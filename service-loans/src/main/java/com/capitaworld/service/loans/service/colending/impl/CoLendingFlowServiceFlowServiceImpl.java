@@ -11,6 +11,7 @@ import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepo
 import com.capitaworld.service.loans.service.colending.CoLendingFlowService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
@@ -106,11 +107,13 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 				}
 				Object[] objects = coLendingFlowRepository.getStageAndStatus(clientResponse.getClientId());
 				if (objects!=null){
-					if ((objects[0].equals("7") || objects[0].equals("9")) && objects[1].equals("3")){
-						clientDetailCoLending.setClientStatus("In-Principle");
-					}else if(objects[0].equals("4") && objects[1].equals("3")){
+					Integer stage = (Integer) objects[0];
+					Integer status = (Integer) objects[1];
+					if ((stage == 7 || stage == 9) && status == 3) {
+						clientDetailCoLending.setClientStatus("Completed");
+					} else if (stage == 4 && status == 3) {
 						clientDetailCoLending.setClientStatus("In-Eligible");
-					}else{
+					} else {
 						clientDetailCoLending.setClientStatus("In-Progress");
 					}
 				}else{
@@ -146,10 +149,32 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 		try {
 			List<ProposalDetails> proposalDetailsList = proposalDetailsRepository.findByApplicationId(applicationId);
 			if(!CommonUtils.isListNullOrEmpty(proposalDetailsList)){
-				ProposalDetails minLoanAmtProposalObj = proposalDetailsList
+				ProposalDetails proposalDetailsOne = proposalDetailsList.get(0);
+				ProposalDetails proposalDetailsTwo = proposalDetailsList.get(1);
+				ProposalDetails minLoanAmtProposalObj = new ProposalDetails();
+				if(proposalDetailsTwo.getElAmount() == proposalDetailsOne.getElAmount()){
+					if(proposalDetailsTwo.getElTenure() == proposalDetailsOne.getElTenure()){
+						if(proposalDetailsTwo.getNbfcFlow() == NBFC_BANK_FLOW){
+							minLoanAmtProposalObj = proposalDetailsTwo;
+						}else {
+							minLoanAmtProposalObj = proposalDetailsOne;
+						}
+					}else if(proposalDetailsTwo.getElTenure() < proposalDetailsOne.getElTenure()){
+						minLoanAmtProposalObj = proposalDetailsTwo;
+					}else {
+						minLoanAmtProposalObj = proposalDetailsOne;
+					}
+				}else if(proposalDetailsTwo.getElAmount() < proposalDetailsOne.getElAmount()){
+					minLoanAmtProposalObj = proposalDetailsTwo;
+				}else {
+					minLoanAmtProposalObj = proposalDetailsOne;
+				}
+				/*ProposalDetails minLoanAmtProposalObj = proposalDetailsList
 						.stream()
 						.min(Comparator.comparing(ProposalDetails::getElAmount))
-						.orElseThrow(NoSuchElementException::new);
+						.orElseThrow(NoSuchElementException::new);*/
+				ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
+				BeanUtils.copyProperties(minLoanAmtProposalObj,proposalMappingRequest);
 				Object[] ratioValues = coLendingFlowRepository.getRatioNbfcBankProduct(applicationId);
 				Double tenure = 0d,nbfcRatio = 0d,bankRatio = 0d;
 				if(!CommonUtils.isObjectNullOrEmpty(ratioValues)){
@@ -174,7 +199,7 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 							ratioVal = bankRatio;
 							bankOrgId = proposalDetails.getUserOrgId();
 						}
-						calcAndSaveBlednedRate(proposalDetails,tenure,ratioVal,minLoanAmtProposalObj);
+						calcAndSaveBlednedRate(proposalDetails,tenure,ratioVal,proposalMappingRequest);
 					}
 				}
 				Integer isDataSaved = coLendingFlowRepository.saveBlendedValues(applicationId,nbfcOrgId,bankOrgId);
@@ -191,16 +216,15 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 		return false;
 	}
 
-	private void calcAndSaveBlednedRate(ProposalDetails proposalDetails,Double tenure,Double ratioVal,ProposalDetails minLoanAmtProposalObj){
+	private void calcAndSaveBlednedRate(ProposalDetails proposalDetails,Double tenure,Double ratioVal,ProposalMappingRequest minLoanAmtProposalObj){
 		try {
 			Double calcTenure = 0d,calcRoi = 0d,calcProcessingFee = 0d,monthlyRate = 0d,calcEmi = 0d;
-			Double loanAmount = minLoanAmtProposalObj.getElAmount(),existingAmt = minLoanAmtProposalObj.getExistingLoanAmount(),additionalAmt = minLoanAmtProposalObj.getExistingLoanAmount();
+			Double loanAmount = minLoanAmtProposalObj.getElAmount(),existingAmt = minLoanAmtProposalObj.getExistingLoanAmount(),additionalAmt = minLoanAmtProposalObj.getAdditionalLoanAmount();
 
 			calcTenure = minLoanAmtProposalObj.getElTenure();
 			calcRoi = (ratioVal * proposalDetails.getElRoi()) / 100;
 			calcProcessingFee = (ratioVal * proposalDetails.getProcessingFee()) / 100;
-			monthlyRate = calcRoi / 12;
-			calcEmi = (monthlyRate) / (1 - Math.pow(1 + monthlyRate, -calcTenure)) * loanAmount;
+
 			if(!CommonUtils.isObjectNullOrEmpty(additionalAmt) && additionalAmt!=0){
 				additionalAmt = (ratioVal * additionalAmt) / 100;
 			}
@@ -210,9 +234,17 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 			if(!CommonUtils.isObjectNullOrEmpty(loanAmount) && loanAmount!=0){
 				loanAmount = (ratioVal * loanAmount) / 100;
 			}
+
+			monthlyRate = (calcRoi/100) / 12;
+			Double mTenure = calcTenure*12;
+			calcEmi= getPMTCalculationByLoanAmt(monthlyRate,mTenure,loanAmount);
+
 			DecimalFormat df = new DecimalFormat("#.##");
 			calcRoi = Double.valueOf(df.format(calcRoi));
 			calcProcessingFee = Double.valueOf(df.format(calcProcessingFee));
+
+			DecimalFormat df1 = new DecimalFormat("#");
+			calcEmi = Double.valueOf(df1.format(calcEmi));
 
 			ProposalDetailsAuditNbfc proposalDetailsAuditNbfc = new ProposalDetailsAuditNbfc();
 			BeanUtils.copyProperties(proposalDetails,proposalDetailsAuditNbfc);
@@ -232,5 +264,9 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 		}catch (Exception e){
 			logger.error("Error in calcAndSaveBlednedRate()",e);
 		}
+	}
+
+	public double getPMTCalculationByLoanAmt(double monthlyRate, double totalTenure, double loanAmount) {
+		return (monthlyRate) / (1 - Math.pow(1 + monthlyRate, -totalTenure)) * loanAmount;
 	}
 }

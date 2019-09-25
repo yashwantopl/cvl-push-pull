@@ -2,7 +2,9 @@ package com.capitaworld.service.loans.controller.fundseeker.corporate;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,8 +26,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.capitaworld.api.reports.ReportRequest;
 import com.capitaworld.client.reports.ReportsClient;
+import com.capitaworld.service.analyzer.model.common.Data;
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.model.DocumentResponse;
+import com.capitaworld.service.gst.GstResponse;
+import com.capitaworld.service.gst.client.GstClient;
+import com.capitaworld.service.gst.yuva.request.GSTR1Request;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CamReportPdfDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.InEligibleProposalCamReportService;
@@ -37,6 +43,10 @@ import com.capitaworld.service.loans.service.fundseeker.retail.PLCamReportServic
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 import com.capitaworld.service.loans.utils.DDRMultipart;
+import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.mca.client.McaClient;
+import com.capitaworld.service.mca.model.McaResponse;
+import com.capitaworld.service.mca.model.verifyApi.VerifyAPIRequest;
 
 @RestController
 @RequestMapping("/cam")
@@ -703,6 +713,41 @@ public class CamReportPdfDetailsController {
 		} catch (Exception e) {
 			logger.error(ERROR_WHILE_GETTING_MAP_DETAILS, e);
 			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@Autowired
+	private GstClient gstClient;
+	
+	@GetMapping(value = "/getGstSpecificDataReport/{panNo}/{fpUserId}/{fsUserId}" , produces = MediaType.APPLICATION_JSON_VALUE)
+	public byte[] getGstSpecificDataReport(@PathVariable(value = "panNo") String panNo ,@PathVariable(value = "fpUserId") Long fpUserId,@PathVariable(value = "fsUserId") Long fsUserId, HttpServletResponse  httpServletResponse,HttpServletRequest httpReq) {
+		logger.info("Into get Gst Specific Data Report with panNo==>{} , fpUserId==>{} and FsUserId==>{}" , panNo , fpUserId ,fsUserId);
+		if(CommonUtils.isObjectNullOrEmpty(panNo) || CommonUtils.isObjectNullOrEmpty(fpUserId) || CommonUtils.isObjectNullOrEmpty(fsUserId)) {
+			logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND , panNo);
+			return null;
+		}
+		try {
+			Map<String, Object> mapData = new HashMap<String, Object>();
+			GSTR1Request gstr1Request = new GSTR1Request();
+			gstr1Request.setPan(panNo);
+			gstr1Request.setFpUserId(fpUserId);
+			gstr1Request.setFsUserId(fsUserId);
+			GstResponse gstResponse = gstClient.gstSpecificDetailCalculation(gstr1Request);
+			mapData.put("gstSpecificData", !CommonUtils.isObjectNullOrEmpty(gstResponse) && !CommonUtils.isObjectNullOrEmpty(gstResponse.getData()) ? gstResponse.getData() : null);
+			ReportRequest reportRequest = new ReportRequest();
+			reportRequest.setParams(mapData);
+			reportRequest.setTemplate("GSTSPECIFICDATA");
+			reportRequest.setType("GSTSPECIFICDATA");
+			byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
+			
+			if (byteArr != null && byteArr.length > 0) {
+				return byteArr;
+			}else {
+				return null;
+			}
+		} catch (Exception e) {
+			logger.error(ERROR_WHILE_GETTING_MAP_DETAILS, e);
+			return null;
 		}
 	}
 	

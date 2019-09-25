@@ -1,19 +1,5 @@
 package com.capitaworld.service.loans.service.fundprovider.impl;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.capitaworld.api.workflow.model.WorkflowJobsTrackerRequest;
 import com.capitaworld.api.workflow.model.WorkflowRequest;
 import com.capitaworld.api.workflow.model.WorkflowResponse;
@@ -22,15 +8,25 @@ import com.capitaworld.api.workflow.utility.WorkflowUtils;
 import com.capitaworld.client.workflow.WorkflowClient;
 import com.capitaworld.service.loans.domain.fundprovider.CoLendingRatio;
 import com.capitaworld.service.loans.domain.fundprovider.FpCoLendingBanks;
-import com.capitaworld.service.loans.domain.fundprovider.ProductMasterTemp;
 import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.WorkflowData;
 import com.capitaworld.service.loans.model.corporate.CoLendingRequest;
+import com.capitaworld.service.loans.repository.colending.CoLendingFlowRepository;
 import com.capitaworld.service.loans.repository.fundprovider.CoLendingRatioRepository;
 import com.capitaworld.service.loans.repository.fundprovider.FpCoLendingBanksRepository;
 import com.capitaworld.service.loans.service.fundprovider.CoLendingService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.io.IOException;
+import java.math.BigInteger;
+import java.util.*;
 
 @Service
 @Transactional
@@ -46,7 +42,9 @@ public class CoLendingServiceImpl implements CoLendingService {
 	
 	@Autowired
 	private CoLendingRatioRepository coLendingRatioRepository;
-	
+
+	@Autowired
+	private CoLendingFlowRepository coLendingFlowRepository;
 	
 
 	@Override
@@ -246,7 +244,14 @@ public class CoLendingServiceImpl implements CoLendingService {
 
 	@Override
 	public List<CoLendingRequest> listByOrgId(Long userOrgId) {
-		return coLendingRatioRepository.listByOrgId(userOrgId);
+		List<CoLendingRequest> responseList = new ArrayList<>();
+		List<BigInteger> bigIntegerList = coLendingFlowRepository.getBankList(userOrgId);
+		for (BigInteger bigInteger:bigIntegerList) {
+			CoLendingRequest request = new CoLendingRequest();
+			request.setBankId(Long.parseLong(bigInteger.toString()));
+			responseList.add(request);
+		}
+		return responseList;
 	}
 
 	@Override
@@ -262,6 +267,23 @@ public class CoLendingServiceImpl implements CoLendingService {
 		catch(Exception e)
 		{
 			logger.error("Error while removeCoLendingProposal",e);
+			return false;
+		}
+	}
+	
+	@Override
+	public Boolean activeCoLendingProposal(Long id) {
+		// TODO Auto-generated method stub
+		CommonDocumentUtils.startHook(logger, "activeCoLendingProposal");
+		try {
+			
+			coLendingRatioRepository.activeRatioAndProposal(id);
+			return true;
+		}
+
+		catch(Exception e)
+		{
+			logger.error("Error while activeCoLendingProposal",e);
 			return false;
 		}
 	}

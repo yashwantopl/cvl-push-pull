@@ -392,7 +392,7 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	
 	
 	/*For cam report In-principleDate for hl pl*/
-	@Query(value = "select lg.In_principle_date from connect.connect_log lg where lg.application_id=:applicationId", nativeQuery = true)
+	@Query(value = "select lg.In_principle_date from connect.connect_log lg where lg.application_id=:applicationId ORDER BY lg.id desc LIMIT 1", nativeQuery = true)
 	Date getInPrincipleDate(@Param("applicationId")  Long applicationId);
 	
 	@Modifying

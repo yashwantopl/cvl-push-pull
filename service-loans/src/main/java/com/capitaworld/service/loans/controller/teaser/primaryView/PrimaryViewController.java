@@ -1103,7 +1103,9 @@ public class PrimaryViewController {
 			//Object[] o = loanApplicationService.getApplicationDetailsById(4479l); // PREVIOUS
 			logger.info("THIS IS THE APPLICATION iD =====>"+applicationId);
 			Object[] o = loanApplicationService.getApplicationDetailsByProposalId(applicationId,proposalId); // NEW BASED ON PROPOSAL MAPPING ID =={} PENDING
-			toUserId = o[0].toString();
+			if(o != null) {
+				toUserId = o[0].toString();
+			}
 			logger.info("=============>"+toUserId);
 			notificationId = NotificationAlias.SYS_FP_VIEW;
 		}
@@ -1111,7 +1113,7 @@ public class PrimaryViewController {
 			String email = commonRepository.getEmailIdFromUsers(Long.valueOf(toUserId));
 	        if (!CommonUtils.isObjectNullOrEmpty(email)) {
 	        	Integer viewedTeaser = commonRepository.getViewedTeaser(email);
-				if(viewedTeaser != null && viewedTeaser > 0) {
+				if(viewedTeaser != null && viewedTeaser > 0 && toUserId != null) {
 					notificationService.sendViewNotification(toUserId, fromUserId, fromUserTypeId, notificationId,
 							applicationId, fpProductId, NotificationTemplate.PRIMARY_VIEW, loginUserType);
 				}

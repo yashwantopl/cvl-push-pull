@@ -467,6 +467,28 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 
     @Column(name="is_Commercial_cibil_for_3_month_mandatory")
     private Boolean isCommercialCibilFor3MonthMandatory = false;
+    
+	@Column(name="manufacturing")
+	private BigDecimal manufacturing;
+	
+	@Column(name="service")
+	private BigDecimal service;
+	
+	@Column(name="trading")
+	private BigDecimal trading;
+	
+	@Column(name="promoter_contri")
+	private BigDecimal promotorContri;
+	
+	
+
+	public BigDecimal getPromotorContri() {
+		return promotorContri;
+	}
+
+	public void setPromotorContri(BigDecimal promotorContri) {
+		this.promotorContri = promotorContri;
+	}
 
 	/**
 	 * @return the jobId
@@ -1665,6 +1687,31 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 		this.isCommercialCibilFor3MonthMandatory = isCommercialCibilFor3MonthMandatory;
 	}
 
+	public BigDecimal getManufacturing() {
+		return manufacturing;
+	}
+
+	public void setManufacturing(BigDecimal manufacturing) {
+		this.manufacturing = manufacturing;
+	}
+
+	public BigDecimal getService() {
+		return service;
+	}
+
+	public void setService(BigDecimal service) {
+		this.service = service;
+	}
+
+	public BigDecimal getTrading() {
+		return trading;
+	}
+
+	public void setTrading(BigDecimal trading) {
+		this.trading = trading;
+	}
+
+	
 	
 	
 	
