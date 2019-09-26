@@ -320,9 +320,9 @@ public class CoLendingServiceImpl implements CoLendingService {
 
 		JSONObject countObj = new JSONObject();
 		List<Long> proposalStatusId = new ArrayList<>();
-		if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.NBFC_FP_MAKER == nhbsApplicationRequest.getUserRoleId()
-				|| com.capitaworld.service.users.utils.CommonUtils.UserRoles.NBFC_FP_CHECKER == nhbsApplicationRequest.getUserRoleId()
-				|| com.capitaworld.service.users.utils.CommonUtils.UserRoles.NBFC_ASSISTED_USER == nhbsApplicationRequest.getUserRoleId()){
+		if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.NBFC_FP_MAKER == nhbsApplicationRequest.getUserRoleId().intValue()
+				|| com.capitaworld.service.users.utils.CommonUtils.UserRoles.NBFC_FP_CHECKER == nhbsApplicationRequest.getUserRoleId().intValue()
+				|| com.capitaworld.service.users.utils.CommonUtils.UserRoles.NBFC_ASSISTED_USER == nhbsApplicationRequest.getUserRoleId().intValue()){
 
 			List<BigInteger> newApplicationIdList = null;
 
@@ -444,7 +444,7 @@ public class CoLendingServiceImpl implements CoLendingService {
 			proposalStatusId.clear();
 			countObj.put("rejectedProposalCount", rejectedProposalCountList.size());
 
-		} else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.NBFC_HO == nhbsApplicationRequest.getUserRoleId()){
+		} else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.NBFC_HO == nhbsApplicationRequest.getUserRoleId().intValue()){
 
 			proposalStatusId.add(MatchConstant.ProposalStatus.ACCEPT);
 			List<BigInteger> inprincipleProposalCountList = proposalDetailsRepository.getFPProposalCountByStatusIdAndUserOrgIdForHO(proposalStatusId,npOrgId,1);
