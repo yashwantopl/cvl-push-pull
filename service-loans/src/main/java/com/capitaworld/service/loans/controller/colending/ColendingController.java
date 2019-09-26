@@ -132,7 +132,7 @@ public class ColendingController {
     }
 
 
-    @RequestMapping(value = "/nbfc/fpProposalCount",method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/nbfc/fpProposalCount", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> fpProposalCount(@RequestBody NhbsApplicationRequest nhbsApplicationRequest, HttpServletRequest request){
         try {
             Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);

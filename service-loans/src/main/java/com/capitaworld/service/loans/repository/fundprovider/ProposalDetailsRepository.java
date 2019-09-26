@@ -153,13 +153,13 @@ public interface ProposalDetailsRepository extends JpaRepository<ProposalDetails
 
     public List<ProposalDetails> findByApplicationId(Long applicationId);
 
-    @Query(value = "SELECT p.proposal_id FROM proposal_details p where p.proposal_status_id=:proposalStatus and p.user_org_id=:userOrgId and p.nbfc_flow=:nbfcFlow and p.is_active=true and p.branch_id=:branchId",nativeQuery = true)
+    @Query(value = "SELECT p.id FROM proposal_details p where p.proposal_status_id IN (:proposalStatus) and p.user_org_id=:userOrgId and p.nbfc_flow=:nbfcFlow and p.is_active=true and p.branch_id=:branchId",nativeQuery = true)
     public List<BigInteger> getFPProposalCountByStatusIdAndUserOrgId(@Param("proposalStatus") List<Long> proposalStatus, @Param("userOrgId") Long userOrgId, @Param("nbfcFlow") Integer nbfcFlow, @Param("branchId") Long branchId);
 
-    @Query(value = "SELECT p.proposal_id FROM proposal_details p where p.proposal_status_id=:proposalStatus and p.user_org_id=:userOrgId and p.nbfc_flow=:nbfcFlow and p.is_active=true",nativeQuery = true)
+    @Query(value = "SELECT p.id FROM proposal_details p where p.proposal_status_id IN(:proposalStatus) and p.user_org_id=:userOrgId and p.nbfc_flow=:nbfcFlow and p.is_active=true",nativeQuery = true)
     public List<BigInteger> getFPProposalCountByStatusIdAndUserOrgIdForHO(@Param("proposalStatus") List<Long> proposalStatus, @Param("userOrgId") Long userOrgId, @Param("nbfcFlow") Integer nbfcFlow);
 
-    @Query(value = "SELECT p.application_id FROM loan_application.proposal_details p WHERE p.proposal_status_id=:proposalStatus AND nbfc_flow=:nbfcFlow AND p.application_id IN (SELECT p.application_id FROM loan_application.proposal_details p WHERE p.proposal_status_id=:proposalStatus AND user_org_id=:userOrgId AND nbfc_flow=:nbfcFlow AND is_active=TRUE AND p.branch_id =:branchId)",nativeQuery = true)
+    @Query(value = "SELECT p.application_id FROM loan_application.proposal_details p WHERE p.proposal_status_id IN(:proposalStatus) AND nbfc_flow=:nbfcFlow AND p.application_id IN (SELECT p.application_id FROM loan_application.proposal_details p WHERE p.proposal_status_id IN (:proposalStatus) AND user_org_id=:userOrgId AND nbfc_flow=:nbfcFlow AND is_active=TRUE AND p.branch_id =:branchId)",nativeQuery = true)
     public List<BigInteger> getFPProposalCountOfSanctionedNBFC(@Param("proposalStatus") List<Long> proposalStatus,@Param("userOrgId") Long userOrgId,@Param("nbfcFlow") Integer nbfcFlow,@Param("branchId") Long branchId);
 }
 
