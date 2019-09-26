@@ -7,6 +7,8 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.math.BigInteger;
+import java.util.List;
 
 /**
  * Created by dhaval.panchal on 14-Aug-19.
@@ -63,6 +65,26 @@ public class CoLendingFlowRepositoryImpl implements CoLendingFlowRepository{
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("Error in saveBlendedValues()");
+        }
+        return null;
+    }
+
+    public List<BigInteger> getBankList(Long nbfcOrgId){
+        try {
+            List<BigInteger> val = (List<BigInteger>) entityManager
+                    .createNativeQuery("SELECT DISTINCT fp.user_org_id " +
+                            "FROM `loan_application`.`fp_co_lending_ratio` clr " +
+                            "INNER JOIN `loan_application`.`nbfc_ratio_mapping` rm " +
+                            "ON clr.id = rm.ratio_id AND rm.is_active = TRUE " +
+                            "INNER JOIN `loan_application`.`fp_product_master` fp " +
+                            "ON rm.fp_product_id = fp.fp_product_id AND fp.is_active = TRUE AND fp.user_org_id !=:nbfcOrgId " +
+                            "WHERE clr.user_org_id =:nbfcOrgId AND clr.is_active = TRUE AND clr.is_proposal_active = TRUE")
+                    .setParameter("nbfcOrgId", nbfcOrgId)
+                    .getResultList();
+          return val;
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("Error while fetching bank list");
         }
         return null;
     }

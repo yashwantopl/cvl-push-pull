@@ -1,9 +1,12 @@
 package com.capitaworld.service.loans.controller.colending;
 
 import com.capitaworld.service.loans.model.ClientListingCoLending;
+import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.NhbsApplicationRequest;
 import com.capitaworld.service.loans.model.SpClientListing;
 import com.capitaworld.service.loans.model.corporate.CoLendingRequest;
 import com.capitaworld.service.loans.service.colending.CoLendingFlowService;
+import com.capitaworld.service.loans.service.fundprovider.CoLendingService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
@@ -26,9 +29,16 @@ public class ColendingController {
 
     private static final String CO_LENDING_CLIENT_LIST_MSG = "Client list for CoLending";
     private static final String SOMETHING_WENT_WRONG_WHILE_FETCHING_CO_LENDING_CLIENT_COUNT_MSG = "Something went wrong while fetching CoLending client count..!";
+    private static final String USER_ID_CAN_NOT_BE_EMPTY_MSG = "userId  can not be empty ==>";
+    private static final String NP_USER_ID_CAN_NOT_BE_EMPTY_MSG = "npUserId  can not be empty ==>";
+    private static final String USER_ROLE_ID_CAN_NOT_BE_EMPTY_MSG = "userRoleId  can not be empty ==>";
+    private static final String APPLICATION_ID_CAN_NOT_BE_EMPTY_MSG = "applicationId  can not be empty ==>";
 
     @Autowired
     private CoLendingFlowService coLendingFlowService;
+
+    @Autowired
+    private CoLendingService coLendingService;
 
     @RequestMapping(value = "/client/list/fs",method = RequestMethod.POST,consumes= MediaType.APPLICATION_JSON_VALUE,produces=MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserResponse> clientListFs(@RequestBody UsersRequest usersRequest, HttpServletRequest request){
@@ -120,4 +130,44 @@ public class ColendingController {
         }
 
     }
+
+
+    @RequestMapping(value = "/nbfc/fpProposalCount",method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> fpProposalCount(@RequestBody NhbsApplicationRequest nhbsApplicationRequest, HttpServletRequest request){
+        try {
+            Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+            if(CommonUtils.isObjectNullOrEmpty(userId) ||
+                    CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest) ||
+                    CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest.getUserRoleIdString()) ||
+                    CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest.getBusinessTypeId())){
+                logger.warn(USER_ID_CAN_NOT_BE_EMPTY_MSG + userId);
+                logger.warn(USER_ROLE_ID_CAN_NOT_BE_EMPTY_MSG + nhbsApplicationRequest.getUserRoleIdString());
+                return new ResponseEntity<LoansResponse>(
+                        new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+            }
+            nhbsApplicationRequest.setUserId(userId);
+            LoansResponse loansResponse = new LoansResponse();
+            Long orgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
+            nhbsApplicationRequest.setUserRoleId(Long.parseLong(CommonUtils.decode(nhbsApplicationRequest.getUserRoleIdString())));
+            JSONObject jsonCountObj = coLendingService.getFPProposalCount(nhbsApplicationRequest,orgId);
+            if(!CommonUtils.isObjectNullOrEmpty(jsonCountObj)){
+                logger.info(CommonUtils.DATA_FOUND);
+                loansResponse.setMessage(CommonUtils.DATA_FOUND);
+            }else{
+                logger.info(CommonUtils.DATA_NOT_FOUND);
+                loansResponse.setMessage(CommonUtils.DATA_NOT_FOUND);
+            }
+            loansResponse.setStatus(HttpStatus.OK.value());
+            loansResponse.setData(jsonCountObj);
+            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error while getting count of proposals : ", e);
+            return new ResponseEntity<LoansResponse>(
+                    new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+
 }

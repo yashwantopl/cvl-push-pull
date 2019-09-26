@@ -476,6 +476,19 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 	
 	@Column(name="trading")
 	private BigDecimal trading;
+	
+	@Column(name="promoter_contri")
+	private BigDecimal promotorContri;
+	
+	
+
+	public BigDecimal getPromotorContri() {
+		return promotorContri;
+	}
+
+	public void setPromotorContri(BigDecimal promotorContri) {
+		this.promotorContri = promotorContri;
+	}
 
 	/**
 	 * @return the jobId

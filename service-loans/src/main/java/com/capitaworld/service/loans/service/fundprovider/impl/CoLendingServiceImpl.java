@@ -1,19 +1,5 @@
 package com.capitaworld.service.loans.service.fundprovider.impl;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.capitaworld.api.workflow.model.WorkflowJobsTrackerRequest;
 import com.capitaworld.api.workflow.model.WorkflowRequest;
 import com.capitaworld.api.workflow.model.WorkflowResponse;
@@ -22,15 +8,33 @@ import com.capitaworld.api.workflow.utility.WorkflowUtils;
 import com.capitaworld.client.workflow.WorkflowClient;
 import com.capitaworld.service.loans.domain.fundprovider.CoLendingRatio;
 import com.capitaworld.service.loans.domain.fundprovider.FpCoLendingBanks;
-import com.capitaworld.service.loans.domain.fundprovider.ProductMasterTemp;
 import com.capitaworld.service.loans.model.DataRequest;
+import com.capitaworld.service.loans.model.NhbsApplicationRequest;
 import com.capitaworld.service.loans.model.WorkflowData;
 import com.capitaworld.service.loans.model.corporate.CoLendingRequest;
+import com.capitaworld.service.loans.repository.colending.CoLendingFlowRepository;
 import com.capitaworld.service.loans.repository.fundprovider.CoLendingRatioRepository;
 import com.capitaworld.service.loans.repository.fundprovider.FpCoLendingBanksRepository;
+import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.service.fundprovider.CoLendingService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.matchengine.utils.MatchConstant;
+import com.capitaworld.service.users.client.UsersClient;
+import com.capitaworld.service.users.model.BranchBasicDetailsRequest;
+import com.capitaworld.service.users.model.UserResponse;
+import com.capitaworld.service.users.model.UsersRequest;
+import org.json.simple.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.io.IOException;
+import java.math.BigInteger;
+import java.util.*;
 
 @Service
 @Transactional
@@ -38,6 +42,8 @@ public class CoLendingServiceImpl implements CoLendingService {
 
 	
 	private static final Logger logger = LoggerFactory.getLogger(CoLendingServiceImpl.class);
+	private static final String ERROR_WHILE_FP_BRANCH_DETAILS = "error while FP branch details : ";
+
 	@Autowired
 	private FpCoLendingBanksRepository fpCoLendingBanksRepository;
 	
@@ -46,8 +52,15 @@ public class CoLendingServiceImpl implements CoLendingService {
 	
 	@Autowired
 	private CoLendingRatioRepository coLendingRatioRepository;
-	
-	
+
+	@Autowired
+	private CoLendingFlowRepository coLendingFlowRepository;
+
+	@Autowired
+	private UsersClient usersClient;
+
+	@Autowired
+	private ProposalDetailsRepository proposalDetailsRepository;
 
 	@Override
 	public List<FpCoLendingBanks> getBankList() {
@@ -246,7 +259,14 @@ public class CoLendingServiceImpl implements CoLendingService {
 
 	@Override
 	public List<CoLendingRequest> listByOrgId(Long userOrgId) {
-		return coLendingRatioRepository.listByOrgId(userOrgId);
+		List<CoLendingRequest> responseList = new ArrayList<>();
+		List<BigInteger> bigIntegerList = coLendingFlowRepository.getBankList(userOrgId);
+		for (BigInteger bigInteger:bigIntegerList) {
+			CoLendingRequest request = new CoLendingRequest();
+			request.setBankId(Long.parseLong(bigInteger.toString()));
+			responseList.add(request);
+		}
+		return responseList;
 	}
 
 	@Override
@@ -281,5 +301,191 @@ public class CoLendingServiceImpl implements CoLendingService {
 			logger.error("Error while activeCoLendingProposal",e);
 			return false;
 		}
+	}
+
+	@Override
+	public JSONObject getFPProposalCount(NhbsApplicationRequest nhbsApplicationRequest, Long npOrgId) {
+
+		Long branchId = null;
+		UsersRequest usersRequestForBranch = new UsersRequest();
+		usersRequestForBranch.setId(nhbsApplicationRequest.getUserId());
+		try {
+			UserResponse userResponseForName = usersClient.getBranchDetailsBYUserId(usersRequestForBranch);
+			BranchBasicDetailsRequest branchBasicDetailsRequest = com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
+					BranchBasicDetailsRequest.class);
+			branchId = branchBasicDetailsRequest.getId();
+		} catch (Exception e) {
+			logger.error(ERROR_WHILE_FP_BRANCH_DETAILS,e);
+		}
+
+		JSONObject countObj = new JSONObject();
+		List<Long> proposalStatusId = new ArrayList<>();
+		if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.NBFC_FP_MAKER == nhbsApplicationRequest.getUserRoleId()
+				|| com.capitaworld.service.users.utils.CommonUtils.UserRoles.NBFC_FP_CHECKER == nhbsApplicationRequest.getUserRoleId()
+				|| com.capitaworld.service.users.utils.CommonUtils.UserRoles.NBFC_ASSISTED_USER == nhbsApplicationRequest.getUserRoleId()){
+
+			List<BigInteger> newApplicationIdList = null;
+
+			proposalStatusId.add(MatchConstant.ProposalStatus.ACCEPT);
+			List<BigInteger> inprincipleProposalCountList = proposalDetailsRepository.getFPProposalCountByStatusIdAndUserOrgId(proposalStatusId,npOrgId,1,branchId);
+			proposalStatusId.clear();
+			countObj.put("inprincipleProposalCount", inprincipleProposalCountList.size());
+
+			proposalStatusId.add(MatchConstant.ProposalStatus.APPROVED);
+			List<BigInteger> sanctionByNBFCProposalCountList = proposalDetailsRepository.getFPProposalCountByStatusIdAndUserOrgId(proposalStatusId,npOrgId,1,branchId);
+			proposalStatusId.clear();
+			countObj.put("sanctionByNBFCProposalCount", sanctionByNBFCProposalCountList.size());
+
+			proposalStatusId.add(MatchConstant.ProposalStatus.APPROVED);
+			List<BigInteger> sanctionProposalCountList = proposalDetailsRepository.getFPProposalCountOfSanctionedNBFC(proposalStatusId,npOrgId,2,branchId);
+			proposalStatusId.clear();
+			countObj.put("sanctionProposalCount", sanctionProposalCountList.size());
+
+			proposalStatusId.add(MatchConstant.ProposalStatus.DISBURSED);
+			proposalStatusId.add(MatchConstant.ProposalStatus.PARTIALLY_DISBURSED);
+			List<BigInteger> disbursedByNBFCProposalCountList = proposalDetailsRepository.getFPProposalCountByStatusIdAndUserOrgId(proposalStatusId,npOrgId,1,branchId);
+			proposalStatusId.clear();
+			countObj.put("disbursedByNBFCProposalCount", disbursedByNBFCProposalCountList.size());
+
+			proposalStatusId.add(MatchConstant.ProposalStatus.DISBURSED);
+			proposalStatusId.add(MatchConstant.ProposalStatus.PARTIALLY_DISBURSED);
+			List<BigInteger> disbursedProposalCountList = proposalDetailsRepository.getFPProposalCountOfSanctionedNBFC(proposalStatusId,npOrgId,2,branchId);
+			proposalStatusId.clear();
+			countObj.put("disbursedProposalCount", disbursedProposalCountList.size());
+
+			proposalStatusId.add(MatchConstant.ProposalStatus.HOLD);
+			List<BigInteger> holdProposalCountList = proposalDetailsRepository.getFPProposalCountByStatusIdAndUserOrgId(proposalStatusId,npOrgId,1,branchId);
+			proposalStatusId.clear();
+			countObj.put("holdProposalCount", holdProposalCountList.size());
+
+			proposalStatusId.add(MatchConstant.ProposalStatus.DECLINE);
+			List<BigInteger> rejectedProposalCountList = proposalDetailsRepository.getFPProposalCountByStatusIdAndUserOrgId(proposalStatusId,npOrgId,1,branchId);
+			proposalStatusId.clear();
+			countObj.put("rejectedProposalCount", rejectedProposalCountList.size());
+
+		}else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_MAKER == nhbsApplicationRequest.getUserRoleId()
+				|| com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_CHECKER == nhbsApplicationRequest.getUserRoleId()){
+
+			proposalStatusId.add(MatchConstant.ProposalStatus.ACCEPT);
+			List<BigInteger> inprincipleProposalCountList = proposalDetailsRepository.getFPProposalCountByStatusIdAndUserOrgId(proposalStatusId,npOrgId,2,branchId);
+			proposalStatusId.clear();
+			countObj.put("inprincipleProposalCount", inprincipleProposalCountList.size());
+
+			/*nbfc branchId and nbfc org id required*/
+			proposalStatusId.add(MatchConstant.ProposalStatus.APPROVED);
+			List<BigInteger> sanctionByNBFCProposalCountList = proposalDetailsRepository.getFPProposalCountByStatusIdAndUserOrgId(proposalStatusId,npOrgId,1,branchId);
+			proposalStatusId.clear();
+			countObj.put("sanctionByNBFCProposalCount", sanctionByNBFCProposalCountList.size());
+
+			proposalStatusId.add(MatchConstant.ProposalStatus.APPROVED);
+			List<BigInteger> sanctionProposalCountList = proposalDetailsRepository.getFPProposalCountByStatusIdAndUserOrgId(proposalStatusId,npOrgId,2,branchId);
+			proposalStatusId.clear();
+			countObj.put("sanctionProposalCount", sanctionProposalCountList.size());
+
+			proposalStatusId.add(MatchConstant.ProposalStatus.DISBURSED);
+			proposalStatusId.add(MatchConstant.ProposalStatus.PARTIALLY_DISBURSED);
+			List<BigInteger> disbursedByNBFCProposalCountList = proposalDetailsRepository.getFPProposalCountByStatusIdAndUserOrgId(proposalStatusId,npOrgId,1,branchId);
+			proposalStatusId.clear();
+			countObj.put("disbursedByNBFCProposalCount", disbursedByNBFCProposalCountList.size());
+
+			proposalStatusId.add(MatchConstant.ProposalStatus.DISBURSED);
+			proposalStatusId.add(MatchConstant.ProposalStatus.PARTIALLY_DISBURSED);
+			List<BigInteger> disbursedProposalCountList = proposalDetailsRepository.getFPProposalCountByStatusIdAndUserOrgId(proposalStatusId,npOrgId,2,branchId);
+			proposalStatusId.clear();
+			countObj.put("disbursedProposalCount", disbursedProposalCountList.size());
+
+			proposalStatusId.add(MatchConstant.ProposalStatus.HOLD);
+			List<BigInteger> holdProposalCountList = proposalDetailsRepository.getFPProposalCountByStatusIdAndUserOrgId(proposalStatusId,npOrgId,2,branchId);
+			proposalStatusId.clear();
+			countObj.put("holdProposalCount", holdProposalCountList.size());
+
+			proposalStatusId.add(MatchConstant.ProposalStatus.DECLINE);
+			List<BigInteger> rejectedProposalCountList = proposalDetailsRepository.getFPProposalCountByStatusIdAndUserOrgId(proposalStatusId,npOrgId,2,branchId);
+			proposalStatusId.clear();
+			countObj.put("rejectedProposalCount", rejectedProposalCountList.size());
+
+		} else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.HEAD_OFFICER == nhbsApplicationRequest.getUserRoleId()){
+
+			proposalStatusId.add(MatchConstant.ProposalStatus.ACCEPT);
+			List<BigInteger> inprincipleProposalCountList = proposalDetailsRepository.getFPProposalCountByStatusIdAndUserOrgIdForHO(proposalStatusId,npOrgId,2);
+			proposalStatusId.clear();
+			countObj.put("inprincipleProposalCount", inprincipleProposalCountList.size());
+
+			/*nbfc branchId and nbfc org id required*/
+			proposalStatusId.add(MatchConstant.ProposalStatus.APPROVED);
+			List<BigInteger> sanctionByNBFCProposalCountList = proposalDetailsRepository.getFPProposalCountByStatusIdAndUserOrgIdForHO(proposalStatusId,npOrgId,2);
+			proposalStatusId.clear();
+			countObj.put("sanctionByNBFCProposalCount", sanctionByNBFCProposalCountList.size());
+
+			proposalStatusId.add(MatchConstant.ProposalStatus.APPROVED);
+			List<BigInteger> sanctionProposalCountList = proposalDetailsRepository.getFPProposalCountByStatusIdAndUserOrgIdForHO(proposalStatusId,npOrgId,2);
+			proposalStatusId.clear();
+			countObj.put("sanctionProposalCount", sanctionProposalCountList.size());
+
+			proposalStatusId.add(MatchConstant.ProposalStatus.DISBURSED);
+			proposalStatusId.add(MatchConstant.ProposalStatus.PARTIALLY_DISBURSED);
+			List<BigInteger> disbursedByNBFCProposalCountList = proposalDetailsRepository.getFPProposalCountByStatusIdAndUserOrgIdForHO(proposalStatusId,npOrgId,2);
+			proposalStatusId.clear();
+			countObj.put("disbursedByNBFCProposalCount", disbursedByNBFCProposalCountList.size());
+
+			proposalStatusId.add(MatchConstant.ProposalStatus.DISBURSED);
+			proposalStatusId.add(MatchConstant.ProposalStatus.PARTIALLY_DISBURSED);
+			List<BigInteger> disbursedProposalCountList = proposalDetailsRepository.getFPProposalCountByStatusIdAndUserOrgIdForHO(proposalStatusId,npOrgId,2);
+			proposalStatusId.clear();
+			countObj.put("disbursedProposalCount", disbursedProposalCountList.size());
+
+			proposalStatusId.add(MatchConstant.ProposalStatus.HOLD);
+			List<BigInteger> holdProposalCountList = proposalDetailsRepository.getFPProposalCountByStatusIdAndUserOrgIdForHO(proposalStatusId,npOrgId,2);
+			proposalStatusId.clear();
+			countObj.put("holdProposalCount", holdProposalCountList.size());
+
+			proposalStatusId.add(MatchConstant.ProposalStatus.DECLINE);
+			List<BigInteger> rejectedProposalCountList = proposalDetailsRepository.getFPProposalCountByStatusIdAndUserOrgIdForHO(proposalStatusId,npOrgId,2);
+			proposalStatusId.clear();
+			countObj.put("rejectedProposalCount", rejectedProposalCountList.size());
+
+		} else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.NBFC_HO == nhbsApplicationRequest.getUserRoleId()){
+
+			proposalStatusId.add(MatchConstant.ProposalStatus.ACCEPT);
+			List<BigInteger> inprincipleProposalCountList = proposalDetailsRepository.getFPProposalCountByStatusIdAndUserOrgIdForHO(proposalStatusId,npOrgId,1);
+			proposalStatusId.clear();
+			countObj.put("inprincipleProposalCount", inprincipleProposalCountList.size());
+
+			/*nbfc branchId and nbfc org id required*/
+			proposalStatusId.add(MatchConstant.ProposalStatus.APPROVED);
+			List<BigInteger> sanctionByNBFCProposalCountList = proposalDetailsRepository.getFPProposalCountByStatusIdAndUserOrgIdForHO(proposalStatusId,npOrgId,1);
+			proposalStatusId.clear();
+			countObj.put("sanctionByNBFCProposalCount", sanctionByNBFCProposalCountList.size());
+
+			proposalStatusId.add(MatchConstant.ProposalStatus.APPROVED);
+			List<BigInteger> sanctionProposalCountList = proposalDetailsRepository.getFPProposalCountByStatusIdAndUserOrgIdForHO(proposalStatusId,npOrgId,1);
+			proposalStatusId.clear();
+			countObj.put("sanctionProposalCount", sanctionProposalCountList.size());
+
+			proposalStatusId.add(MatchConstant.ProposalStatus.DISBURSED);
+			proposalStatusId.add(MatchConstant.ProposalStatus.PARTIALLY_DISBURSED);
+			List<BigInteger> disbursedByNBFCProposalCountList = proposalDetailsRepository.getFPProposalCountByStatusIdAndUserOrgIdForHO(proposalStatusId,npOrgId,1);
+			proposalStatusId.clear();
+			countObj.put("disbursedByNBFCProposalCount", disbursedByNBFCProposalCountList.size());
+
+			proposalStatusId.add(MatchConstant.ProposalStatus.DISBURSED);
+			proposalStatusId.add(MatchConstant.ProposalStatus.PARTIALLY_DISBURSED);
+			List<BigInteger> disbursedProposalCountList = proposalDetailsRepository.getFPProposalCountByStatusIdAndUserOrgIdForHO(proposalStatusId,npOrgId,1);
+			proposalStatusId.clear();
+			countObj.put("disbursedProposalCount", disbursedProposalCountList.size());
+
+			proposalStatusId.add(MatchConstant.ProposalStatus.HOLD);
+			List<BigInteger> holdProposalCountList = proposalDetailsRepository.getFPProposalCountByStatusIdAndUserOrgIdForHO(proposalStatusId,npOrgId,1);
+			proposalStatusId.clear();
+			countObj.put("holdProposalCount", holdProposalCountList.size());
+
+			proposalStatusId.add(MatchConstant.ProposalStatus.DECLINE);
+			List<BigInteger> rejectedProposalCountList = proposalDetailsRepository.getFPProposalCountByStatusIdAndUserOrgIdForHO(proposalStatusId,npOrgId,1);
+			proposalStatusId.clear();
+			countObj.put("rejectedProposalCount", rejectedProposalCountList.size());
+		}
+		logger.info("exit from getFPProposalCount()");
+		logger.info(countObj.toJSONString());
+		return countObj;
 	}
 }
