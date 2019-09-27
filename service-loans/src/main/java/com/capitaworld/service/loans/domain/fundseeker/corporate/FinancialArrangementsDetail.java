@@ -115,6 +115,9 @@ public class FinancialArrangementsDetail implements Serializable {
 	
 	@Column(name = "is_bureau_emi")
 	private Boolean isBureauEmi;
+	
+	@Column(name = "dpd_details")
+	private String dpdDetails;
 
 	public FinancialArrangementsDetail() {
 		// Do nothing because of X and Y.
@@ -342,6 +345,13 @@ public class FinancialArrangementsDetail implements Serializable {
 	public void setIsBureauEmi(Boolean isBureauEmi) {
 		this.isBureauEmi = isBureauEmi;
 	}
-	
+
+	public String getDpdDetails() {
+		return dpdDetails;
+	}
+
+	public void setDpdDetails(String dpdDetails) {
+		this.dpdDetails = dpdDetails;
+	}
 }
 
