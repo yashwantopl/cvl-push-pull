@@ -185,7 +185,7 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 	    }else if(loanType == 2) {// Working Capital
 	    	loanTypes = Arrays.asList(new String[]{"cash credit","overdraft","loan - commercial cash credit"});
 	    	 existingLimits = financialArrangementDetailsRepository.getExistingLimits(applicationId, loanTypes);
-	    	 existingLoanCollateralAmount =	financialArrangementDetailsRepository.getAmountOfCollateralExistingLoan(applicationId,loanTypes); // Get Amount of Collateral buero
+	    	 			existingLoanCollateralAmount =	financialArrangementDetailsRepository.getAmountOfCollateralExistingLoan(applicationId,loanTypes); // Collateral Amount For Working Capital
 	    }else if(loanType == 1) { //Term Loan
 	    	loanTypes = Arrays.asList(new String[]{
 	    			"demand loan",
@@ -198,6 +198,7 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 	    			"property loan","others"
 	    	});
 			 existingLimits = financialArrangementDetailsRepository.getOutStandingAmount(applicationId, loanTypes);
+			 		existingLoanCollateralAmount =	financialArrangementDetailsRepository.getAmountOfCollateralExistingLoan(applicationId,loanTypes); // Collateral Amount For Term Loan
 	    }
 	//	Double existingLimits = financialArrangementDetailsRepository.getExistingLimits(applicationId, loanTypes);
 		logger.info("existingLimits=====>" + existingLimits + FOR_APPLICATION_ID_MSG, applicationId);

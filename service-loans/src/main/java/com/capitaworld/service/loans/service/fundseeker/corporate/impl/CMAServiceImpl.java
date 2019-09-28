@@ -824,8 +824,10 @@ public class CMAServiceImpl implements CMAService {
 			double creditorsTrnovr = profitAndLossStmntReq.getRawMaterials() + profitAndLossStmntReq.getPowerAndFuel() + profitAndLossStmntReq.getOtherMfgExpenses();
 			if(liabilitiesDetails.getTradePayables() != 0) {
 				double creditors = (365 / (creditorsTrnovr / liabilitiesDetails.getTradePayables())) * 12 / totalMonth;
-				ratioDetailsReq.setCreditorsTurnover(creditors);
-				ratioDetailsReq.setCreditorsTurnoverStr(CommonUtils.convertValueIndianCurrency(creditors).toString());
+				if(!Double.isInfinite(creditors)) {
+					ratioDetailsReq.setCreditorsTurnover(creditors);
+					ratioDetailsReq.setCreditorsTurnoverStr(CommonUtils.convertValueIndianCurrency(creditors).toString());	
+				}
 			}
 			
 			//B116 -----> =(365/(B21/(B87+B88-B66)))*12/B17
