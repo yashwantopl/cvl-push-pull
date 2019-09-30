@@ -6216,7 +6216,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		LoanApplicationMaster corporateLoan = new PrimaryCorporateDetail();
 		corporateLoan.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.OPEN));
 		corporateLoan.setDdrStatusId(CommonUtils.DdrStatus.OPEN);
-		corporateLoan.setLoanCampaignCode(loanRepository.getCampaignUser(userId));
+		corporateLoan.setLoanCampaignCode(loanRepository.getCampaignUser(userId, com.capitaworld.service.matchengine.utils.CommonUtils.CampaignLoanType.Msme.getId()));
 		corporateLoan.setCreatedBy(userId);
 		corporateLoan.setCreatedDate(new Date());
 		corporateLoan.setUserId(userId);
@@ -6257,7 +6257,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		LoanApplicationMaster retailLoanObj = new LoanApplicationMaster();
 		retailLoanObj.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.OPEN));
 		retailLoanObj.setDdrStatusId(CommonUtils.DdrStatus.OPEN);
-		retailLoanObj.setLoanCampaignCode(loanRepository.getCampaignUser(userId));
+		retailLoanObj.setLoanCampaignCode(loanRepository.getCampaignUser(userId, com.capitaworld.service.matchengine.utils.CommonUtils.CampaignLoanType.Retail.getId()));
 		retailLoanObj.setCreatedBy(userId);
 		retailLoanObj.setCreatedDate(new Date());
 		retailLoanObj.setUserId(userId);
