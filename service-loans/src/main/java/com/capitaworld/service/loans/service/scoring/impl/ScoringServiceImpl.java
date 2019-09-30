@@ -76,11 +76,6 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatem
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import com.capitaworld.service.loans.domain.fundseeker.mfi.MFIApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.mfi.MfiIncomeDetails;
-import com.capitaworld.service.loans.domain.fundseeker.retail.BankingRelation;
-import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
-import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryAutoLoanDetail;
-import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryHomeLoanDetail;
-import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.score.ScoreParameterRequestLoans;
@@ -101,6 +96,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingSt
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.BankingRelationlRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.CoApplicantDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.CreditCardsDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryAutoLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryHomeLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
@@ -203,6 +199,10 @@ public class ScoringServiceImpl implements ScoringService {
     @Autowired
     private FinancialArrangementDetailsRepository financialArrangementDetailsRepository;
 
+    
+    @Autowired
+    private CreditCardsDetailRepository creditCardsDetailRepository;
+    
     @Autowired
     private FinancialArrangementDetailsService financialArrangementDetailsService;
 
@@ -8120,23 +8120,93 @@ public class ScoringServiceImpl implements ScoringService {
         	if(!CommonUtils.isListNullOrEmpty(coAppIds)) {
         		coAppITRUploadedIds = coApplicantDetailRepository.getCoAppIdsOfCoApplicantUploadedITR(applicationId,true);
         	}
-        }
+        }        	
+        	
+         // IF LOAN IS ALREADY EXIST WITH SBI THEN CHECK DPDs ALL OUTSTANDING LOAN            
+        /*if(count > 0) {
+        	List<CreditCardsDetail> dpdDetailsList = creditCardsDetailRepository.listCreditCardsFromAppId(applicationId);
+        	List<CreditCardsDetail> dpdList = new ArrayList<>(dpdDetailsList.size());
+        	
+        	// for(CreditCardsDetail response : dpdDetailsList) {
+        	for (int i = 0; i < dpdDetailsList.size(); i++) {
+        			String dpdResponse =dpdDetailsList.get(i).getDpdDetails() ;	
+        				logger.info("dpdResponse Here ======{}====={}===>>>"+dpdResponse);
+        				if(dpdResponse.contains("|")){
+     						String[] DpdValResp = dpdResponse.split("\\|");
+     						if(!CommonUtils.isObjectNullOrEmpty(DpdValResp[1])) {
+     								dpds.add(Integer.parseInt(DpdValResp[1]));
+     				}
+        		}
+        	}
+        	
+        } 	*/
+        // Step 2 :--- Check whether Borrower is uploading SBI Bank Statement With Discuss Balu Bhai
+        			//	(PENDING)
+        	
+        				
+        
         List<ScoringRequest> scoringRequestList=new ArrayList<>(scoringRequestLoansList.size());
         ScoreParameterRetailRequest scoreParameterRetailRequest = null;
         for(ScoringRequestLoans scoringRequestLoans : scoringRequestLoansList)
         {
             Long scoreModelId = scoringRequestLoans.getScoringModelId();
             Long fpProductId = scoringRequestLoans.getFpProductId();
+            Integer personalBankingId = null;
 //            homeLoanModelRequest = homeLoanModelService.get(scoringRequestLoans.getLoanPurposeModelId(), null, null);
             Integer minBankRelationshipInMonths = null;
             orgId = scoringRequestLoans.getOrgId();
             if(orgId != null) {
             	BankList bankEnum = BankList.fromOrgId(orgId.toString());
-            	if(bankEnum != null) {
-            		logger.info("Bank Name====>{}==>Application Id===>{}===> Fp Product Id===>{}",bankEnum.getName(),applicationId,fpProductId);
-            		minBankRelationshipInMonths = bankingRelationlRepository.getMinRelationshipInMonthByApplicationAndOrgName(applicationId, bankEnum.getName());
+            	try {
+            		if(bankEnum != null) {
+                		logger.info("Bank Name====>{}==>Application Id===>{}===> Fp Product Id===>{}",bankEnum.getName(),applicationId,fpProductId);
+                		minBankRelationshipInMonths = bankingRelationlRepository.getMinRelationshipInMonthByApplicationAndOrgName(applicationId, bankEnum.getName());
+                	}            		
+            	}catch(Exception e) {
+            		logger.error("Error while Getting Minimum Banking Relationship = >{}",e);
             	}
+            	// Step 1 :- (First scenario CHECK Borrower has any outstanding Loan with DPDs with SBI===============>)
+            	try {
+            		if(bankEnum != null) {
+        				List<Long> ids = financialArrangementDetailsRepository.checkExistingLoanWithBank(applicationId,(bankEnum.getName() != null ? bankEnum.getName().toLowerCase() : null));
+        				if(!CommonUtils.isListNullOrEmpty(ids)) {
+        					List<Long> dpdIds = financialArrangementDetailsRepository.checkDpdsWithBankByIds(ids);
+        					if(CommonUtils.isListNullOrEmpty(dpdIds)) {
+        						personalBankingId = 2; //Credit Relation With satisfactory Performance(Standard In Our Books For the 12 Months) 
+        					}
+        				}
+                	}       		
+            	}catch(Exception e) {
+            		logger.error("Error while Getting Personal Banking Relationship = >{}",e);
+            	}
+            	
+            	
+            	// Step 2 :- Corporate Salary Package(CSP Customer)
+            	
+              // Step :3 (Deposit (SB/CA/TDR) relationship for at least 6 months) 				
+            	if(personalBankingId == null) {
+            		Double depositeSBCATDRAmount = 0.0d;
+                	if(bankEnum != null) {
+                		for(Data bankStatementData : bankStatementDatas) {
+                			if(bankStatementData != null && bankStatementData.getSummaryInfo() != null && bankStatementData.getSummaryInfo().getSummaryInfoTotalDetails() != null && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCashDeposit()) && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getCustomerInfo()) && bankEnum.getName().equalsIgnoreCase(bankStatementData.getCustomerInfo().getBank())) {
+                				depositeSBCATDRAmount = depositeSBCATDRAmount+ Double.valueOf(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalCashDeposit()); 
+                						logger.info("Total Deposite Amount here ====={}====={}==>",depositeSBCATDRAmount);
+                			 	}
+                		}                		
+                	}
+                	if(depositeSBCATDRAmount > 0.0d) {
+                		personalBankingId = 4; //Deposite(SB/CA/TDR) Relationship For at Least 6 months
+                	}
+            	}
+            	
+            	if(personalBankingId == null) {
+            		personalBankingId = 5; //New Customer
+            	}
+            	
             	logger.info("Min Banking Relationship in Month === >{}",minBankRelationshipInMonths);
+            	
+            	// CHECK CUSTOMER IS ALREADY OUTSTANDING LOAN WITH SBI BANK
+            //	bankingRelationlRepository. CHECK CUSTOMER IS (UPLOADED STATEMENT WITH SBI BANK) 
             }
             ScoringRequest scoringRequest = new ScoringRequest();
             scoringRequest.setScoringModelId(scoreModelId);
@@ -8204,6 +8274,7 @@ public class ScoringServiceImpl implements ScoringService {
           // ENDS HERE CONCESSION BASED ON RATE OF INTEREST:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
             ///////// End  Getting Old Request ///////
                 scoreParameterRetailRequest =  new ScoreParameterRetailRequest();
+                scoreParameterRetailRequest.setPersonalBankingRelationShip(personalBankingId);
                 scoreParameterRetailRequest.setExShowRoomPrice(primaryAutoLoanDetail.getVehicleExShowRoomPrice() != null ? primaryAutoLoanDetail.getVehicleExShowRoomPrice().doubleValue() : 0.0d);
                 scoreParameterRetailRequest.setOnRoadPrice(primaryAutoLoanDetail.getVehicleOnRoadPrice() != null ? primaryAutoLoanDetail.getVehicleOnRoadPrice().doubleValue() : 0.0d);
                 scoreParameterRetailRequest.setAgreedIDV(primaryAutoLoanDetail.getVehicleAgreedPurchasePrice() != null ? primaryAutoLoanDetail.getVehicleAgreedPurchasePrice().doubleValue() : 0.0d);
@@ -8682,18 +8753,16 @@ public class ScoringServiceImpl implements ScoringService {
             				}
             				break;
             			case ScoreParameter.Retail.AutoLoan.LOAN_PURPOSE:
+            				scoreParameterRetailRequest.setLoanPurpose(retailApplicantDetail.getLoanPurpose());
             				if(AutoLoanPurposeType.SECOND_HAND_FOUR_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose()) || AutoLoanPurposeType.SECOND_HAND_TWO_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose())) {
             					if(AutoLoanPurposeType.SECOND_HAND_FOUR_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose())) {
-            						scoreParameterRetailRequest.setLoanPurpose(8); // Static as we do not asking to borrower for Detailed Purpose
-                					scoreParameterRetailRequest.setLoanPurposeQueType(8);
+                					scoreParameterRetailRequest.setLoanPurposeQueType(8);// Static as we do not asking to borrower for Detailed Purpose
             					}else {
-            						scoreParameterRetailRequest.setLoanPurpose(9);                					
                 					scoreParameterRetailRequest.setLoanPurposeQueType(9);
             					}
             					scoreParameterRetailRequest.setIsLoanPurpose_p(true);
             					scoreParameterRetailRequest.setLoanPurposeQueValue(retailApplicantDetail.getLoanPurposeQueValue());
             				}else {
-            					scoreParameterRetailRequest.setLoanPurpose(retailApplicantDetail.getLoanPurposeQueType());
             					scoreParameterRetailRequest.setIsLoanPurpose_p(retailApplicantDetail.getLoanPurposeQueType() != null);
             					scoreParameterRetailRequest.setLoanPurposeQueType(retailApplicantDetail.getLoanPurposeQueType());
             					scoreParameterRetailRequest.setLoanPurposeQueValue(retailApplicantDetail.getLoanPurposeQueValue());            					
@@ -8769,6 +8838,9 @@ public class ScoringServiceImpl implements ScoringService {
             				scoreParameterRetailRequest.setTakeHomePay(scoringRequestLoans.getNetTakeHomepay());
             				scoreParameterRetailRequest.setIsTakeHomePay_p(scoringRequestLoans.getNetTakeHomepay() != null);
             				break;
+            			case ScoreParameter.Retail.AutoLoan.PERSONAL_RELATIONSHIP_WITH_BANK: //
+            				scoreParameterRetailRequest.setIsPersonalRelationShipWithBank_p(true);
+            				break;	
                             default:
                                 break;
 

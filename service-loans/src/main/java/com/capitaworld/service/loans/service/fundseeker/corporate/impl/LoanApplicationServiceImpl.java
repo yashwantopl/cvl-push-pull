@@ -8493,12 +8493,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					percOfPurchase=totalOfPurchase!= 0 && grandTotalOfPurchase != null && grandTotalOfPurchase!= 0? totalOfPurchase/grandTotalOfPurchase*100:0;
 					
 					relatedParty.put("relatedParty", gstRelatedPartyRequests);
-					relatedParty.put("totalOfSales", totalOfSales != null && totalOfSales != 0?CommonUtils.convertStringFormate(totalOfSales):" - ");
-					relatedParty.put("totalOfPurchase", totalOfPurchase != null && totalOfPurchase!= 0?CommonUtils.convertStringFormate(totalOfPurchase):" - ");
-					relatedParty.put("grandTotalOfSales", grandTotalOfSales != null && grandTotalOfSales!= 0?CommonUtils.convertStringFormate(grandTotalOfSales):" - ");
-					relatedParty.put("grandTotalOfPurchase", grandTotalOfPurchase != null && grandTotalOfPurchase != 0?CommonUtils.convertStringFormate(grandTotalOfPurchase):" - ");
-					relatedParty.put("percOfSales", percOfSales != null && percOfSales != 0?convertValue(percOfSales).toString().concat(" %"):" - ");
-					relatedParty.put("percOfPurchase", percOfPurchase != null && percOfPurchase != 0?convertValue(percOfPurchase).toString().concat(" %"):" - ");
+					relatedParty.put("totalOfSales", totalOfSales != null && totalOfSales != 0?CommonUtils.convertValueIndianCurrency(totalOfSales):" - ");
+					relatedParty.put("totalOfPurchase", totalOfPurchase != null && totalOfPurchase!= 0?CommonUtils.convertValueIndianCurrency(totalOfPurchase):" - ");
+					relatedParty.put("grandTotalOfSales", grandTotalOfSales != null && grandTotalOfSales!= 0?CommonUtils.convertValueIndianCurrency(grandTotalOfSales):" - ");
+					relatedParty.put("grandTotalOfPurchase", grandTotalOfPurchase != null && grandTotalOfPurchase != 0?CommonUtils.convertValueIndianCurrency(grandTotalOfPurchase):" - ");
+					relatedParty.put("percOfSales", percOfSales != null && percOfSales != 0?CommonUtils.convertValueIndianCurrency(percOfSales).toString().concat(" %"):" - ");
+					relatedParty.put("percOfPurchase", percOfPurchase != null && percOfPurchase != 0?CommonUtils.convertValueIndianCurrency(percOfPurchase).toString().concat(" %"):" - ");
 				}
 				return  relatedParty;
 			}

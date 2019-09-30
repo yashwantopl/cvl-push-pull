@@ -358,7 +358,6 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			try {
 				for (DirectorBackgroundDetailRequest reqObj : directorBackgroundDetailRequestList) {
 					DirectorBackgroundDetail saveDirObj = null;
-					verifyApiReq.getVerifyAPIDINPANRequest().getPara().getVerifyAPIDINPANs().add(new VerifyAPIDINPAN(reqObj.getDirectorsName(), reqObj.getPanNo()));
 					if (!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
 						saveDirObj = directorBackgroundDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
 						BeanUtils.copyProperties(reqObj, saveDirObj, "id", "createdBy", "createdDate", "modifiedBy", "modifiedDate");
@@ -374,6 +373,14 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 						saveDirObj.setCreatedBy(fundSeekerInputRequest.getUserId());
 						saveDirObj.setCreatedDate(new Date());
 						saveDirObj.setIsActive(true);
+					}
+					/*set Pan No for Verify Api*/
+					if(saveDirObj.getIsActive() != null && saveDirObj.getIsActive()) {
+						StringBuilder sb= new StringBuilder();
+						sb.append(reqObj.getFirstName() != null ? reqObj.getFirstName() : "");
+						sb.append(reqObj.getMiddleName() != null ? " "+ reqObj.getMiddleName() : "");
+						sb.append(reqObj.getLastName() != null ? " " + reqObj.getLastName() : "");
+						verifyApiReq.getVerifyAPIDINPANRequest().getPara().getVerifyAPIDINPANs().add(new VerifyAPIDINPAN(sb.toString(), reqObj.getPanNo()));						
 					}
 					if(!CommonUtils.isObjectNullOrEmpty(reqObj.getIsMainDirector()) && (reqObj.getIsMainDirector())){
 						DirectorPersonalDetailRequest directorPersonalDetailRequest = reqObj.getDirectorPersonalDetailRequest();
@@ -689,39 +696,38 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		try {
 			logger.info("Start invokeFraudAnalytics()");
 			LoansResponse res = new LoansResponse();
-			/*Boolean isMp = false;*/
-			UserResponse configResponse =null;
+			/* Boolean isMp = false; */
+			UserResponse configResponse = null;
 			UserOrganisationRequest convertRes = null;
-			GeneralConfigData jsonData = null; 
+			GeneralConfigData jsonData = null;
 			try {
-			       configResponse = userClient.getGeneralConfigByUserId(fundSeekerInputRequestResponse.getUserId());
-			       if(configResponse!= null && configResponse.getData()!= null) {
-			    	   convertRes= convertJSONToUserOrganisationRequest(convertObjectToString(configResponse.getData()));
-				       jsonData= convertRes != null && convertRes.getGeneralConfig()!= null ? CommonUtils.convertJSONToGeneralConfigDataRespo(convertRes.getGeneralConfig()):null;
-			       }
-			    } catch (Exception e) {
-			    	e.printStackTrace();
-			       logger.error("Error while getGeneralConfigByUserId called Users Client : ",e);
-			    }
-			if ("Y".equals(String.valueOf(environment.getRequiredProperty("cw.call.service_fraudanalytics"))) && jsonData!= null && jsonData.getIsHunterActive()) {
+				logger.info("In for Get Configuratin from users for==>"+ fundSeekerInputRequestResponse.getApplicationId());
+				configResponse = userClient.getGeneralConfigByUserId(fundSeekerInputRequestResponse.getUserId());
+				if (configResponse != null && configResponse.getData() != null) {
+					convertRes = convertJSONToUserOrganisationRequest(convertObjectToString(configResponse.getData()));
+					jsonData = convertRes != null && convertRes.getGeneralConfig() != null ? CommonUtils.convertJSONToGeneralConfigDataRespo(convertRes.getGeneralConfig()): null;
+				}
+			} catch (Exception e) {
+				logger.error("Error while getGeneralConfigByUserId called Users Client : ", e);
+			}
+			if ("Y".equals(String.valueOf(environment.getRequiredProperty("cw.call.service_fraudanalytics"))) && jsonData != null && jsonData.getIsHunterActive()) {
 				Boolean isNTB = false;
 				HunterRequestDataResponse hunterRequestDataResponse = null;
-				if (fundSeekerInputRequestResponse.getBusinessTypeId() != null
-						&& fundSeekerInputRequestResponse.getBusinessTypeId() == 2) {// FOR NTB ONLY
+				if (fundSeekerInputRequestResponse.getBusinessTypeId() != null && fundSeekerInputRequestResponse.getBusinessTypeId() == 2) {// FOR NTB ONLY
 					isNTB = true;
-					hunterRequestDataResponse = loanApplicationService
-							.getDataForHunterForNTB(fundSeekerInputRequestResponse.getApplicationId());
-				}else {
-					hunterRequestDataResponse = loanApplicationService
-							.getDataForHunter(fundSeekerInputRequestResponse.getApplicationId());
+					hunterRequestDataResponse = loanApplicationService.getDataForHunterForNTB(fundSeekerInputRequestResponse.getApplicationId());
+				} else {
+					logger.info("getting data for prepare hunter request for==>>"+ fundSeekerInputRequestResponse.getApplicationId());
+					hunterRequestDataResponse = loanApplicationService.getDataForHunter(fundSeekerInputRequestResponse.getApplicationId());
 				}
-				/*analaytics req set*/
+				/* analaytics req set */
+				logger.info("setting up Hunter req for ==>" + fundSeekerInputRequestResponse.getApplicationId());
 				AnalyticsRequest request = new AnalyticsRequest();
 				request.setApplicationId(fundSeekerInputRequestResponse.getApplicationId());
 				request.setUserId(fundSeekerInputRequestResponse.getUserId());
 				request.setData(hunterRequestDataResponse);
 				request.setIsNtb(isNTB);
-				/*set configuartions*/
+				/* set configuartions */
 				request.setCredentialUserName(jsonData.getUserName());
 				request.setCredentialpassword(jsonData.getPassword());
 				request.setIsHunterOn(jsonData.getIsHunterActive());
@@ -731,24 +737,24 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				res.setMessage(CommonUtils.ONE_FORM_SAVED_SUCCESSFULLY);
 				res.setStatus(HttpStatus.OK.value());
 				try {
+					logger.info("in for callHunterIIAPI Start==>" + fundSeekerInputRequestResponse.getApplicationId());
 					AnalyticsResponse response = fraudAnalyticsClient.callHunterIIAPI(request);
-					if (response != null){
+					if (response != null) {
 						logger.info("callHunterIIAPI is called");
 					}
-				}
-				catch (Exception e) {
-					logger.error("End invokeFraudAnalytics() with Error : "+e.getMessage());
+				} catch (Exception e) {
+					logger.error("End invokeFraudAnalytics() with Error : " + e.getMessage());
 					return new LoansResponse(CommonUtils.ONE_FORM_SAVED_SUCCESSFULLY, HttpStatus.OK.value());
 				}
 				logger.info("End invokeFraudAnalytics() with resp : " + res.getData());
 				return new LoansResponse(CommonUtils.ONE_FORM_SAVED_SUCCESSFULLY, HttpStatus.OK.value());
-			}else if(jsonData != null && !jsonData.getIsHunterActive()) {
-				logger.info("Hunter is not Activated for userId==>"+fundSeekerInputRequestResponse.getUserId());
+			} else if (jsonData != null && !jsonData.getIsHunterActive()) {
+				logger.info("Hunter is not Activated for userId==>" + fundSeekerInputRequestResponse.getUserId());
 				return new LoansResponse(CommonUtils.ONE_FORM_SAVED_SUCCESSFULLY, HttpStatus.OK.value());
-			}else if(jsonData == null) {
-				logger.info("Hunter Credentials is null for userId==>"+fundSeekerInputRequestResponse.getUserId());
+			} else if (jsonData == null) {
+				logger.info("Hunter Credentials is null for userId==>" + fundSeekerInputRequestResponse.getUserId());
 				return new LoansResponse(CommonUtils.ONE_FORM_SAVED_SUCCESSFULLY, HttpStatus.OK.value());
-			}else {
+			} else {
 				logger.info("End invokeFraudAnalytics() Skiping Fraud Analytics call");
 				logger.info("FUNDSEEKER INPUT SAVED SUCCESSFULLY");
 				return new LoansResponse(CommonUtils.ONE_FORM_SAVED_SUCCESSFULLY, HttpStatus.OK.value());

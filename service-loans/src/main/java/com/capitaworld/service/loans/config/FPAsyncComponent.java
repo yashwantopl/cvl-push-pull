@@ -2023,13 +2023,12 @@ public class FPAsyncComponent {
 			parameters.put(CommonUtils.PARAMETERS_ADDRESS, address != null ? address : "NA");
 
 			String subjcet = "Intimation : Sent Back - #ApplicationId=" + request.getApplicationId();
+			// ====================== MAIL TO CHECKER ======================
 			if (!CommonUtils.isObjectNullOrEmpty(assignedChecker)
 					&& !CommonUtils.isObjectNullOrEmpty(assignedChecker.getEmail())) {
-
 				String toIds = assignedChecker.getEmail();
 				logger.info("Email Sending TO CHECKER on sendMailWhenMakerAssignDDRToChecker===to==>{}", toIds);
 				parameters.put(CommonUtils.PARAMETERS_IS_DYNAMIC, true);
-				// ====================== MAIL TO CHECKER ======================
 				createNotificationForEmail(toIds, request.getNpUserId().toString(), parameters,NotificationAlias.EMAIL_CHECKER_MAKER_REASSIGN_TO_CHECKER, subjcet,domainId ,null);
 				parameters.put(CommonUtils.PARAMETERS_IS_DYNAMIC, false);
 			}
@@ -2215,9 +2214,8 @@ public class FPAsyncComponent {
 				UserResponse userResponseForName = userClient.getFPDetails(adminForMaker);
 				FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
 						(Map<Object, Object>) userResponseForName.getData(), FundProviderDetailsRequest.class);
-				adminMakerName = fundProviderDetailsRequest.getFirstName() + " "
-						+ (fundProviderDetailsRequest.getLastName() == null ? ""
-						: fundProviderDetailsRequest.getLastName());
+				adminMakerName = fundProviderDetailsRequest.getFirstName() + " "+ (fundProviderDetailsRequest.getLastName() == null 
+						? "": fundProviderDetailsRequest.getLastName());
 			} catch (Exception e) {
 				logger.error(ERROR_WHILE_FETCHING_FP_NAME,e);
 			}
@@ -2231,11 +2229,15 @@ public class FPAsyncComponent {
 			UserResponse userResponse = userClient.getUserDetailByOrgRoleId(productMasterTemp.getUserOrgId(),
 					com.capitaworld.service.users.utils.CommonUtils.UserRoles.ADMIN_CHECKER);
 			List<Map<String, Object>> usersRespList = (List<Map<String, Object>>) userResponse.getListData();
-
-			String to = null;
+			UsersRequest firstAdminChecker = MultipleJSONObjectHelper.getObjectFromMap(usersRespList.get(0),UsersRequest.class);
+			List<String> ccEmails=new ArrayList<>();
+			
+			
 			if (!CommonUtils.isObjectNullOrEmpty(usersRespList)) {
 				for (int i = 0; i < usersRespList.size(); i++) {
+					String to = null;
 					UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap(usersRespList.get(i),UsersRequest.class);
+					ccEmails.add(userObj.getEmail());
 					String name = null;
 					try {
 						logger.info(MSG_INTO_GETTING_FP_NAME , userObj);
@@ -2243,24 +2245,10 @@ public class FPAsyncComponent {
 						FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object, Object>) userResponseForName.getData(),
 										FundProviderDetailsRequest.class);
 						name = fundProviderDetailsRequest.getFirstName() + " "
-								+ (fundProviderDetailsRequest.getLastName() == null ? ""
-								: fundProviderDetailsRequest.getLastName());
+								+ (fundProviderDetailsRequest.getLastName() == null ? "": fundProviderDetailsRequest.getLastName());
 					} catch (Exception e) {
 						logger.error(ERROR_WHILE_FETCHING_FP_NAME,e);
 					}
-
-					if (!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
-						logger.info(MSG_MAKER_ID,userObj.getEmail());
-						to = userObj.getEmail();
-						if (LITERAL_NULL.equals(name)) {
-							mailParameters.put(PARAMETERS_ADMIN_CHECKER, PARAMETERS_SIR_MADAM);
-						} else {
-							mailParameters.put(PARAMETERS_ADMIN_CHECKER, name != null ? name : PARAMETERS_SIR_MADAM);
-						}
-
-						createNotificationForEmail(to, userId.toString(), mailParameters, NotificationAlias.EMAIL_ADMIN_CHECKER_ADMIN_MAKER_CREATES_PRODUCT, subject,domainId,null);
-					}
-
 					if (!CommonUtils.isObjectNullOrEmpty(userObj.getMobile())) {
 						logger.info(MSG_MAKER_ID,userObj.getEmail());
 						Map<String, Object> smsParameters = new HashMap<String, Object>();
@@ -2292,6 +2280,21 @@ public class FPAsyncComponent {
 					}
 
 				}
+				if(!ccEmails.isEmpty()) {
+					ccEmails.remove(ccEmails.indexOf(firstAdminChecker.getEmail()));
+				}
+				String[] cc=Arrays.copyOf(ccEmails.toArray(),ccEmails.size(),String[].class);
+				if (!CommonUtils.isObjectNullOrEmpty(firstAdminChecker.getEmail())) {
+					logger.info(MSG_MAKER_ID,firstAdminChecker.getEmail());
+					if (LITERAL_NULL.equals(firstAdminChecker.getName())) {
+						mailParameters.put(PARAMETERS_ADMIN_CHECKER, PARAMETERS_SIR_MADAM);
+					} else {
+						mailParameters.put(PARAMETERS_ADMIN_CHECKER, firstAdminChecker.getName() != null ? firstAdminChecker.getName() : PARAMETERS_SIR_MADAM);
+					}
+
+					createNotificationForEmail(firstAdminChecker.getEmail(), userId.toString(), mailParameters, NotificationAlias.EMAIL_ADMIN_CHECKER_ADMIN_MAKER_CREATES_PRODUCT, subject,domainId,cc);
+				}
+
 
 			} else {
 				logger.info("No Admin Checker found=================>");
@@ -2335,78 +2338,86 @@ public class FPAsyncComponent {
 			UserResponse userResponse = userClient.getUserDetailByOrgRoleId(productMasterTemp.getUserOrgId(),
 					com.capitaworld.service.users.utils.CommonUtils.UserRoles.ADMIN_CHECKER);
 			List<Map<String, Object>> usersRespList = (List<Map<String, Object>>) userResponse.getListData();
-			String to = null;
+			String to = "";
+			String[] cc= {};
 			if (!CommonUtils.isObjectNullOrEmpty(usersRespList)) {
-				for (int i = 0; i < usersRespList.size(); i++) {
-					UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap(usersRespList.get(i),UsersRequest.class);
+				
+				UsersRequest firstBranchUser = MultipleJSONObjectHelper.getObjectFromMap(usersRespList.get(0),UsersRequest.class);
 					String name = null;
 					try {
-						logger.info(MSG_INTO_GETTING_FP_NAME , userObj);
-						UserResponse userResponseForName = userClient.getFPDetails(userObj);
+						UserResponse userResponseForName = userClient.getFPDetails(firstBranchUser);
 						FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper
-								.getObjectFromMap((Map<Object, Object>) userResponseForName.getData(),
-										FundProviderDetailsRequest.class);
-						name = fundProviderDetailsRequest.getFirstName() + " "
-								+ (fundProviderDetailsRequest.getLastName() == null ? ""
+								.getObjectFromMap((Map<Object, Object>) userResponseForName.getData(),FundProviderDetailsRequest.class);
+						name = fundProviderDetailsRequest.getFirstName() + " "+ (fundProviderDetailsRequest.getLastName() == null ? ""
 								: fundProviderDetailsRequest.getLastName());
 					} catch (Exception e) {
 						logger.error(ERROR_WHILE_FETCHING_FP_NAME,e);
 					}
-					if(productMasterTemp!=null && productMasterTemp.getProductId()!= null && (productMasterTemp.getProductId() == LoanType.PERSONAL_LOAN.getValue() || 
-							productMasterTemp.getProductId() == LoanType.HOME_LOAN.getValue())) {
+					if(productMasterTemp!=null && productMasterTemp.getProductId()!= null 
+							&& (productMasterTemp.getProductId() == LoanType.PERSONAL_LOAN.getValue() 
+							|| productMasterTemp.getProductId() == LoanType.HOME_LOAN.getValue())) {
 						domainId = DomainValue.RETAIL.getId();
 					}
-					Integer businessTypeId = appProposalMappingRepo.getBusinessIdByUserId(userId);
-					if (!CommonUtils.isObjectNullOrEmpty(businessTypeId) && ! businessTypeId.equals(CommonUtils.BusinessType.ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS.getId())) {
-					if (!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
-						logger.info(MSG_MAKER_ID,userObj.getEmail());
-						to = userObj.getEmail();
-						
-
-						if (LITERAL_NULL.equals(name)) {
-							mailParameters.put(PARAMETERS_ADMIN_CHECKER, PARAMETERS_SIR_MADAM);
-						} else {
-							mailParameters.put(PARAMETERS_ADMIN_CHECKER, name != null ? name : PARAMETERS_SIR_MADAM);
-						}
-						createNotificationForEmail(to, userId.toString(), mailParameters, NotificationAlias.EMAIL_ADMIN_CHECKER_ADMIN_MAKER_RESENDS_PRODUCT, subject,domainId,null);
-					
-						if (!CommonUtils.isObjectNullOrEmpty(userObj.getMobile())) {
-							logger.info(MSG_MAKER_ID,userObj.getEmail());
-							Map<String, Object> smsParameters = new HashMap<String, Object>();
-							to = "91" + userObj.getMobile();
-							if (LITERAL_NULL.equals(name)) {
-								smsParameters.put(PARAMETERS_ADMIN_CHECKER, PARAMETERS_SIR_MADAM);
-							} else {
-								smsParameters.put(PARAMETERS_ADMIN_CHECKER, name != null ? name : PARAMETERS_SIR_MADAM);
+					if (LITERAL_NULL.equals(name)) {
+						mailParameters.put(PARAMETERS_ADMIN_CHECKER, PARAMETERS_SIR_MADAM);
+					} else {
+						mailParameters.put(PARAMETERS_ADMIN_CHECKER, name != null ? name : PARAMETERS_SIR_MADAM);
+					}
+					/** getting user for cc*/
+					final Long tempDomId = domainId;
+					List<String> tocc=new ArrayList<>();
+					for (Map<String,Object> us : usersRespList) {
+						UsersRequest user = MultipleJSONObjectHelper.getObjectFromMap(us,UsersRequest.class);
+						try {
+							tocc.add(user.getEmail());
+							if (!CommonUtils.isObjectNullOrEmpty(user.getMobile())) {
+								logger.info(MSG_MAKER_ID,user.getEmail());
+								String nameForSmsandSystem = null;
+								try {
+									logger.info(MSG_INTO_GETTING_FP_NAME , user);
+									UserResponse userResponseForName = userClient.getFPDetails(user);
+									FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object, Object>) userResponseForName.getData(),
+													FundProviderDetailsRequest.class);
+									nameForSmsandSystem = fundProviderDetailsRequest.getFirstName() + " "+ (fundProviderDetailsRequest.getLastName() == null ? ""
+											: fundProviderDetailsRequest.getLastName());
+								} catch (Exception e) {
+									logger.error(ERROR_WHILE_FETCHING_FP_NAME,e);
+								}
+								
+								String toSms = "91" + user.getMobile();
+								if (LITERAL_NULL.equals(nameForSmsandSystem)) {
+									mailParameters.put(PARAMETERS_ADMIN_CHECKER, PARAMETERS_SIR_MADAM);
+								} else {
+									mailParameters.put(PARAMETERS_ADMIN_CHECKER, nameForSmsandSystem != null ? nameForSmsandSystem : PARAMETERS_SIR_MADAM);
+								}
+								mailParameters.put(PARAMETERS_PRODUCT_NAME, productMasterTemp.getName() != null ? productMasterTemp.getName() : "NA");
+								mailParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "NA");
+								mailParameters.put("url", URL_WWW_PSBLOANS_COM);
+								sendSMSNotification(userId.toString(), mailParameters,NotificationAlias.SMS_ADMIN_CHECKER_ADMIN_MAKER_RESENDS_PRODUCT,tempDomId, toSms);
 							}
-							smsParameters.put(PARAMETERS_ADMIN_MAKER, adminMakerName != null ? adminMakerName : LITERAL_MAKER);
-							smsParameters.put(PARAMETERS_PRODUCT_NAME, productMasterTemp.getName() != null ? productMasterTemp.getName() : "NA");
-							smsParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "NA");
-							smsParameters.put("url", URL_WWW_PSBLOANS_COM);
-							sendSMSNotification(userId.toString(), smsParameters,NotificationAlias.SMS_ADMIN_CHECKER_ADMIN_MAKER_RESENDS_PRODUCT,domainId, to);
-						}
-	
-						if (!CommonUtils.isObjectNullOrEmpty(userObj.getId())) {
-							logger.info(MSG_MAKER_ID,userObj.getEmail());
-							Map<String, Object> sysParameters = new HashMap<>();
-							sysParameters.put(PARAMETERS_ADMIN_MAKER, adminMakerName != null ? adminMakerName : LITERAL_MAKER);
-							sysParameters.put(PARAMETERS_PRODUCT_NAME,productMasterTemp.getName() != null ? productMasterTemp.getName() : "NA");
-							sysParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "NA");
-							sendSYSNotification(userId, userObj.getId().toString(), sysParameters,
-									NotificationAlias.SYS_ADMIN_CHECKER_ADMIN_MAKER_RESENDS_PRODUCT,userObj.getId().toString(), domainId,userObj.getId().toString());
+		
+							if (!CommonUtils.isObjectNullOrEmpty(user.getId())) {
+								logger.info(MSG_MAKER_ID,user.getEmail());
+								sendSYSNotification(userId, user.getId().toString(), mailParameters,
+										NotificationAlias.SYS_ADMIN_CHECKER_ADMIN_MAKER_RESENDS_PRODUCT,user.getId().toString(), tempDomId,user.getId().toString());
+								
+							}
+						} catch (NotificationException e) {
+							logger.error("Exception in sending system notification and sms to user {}",user.getMobile());
 						}
 					}
-
-				}
-
-			} }else {
+					
+					to=tocc.get(0);
+					if (!CommonUtils.isObjectNullOrEmpty(tocc.get(0))) {
+						tocc.remove(tocc.indexOf(to));
+					}	
+					cc = Arrays.copyOf(tocc.toArray(), tocc.size(),String[].class);
+					createNotificationForEmail(to, userId.toString(), mailParameters, NotificationAlias.EMAIL_ADMIN_CHECKER_ADMIN_MAKER_RESENDS_PRODUCT, subject,domainId,cc);
+			  }else {
 				logger.info("No Admin Checker found=================>");
-			}
-
+			  }
 		} catch (Exception e) {
-
-			logger.error(
-					"An exception getting while sending Mail to Checker when Admin Maker resend product for Approval=============>{}",e);
+			logger.error("An exception getting while sending Mail to Checker when Admin Maker resend product for Approval=============>{}",e);
 		}
 
 	}
