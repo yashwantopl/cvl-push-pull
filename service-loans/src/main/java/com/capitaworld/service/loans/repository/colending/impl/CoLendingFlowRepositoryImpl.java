@@ -50,16 +50,18 @@ public class CoLendingFlowRepositoryImpl implements CoLendingFlowRepository{
         return null;
     }
 
-    public Integer saveBlendedValues(Long applicationId,Long nbfcOrgId,Long bankOrgId){
+    public Integer saveBlendedValues(Long applicationId,Long nbfcOrgId,Long bankOrgId,Double blRoi,Double blEmi){
         try {
           Integer val = entityManager
                     .createNativeQuery("INSERT INTO nbfc_proposal_blended_rate (application_id,nbfc_org_id,bank_org_id,bl_exisiting_amount,bl_additional_amount,bl_amount, "
                                         + "bl_tenure,bl_roi,bl_emi,bl_processing_fee,created_date,modified_date) "
                                         + "SELECT application_id,:nbfcOrgId,:bankOrgId,SUM(existing_loan_amount),SUM(additional_loan_amount), "
-                                        + "SUM(el_amount),el_tenure,FORMAT(SUM(el_roi),2),SUM(emi),FORMAT(SUM(processing_fee),2),NOW(),NOW()  FROM proposal_details WHERE application_id=:applicationId")
+                                        + "SUM(el_amount),el_tenure,:blRoi,:blEmi,FORMAT(SUM(processing_fee),2),NOW(),NOW()  FROM proposal_details WHERE application_id=:applicationId")
                     .setParameter("applicationId", applicationId)
                     .setParameter("nbfcOrgId", nbfcOrgId)
                     .setParameter("bankOrgId", bankOrgId)
+                    .setParameter("blRoi", blRoi)
+                    .setParameter("blEmi", blEmi)
                     .executeUpdate();
           return val;
         } catch (Exception e) {
