@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.service.loans.model.teaser.primaryview.CommonRequest;
 import com.capitaworld.service.loans.repository.common.CommonRepository;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
@@ -141,10 +142,13 @@ public class CommonRepositoryImpl  implements CommonRepository {
 		return (List<Object[]>) storedProcedureQuery.getResultList();
 	}
 
-	/*@Override
-	public Boolean getRelatedPartyFilledFlagOnConnect(Long applicationId) throws Exception {
-		return Boolean.valueOf(manager.createNativeQuery("select  cl.is_related_party_filled from connect.connect_log cl where cl.application_id=:applicationId").setParameter("applicationId", applicationId).getSingleResult().toString());
+	@Override
+	public Object[] getUserDetailsByApplicationId(Long applicationId) throws Exception {
+		return (Object[]) manager.createNativeQuery("select c.application_id,c.user_id,pd.id,pd.fp_product_id,c.loan_type_id,u.email,u.mobile\r\n" + 
+				"from connect.connect_log c \r\n" + 
+				"left join loan_application.proposal_details pd on pd.application_id=c.application_id\r\n" + 
+				"left join users.users u on u.user_id=c.user_id\r\n" + 
+				"where c.application_id=:applicationId").setParameter("applicationId", applicationId).getSingleResult();
 	}
-	*/
 	
 }
