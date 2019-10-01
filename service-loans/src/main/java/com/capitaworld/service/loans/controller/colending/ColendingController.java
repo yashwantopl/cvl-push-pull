@@ -119,13 +119,13 @@ public class ColendingController {
             }else{
                 logger.info("co-origination's flow,blended rate calculated-->"+isRateCalculated);
                 return new ResponseEntity<UserResponse>(
-                        new UserResponse("Something went wrong whileco-origination's flow,blended rate calculation", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                        new UserResponse("Something went wrong while co-origination's flow,blended rate calculation", HttpStatus.INTERNAL_SERVER_ERROR.value()),
                         HttpStatus.OK);
             }
         } catch (Exception e) {
-            logger.error("Something went wrong whileco-origination's flow,blended rate calculation - nbfcFlowBlendedCalculation()",e);
+            logger.error("Something went wrong while co-origination's flow,blended rate calculation - nbfcFlowBlendedCalculation()",e);
             return new ResponseEntity<UserResponse>(
-                    new UserResponse("Something went wrong whileco-origination's flow,blended rate calculation - nbfcFlowBlendedCalculation()", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                    new UserResponse("Something went wrong while co-origination's flow,blended rate calculation - nbfcFlowBlendedCalculation()", HttpStatus.INTERNAL_SERVER_ERROR.value()),
                     HttpStatus.OK);
         }
 

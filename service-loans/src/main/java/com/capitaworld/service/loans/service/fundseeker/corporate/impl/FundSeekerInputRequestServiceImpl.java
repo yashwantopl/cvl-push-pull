@@ -376,7 +376,11 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 					}
 					/*set Pan No for Verify Api*/
 					if(saveDirObj.getIsActive() != null && saveDirObj.getIsActive()) {
-						verifyApiReq.getVerifyAPIDINPANRequest().getPara().getVerifyAPIDINPANs().add(new VerifyAPIDINPAN(reqObj.getDirectorsName(), reqObj.getPanNo()));						
+						StringBuilder sb= new StringBuilder();
+						sb.append(reqObj.getFirstName() != null ? reqObj.getFirstName() : "");
+						sb.append(reqObj.getMiddleName() != null ? " "+ reqObj.getMiddleName() : "");
+						sb.append(reqObj.getLastName() != null ? " " + reqObj.getLastName() : "");
+						verifyApiReq.getVerifyAPIDINPANRequest().getPara().getVerifyAPIDINPANs().add(new VerifyAPIDINPAN(sb.toString(), reqObj.getPanNo()));						
 					}
 					if(!CommonUtils.isObjectNullOrEmpty(reqObj.getIsMainDirector()) && (reqObj.getIsMainDirector())){
 						DirectorPersonalDetailRequest directorPersonalDetailRequest = reqObj.getDirectorPersonalDetailRequest();

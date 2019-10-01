@@ -59,11 +59,16 @@ public class LoanRepositoryImpl implements LoanRepository {
 	}
 	
 	@Override
-	public String getCampaignUser(Long userId) {
+	public String getCampaignUser(Long userId,Long campaignType) {
 		try {
 			String code = (String) entityManager
-					.createNativeQuery("SELECT cam.code FROM `users`.`campaign_details` cam WHERE cam.user_id =:userId  AND cam.is_active = TRUE order by cam.id desc limit 1")
+					//.createNativeQuery("SELECT cam.code FROM `users`.`campaign_details` cam WHERE cam.user_id =:userId  AND cam.is_active = TRUE order by cam.id desc limit 1")
+					.createNativeQuery("SELECT cam.code FROM `users`.`campaign_details` cam "
+									+ "INNER JOIN users.`user_organisation_master` u ON u.organisation_code=cam.code AND (u.campaign_type=:campaignTypeBoth OR u.campaign_type=:campaignType) "
+									+ "WHERE cam.user_id =:userId  AND cam.is_active = TRUE ORDER BY cam.id DESC LIMIT 1")
 					.setParameter(CommonUtils.USER_ID, userId)
+					.setParameter("campaignType", campaignType)
+					.setParameter("campaignTypeBoth", com.capitaworld.service.matchengine.utils.CommonUtils.CampaignLoanType.Both.getId())
 					.getSingleResult();
 			return !CommonUtils.isObjectNullOrEmpty(code) ? code : null;
 		} catch (Exception e) {

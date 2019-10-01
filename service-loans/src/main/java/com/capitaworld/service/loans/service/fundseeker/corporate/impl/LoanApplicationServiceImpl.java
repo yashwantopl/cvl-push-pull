@@ -6216,7 +6216,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		LoanApplicationMaster corporateLoan = new PrimaryCorporateDetail();
 		corporateLoan.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.OPEN));
 		corporateLoan.setDdrStatusId(CommonUtils.DdrStatus.OPEN);
-		corporateLoan.setLoanCampaignCode(loanRepository.getCampaignUser(userId));
+		corporateLoan.setLoanCampaignCode(loanRepository.getCampaignUser(userId, com.capitaworld.service.matchengine.utils.CommonUtils.CampaignLoanType.Msme.getId()));
 		corporateLoan.setCreatedBy(userId);
 		corporateLoan.setCreatedDate(new Date());
 		corporateLoan.setUserId(userId);
@@ -6257,7 +6257,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		LoanApplicationMaster retailLoanObj = new LoanApplicationMaster();
 		retailLoanObj.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.OPEN));
 		retailLoanObj.setDdrStatusId(CommonUtils.DdrStatus.OPEN);
-		retailLoanObj.setLoanCampaignCode(loanRepository.getCampaignUser(userId));
+		retailLoanObj.setLoanCampaignCode(loanRepository.getCampaignUser(userId, com.capitaworld.service.matchengine.utils.CommonUtils.CampaignLoanType.Retail.getId()));
 		retailLoanObj.setCreatedBy(userId);
 		retailLoanObj.setCreatedDate(new Date());
 		retailLoanObj.setUserId(userId);
@@ -8493,12 +8493,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					percOfPurchase=totalOfPurchase!= 0 && grandTotalOfPurchase != null && grandTotalOfPurchase!= 0? totalOfPurchase/grandTotalOfPurchase*100:0;
 					
 					relatedParty.put("relatedParty", gstRelatedPartyRequests);
-					relatedParty.put("totalOfSales", totalOfSales != null && totalOfSales != 0?CommonUtils.convertStringFormate(totalOfSales):" - ");
-					relatedParty.put("totalOfPurchase", totalOfPurchase != null && totalOfPurchase!= 0?CommonUtils.convertStringFormate(totalOfPurchase):" - ");
-					relatedParty.put("grandTotalOfSales", grandTotalOfSales != null && grandTotalOfSales!= 0?CommonUtils.convertStringFormate(grandTotalOfSales):" - ");
-					relatedParty.put("grandTotalOfPurchase", grandTotalOfPurchase != null && grandTotalOfPurchase != 0?CommonUtils.convertStringFormate(grandTotalOfPurchase):" - ");
-					relatedParty.put("percOfSales", percOfSales != null && percOfSales != 0?convertValue(percOfSales).toString().concat(" %"):" - ");
-					relatedParty.put("percOfPurchase", percOfPurchase != null && percOfPurchase != 0?convertValue(percOfPurchase).toString().concat(" %"):" - ");
+					relatedParty.put("totalOfSales", totalOfSales != null && totalOfSales != 0?CommonUtils.convertValueIndianCurrency(totalOfSales):" - ");
+					relatedParty.put("totalOfPurchase", totalOfPurchase != null && totalOfPurchase!= 0?CommonUtils.convertValueIndianCurrency(totalOfPurchase):" - ");
+					relatedParty.put("grandTotalOfSales", grandTotalOfSales != null && grandTotalOfSales!= 0?CommonUtils.convertValueIndianCurrency(grandTotalOfSales):" - ");
+					relatedParty.put("grandTotalOfPurchase", grandTotalOfPurchase != null && grandTotalOfPurchase != 0?CommonUtils.convertValueIndianCurrency(grandTotalOfPurchase):" - ");
+					relatedParty.put("percOfSales", percOfSales != null && percOfSales != 0?CommonUtils.convertValueIndianCurrency(percOfSales).toString().concat(" %"):" - ");
+					relatedParty.put("percOfPurchase", percOfPurchase != null && percOfPurchase != 0?CommonUtils.convertValueIndianCurrency(percOfPurchase).toString().concat(" %"):" - ");
 				}
 				return  relatedParty;
 			}
