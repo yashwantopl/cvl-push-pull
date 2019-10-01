@@ -75,6 +75,7 @@ import com.capitaworld.service.loans.service.common.CommonService;
 import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.retail.BankAccountHeldDetailService;
+import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantIncomeService;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.retail.EmpFinancialDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.retail.FixedDepositsDetailService;
@@ -115,6 +116,7 @@ import com.capitaworld.service.oneform.enums.LoanType;
 import com.capitaworld.service.oneform.enums.MaritalStatusMst;
 import com.capitaworld.service.oneform.enums.OccupationHL;
 import com.capitaworld.service.oneform.enums.OccupationNature;
+import com.capitaworld.service.oneform.enums.OccupationNatureNTB;
 import com.capitaworld.service.oneform.enums.RelationshipTypeHL;
 import com.capitaworld.service.oneform.enums.Religion;
 import com.capitaworld.service.oneform.enums.ReligionRetailMst;
@@ -261,6 +263,9 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 	
 	@Autowired
 	private UsersClient usersClient;
+	
+	@Autowired
+	private CoApplicantIncomeService coApplicantIncomeService;
 
 
 	@Override
@@ -1053,7 +1058,7 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 				plRetailApplicantResponse.setAadharNumber(coApplicantDetail.getAadharNumber());
 				plRetailApplicantResponse.setMobile(coApplicantDetail.getMobile());
 				plRetailApplicantResponse.setCompanyName(coApplicantDetail.getCompanyName());
-				plRetailApplicantResponse.setEmploymentType(coApplicantDetail.getEmploymentType() != null ? OccupationNature.getById(coApplicantDetail.getEmploymentType()).getValue().toString() : "-");
+				plRetailApplicantResponse.setEmploymentType(coApplicantDetail.getEmploymentType() != null ? OccupationNatureNTB.getById(coApplicantDetail.getEmploymentType()).getValue().toString() : "-");
 				plRetailApplicantResponse.setEmploymentStatus(coApplicantDetail.getEmploymentStatus() != null ? EmploymentStatusRetailMst.getById(coApplicantDetail.getEmploymentStatus()).getValue() : "-");
 				plRetailApplicantResponse.setCurrentJobYear((coApplicantDetail.getCurrentJobYear() !=null ? (coApplicantDetail.getCurrentJobYear() +" year") : "") + "" +(coApplicantDetail.getCurrentJobMonth() != null ? (coApplicantDetail.getCurrentJobMonth() +" months") :  "" )); 
 				plRetailApplicantResponse.setTotalExperienceYear((coApplicantDetail.getTotalExperienceYear() !=null ? (coApplicantDetail.getTotalExperienceYear() +" year") : "") + "" + (coApplicantDetail.getTotalExperienceMonth() != null ? (coApplicantDetail.getTotalExperienceMonth() +" months") :  "" ));
@@ -1074,7 +1079,7 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 				plRetailApplicantResponse.setResidenceSinceMonthYear(coApplicantDetail.getResidenceSinceMonth()!=null?coApplicantDetail.getResidenceSinceYear()!=null?coApplicantDetail.getResidenceSinceMonth()+"-"+coApplicantDetail.getResidenceSinceYear():"":"");
 				plRetailApplicantResponse.setResidenceSinceYear(coApplicantDetail.getResidenceSinceYear());
 				plRetailApplicantResponse.setNameOfEmployer(coApplicantDetail.getNameOfEntity());
-				plRetailApplicantResponse.setEmploymentWith(coApplicantDetail.getEmploymentStatus()!= null ? EmploymentCategory.getById(coApplicantDetail.getEmploymentStatus()).getValue() : "-");
+				plRetailApplicantResponse.setEmploymentWith(coApplicantDetail.getEmploymentWith()!= null ? EmploymentCategory.getById(coApplicantDetail.getEmploymentWith()).getValue() : "-");
 				plRetailApplicantResponse.setBusinessStartDate(coApplicantDetail.getBusinessStartDate());
 				plRetailApplicantResponse.setNetworth(coApplicantDetail.getNetworth());
 				plRetailApplicantResponse.setGrossMonthlyIncome(coApplicantDetail.getGrossMonthlyIncome());
@@ -1142,11 +1147,13 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 					
 				case 4://Self Employed
 					plRetailApplicantResponse.setEmploymentWith(coApplicantDetail.getEmploymentWith() != null ? EmploymentWithRetail.getById(coApplicantDetail.getEmploymentWith()).getValue().toString() : "-");
+					plRetailApplicantResponse.setNameOfEmployer(coApplicantDetail.getNameOfEmployer());
 					break;
 				
 				case 5://Self Employed Professional
 					
 					plRetailApplicantResponse.setEmploymentWith(coApplicantDetail.getEmploymentWith() != null ? OccupationHL.getById(coApplicantDetail.getEmploymentWith()).getValue().toString() : "-");
+					plRetailApplicantResponse.setNameOfEmployer(coApplicantDetail.getNameOfEmployer());
 					break;
 				
 				default:
@@ -1225,6 +1232,13 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 					logger.error("error while fetching itr data from itrClient",e);
 				}
 				
+				
+				try {
+					List<RetailApplicantIncomeRequest> retailApplicantIncomeDetail = coApplicantIncomeService.getAllByCoAppId(coApplicantDetail.getId());
+					plRetailApplicantResponse.setRetailApplicantIncomeRequestList(!CommonUtils.isListNullOrEmpty(retailApplicantIncomeDetail) ? retailApplicantIncomeDetail : null);
+				} catch (Exception e) {
+					logger.error("Error while getting income details : ",e);
+				}
 				
 				String coAppFullName = plRetailApplicantResponse.getFullName();
 				if(!CommonUtils.isObjectNullOrEmpty(coAppFullName) && coAppFullName.equalsIgnoreCase(coAppnameAsPerItr)) {
