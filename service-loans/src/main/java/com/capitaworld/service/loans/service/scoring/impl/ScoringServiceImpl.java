@@ -3410,7 +3410,7 @@ public class ScoringServiceImpl implements ScoringService {
             		Double depositeSBCATDRAmount = 0.0d;
                 	if(bankEnum != null) {
                 		for(Data bankStatementData : coApplicantBankStatementDatas) {
-                			if(bankStatementData != null && bankStatementData.getSummaryInfo() != null && bankStatementData.getSummaryInfo().getSummaryInfoTotalDetails() != null && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCashDeposit()) && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getCustomerInfo()) && bankEnum.getName().equalsIgnoreCase(bankStatementData.getCustomerInfo().getBank())) {
+                			if(bankStatementData != null && bankStatementData.getSummaryInfo() != null && bankStatementData.getSummaryInfo().getSummaryInfoTotalDetails() != null && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCashDeposit()) && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getCustomerInfo()) && bankEnum.getName().equalsIgnoreCase(bankStatementData.getEnumBank())) {
                 				depositeSBCATDRAmount = depositeSBCATDRAmount+ Double.valueOf(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalCashDeposit()); 
                 						logger.info("Total Deposite Amount here ====={}====={}==>",depositeSBCATDRAmount);
                 			 	}
@@ -8229,7 +8229,7 @@ public class ScoringServiceImpl implements ScoringService {
             		Double depositeSBCATDRAmount = 0.0d;
                 	if(bankEnum != null) {
                 		for(Data bankStatementData : bankStatementDatas) {
-                			if(bankStatementData != null && bankStatementData.getSummaryInfo() != null && bankStatementData.getSummaryInfo().getSummaryInfoTotalDetails() != null && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCashDeposit()) && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getCustomerInfo()) && bankEnum.getName().equalsIgnoreCase(bankStatementData.getCustomerInfo().getBank())) {
+                			if(bankStatementData != null && bankStatementData.getSummaryInfo() != null && bankStatementData.getSummaryInfo().getSummaryInfoTotalDetails() != null && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCashDeposit()) && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getCustomerInfo()) && bankEnum.getName().equalsIgnoreCase(bankStatementData.getEnumBank())) {
                 				depositeSBCATDRAmount = depositeSBCATDRAmount+ Double.valueOf(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalCashDeposit()); 
                 						logger.info("Total Deposite Amount here ====={}====={}==>",depositeSBCATDRAmount);
                 			 	}
