@@ -355,3 +355,11 @@ alter table loan_application.fp_auto_loan_details_temp add column is_agreed_purc
 
 alter table loan_application.fp_auto_loan_details add column nmi_mi_income_type int(2) default null;
 alter table loan_application.fp_auto_loan_details_temp add column nmi_mi_income_type int(2) default null;
+
+INSERT INTO `scoring_sidbi`.`field_master` (`id`,`name`, `type`, `created_date`, `modified_date`, `created_by`, `modified_by`, `is_active`, `parent_field_id`) VALUES(208,'PERSONAL_RELATIONSHIP_WITH_BANK_AL','2','2019-09-28 12:17:26',NULL,NULL,NULL,TRUE,NULL);
+INSERT INTO `scoring_sidbi`.`field_mapping` (`created_by`, `created_date`, `is_active`, `loan_type_id`, `modified_by`, `modified_date`, `field_master_id`, `business_type_id`, `financial_type_id`, `is_consider_co_app`, `employment_type_id`) VALUES(NULL,NOW(),TRUE,NULL,NULL,NULL,'208','8','3',FALSE,NULL);
+
+ALTER TABLE `scoring_sidbi`.`risk_grading_temp` ADD COLUMN min_sub_score DOUBLE AFTER `min_score`;
+ALTER TABLE `scoring_sidbi`.`risk_grading_temp`  ADD COLUMN max_sub_score DOUBLE AFTER min_sub_score;
+ALTER TABLE `scoring_sidbi`.`risk_grading`  ADD COLUMN min_sub_score DOUBLE AFTER `max_score`;
+ALTER TABLE `scoring_sidbi`.`risk_grading`  ADD COLUMN max_sub_score DOUBLE AFTER min_sub_score;

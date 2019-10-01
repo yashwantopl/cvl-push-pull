@@ -3362,6 +3362,7 @@ public class ScoringServiceImpl implements ScoringService {
             logger.info("Scoring model Id For CoApp===>{}",scoreModelId);
             Long fpProductId = scoringRequestLoans.getFpProductId();
             logger.info("Fp Product Id For CoApp===>{}",fpProductId);
+            Integer personalBankingId = null;
             ScoringRequest scoringRequest = new ScoringRequest();
             scoringRequest.setScoringModelId(scoreModelId);
             scoringRequest.setFpProductId(fpProductId);
@@ -3379,11 +3380,50 @@ public class ScoringServiceImpl implements ScoringService {
             orgId = scoringRequestLoans.getOrgId();
             if(orgId != null) {
             	BankList bankEnum = BankList.fromOrgId(orgId.toString());
-            	if(bankEnum != null) {
-            		logger.info("Bank Name====>{}==>Application Id===>{}===> Fp Product Id===>{}",bankEnum.getName(),applicationId,fpProductId);
-            		minBankRelationshipInMonths = bankingRelationlRepository.getMinRelationshipInMonthByApplicationAndOrgNameAndCoApplicantId(applicationId, bankEnum.getName(),coApplicantId);
+            	try {
+	            	if(bankEnum != null) {
+	            		logger.info("Bank Name====>{}==>Application Id===>{}===> Fp Product Id===>{}",bankEnum.getName(),applicationId,fpProductId);
+	            		minBankRelationshipInMonths = bankingRelationlRepository.getMinRelationshipInMonthByApplicationAndOrgNameAndCoApplicantId(applicationId, bankEnum.getName(),coApplicantId);
+	            	}
+            	}catch(Exception e) {
+            		logger.error("Error while Getting banking Relationship = >{}",e);
             	}
             	logger.info("Min Banking Relationship in Month CoApplicant === >{}",minBankRelationshipInMonths);
+            	
+            	// Step 1 :- (First scenario CHECK Borrower has any outstanding Loan with DPDs with SBI===============>)
+            	try {
+            		if(bankEnum != null) {
+        				List<Long> ids = financialArrangementDetailsRepository.checkExistingLoanWithBankForCoApp(applicationId,(bankEnum.getName() != null ? bankEnum.getName().toLowerCase() : null),coApplicantId);
+        				if(!CommonUtils.isListNullOrEmpty(ids)) {
+        					List<Long> dpdIds = financialArrangementDetailsRepository.checkDpdsWithBankByIds(ids);
+        					if(CommonUtils.isListNullOrEmpty(dpdIds)) {
+        						personalBankingId = 2; //Credit Relation With satisfactory Performance(Standard In Our Books For the 12 Months) 
+        					}
+        				}
+                	}       		
+            	}catch(Exception e) {
+            		logger.error("Error while Getting Personal Banking Relationship = >{}",e);
+            	}
+            	
+            	// Step :3 (Deposit (SB/CA/TDR) relationship for at least 6 months) 				
+            	if(personalBankingId == null) {
+            		Double depositeSBCATDRAmount = 0.0d;
+                	if(bankEnum != null) {
+                		for(Data bankStatementData : coApplicantBankStatementDatas) {
+                			if(bankStatementData != null && bankStatementData.getSummaryInfo() != null && bankStatementData.getSummaryInfo().getSummaryInfoTotalDetails() != null && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCashDeposit()) && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getCustomerInfo()) && bankEnum.getName().equalsIgnoreCase(bankStatementData.getCustomerInfo().getBank())) {
+                				depositeSBCATDRAmount = depositeSBCATDRAmount+ Double.valueOf(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalCashDeposit()); 
+                						logger.info("Total Deposite Amount here ====={}====={}==>",depositeSBCATDRAmount);
+                			 	}
+                		}                		
+                	}
+                	if(depositeSBCATDRAmount > 0.0d) {
+                		personalBankingId = 4; //Deposite(SB/CA/TDR) Relationship For at Least 6 months
+                	}
+            	}
+            	
+            	if(personalBankingId == null) {
+            		personalBankingId = 5; //New Customer
+            	}
             }
 
             ///////// End  Getting Old Request ///////
@@ -3397,6 +3437,7 @@ public class ScoringServiceImpl implements ScoringService {
 				scoreParameterRetailRequest.setEmi(scoringRequestLoans.getEmi());
 				scoreParameterRetailRequest.setElAmountOnAverageScoring(scoringRequestLoans.getElAmountOnAverageScoring());
 				scoreParameterRetailRequest.setIsConsiderCoAppIncome(scoringRequestLoans.getIsConsiderCoAppIncome());
+				scoreParameterRetailRequest.setPersonalBankingRelationShip(personalBankingId);
 				logger.info("Is Income Consider For CoApplicant============>{}=======>{}",scoringRequestLoans.getIsConsiderCoAppIncome(), coApplicantId);
 				logger.info("Result of Average Eligibility Call For CoApplicant===============>{}======>{}========>{}========================{}",scoringRequestLoans.getElAmountOnAverageScoring(),applicationId,fpProductId,coApplicantId);
 				logger.info("FOIR For CoApplicant===============>{}======>{}========>{}========================{}",scoringRequestLoans.getFoir(),applicationId,fpProductId,applicationId,fpProductId,coApplicantId);
