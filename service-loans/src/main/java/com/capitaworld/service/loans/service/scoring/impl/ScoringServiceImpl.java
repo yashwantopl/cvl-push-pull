@@ -3395,8 +3395,8 @@ public class ScoringServiceImpl implements ScoringService {
             		if(bankEnum != null) {
         				List<Long> ids = financialArrangementDetailsRepository.checkExistingLoanWithBankForCoApp(applicationId,(bankEnum.getName() != null ? bankEnum.getName().toLowerCase() : null),coApplicantId);
         				if(!CommonUtils.isListNullOrEmpty(ids)) {
-        					List<Long> dpdIds = financialArrangementDetailsRepository.checkDpdsWithBankByIds(ids);
-        					if(CommonUtils.isListNullOrEmpty(dpdIds)) {
+        					Long cnt = financialArrangementDetailsRepository.checkDpdsWithBankByIds(ids);
+        					if(cnt <= 0) {
         						personalBankingId = 2; //Credit Relation With satisfactory Performance(Standard In Our Books For the 12 Months) 
         					}
         				}
@@ -8211,8 +8211,8 @@ public class ScoringServiceImpl implements ScoringService {
             		if(bankEnum != null) {
         				List<Long> ids = financialArrangementDetailsRepository.checkExistingLoanWithBank(applicationId,(bankEnum.getName() != null ? bankEnum.getName().toLowerCase() : null));
         				if(!CommonUtils.isListNullOrEmpty(ids)) {
-        					List<Long> dpdIds = financialArrangementDetailsRepository.checkDpdsWithBankByIds(ids);
-        					if(CommonUtils.isListNullOrEmpty(dpdIds)) {
+        					Long cnt = financialArrangementDetailsRepository.checkDpdsWithBankByIds(ids);
+        					if(cnt <= 0) {
         						personalBankingId = 2; //Credit Relation With satisfactory Performance(Standard In Our Books For the 12 Months) 
         					}
         				}

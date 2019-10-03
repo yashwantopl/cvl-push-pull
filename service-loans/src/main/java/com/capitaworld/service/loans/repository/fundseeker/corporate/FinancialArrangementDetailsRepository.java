@@ -105,7 +105,7 @@ public interface FinancialArrangementDetailsRepository extends JpaRepository<Fin
 	public List<Long> checkExistingLoanWithBankForCoApp(@Param("applicationId") Long applicationId,@Param("financialInstitutionName") String financialInstitutionName,@Param("coAppId") Long coAppId);
 	
 	@Query(value="SELECT count(o.id) FROM fs_corporate_current_financial_arrangements_details o WHERE o.id in (:ids) and o.dpd_details IS NOT NULL and o.dpd_details != '[]'",nativeQuery = true)
-	public List<Long> checkDpdsWithBankByIds(@Param("ids") List<Long> ids);
+	public Long checkDpdsWithBankByIds(@Param("ids") List<Long> ids);
 	
 	
 	
