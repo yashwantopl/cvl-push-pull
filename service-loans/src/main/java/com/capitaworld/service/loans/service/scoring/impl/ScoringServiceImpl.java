@@ -106,6 +106,7 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArran
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.scoring.ScoringService;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.loans.utils.CommonUtils.CSPCode;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.loans.utils.scoreexcel.ScoreExcelFileGenerator;
 import com.capitaworld.service.loans.utils.scoreexcel.ScoreExcelReader;
@@ -3404,6 +3405,24 @@ public class ScoringServiceImpl implements ScoringService {
             	}catch(Exception e) {
             		logger.error("Error while Getting Personal Banking Relationship = >{}",e);
             	}
+            	
+            	
+            	// Step 2 :- Corporate Salary Package(CSP Customer)
+            	if(personalBankingId == null) {
+            		for(Data bankStatementData : coApplicantBankStatementDatas) {
+            			if(bankStatementData != null && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getSummaryInfo()) && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getSummaryInfo().getAccType())) {
+            					CSPCode cspCodeByBank = CommonUtils.CSPCode.fromDescAndOrgId(bankStatementData.getSummaryInfo().getAccType(), orgId);
+            					if(!CommonUtils.isObjectNullOrEmpty(cspCodeByBank)) {
+            						logger.info("CSP Code Found For OrgId==>{}==>{}",cspCodeByBank.getOrgId(),cspCodeByBank.getDesc());
+            						personalBankingId = 3; //Corporate Salary Package(CSP Customer)
+            					}else {
+            						logger.info("CSP Code not Found For OrgId==>{}",orgId);
+            					}
+            					
+            			 }
+            		}                		
+            	}
+            	
             	
             	// Step :3 (Deposit (SB/CA/TDR) relationship for at least 6 months) 				
             	if(personalBankingId == null) {
@@ -8223,6 +8242,22 @@ public class ScoringServiceImpl implements ScoringService {
             	
             	
             	// Step 2 :- Corporate Salary Package(CSP Customer)
+            	if(personalBankingId == null) {
+            		for(Data bankStatementData : bankStatementDatas) {
+            			if(bankStatementData != null && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getSummaryInfo()) && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getSummaryInfo().getAccType())) {
+            					CSPCode cspCodeByBank = CommonUtils.CSPCode.fromDescAndOrgId(bankStatementData.getSummaryInfo().getAccType(), orgId);
+            					if(!CommonUtils.isObjectNullOrEmpty(cspCodeByBank)) {
+            						logger.info("CSP Code Found For OrgId==>{}==>{}",cspCodeByBank.getOrgId(),cspCodeByBank.getDesc());
+            						personalBankingId = 3; //Corporate Salary Package(CSP Customer)
+            					}else {
+            						logger.info("CSP Code not Found For OrgId==>{}",orgId);
+            					}
+            					
+            			 }
+            		}                		
+            	}
+            	
+            	
             	
               // Step :3 (Deposit (SB/CA/TDR) relationship for at least 6 months) 				
             	if(personalBankingId == null) {
