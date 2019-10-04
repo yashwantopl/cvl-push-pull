@@ -11,9 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.capitaworld.service.loans.model.teaser.primaryview.CommonRequest;
 import com.capitaworld.service.loans.repository.common.CommonRepository;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
@@ -149,6 +146,12 @@ public class CommonRepositoryImpl  implements CommonRepository {
 				"left join loan_application.proposal_details pd on pd.application_id=c.application_id\r\n" + 
 				"left join users.users u on u.user_id=c.user_id\r\n" + 
 				"where c.application_id=:applicationId").setParameter("applicationId", applicationId).getSingleResult();
+	}
+	
+	@Override
+	public List<String> getUserDetailsByUserOrgIdAndUserRoleIdAndBranchId(Long orgId ,Long roleId ,Long branchId){
+		return (List<String>) manager.createNativeQuery("SELECT us.email FROM users.users us WHERE us.user_org_id=:orgId AND us.user_role_id=:roleId AND us.branch_id=:branchId")
+				.setParameter("orgId", orgId).setParameter("roleId", roleId).setParameter("branchId", branchId).getResultList();
 	}
 	
 }

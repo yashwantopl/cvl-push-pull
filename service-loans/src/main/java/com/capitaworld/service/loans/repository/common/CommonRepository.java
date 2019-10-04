@@ -31,4 +31,6 @@ public interface CommonRepository {
 	public List<Object[]> getBankDetails(Long applicationId, Long orgId);
 
 	public Object[] getUserDetailsByApplicationId(Long applicationId) throws Exception;
+	
+	public List<String> getUserDetailsByUserOrgIdAndUserRoleIdAndBranchId(Long orgId ,Long roleId ,Long branchId);
 }
