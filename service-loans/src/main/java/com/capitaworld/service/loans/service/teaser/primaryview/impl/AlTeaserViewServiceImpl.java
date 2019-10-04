@@ -284,7 +284,6 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
-		System.out.println("proposalId--------------::" + proposalId);
 		// ENDS HERE===================>
 		ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalId);
 		logger.info("applicationProposalMapping  ==>{}",applicationProposalMapping);
@@ -496,7 +495,6 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 					logger.info("error while fetching address");
 				}
 				
-				System.out.println("plRetailApplicantRequest.getAddressCountry().longValue()----------::" + plRetailApplicantRequest.getAddressCountry());
 				
 				//citetailApplicantResponse.setry,State,country
 				alTeaserViewResponse.setCity(CommonDocumentUtils.getCity(plRetailApplicantRequest.getAddressCity(), oneFormClient));
@@ -708,10 +706,8 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 
 		try {
 			ScoringResponse scoringResponse = scoringClient.getScore(scoringRequest);
-			System.out.println("scoringResponse.getDataObject() ------::" + scoringResponse.getDataObject());
 			ProposalScoreResponse proposalScoreResponse = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) scoringResponse.getDataObject(), ProposalScoreResponse.class);
 			if (proposalScoreResponse != null){
-				System.out.println("inside proposalScoreResponse------::" + scoringResponse);
 				alTeaserViewResponse.setScoringModelName(proposalScoreResponse.getScoringModelName()!=null?proposalScoreResponse.getScoringModelName():" - ");
 				alTeaserViewResponse.setDataList(scoringResponse.getDataList()!=null?scoringResponse.getDataList():" - ");
 				alTeaserViewResponse.setDataObject(scoringResponse.getDataObject()!=null?scoringResponse.getDataObject():" - ");
@@ -1046,6 +1042,7 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 		List<PLRetailApplicantResponse> request=new ArrayList<>(); 
 		try {
 			List<CoApplicantDetail> coApplicantList = coAppService.getCoApplicantList(applicationId);
+			System.out.println("coApplicantList.size ---:: " + coApplicantList.size());
 			FinalAutoLoanDetail finalAutoLoanDetail = finalAutoLoanDetailRepository.getByApplicationAndProposalId(applicationId, proposalId);
 			for (CoApplicantDetail coApplicantDetail : coApplicantList) {
 				PLRetailApplicantResponse plRetailApplicantResponse=new PLRetailApplicantResponse();
@@ -1079,7 +1076,7 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 				plRetailApplicantResponse.setResidenceSinceMonthYear(coApplicantDetail.getResidenceSinceMonth()!=null?coApplicantDetail.getResidenceSinceYear()!=null?coApplicantDetail.getResidenceSinceMonth()+"-"+coApplicantDetail.getResidenceSinceYear():"":"");
 				plRetailApplicantResponse.setResidenceSinceYear(coApplicantDetail.getResidenceSinceYear());
 				plRetailApplicantResponse.setNameOfEmployer(coApplicantDetail.getNameOfEntity());
-				plRetailApplicantResponse.setEmploymentWith(coApplicantDetail.getEmploymentWith()!= null ? EmploymentCategory.getById(coApplicantDetail.getEmploymentWith()).getValue() : "-");
+//				plRetailApplicantResponse.setEmploymentWith(coApplicantDetail.getEmploymentWith()!= null ? EmploymentCategory.getById(coApplicantDetail.getEmploymentWith()).getValue() : "-");
 				plRetailApplicantResponse.setBusinessStartDate(coApplicantDetail.getBusinessStartDate());
 				plRetailApplicantResponse.setNetworth(coApplicantDetail.getNetworth());
 				plRetailApplicantResponse.setGrossMonthlyIncome(coApplicantDetail.getGrossMonthlyIncome());
@@ -1103,7 +1100,7 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 				}
 				
 				/*employment type*/
-				plRetailApplicantResponse.setEmploymentType(coApplicantDetail.getEmploymentType() != null ? OccupationNature.getById(coApplicantDetail.getEmploymentType()).getValue().toString() : "-");
+				plRetailApplicantResponse.setEmploymentType(coApplicantDetail.getEmploymentType() != null ? OccupationNatureNTB.getById(coApplicantDetail.getEmploymentType()).getValue().toString() : "-");
 				
 				//as per OccupationNature enum id
 				switch (coApplicantDetail.getEmploymentType() != null ? coApplicantDetail.getEmploymentType() : 0) {
