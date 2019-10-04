@@ -66,7 +66,7 @@ public class IneligibleProposalDetailsController {
 		Boolean isSendMail = null;
 		InEligibleProposalDetailsRequest proposalDetailsRequest = ineligibleProposalDetailsService.get(inEligibleProposalDetailsRequest.getApplicationId());
 		if(proposalDetailsRequest != null) {
-			Boolean isCampaignUser = loanRepository.isCampaignUser(inEligibleProposalDetailsRequest.getUserId());
+			Boolean isCampaignUser = loanRepository.isCampaignUser(inEligibleProposalDetailsRequest.getApplicationId());
 			if(isCampaignUser) {
 				if(CommonUtils.OfflineApplicationConfig.BankSpecific.ON.equalsIgnoreCase(proposalDetailsRequest.getAddiFields())) {
 					isSendMail = true;
