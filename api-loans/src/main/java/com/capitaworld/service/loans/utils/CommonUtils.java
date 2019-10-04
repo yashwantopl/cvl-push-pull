@@ -315,8 +315,7 @@ public class CommonUtils {
 		SBCHQ_PSP_PUBIND_SILVER_INR("10971431","SBCHQ- PSP-PUBIND-SILVER-INR","PSP","Silver","Category 2","Corporate Salary Package",16l),
 		SBCHQ_PSP_PUBIND_GOLD_INR("10971441","SBCHQ- PSP-PUBIND-GOLD-INR","PSP","Gold","Category 2","Corporate Salary Package",16l),
 		SBCHQ_PSP_PUBIND_DIAMOND_INR("10971451","SBCHQ- PSP-PUBIND-DIAMOND-INR","PSP","Diamond","Category 2","Corporate Salary Package",16l),
-		SBCHQ_PSP_PUBIND_PLATINUM_INR("10971461","SBCHQ- PSP-PUBIND-PLATINUM-INR","PSP","Platinum","Category 2","Corporate Salary Package",16l),
-		SBCHQ_GEN_STF_IND_ALL_INR("10971461","SBCHQ-GEN-STF-IND-ALL-INR","PSP","Platinum","Category 2","Corporate Salary Package",16l);
+		SBCHQ_PSP_PUBIND_PLATINUM_INR("10971461","SBCHQ- PSP-PUBIND-PLATINUM-INR","PSP","Platinum","Category 2","Corporate Salary Package",16l);
 		
 		private String productCode;
 		private String desc;
