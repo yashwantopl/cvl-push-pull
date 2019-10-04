@@ -3865,6 +3865,9 @@ public class ScoringServiceImpl implements ScoringService {
         				scoreParameterRetailRequest.setEmiAmountFromCIBIL(totalEMI);
         				//Already Set NMI and GMI Above Before Switch Starts
         				break;
+        			case ScoreParameter.Retail.AutoLoan.PERSONAL_RELATIONSHIP_WITH_BANK: //
+        				scoreParameterRetailRequest.setIsPersonalRelationShipWithBank_p(true);
+        				 break;
                         default:
                          break;
 
