@@ -74,6 +74,7 @@ public class HlTeaserViewResponse {
     private Object scoringResponseList;
     private Long appId;
     private Object cibilScore;
+    private String cibilScoreRange;
     private Object nameOfEntity;
     private String pan;
     private String religion;
@@ -1339,5 +1340,11 @@ public class HlTeaserViewResponse {
 		this.campaignType = campaignType;
 	}
 
-	
+	public String getCibilScoreRange() {
+		return cibilScoreRange;
+	}
+
+	public void setCibilScoreRange(String cibilScoreRange) {
+		this.cibilScoreRange = cibilScoreRange;
+	}
 }

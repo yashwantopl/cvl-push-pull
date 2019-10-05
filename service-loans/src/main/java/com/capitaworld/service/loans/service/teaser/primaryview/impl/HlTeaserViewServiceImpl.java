@@ -678,6 +678,9 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 			cibilReq.setPan(plRetailApplicantResponse.getPan());
 			cibilReq.setApplicationId(toApplicationId);
 			CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
+			if(cibilScoreByPanCard != null) {
+				hlTeaserViewResponse.setCibilScoreRange(CommonUtils.getCibilV2ScoreRange(Integer.parseInt(cibilScoreByPanCard.getActualScore())));
+			}
 			hlTeaserViewResponse.setCibilScore(cibilScoreByPanCard);
 		} catch (Exception e) {
 			logger.error("Error While calling Cibil Score By PanCard : ",e);
