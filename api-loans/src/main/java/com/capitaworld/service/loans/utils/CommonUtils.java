@@ -366,7 +366,7 @@ public class CommonUtils {
 		
 		public static CSPCode fromDescAndOrgId(String desc,Long orgId) {
 			for (CSPCode c : CSPCode.values()) {
-				if (c.desc.equalsIgnoreCase(desc) && c.orgId.equals(orgId)) {
+				if (c.desc.replaceAll("[^a-zA-Z]", "").equalsIgnoreCase(desc.replaceAll("[^a-zA-Z]", "")) && c.orgId.equals(orgId)) {
 					return c;
 				}
 			}
