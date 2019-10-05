@@ -3416,6 +3416,7 @@ public class ScoringServiceImpl implements ScoringService {
             					if(!CommonUtils.isObjectNullOrEmpty(cspCodeByBank)) {
             						logger.info("CSP Code Found For OrgId==>{}==>{}",cspCodeByBank.getOrgId(),cspCodeByBank.getDesc());
             						personalBankingId = 3; //Corporate Salary Package(CSP Customer)
+            						break;
             					}else {
             						logger.info("CSP Code not Found For OrgId==>{}",orgId);
             					}
@@ -8254,6 +8255,7 @@ public class ScoringServiceImpl implements ScoringService {
             					if(!CommonUtils.isObjectNullOrEmpty(cspCodeByBank)) {
             						logger.info("CSP Code Found For OrgId==>{}==>{}",cspCodeByBank.getOrgId(),cspCodeByBank.getDesc());
             						personalBankingId = 3; //Corporate Salary Package(CSP Customer)
+            						break;
             					}else {
             						logger.info("CSP Code not Found For OrgId==>{}",orgId);
             					}
