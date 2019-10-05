@@ -8248,6 +8248,7 @@ public class ScoringServiceImpl implements ScoringService {
             	if(personalBankingId == null) {
             		for(Data bankStatementData : bankStatementDatas) {
             			if(bankStatementData != null && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getSummaryInfo()) && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getSummaryInfo().getAccType())) {
+            				logger.info("After Replaced = >{}",bankStatementData.getSummaryInfo().getAccType().replaceAll("[^a-zA-Z0-9]", ""));
             					CSPCode cspCodeByBank = CommonUtils.CSPCode.fromDescAndOrgId(bankStatementData.getSummaryInfo().getAccType(), orgId);
             					if(!CommonUtils.isObjectNullOrEmpty(cspCodeByBank)) {
             						logger.info("CSP Code Found For OrgId==>{}==>{}",cspCodeByBank.getOrgId(),cspCodeByBank.getDesc());
