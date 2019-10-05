@@ -3409,7 +3409,7 @@ public class ScoringServiceImpl implements ScoringService {
             	if(personalBankingId == null) {
             		for(Data bankStatementData : coApplicantBankStatementDatas) {
             			if(bankStatementData != null && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getSummaryInfo()) && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getSummaryInfo().getAccType())) {
-            				String code = bankStatementData.getSummaryInfo().getAccType().replaceAll("[^a-zA-Z0-9]", "");
+            				String code = bankStatementData.getSummaryInfo().getAccType().replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
             				logger.info("After Replaced CoApp= >{}",code);
             					Long codeExists = cspCodeRepository.isCodeExists(code, orgId);
             					if(codeExists > 0) {
@@ -8249,7 +8249,7 @@ public class ScoringServiceImpl implements ScoringService {
             	if(personalBankingId == null) {
             		for(Data bankStatementData : bankStatementDatas) {
             			if(bankStatementData != null && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getSummaryInfo()) && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getSummaryInfo().getAccType())) {
-            				String code = bankStatementData.getSummaryInfo().getAccType().replaceAll("[^a-zA-Z0-9]", "");
+            				String code = bankStatementData.getSummaryInfo().getAccType().replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
             				logger.info("After Replaced = >{}",code);
             				Long codeExists = cspCodeRepository.isCodeExists(code, orgId);
             					if(codeExists > 0) {
