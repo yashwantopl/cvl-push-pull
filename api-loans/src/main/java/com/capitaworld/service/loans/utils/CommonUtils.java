@@ -2432,4 +2432,39 @@ public class CommonUtils {
 			 return null;
 		 }
 	 }
+	/**
+	 * @author nilay.darji
+	 * @param score
+	 * @return CIBIL Version 2 Score Range Return
+	 * 
+	 */
+	public static String getCibilV2ScoreRange(Integer score) {
+		if (score.equals(-1)) {
+			return "-1";
+		} else if (score.equals(0) || score.equals(1)) {
+			return "1 - 5";
+		} else if (isBetween(score, 300, 550)) {
+			return "300 - 514";
+		} else if (isBetween(score, 551, 600)) {
+			return "515 - 520";
+		} else if (isBetween(score, 601, 650)) {
+			return "521 - 566";
+		} else if (isBetween(score, 651, 700)) {
+			return "567 - 618";
+		} else if (isBetween(score, 701, 750)) {
+			return "619 - 661";
+		} else if (isBetween(score, 751, 800)) {
+			return "662 - 697";
+		} else if (isBetween(score, 801, 850)) {
+			return "698 - 840";
+		} else if (isBetween(score, 851, 900)) {
+			return "841 - 900";
+		} else {
+			return null;
+		}
+	} 
+
+	public static boolean isBetween(int actualVal, int min, int max) {
+		return min <= actualVal && actualVal <= max;
+	}
 }
