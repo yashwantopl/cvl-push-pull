@@ -209,6 +209,8 @@ public class AlTeaserViewResponse {
 	
 	private String  campaignType; 
 	
+	private Map matchDisplayObjectMap;
+	
 	public AlTeaserViewResponse() {
 		// TODO Auto-generated constructor stub
 	}
@@ -1642,6 +1644,16 @@ public class AlTeaserViewResponse {
 	public void setCampaignType(String campaignType) {
 		this.campaignType = campaignType;
 	}
+
+	public Map getMatchDisplayObjectMap() {
+		return matchDisplayObjectMap;
+	}
+
+	public void setMatchDisplayObjectMap(Map matchDisplayObjectMap) {
+		this.matchDisplayObjectMap = matchDisplayObjectMap;
+	}
+
+
 	
 	
 
