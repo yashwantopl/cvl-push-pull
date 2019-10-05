@@ -316,7 +316,7 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 					matchRequest.setProposalId(proposalId);
 					matchRequest.setBusinessTypeId(applicationProposalMapping.getBusinessTypeId());
 					MatchDisplayResponse matchResponse = matchEngineClient.displayMatchesOfRetail(matchRequest);
-					alTeaserViewResponse.setMatchesList(matchResponse.getMatchDisplayObjectList());
+					alTeaserViewResponse.setMatchDisplayObjectMap(matchResponse.getMatchDisplayObjectMap());
 				} catch (Exception e) {
 					logger.error("Error while getting matches data : " + e);
 				}
