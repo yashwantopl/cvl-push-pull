@@ -14,18 +14,6 @@ import java.util.regex.Pattern;
 
 import javax.transaction.Transactional;
 
-import com.capitaworld.service.loans.domain.fundseeker.mfi.MFIApplicantDetail;
-import com.capitaworld.service.loans.domain.fundseeker.mfi.MfiExpenseExpectedIncomeDetails;
-import com.capitaworld.service.loans.domain.fundseeker.mfi.MfiIncomeDetails;
-import com.capitaworld.service.loans.domain.fundseeker.retail.*;
-import com.capitaworld.service.loans.model.micro_finance.MfiIncomeDetailsReq;
-import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiApplicationDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiExpenseExpectedIncomeDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiIncomeDetailsRepository;
-import com.capitaworld.service.oneform.enums.*;
-import com.capitaworld.service.scoring.MCLRReqRes;
-import com.capitaworld.service.scoring.REPOReqRes;
-import com.capitaworld.service.scoring.model.*;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -76,10 +64,16 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatem
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import com.capitaworld.service.loans.domain.fundseeker.mfi.MFIApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.mfi.MfiIncomeDetails;
+import com.capitaworld.service.loans.domain.fundseeker.retail.BankingRelation;
+import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryAutoLoanDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryHomeLoanDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.score.ScoreParameterRequestLoans;
 import com.capitaworld.service.loans.model.score.ScoringRequestLoans;
+import com.capitaworld.service.loans.repository.CspCodeRepository;
 import com.capitaworld.service.loans.repository.common.LoanRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.ScoringRequestDetailRepository;
@@ -106,13 +100,12 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArran
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.scoring.ScoringService;
 import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.loans.utils.CommonUtils.CSPCode;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.loans.utils.scoreexcel.ScoreExcelFileGenerator;
 import com.capitaworld.service.loans.utils.scoreexcel.ScoreExcelReader;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.AnnualIncomeRural;
-import com.capitaworld.service.oneform.enums.AutoDetailPurposeofLoan;
+import com.capitaworld.service.oneform.enums.AutoLoanPurposeType;
 import com.capitaworld.service.oneform.enums.BankList;
 import com.capitaworld.service.oneform.enums.EmploymentWithPL;
 import com.capitaworld.service.oneform.enums.EmploymentWithPLScoring;
@@ -120,12 +113,14 @@ import com.capitaworld.service.oneform.enums.Gender;
 import com.capitaworld.service.oneform.enums.OccupationHL;
 import com.capitaworld.service.oneform.enums.OccupationNatureNTB;
 import com.capitaworld.service.oneform.enums.ResidenceStatusRetailMst;
+import com.capitaworld.service.oneform.enums.VehicleType;
 import com.capitaworld.service.oneform.enums.scoring.EnvironmentCategory;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.rating.RatingClient;
 import com.capitaworld.service.rating.model.IndustryResponse;
 import com.capitaworld.service.rating.model.IrrRequest;
 import com.capitaworld.service.scoring.MCLRReqRes;
+import com.capitaworld.service.scoring.REPOReqRes;
 import com.capitaworld.service.scoring.ScoringClient;
 import com.capitaworld.service.scoring.exception.ScoringException;
 import com.capitaworld.service.scoring.model.FundSeekerInputRequest;
@@ -256,6 +251,9 @@ public class ScoringServiceImpl implements ScoringService {
 
     @Autowired
     private MfiIncomeDetailsRepository mfiIncomeDetailsRepository;
+    
+    @Autowired
+    private CspCodeRepository cspCodeRepository;
 
     private static final String ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING = "Error while getting retail applicant detail for personal loan scoring : ";
     private static final String ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_HOME_LOAN_SCORING = "Error while getting retail applicant detail for Home loan scoring : ";
@@ -3411,10 +3409,11 @@ public class ScoringServiceImpl implements ScoringService {
             	if(personalBankingId == null) {
             		for(Data bankStatementData : coApplicantBankStatementDatas) {
             			if(bankStatementData != null && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getSummaryInfo()) && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getSummaryInfo().getAccType())) {
-            				logger.info("After Replaced CoApp= >{}",bankStatementData.getSummaryInfo().getAccType().replaceAll("[^a-zA-Z0-9]", ""));
-            					CSPCode cspCodeByBank = CommonUtils.CSPCode.fromDescAndOrgId(bankStatementData.getSummaryInfo().getAccType(), orgId);
-            					if(!CommonUtils.isObjectNullOrEmpty(cspCodeByBank)) {
-            						logger.info("CSP Code Found For OrgId==>{}==>{}",cspCodeByBank.getOrgId(),cspCodeByBank.getDesc());
+            				String code = bankStatementData.getSummaryInfo().getAccType().replaceAll("[^a-zA-Z0-9]", "");
+            				logger.info("After Replaced CoApp= >{}",code);
+            					Long codeExists = cspCodeRepository.isCodeExists(code, orgId);
+            					if(codeExists > 0) {
+            						logger.info("CSP Code Found For OrgId==>{}==>{}",orgId,code);
             						personalBankingId = 3; //Corporate Salary Package(CSP Customer)
             						break;
             					}else {
@@ -8250,10 +8249,11 @@ public class ScoringServiceImpl implements ScoringService {
             	if(personalBankingId == null) {
             		for(Data bankStatementData : bankStatementDatas) {
             			if(bankStatementData != null && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getSummaryInfo()) && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getSummaryInfo().getAccType())) {
-            				logger.info("After Replaced = >{}",bankStatementData.getSummaryInfo().getAccType().replaceAll("[^a-zA-Z0-9]", ""));
-            					CSPCode cspCodeByBank = CommonUtils.CSPCode.fromDescAndOrgId(bankStatementData.getSummaryInfo().getAccType(), orgId);
-            					if(!CommonUtils.isObjectNullOrEmpty(cspCodeByBank)) {
-            						logger.info("CSP Code Found For OrgId==>{}==>{}",cspCodeByBank.getOrgId(),cspCodeByBank.getDesc());
+            				String code = bankStatementData.getSummaryInfo().getAccType().replaceAll("[^a-zA-Z0-9]", "");
+            				logger.info("After Replaced = >{}",code);
+            				Long codeExists = cspCodeRepository.isCodeExists(code, orgId);
+            					if(codeExists > 0) {
+            						logger.info("CSP Code Found For OrgId==>{}==>{}",orgId,code);
             						personalBankingId = 3; //Corporate Salary Package(CSP Customer)
             						break;
             					}else {

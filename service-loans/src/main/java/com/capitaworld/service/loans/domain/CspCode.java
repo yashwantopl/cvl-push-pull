@@ -1,12 +1,18 @@
 package com.capitaworld.service.loans.domain;
 
 
-import javax.persistence.*;
 import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @Table(name="csp_code")
-public class CspCodes implements Serializable {
+public class CspCode implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -30,6 +36,9 @@ public class CspCodes implements Serializable {
 
     @Column(name="rsm_relationship_with_bank")
     private String rsmRelationshipWithBank;
+    
+    @Column(name="org_id")
+    private Long orgId;
 
 
     public Long getId() {
@@ -88,4 +97,11 @@ public class CspCodes implements Serializable {
         this.rsmRelationshipWithBank = rsmRelationshipWithBank;
     }
 
+	public Long getOrgId() {
+		return orgId;
+	}
+
+	public void setOrgId(Long orgId) {
+		this.orgId = orgId;
+	}
 }
