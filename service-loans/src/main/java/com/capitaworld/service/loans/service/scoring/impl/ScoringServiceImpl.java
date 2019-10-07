@@ -3432,7 +3432,7 @@ public class ScoringServiceImpl implements ScoringService {
                 		for(Data bankStatementData : coApplicantBankStatementDatas) {
                 			if(bankStatementData != null && bankStatementData.getSummaryInfo() != null && bankStatementData.getSummaryInfo().getSummaryInfoTotalDetails() != null && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCredit()) && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getCustomerInfo()) && bankEnum.getName().equalsIgnoreCase(bankStatementData.getEnumBank())) {
                 				depositeSBCATDRAmount = depositeSBCATDRAmount + Double.valueOf(bankStatementData.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCredit()); 
-                						logger.info("Total Deposite Amount here ====={}====={}==>",depositeSBCATDRAmount);
+                						logger.info("Total Deposite Amount here CoApp====={}====={}==>",depositeSBCATDRAmount,applicationId);
                 			 	}
                 		}                		
                 	}
@@ -8273,7 +8273,7 @@ public class ScoringServiceImpl implements ScoringService {
                 		for(Data bankStatementData : bankStatementDatas) {
                 			if(bankStatementData != null && bankStatementData.getSummaryInfo() != null && bankStatementData.getSummaryInfo().getSummaryInfoTotalDetails() != null && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCredit()) && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getCustomerInfo()) && bankEnum.getName().equalsIgnoreCase(bankStatementData.getEnumBank())) {
                 				depositeSBCATDRAmount = depositeSBCATDRAmount + Double.valueOf(bankStatementData.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCredit()); 
-                						logger.info("Total Deposite Amount here ====={}====={}==>",depositeSBCATDRAmount);
+                						logger.info("Total Deposite Amount here ====={}====={}==>",depositeSBCATDRAmount,applicationId);
                 			 	}
                 		}                		
                 	}
