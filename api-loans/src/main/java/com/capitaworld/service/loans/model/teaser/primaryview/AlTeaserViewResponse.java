@@ -206,9 +206,8 @@ public class AlTeaserViewResponse {
 	private Long vehicleOnRoadPrice; 
 	private Long vehicleAgreedPurchasePrice;
 	private Boolean isVehicleHypothecation;
-	
+	private String cibilScoreRange;
 	private String  campaignType; 
-	
 	private Map matchDisplayObjectMap;
 	
 	public AlTeaserViewResponse() {
@@ -1651,6 +1650,14 @@ public class AlTeaserViewResponse {
 
 	public void setMatchDisplayObjectMap(Map matchDisplayObjectMap) {
 		this.matchDisplayObjectMap = matchDisplayObjectMap;
+	}
+
+	public String getCibilScoreRange() {
+		return cibilScoreRange;
+	}
+
+	public void setCibilScoreRange(String cibilScoreRange) {
+		this.cibilScoreRange = cibilScoreRange;
 	}
 
 
