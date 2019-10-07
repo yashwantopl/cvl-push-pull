@@ -208,6 +208,7 @@ public class AlTeaserViewResponse {
 	private Boolean isVehicleHypothecation;
 	private String cibilScoreRange;
 	private String  campaignType; 
+	private Boolean  isUserHaveAadhar; 
 	private Map matchDisplayObjectMap;
 	
 	public AlTeaserViewResponse() {
@@ -1658,6 +1659,14 @@ public class AlTeaserViewResponse {
 
 	public void setCibilScoreRange(String cibilScoreRange) {
 		this.cibilScoreRange = cibilScoreRange;
+	}
+
+	public Boolean getIsUserHaveAadhar() {
+		return isUserHaveAadhar;
+	}
+
+	public void setIsUserHaveAadhar(Boolean isUserHaveAadhar) {
+		this.isUserHaveAadhar = isUserHaveAadhar;
 	}
 
 
