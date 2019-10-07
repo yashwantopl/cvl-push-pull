@@ -6,20 +6,31 @@ import com.capitaworld.api.workflow.model.WorkflowResponse;
 import com.capitaworld.api.workflow.utility.MultipleJSONObjectHelper;
 import com.capitaworld.api.workflow.utility.WorkflowUtils;
 import com.capitaworld.client.workflow.WorkflowClient;
+import com.capitaworld.connect.api.ConnectRequest;
+import com.capitaworld.connect.api.ConnectResponse;
+import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.service.loans.domain.fundprovider.CoLendingRatio;
 import com.capitaworld.service.loans.domain.fundprovider.FpCoLendingBanks;
+import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.NhbsApplicationRequest;
 import com.capitaworld.service.loans.model.WorkflowData;
+import com.capitaworld.service.loans.model.colending.CoLendingProposalResponse;
 import com.capitaworld.service.loans.model.corporate.CoLendingRequest;
 import com.capitaworld.service.loans.repository.colending.CoLendingFlowRepository;
 import com.capitaworld.service.loans.repository.fundprovider.CoLendingRatioRepository;
 import com.capitaworld.service.loans.repository.fundprovider.FpCoLendingBanksRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.service.fundprovider.CoLendingService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.matchengine.utils.MatchConstant;
+import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.BranchBasicDetailsRequest;
 import com.capitaworld.service.users.model.UserResponse;
@@ -34,6 +45,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.text.DecimalFormat;
 import java.util.*;
 
 @Service
@@ -61,6 +73,20 @@ public class CoLendingServiceImpl implements CoLendingService {
 
 	@Autowired
 	private ProposalDetailsRepository proposalDetailsRepository;
+
+	@Autowired
+	private ApplicationProposalMappingRepository applicationProposalMappingRepository;
+
+	@Autowired
+	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
+
+	@Autowired
+	private OneFormClient oneFormClient;
+
+	@Autowired
+	private ConnectClient connectClient;
+
+	DecimalFormat df = new DecimalFormat("#");
 
 	@Override
 	public List<FpCoLendingBanks> getBankList() {
@@ -488,4 +514,154 @@ public class CoLendingServiceImpl implements CoLendingService {
 		logger.info(countObj.toJSONString());
 		return countObj;
 	}
+
+	@Override
+	public List<CoLendingProposalResponse> getListOfCheckerProposalsFP(NhbsApplicationRequest request) {
+		logger.info("entry in getListOfCheckerProposalsFP()");
+		long branchId = 0;
+		UsersRequest usersRequest = new UsersRequest();
+		usersRequest.setId(request.getUserId());
+		usersRequest.setUserOrgId(request.getUserOrgId());
+		try {
+			UserResponse userResponseForName = usersClient.getBranchDetailsBYUserId(usersRequest);
+			BranchBasicDetailsRequest branchBasicDetailsRequest = com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
+					BranchBasicDetailsRequest.class);
+			branchId = branchBasicDetailsRequest.getId();
+		} catch (Exception e) {
+			logger.error(ERROR_WHILE_FP_BRANCH_DETAILS,e);
+		}
+
+		List<BigInteger> proposalIdList = new ArrayList<>();
+		List<Long> proposalStatusId = new ArrayList<>();
+		if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.NBFC_FP_MAKER == request.getUserRoleId().intValue() ||
+				com.capitaworld.service.users.utils.CommonUtils.UserRoles.NBFC_FP_CHECKER == request.getUserRoleId().intValue() ||
+				com.capitaworld.service.users.utils.CommonUtils.UserRoles.NBFC_ASSISTED_USER == request.getUserRoleId().intValue()) {
+
+			if (request.getDdrStatusId() == MatchConstant.ProposalStatus.ACCEPT) {
+				proposalStatusId.add(MatchConstant.ProposalStatus.ACCEPT);
+				proposalIdList = proposalDetailsRepository.getFPProposalCountByStatusIdAndUserOrgIdPageable(proposalStatusId, request.getUserOrgId(), 1, branchId,(request.getPageIndex()*10), request.getSize());
+			}else if(request.getDdrStatusId()== MatchConstant.ProposalStatus.APPROVED){
+				proposalStatusId.add(MatchConstant.ProposalStatus.APPROVED);
+				proposalIdList = proposalDetailsRepository.getFPProposalCountByStatusIdAndUserOrgIdPageable(proposalStatusId,request.getUserOrgId(),1, branchId,(request.getPageIndex()*10), request.getSize());
+			} else if(request.getDdrStatusId()== MatchConstant.ProposalStatus.APPROVED_BY_NBFC){
+				proposalStatusId.add(MatchConstant.ProposalStatus.APPROVED);
+				proposalIdList = proposalDetailsRepository.getFPProposalCountByStatusIdAndUserOrgIdPageable(proposalStatusId,request.getUserOrgId(),2, branchId,(request.getPageIndex()*10), request.getSize());
+			} else if(request.getDdrStatusId()== MatchConstant.ProposalStatus.DISBURSED){
+				proposalStatusId.add(MatchConstant.ProposalStatus.DISBURSED);
+				proposalIdList = proposalDetailsRepository.getFPProposalCountByStatusIdAndUserOrgIdPageable(proposalStatusId,request.getUserOrgId(),2, branchId,(request.getPageIndex()*10), request.getSize());
+			} else if(request.getDdrStatusId()== MatchConstant.ProposalStatus.DISBURSED_BY_NBFC){
+				proposalStatusId.add(MatchConstant.ProposalStatus.DISBURSED);
+				proposalIdList = proposalDetailsRepository.getFPProposalCountByStatusIdAndUserOrgIdPageable(proposalStatusId,request.getUserOrgId(),2, branchId,(request.getPageIndex()*10), request.getSize());
+
+			} else {
+				proposalIdList = null;
+			}
+
+		}
+		List<CoLendingProposalResponse> responseList = null;
+			if(!CommonUtils.isListNullOrEmpty(proposalIdList)) {
+				responseList = new ArrayList<CoLendingProposalResponse>();
+				for (BigInteger proposalId : proposalIdList) {
+					CoLendingProposalResponse response = new CoLendingProposalResponse();
+					ApplicationProposalMapping proposalMapping = applicationProposalMappingRepository.findOne(proposalId.longValue());
+					if (!CommonUtils.isObjectNullOrEmpty(proposalMapping)) {
+						CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.getByProposalId(proposalMapping.getProposalId());
+						ProposalDetails proposalDetail = proposalDetailsRepository.getBranchId(proposalMapping.getApplicationId(), proposalMapping.getProposalId());
+
+						if (!CommonUtils.isObjectNullOrEmpty(proposalMapping)) {
+							// set application code into response
+							response.setApplicationCode(proposalMapping.getApplicationCode());
+							// set application Id into response
+							response.setApplicationId(proposalMapping.getApplicationId());
+							// set proposal Id into response
+							response.setProposalId(proposalMapping.getProposalId());
+							// set organization name in response
+							if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
+								response.setOrganizationName(corporateApplicantDetail.getOrganisationName());
+							}
+							// set business type id in response
+							response.setBusinessTypeId(proposalMapping.getBusinessTypeId());
+							// set product id in response
+							response.setProductId(proposalMapping.getProductId());
+							// set product id in response
+							response.setProductId(proposalMapping.getProductId());
+						}
+						if (!CommonUtils.isObjectNullOrEmpty(proposalDetail)) {
+							// set product id in response
+							response.setFpProductId(proposalDetail.getFpProductId());
+						}
+
+						//set amount
+						String amount = "";
+						if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getLoanAmount())) {
+							amount += "NA";
+						} else {
+							amount += df.format(proposalMapping.getLoanAmount());
+						}
+						response.setAmount(amount);
+
+						//get branch details
+						if (!CommonUtils.isObjectNullOrEmpty(proposalDetail) && !CommonUtils.isObjectNullOrEmpty(proposalDetail.getBranchId())) {
+							UserResponse userResponse = usersClient.getBranchDetailById(proposalDetail.getBranchId());
+							BranchBasicDetailsRequest basicDetailsRequest = null;
+							try {
+								basicDetailsRequest = com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), BranchBasicDetailsRequest.class);
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+							if (basicDetailsRequest != null) {
+								// set branch name in response
+								response.setBranchName(basicDetailsRequest.getName());
+								// set branch code in response
+								response.setBranchCode(basicDetailsRequest.getCode());
+
+								// set city state in response
+								if (!CommonUtils.isObjectNullOrEmpty(basicDetailsRequest.getCityId())) {
+									try {
+										response.setBranchCity(CommonDocumentUtils.getCity(Long.valueOf(basicDetailsRequest.getCityId()), oneFormClient));
+									} catch (LoansException e) {
+										response.setBranchCity("NA");
+									}
+								} else {
+									response.setBranchCity("NA");
+								}
+								if (!CommonUtils.isObjectNullOrEmpty(basicDetailsRequest.getStateId())) {
+									try {
+										response.setBranchState(CommonDocumentUtils.getState(Long.valueOf(basicDetailsRequest.getStateId()), oneFormClient));
+									} catch (LoansException e) {
+										response.setBranchState("NA");
+									}
+								} else {
+									response.setBranchState("NA");
+								}
+							}
+						}
+						// set in principle date in response
+						try {
+							ConnectRequest connectRequest = null;
+							ConnectResponse connectResponse = connectClient.getApplicationList(proposalMapping.getApplicationId());
+							if (!CommonUtils.isObjectNullOrEmpty(connectResponse) && !CommonUtils.isListNullOrEmpty(connectResponse.getDataList())) {
+								List<LinkedHashMap<String, Object>> list = (List<LinkedHashMap<String, Object>>) connectResponse.getDataList();
+								for (LinkedHashMap<String, Object> mp : list) {
+									connectRequest = com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap(mp, ConnectRequest.class);
+									if (response.getProposalId().equals(proposalId)) {
+										Date inPrincipleDate = connectRequest.getModifiedDate();
+										response.setInPrincipleDate(!CommonUtils.isObjectNullOrEmpty(inPrincipleDate) ? CommonUtils.DATE_FORMAT.format(inPrincipleDate) : "-");
+									}
+								}
+							}
+						} catch (Exception e2) {
+							logger.error(CommonUtils.EXCEPTION, e2);
+						}
+
+						//add response to list
+						responseList.add(response);
+					}
+				}
+			}
+
+		logger.info("exit from getListOfCheckerProposalsFP()");
+		return responseList;
+	}
+
 }
