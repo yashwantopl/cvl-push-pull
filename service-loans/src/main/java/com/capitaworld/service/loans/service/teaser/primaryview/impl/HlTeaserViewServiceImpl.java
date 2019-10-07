@@ -1242,7 +1242,18 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				} catch (Exception e) {
 					logger.error(":::::::::::---------Error while fetching name as per itr----------:::::::::::",e);
 				}*/
-				
+				try {
+					CibilRequest cibilReq=new CibilRequest();
+					cibilReq.setPan(coApplicantDetail.getPan());
+					cibilReq.setApplicationId(applicationId);
+					CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
+					if(cibilScoreByPanCard != null) {
+						plRetailApplicantResponse.setCibilScoreRange(CommonUtils.getCibilV2ScoreRange(Integer.parseInt(cibilScoreByPanCard.getActualScore())));
+					}
+					plRetailApplicantResponse.setCibilScore(cibilScoreByPanCard);
+				} catch (Exception e) {
+					logger.error("Error While calling Cibil Score By PanCard : ",e);
+				}
 				/* FOR COAPP */
 				ITRBasicDetailsResponse itrReq = new ITRBasicDetailsResponse();
 				itrReq.setApplicationId(applicationId);
