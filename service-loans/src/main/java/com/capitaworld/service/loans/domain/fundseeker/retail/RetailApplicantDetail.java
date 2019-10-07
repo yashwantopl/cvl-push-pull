@@ -619,8 +619,11 @@ public class RetailApplicantDetail implements Serializable {
 	private Boolean isCheckOffNotChangeSalAcc;
 	@Column(name="is_cibil_terms_agree")
 	private Boolean isCibilTermsAgree;
-
-
+	
+	@Column(name="is_user_have_aadhar")
+	private Boolean isUserHaveAadhar;
+	
+	
 	public RetailApplicantDetail() {
 		// Do nothing because of X and Y.
 	}
@@ -2194,4 +2197,13 @@ public class RetailApplicantDetail implements Serializable {
 	public void setIsCibilTermsAgree(Boolean isCibilTermsAgree) {
 		this.isCibilTermsAgree = isCibilTermsAgree;
 	}
+
+	public Boolean getIsUserHaveAadhar() {
+		return isUserHaveAadhar;
+	}
+
+	public void setIsUserHaveAadhar(Boolean isUserHaveAadhar) {
+		this.isUserHaveAadhar = isUserHaveAadhar;
+	}
+	
 }
