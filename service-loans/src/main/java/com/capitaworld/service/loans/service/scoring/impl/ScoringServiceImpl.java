@@ -114,6 +114,7 @@ import com.capitaworld.service.oneform.enums.OccupationHL;
 import com.capitaworld.service.oneform.enums.OccupationNatureNTB;
 import com.capitaworld.service.oneform.enums.ResidenceStatusRetailMst;
 import com.capitaworld.service.oneform.enums.VehicleType;
+import com.capitaworld.service.oneform.enums.YesNo;
 import com.capitaworld.service.oneform.enums.scoring.EnvironmentCategory;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.rating.RatingClient;
@@ -3869,6 +3870,15 @@ public class ScoringServiceImpl implements ScoringService {
         			case ScoreParameter.Retail.AutoLoan.PERSONAL_RELATIONSHIP_WITH_BANK: //
         				scoreParameterRetailRequest.setIsPersonalRelationShipWithBank_p(true);
         				 break;
+//        			case ScoreParameter.Retail.AutoLoan.IS_ADHAAR_CARD:
+//        				scoreParameterRetailRequest.setIsAdhaarCard_p(true);
+//        				scoreParameterRetailRequest.setAdhaarCardValue(YesNo.NO.getId()); // Default No
+//        				if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getIsUserHaveAadhar())) {
+//        					if(coApplicantDetail.getIsUserHaveAadhar()) {
+//        						scoreParameterRetailRequest.setAdhaarCardValue(YesNo.YES.getId()); // Default Yes	
+//        					}
+//        				}
+//        				break;
                         default:
                          break;
 
@@ -8923,6 +8933,15 @@ public class ScoringServiceImpl implements ScoringService {
             				break;
             			case ScoreParameter.Retail.AutoLoan.PERSONAL_RELATIONSHIP_WITH_BANK: //
             				scoreParameterRetailRequest.setIsPersonalRelationShipWithBank_p(true);
+            				break;	
+            			case ScoreParameter.Retail.AutoLoan.IS_ADHAAR_CARD:
+            				scoreParameterRetailRequest.setIsAdhaarCard_p(true);
+            				scoreParameterRetailRequest.setAdhaarCardValue(YesNo.NO.getId()); // Default No
+            				if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getIsUserHaveAadhar())) {
+            					if(retailApplicantDetail.getIsUserHaveAadhar()) {
+            						scoreParameterRetailRequest.setAdhaarCardValue(YesNo.YES.getId()); // Default Yes	
+            					}
+            				}
             				break;	
                             default:
                                 break;
