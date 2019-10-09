@@ -8937,10 +8937,8 @@ public class ScoringServiceImpl implements ScoringService {
             			case ScoreParameter.Retail.AutoLoan.IS_ADHAAR_CARD:
             				scoreParameterRetailRequest.setIsAdhaarCard_p(true);
             				scoreParameterRetailRequest.setAdhaarCardValue(YesNo.NO.getId()); // Default No
-            				if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getIsUserHaveAadhar())) {
-            					if(retailApplicantDetail.getIsUserHaveAadhar()) {
-            						scoreParameterRetailRequest.setAdhaarCardValue(YesNo.YES.getId()); // Default Yes	
-            					}
+            				if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getIsUserHaveAadhar()) && retailApplicantDetail.getIsUserHaveAadhar()) {
+            					scoreParameterRetailRequest.setAdhaarCardValue(YesNo.YES.getId()); // Default Yes	
             				}
             				break;	
                             default:
