@@ -58,6 +58,7 @@ import com.capitaworld.service.loans.model.retail.PrimaryAutoLoanDetailRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
 import com.capitaworld.service.loans.repository.common.CommonRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.BankingRelationlRepository;
@@ -124,6 +125,8 @@ import com.capitaworld.service.scoring.model.ProposalScoreResponse;
 import com.capitaworld.service.scoring.model.ScoringRequest;
 import com.capitaworld.service.scoring.model.ScoringResponse;
 import com.capitaworld.service.scoring.utils.ScoreParameter.Retail;
+import com.capitaworld.service.users.client.UsersClient;
+import com.capitaworld.service.users.model.UserResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
@@ -216,7 +219,13 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 	private PrimaryAutoLoanDetailRepository primaryAutoLoanDetailRepository;
 	
 	@Autowired
+	private ProposalDetailsRepository proposalDetailsRepository;
+	
+	@Autowired
 	private EPFClient epfClient;
+	
+	@Autowired
+	private UsersClient usersClient;
 	
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -894,6 +903,43 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 		} catch (Exception e2) {
 			logger.info("Error while getting date of in-principal approval from connect client : ",e2);
 		}*/
+		
+		//Fetch Bank Details
+				try {
+					Map<String, Object> bankData = new HashMap<String, Object>();
+					Long orgId = proposalDetailsRepository.getOrgIdByProposalId(proposalId);
+					List<Object[]> listBankData = commonRepository.getBankDetails(applicationId, orgId);
+					if(!CommonUtils.isListNullOrEmpty(listBankData) && !CommonUtils.isObjectNullOrEmpty(listBankData.get(0))) {
+						
+						String bankAddress = (listBankData.get(0)[5] != null ? listBankData.get(0)[5] : "") + (listBankData.get(0)[6] != null ? ", " + listBankData.get(0)[6] : "") 
+								+ (listBankData.get(0)[7] != null ? ", " +listBankData.get(0)[7] : "") + (listBankData.get(0)[8] != null ? " - " + listBankData.get(0)[8] : "");
+						bankData.put("currentBankAddress", !CommonUtils.isObjectNullOrEmpty(bankAddress) ? StringEscapeUtils.escapeXml(bankAddress) : "-");
+						bankData.put("bankName", listBankData.get(0)[9] != null ? listBankData.get(0)[9] : "-");
+						if(listBankData.size() > 1 && !CommonUtils.isObjectNullOrEmpty(listBankData.get(1))) {
+							String prevBankAddress = (listBankData.get(1)[5] != null ? listBankData.get(1)[5] : "") + (listBankData.get(1)[6] != null ? ", " + listBankData.get(1)[6] : "") 
+									+ (listBankData.get(1)[7] != null ? ", " +listBankData.get(1)[7] : "") + (listBankData.get(1)[8] != null ? " - " + listBankData.get(1)[8] : "");
+							bankData.put("previousBankAddress", !CommonUtils.isObjectNullOrEmpty(bankAddress) ? StringEscapeUtils.escapeXml(prevBankAddress) : "-");
+						}
+					}
+					
+					try {
+			            UserResponse campaignUser=usersClient.isExists(loanApplicationMaster.getUserId(),null);
+			            if(campaignUser != null && campaignUser.getData() != null && campaignUser.getData().equals(true)) {
+			                bankData.put("typeOfUser", "Bank Specific");
+			            }else {
+			            	bankData.put("typeOfUser", "Market Place");
+			            }
+			        } catch (Exception e2) {
+			            logger.info("error while campaign user check ==>" , e2);
+			        }
+					map.put("bankDetails", bankData);
+					
+				}catch (Exception e) {
+					logger.error("Error/Exception while getting Bank Details Of ApplicationId==>{}  ..Error==>{}",applicationId ,e);
+				}
+				
+		
+		
 		
 		//MATCHES RESPONSE
 		try {
