@@ -903,7 +903,7 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 			matchRequest.setBusinessTypeId(applicationProposalMapping.getBusinessTypeId());
 			MatchDisplayResponse matchResponse= matchEngineClient.displayMatchesOfRetail(matchRequest);
 			logger.info("matchesResponse ==>{}", matchResponse);
-			map.put("matchesResponse", !CommonUtils.isListNullOrEmpty(matchResponse.getMatchDisplayObjectList()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectList(),null) : null);
+			map.put("matchesResponse", !CommonUtils.isObjectNullOrEmpty(matchResponse.getMatchDisplayObjectMap()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectMap(),null) : null);
 		}
 		catch (Exception e) {
 			logger.error("Error while getting matches data : ",e);
