@@ -496,15 +496,11 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 					logger.info("error while fetching address");
 				}
 				
-				try {
-					
+				
 				//citetailApplicantResponse.setry,State,country
 				alTeaserViewResponse.setCity(CommonDocumentUtils.getCity(plRetailApplicantRequest.getAddressCity(), oneFormClient));
 				alTeaserViewResponse.setState(CommonDocumentUtils.getState(plRetailApplicantRequest.getAddressState(), oneFormClient));
 				alTeaserViewResponse.setCountry(CommonDocumentUtils.getCountry(plRetailApplicantRequest.getAddressCountry().longValue(), oneFormClient));
-				} catch (Exception e) {
-					// TODO: handle exception
-				}
 				
 				// address
 				try {
