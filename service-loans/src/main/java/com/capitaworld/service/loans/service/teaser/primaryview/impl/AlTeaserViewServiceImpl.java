@@ -345,7 +345,7 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 				plRetailApplicantResponse.setPan(plRetailApplicantRequest.getPan());
 				plRetailApplicantResponse.setAadharNumber(plRetailApplicantRequest.getAadharNumber());
 				plRetailApplicantResponse.setMobile(plRetailApplicantRequest.getMobile());
-				alTeaserViewResponse.setIsUserHaveAadhar(CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getIsUserHaveAadhar()) ?  false : plRetailApplicantRequest.getIsUserHaveAadhar());
+				alTeaserViewResponse.setIsUserHaveAadhar(plRetailApplicantRequest.getIsUserHaveAadhar());
 				
 				//Emp Salaried Type of Applicant
 				if(plRetailApplicantRequest.getEmploymentType() != null && plRetailApplicantRequest.getEmploymentType() == OccupationNature.SALARIED.getId()) {
@@ -496,11 +496,15 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 					logger.info("error while fetching address");
 				}
 				
-				
+				try {
+					
 				//citetailApplicantResponse.setry,State,country
 				alTeaserViewResponse.setCity(CommonDocumentUtils.getCity(plRetailApplicantRequest.getAddressCity(), oneFormClient));
 				alTeaserViewResponse.setState(CommonDocumentUtils.getState(plRetailApplicantRequest.getAddressState(), oneFormClient));
 				alTeaserViewResponse.setCountry(CommonDocumentUtils.getCountry(plRetailApplicantRequest.getAddressCountry().longValue(), oneFormClient));
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
 				
 				// address
 				try {
