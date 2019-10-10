@@ -27,6 +27,7 @@ public class ALOneformPrimaryRes implements Serializable {
 	private Double monthlyIncome;
 	private Double grossMonthlyIncome;
 	private Long clientId;  
+	private Boolean isUserHaveAadhar;
 	
 	// Vehicle details
 	private Integer vehicleType; 
@@ -293,5 +294,14 @@ public class ALOneformPrimaryRes implements Serializable {
 	public void setClientId(Long clientId) {
 		this.clientId = clientId;
 	}
+
+	public Boolean getIsUserHaveAadhar() {
+		return isUserHaveAadhar;
+	}
+
+	public void setIsUserHaveAadhar(Boolean isUserHaveAadhar) {
+		this.isUserHaveAadhar = isUserHaveAadhar;
+	}
+
 	
 }

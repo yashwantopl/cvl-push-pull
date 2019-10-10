@@ -345,7 +345,7 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 				plRetailApplicantResponse.setPan(plRetailApplicantRequest.getPan());
 				plRetailApplicantResponse.setAadharNumber(plRetailApplicantRequest.getAadharNumber());
 				plRetailApplicantResponse.setMobile(plRetailApplicantRequest.getMobile());
-				alTeaserViewResponse.setIsUserHaveAadhar(CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getIsUserHaveAadhar()) ?  false : plRetailApplicantRequest.getIsUserHaveAadhar());
+				alTeaserViewResponse.setIsUserHaveAadhar(plRetailApplicantRequest.getIsUserHaveAadhar());
 				
 				//Emp Salaried Type of Applicant
 				if(plRetailApplicantRequest.getEmploymentType() != null && plRetailApplicantRequest.getEmploymentType() == OccupationNature.SALARIED.getId()) {
