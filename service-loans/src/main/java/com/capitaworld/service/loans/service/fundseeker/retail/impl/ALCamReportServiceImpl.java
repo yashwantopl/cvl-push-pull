@@ -1372,6 +1372,7 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 						collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.BUREAU_SCORE)).collect(Collectors.toList());
 						if(!CommonUtils.isListNullOrEmpty(collect)) {
 							companyMap.put(Retail.AutoLoan.BUREAU_SCORE, CommonUtils.printFields(collect.get(0),null));
+                                                        companyMap.put("versionScoreOfCoApp", !collect.isEmpty() && collect.get(0) != null && collect.get(0).getAnswer() != null ? CommonUtils.getCibilV2ScoreRange(collect.get(0).getAnswer().intValue()) : "-");
 						}
 						collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.MARITAL_STATUS)).collect(Collectors.toList());
 						if(!CommonUtils.isListNullOrEmpty(collect)) {
