@@ -157,20 +157,87 @@ public interface ProposalDetailsRepository extends JpaRepository<ProposalDetails
     @Query(value = "SELECT p.id FROM proposal_details p where p.proposal_status_id IN (:proposalStatus) and p.user_org_id=:userOrgId and p.nbfc_flow=:nbfcFlow and p.is_active=true and p.branch_id=:branchId",nativeQuery = true)
     public List<BigInteger> getFPProposalCountByStatusIdAndUserOrgId(@Param("proposalStatus") List<Long> proposalStatus, @Param("userOrgId") Long userOrgId, @Param("nbfcFlow") Integer nbfcFlow, @Param("branchId") Long branchId);
 
-    @Query(value = "SELECT p.id FROM proposal_details p where p.proposal_status_id IN(:proposalStatus) and p.user_org_id=:userOrgId and p.nbfc_flow=:nbfcFlow and p.is_active=true",nativeQuery = true)
-    public List<BigInteger> getFPProposalCountByStatusIdAndUserOrgIdForHO(@Param("proposalStatus") List<Long> proposalStatus, @Param("userOrgId") Long userOrgId, @Param("nbfcFlow") Integer nbfcFlow);
+    // Count for NBFC (sanction, disbursed by both)
+    @Query(value = "SELECT p.id FROM proposal_details p WHERE p.proposal_status_id IN (:proposalStatus) AND p.user_org_id=:userOrgId AND p.nbfc_flow=:nbfcFlow_1 AND p.is_active=TRUE AND p.branch_id=:branchId AND p.application_id IN (SELECT pd.application_id FROM proposal_details pd WHERE pd.proposal_status_id IN (:proposalStatus) AND pd.is_active=TRUE AND pd.nbfc_flow=:nbfcFlow_2)",nativeQuery = true)
+    public List<BigInteger> getFPProposalCountByStatusIdAndUserOrgId(@Param("proposalStatus") List<Long> proposalStatus, @Param("userOrgId") Long userOrgId, @Param("nbfcFlow_1") Integer nbfcFlow_1,@Param("nbfcFlow_2") Integer nbfcFlow_2, @Param("branchId") Long branchId);
 
-    @Query(value = "SELECT p.id FROM loan_application.proposal_details p WHERE p.proposal_status_id IN(:proposalStatus) AND nbfc_flow=:nbfcFlow AND p.application_id IN (SELECT p.application_id FROM loan_application.proposal_details p WHERE p.proposal_status_id IN (:proposalStatus) AND user_org_id=:userOrgId AND nbfc_flow=:nbfcFlow AND is_active=TRUE AND p.branch_id =:branchId)",nativeQuery = true)
-    public List<BigInteger> getFPProposalCountOfSanctionedNBFC(@Param("proposalStatus") List<Long> proposalStatus,@Param("userOrgId") Long userOrgId,@Param("nbfcFlow") Integer nbfcFlow,@Param("branchId") Long branchId);
-
-    @Query(value = "select lm.proposal_id from proposal_details lm inner join proposal_details pd on pd.id=lm.proposal_id where pd.branch_id=:branchId and pd.fp_product_id=:fpProductId and (lm.ddr_status_id =:id OR (lm.ddr_status_id IS NULL AND lm.status =:statusId)) and lm.np_user_id=:npUserId and pd.is_active=true and lm.is_active = true and lm.business_type_id=:businessTypeId order by lm.modified_date desc \n#pageable\n",nativeQuery = true)
-    public List<BigInteger> getFPAssignedToCheckerProposalsByNPUserIdPagination(Pageable pageable, @Param("id") Long ddrStatusId, @Param("npUserId") Long npUserId, @Param("branchId") Long branchId, @Param("fpProductId") Long fpProductId, @Param("statusId") Long applicationStatusId, @Param("businessTypeId")Long businessTypeId);
+    // Count for NBFC (sanction, disbursed by NBFC)
+    @Query(value = "SELECT p.id FROM proposal_details p where p.proposal_status_id IN (:proposalStatus) and p.user_org_id=:userOrgId and p.nbfc_flow=:nbfcFlow_1 and p.is_active=true and p.branch_id=:branchId AND p.application_id NOT IN (SELECT pd.application_id FROM proposal_details pd WHERE pd.proposal_status_id IN (:proposalStatus) AND pd.is_active=TRUE AND pd.nbfc_flow=:nbfcFlow_2)",nativeQuery = true)
+    public List<BigInteger> getFPProposalCountByStatusIdAndUserOrgIdNBFC(@Param("proposalStatus") List<Long> proposalStatus, @Param("userOrgId") Long userOrgId, @Param("nbfcFlow_1") Integer nbfcFlow_1, @Param("nbfcFlow_2") Integer nbfcFlow_2, @Param("branchId") Long branchId);
 
     @Query(value="SELECT * FROM proposal_details WHERE application_id =:applicationId AND id =:proposalId AND is_active = TRUE LIMIT 1",nativeQuery= true)
     public ProposalDetails getBranchId(@Param("applicationId") Long applicationId, @Param("proposalId") Long proposalId);
 
     @Query(value = "SELECT p.id FROM proposal_details p where p.proposal_status_id IN (:proposalStatus) and p.user_org_id=:userOrgId and p.nbfc_flow=:nbfcFlow and p.is_active=true and p.branch_id=:branchId limit :pageIndex,:pageSize",nativeQuery = true)
     public List<BigInteger> getFPProposalCountByStatusIdAndUserOrgIdPageable(@Param("proposalStatus") List<Long> proposalStatus, @Param("userOrgId") Long userOrgId, @Param("nbfcFlow") Integer nbfcFlow, @Param("branchId") Long branchId, @Param("pageIndex") int pageIndex, @Param("pageSize") int pageSize);
+
+    // In-principle bank
+    @Query(value = "SELECT p.id FROM proposal_details p WHERE p.proposal_status_id IN (:proposalStatus) AND p.user_org_id=:userOrgId AND p.nbfc_flow=:nbfcFlow_1 AND p.is_active=TRUE AND p.branch_id=:branchId AND p.application_id IN (SELECT pd.application_id FROM proposal_details pd WHERE pd.proposal_status_id IN (:proposalStatus) AND pd.is_active=TRUE AND pd.nbfc_flow=:nbfcFlow_2) limit :pageIndex,:pageSize",nativeQuery = true)
+    public List<BigInteger> getFPProposalCountByStatusIdAndUserOrgIdPageable(@Param("proposalStatus") List<Long> proposalStatus, @Param("userOrgId") Long userOrgId, @Param("nbfcFlow_1") Integer nbfcFlow_1,@Param("nbfcFlow_2") Integer nbfcFlow_2, @Param("branchId") Long branchId, @Param("pageIndex") int pageIndex, @Param("pageSize") int pageSize);
+
+    // Proposal List for NBFC (sanction, disbursed by NBFC)
+    @Query(value = "SELECT p.id FROM proposal_details p where p.proposal_status_id IN (:proposalStatus) and p.user_org_id=:userOrgId and p.nbfc_flow=:nbfcFlow_1 and p.is_active=true and p.branch_id=:branchId AND p.application_id NOT IN (SELECT pd.application_id FROM proposal_details pd WHERE pd.proposal_status_id IN (:proposalStatus) AND pd.is_active=TRUE AND pd.nbfc_flow=:nbfcFlow_2) limit :pageIndex,:pageSize",nativeQuery = true)
+    public List<BigInteger> getFPProposalListByStatusIdAndUserOrgIdPageable(@Param("proposalStatus") List<Long> proposalStatus, @Param("userOrgId") Long userOrgId, @Param("nbfcFlow_1") Integer nbfcFlow_1, @Param("branchId") Long branchId, @Param("nbfcFlow_2") Integer nbfcFlow_2,@Param("pageIndex") int pageIndex, @Param("pageSize") int pageSize);
+
+    // Proposal List for NBFC (sanction, disbursed by Both)
+    @Query(value = "SELECT p.id FROM proposal_details p WHERE p.proposal_status_id IN (:proposalStatus) AND p.user_org_id=:userOrgId AND p.nbfc_flow=:nbfcFlow_1 AND p.is_active=TRUE AND p.branch_id=:branchId AND p.application_id IN (SELECT pd.application_id FROM proposal_details pd WHERE pd.proposal_status_id IN (:proposalStatus) AND pd.is_active=TRUE AND pd.nbfc_flow=:nbfcFlow_2) LIMIT :pageIndex,:pageSize",nativeQuery = true)
+    public List<BigInteger> getFPProposalsByStatusIdAndUserOrgIdPageable(@Param("proposalStatus") List<Long> proposalStatus, @Param("userOrgId") Long userOrgId, @Param("nbfcFlow_1") Integer nbfcFlow_1, @Param("branchId") Long branchId, @Param("nbfcFlow_2") Integer nbfcFlow_2,@Param("pageIndex") int pageIndex, @Param("pageSize") int pageSize);
+
+    // Count for Bank (In principle,sanction, disbursed by both)
+    @Query(value = "SELECT p.id FROM proposal_details p WHERE p.proposal_status_id IN (:proposalStatus) AND p.user_org_id=:userOrgId AND p.nbfc_flow=:nbfcFlow_1 AND p.is_active=TRUE AND p.branch_id=:branchId AND p.application_id IN (SELECT pd.application_id FROM proposal_details pd WHERE pd.proposal_status_id IN (:proposalStatus) AND pd.is_active=TRUE AND pd.nbfc_flow=:nbfcFlow_2)",nativeQuery = true)
+    public List<BigInteger> getFPProposalCountByStatusIdAndUserOrgIdForBank(@Param("proposalStatus") List<Long> proposalStatus, @Param("userOrgId") Long userOrgId, @Param("nbfcFlow_1") Integer nbfcFlow_1,@Param("nbfcFlow_2") Integer nbfcFlow_2, @Param("branchId") Long branchId);
+
+    // Count for Bank (sanction, disbursed by NBFC)
+    @Query(value = "SELECT p.id FROM proposal_details p WHERE p.proposal_status_id <:proposalStatus AND p.user_org_id=:userOrgId AND p.nbfc_flow=:nbfcFlow_1 AND p.is_active=TRUE AND p.branch_id=:branchId AND p.application_id IN (SELECT pd.application_id FROM proposal_details pd WHERE pd.proposal_status_id IN (:proposalStatus) AND pd.is_active=TRUE AND pd.nbfc_flow=:nbfcFlow_2)",nativeQuery = true)
+    public List<BigInteger> getFPProposalCountByStatusIdAndUserOrgIdFNBFCorBank(@Param("proposalStatus") Long proposalStatus, @Param("userOrgId") Long userOrgId, @Param("nbfcFlow_1") Integer nbfcFlow_1,@Param("nbfcFlow_2") Integer nbfcFlow_2, @Param("branchId") Long branchId);
+
+    // Proposal List for BANK (sanction, disbursed by NBFC)
+    @Query(value = "SELECT p.id FROM proposal_details p WHERE p.proposal_status_id <:proposalStatus AND p.user_org_id=:userOrgId AND p.nbfc_flow=:nbfcFlow_1 AND p.is_active=TRUE AND p.branch_id=:branchId AND p.application_id IN (SELECT pd.application_id FROM proposal_details pd WHERE pd.proposal_status_id IN (:proposalStatus) AND pd.is_active=TRUE AND pd.nbfc_flow=:nbfcFlow_2) limit :pageIndex,:pageSize",nativeQuery = true)
+    public List<BigInteger> getFPProposalListByStatusIdAndUserOrgIdNBFCForBankPageable(@Param("proposalStatus") List<Long> proposalStatus, @Param("userOrgId") Long userOrgId, @Param("nbfcFlow_1") Integer nbfcFlow_1, @Param("branchId") Long branchId, @Param("nbfcFlow_2") Integer nbfcFlow_2,@Param("pageIndex") int pageIndex, @Param("pageSize") int pageSize);
+
+    // Proposal List for BANK (sanction, disbursed by Both)
+    @Query(value = "SELECT p.id FROM proposal_details p WHERE p.proposal_status_id IN (:proposalStatus) AND p.user_org_id=:userOrgId AND p.nbfc_flow=:nbfcFlow_1 AND p.is_active=TRUE AND p.branch_id=:branchId AND p.application_id IN (SELECT pd.application_id FROM proposal_details pd WHERE pd.proposal_status_id IN (:proposalStatus) AND pd.is_active=TRUE AND pd.nbfc_flow=:nbfcFlow_2) LIMIT :pageIndex,:pageSize",nativeQuery = true)
+    public List<BigInteger> getFPProposalsByStatusIdAndUserOrgIdForBankPageable(@Param("proposalStatus") List<Long> proposalStatus, @Param("userOrgId") Long userOrgId, @Param("nbfcFlow_1") Integer nbfcFlow_1, @Param("branchId") Long branchId, @Param("nbfcFlow_2") Integer nbfcFlow_2,@Param("pageIndex") int pageIndex, @Param("pageSize") int pageSize);
+
+    // Count for HO
+    @Query(value = "SELECT p.id FROM proposal_details p where p.proposal_status_id IN (:proposalStatus) and p.user_org_id=:userOrgId and p.nbfc_flow=:nbfcFlow and p.is_active=true",nativeQuery = true)
+    public List<BigInteger> getFPProposalCountByStatusIdAndUserOrgIdForHO(@Param("proposalStatus") List<Long> proposalStatus, @Param("userOrgId") Long userOrgId, @Param("nbfcFlow") Integer nbfcFlow);
+
+    // Count for NBFC (sanction, disbursed by both)
+    @Query(value = "SELECT p.id FROM proposal_details p WHERE p.proposal_status_id IN (:proposalStatus) AND p.user_org_id=:userOrgId AND p.nbfc_flow=:nbfcFlow_1 AND p.is_active=TRUE AND p.application_id IN (SELECT pd.application_id FROM proposal_details pd WHERE pd.proposal_status_id IN (:proposalStatus) AND pd.is_active=TRUE AND pd.nbfc_flow=:nbfcFlow_2)",nativeQuery = true)
+    public List<BigInteger> getFPProposalCountByStatusIdAndUserOrgIdFoHO(@Param("proposalStatus") List<Long> proposalStatus, @Param("userOrgId") Long userOrgId, @Param("nbfcFlow_1") Integer nbfcFlow_1,@Param("nbfcFlow_2") Integer nbfcFlow_2);
+
+    // Count for NBFC (sanction, disbursed by NBFC)
+    @Query(value = "SELECT p.id FROM proposal_details p where p.proposal_status_id IN (:proposalStatus) and p.user_org_id=:userOrgId and p.nbfc_flow=:nbfcFlow_1 and p.is_active=true AND p.application_id NOT IN (SELECT pd.application_id FROM proposal_details pd WHERE pd.proposal_status_id IN (:proposalStatus) AND pd.is_active=TRUE AND pd.nbfc_flow=:nbfcFlow_2)",nativeQuery = true)
+    public List<BigInteger> getFPProposalCountByStatusIdAndUserOrgIdForHONBFC(@Param("proposalStatus") List<Long> proposalStatus, @Param("userOrgId") Long userOrgId, @Param("nbfcFlow_1") Integer nbfcFlow_1, @Param("nbfcFlow_2") Integer nbfcFlow_2);
+
+    // Proposal List for NBFC HO(In principle)
+    @Query(value = "SELECT p.id FROM proposal_details p where p.proposal_status_id IN (:proposalStatus) and p.user_org_id=:userOrgId and p.nbfc_flow=:nbfcFlow and p.is_active=true and p.branch_id=:branchId limit :pageIndex,:pageSize",nativeQuery = true)
+    public List<BigInteger> getFPProposalCountByStatusIdAndUserOrgIdForHOPageable(@Param("proposalStatus") List<Long> proposalStatus, @Param("userOrgId") Long userOrgId, @Param("nbfcFlow") Integer nbfcFlow, @Param("pageIndex") int pageIndex, @Param("pageSize") int pageSize);
+
+    // Proposal List for NBFC HO (sanction, disbursed by NBFC)
+    @Query(value = "SELECT p.id FROM proposal_details p where p.proposal_status_id IN (:proposalStatus) and p.user_org_id=:userOrgId and p.nbfc_flow=:nbfcFlow_1 and p.is_active=true and p.branch_id=:branchId AND p.application_id NOT IN (SELECT pd.application_id FROM proposal_details pd WHERE pd.proposal_status_id IN (:proposalStatus) AND pd.is_active=TRUE AND pd.nbfc_flow=:nbfcFlow_2) limit :pageIndex,:pageSize",nativeQuery = true)
+    public List<BigInteger> getFPProposalListByStatusIdAndUserOrgIdForHOPageable(@Param("proposalStatus") List<Long> proposalStatus, @Param("userOrgId") Long userOrgId, @Param("nbfcFlow_1") Integer nbfcFlow_1, @Param("nbfcFlow_2") Integer nbfcFlow_2,@Param("pageIndex") int pageIndex, @Param("pageSize") int pageSize);
+
+    // Proposal List for NBFC HO (sanction, disbursed by Both)
+    @Query(value = "SELECT p.id FROM proposal_details p WHERE p.proposal_status_id IN (:proposalStatus) AND p.user_org_id=:userOrgId AND p.nbfc_flow=:nbfcFlow_1 AND p.is_active=TRUE AND p.branch_id=:branchId AND p.application_id IN (SELECT pd.application_id FROM proposal_details pd WHERE pd.proposal_status_id IN (:proposalStatus) AND pd.is_active=TRUE AND pd.nbfc_flow=:nbfcFlow_2) LIMIT :pageIndex,:pageSize",nativeQuery = true)
+    public List<BigInteger> getFPProposalsByStatusIdAndUserOrgIdForHOPageable(@Param("proposalStatus") List<Long> proposalStatus, @Param("userOrgId") Long userOrgId, @Param("nbfcFlow_1") Integer nbfcFlow_1, @Param("nbfcFlow_2") Integer nbfcFlow_2,@Param("pageIndex") int pageIndex, @Param("pageSize") int pageSize);
+
+    // Count for Bank HO (In principle,sanction, disbursed by both)
+    @Query(value = "SELECT p.id FROM proposal_details p WHERE p.proposal_status_id IN (:proposalStatus) AND p.user_org_id=:userOrgId AND p.nbfc_flow=:nbfcFlow_1 AND p.is_active=TRUE AND p.application_id IN (SELECT pd.application_id FROM proposal_details pd WHERE pd.proposal_status_id IN (:proposalStatus) AND pd.is_active=TRUE AND pd.nbfc_flow=:nbfcFlow_2)",nativeQuery = true)
+    public List<BigInteger> getFPProposalCountByStatusIdAndUserOrgIdForBankHO(@Param("proposalStatus") List<Long> proposalStatus, @Param("userOrgId") Long userOrgId, @Param("nbfcFlow_1") Integer nbfcFlow_1,@Param("nbfcFlow_2") Integer nbfcFlow_2);
+
+    // Count for Bank HO (sanction, disbursed by NBFC)
+    @Query(value = "SELECT p.id FROM proposal_details p WHERE p.proposal_status_id <:proposalStatus AND p.user_org_id=:userOrgId AND p.nbfc_flow=:nbfcFlow_1 AND p.is_active=TRUE AND p.application_id IN (SELECT pd.application_id FROM proposal_details pd WHERE pd.proposal_status_id IN (:proposalStatus) AND pd.is_active=TRUE AND pd.nbfc_flow=:nbfcFlow_2)",nativeQuery = true)
+    public List<BigInteger> getFPProposalCountByStatusIdAndUserOrgIdFNBFCorBankHO(@Param("proposalStatus") Long proposalStatus, @Param("userOrgId") Long userOrgId, @Param("nbfcFlow_1") Integer nbfcFlow_1,@Param("nbfcFlow_2") Integer nbfcFlow_2);
+
+    // Proposal List for BANK HO (sanction, disbursed by NBFC)
+    @Query(value = "SELECT p.id FROM proposal_details p WHERE p.proposal_status_id <:proposalStatus AND p.user_org_id=:userOrgId AND p.nbfc_flow=:nbfcFlow_1 AND p.is_active=TRUE AND p.application_id IN (SELECT pd.application_id FROM proposal_details pd WHERE pd.proposal_status_id IN (:proposalStatus) AND pd.is_active=TRUE AND pd.nbfc_flow=:nbfcFlow_2) limit :pageIndex,:pageSize",nativeQuery = true)
+    public List<BigInteger> getFPProposalListByStatusIdAndUserOrgIdNBFCForBankHOPageable(@Param("proposalStatus") List<Long> proposalStatus, @Param("userOrgId") Long userOrgId, @Param("nbfcFlow_1") Integer nbfcFlow_1,  @Param("nbfcFlow_2") Integer nbfcFlow_2,@Param("pageIndex") int pageIndex, @Param("pageSize") int pageSize);
+
+    // Proposal List for BANK HO (sanction, disbursed by Both)
+    @Query(value = "SELECT p.id FROM proposal_details p WHERE p.proposal_status_id IN (:proposalStatus) AND p.user_org_id=:userOrgId AND p.nbfc_flow=:nbfcFlow_1 AND p.is_active=TRUE AND p.application_id IN (SELECT pd.application_id FROM proposal_details pd WHERE pd.proposal_status_id IN (:proposalStatus) AND pd.is_active=TRUE AND pd.nbfc_flow=:nbfcFlow_2) LIMIT :pageIndex,:pageSize",nativeQuery = true)
+    public List<BigInteger> getFPProposalsByStatusIdAndUserOrgIdForBankHOPageable(@Param("proposalStatus") List<Long> proposalStatus, @Param("userOrgId") Long userOrgId, @Param("nbfcFlow_1") Integer nbfcFlow_1,  @Param("nbfcFlow_2") Integer nbfcFlow_2,@Param("pageIndex") int pageIndex, @Param("pageSize") int pageSize);
 
 }
 
