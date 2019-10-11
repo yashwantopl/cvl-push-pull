@@ -2,6 +2,8 @@ package com.capitaworld.service.loans.repository.common;
 
 import java.util.List;
 
+import com.capitaworld.service.loans.model.teaser.primaryview.CommonRequest;
+
 public interface CommonRepository {
 
 	public Object[] getUserCampainCodeByApplicationId(Long applicationId);
@@ -27,9 +29,8 @@ public interface CommonRepository {
 	public String getSidbiAmount();
 	
 	public List<Object[]> getBankDetails(Long applicationId, Long orgId);
+
+	public Object[] getUserDetailsByApplicationId(Long applicationId) throws Exception;
 	
-/*	public Boolean updateRelatedPartyFilledFlagOnConnect(Long applicationId) throws Exception;
-	
-	public Boolean getRelatedPartyFilledFlagOnConnect(Long applicationId) throws Exception;
-*/	
+	public List<String> getUserDetailsByUserOrgIdAndUserRoleIdAndBranchId(Long orgId ,Long roleId ,Long branchId);
 }

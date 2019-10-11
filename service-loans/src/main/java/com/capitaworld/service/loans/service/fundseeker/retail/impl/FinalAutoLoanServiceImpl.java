@@ -262,9 +262,11 @@ public class FinalAutoLoanServiceImpl implements FinalAutoLoanService {
             
             // Get pre sanction details
             PreSanctionVisit preSanctionVisit = preSanctionVisitRepository.getByApplicationIdAndApplicationProposalMapping(applicationId , proposalId);
-            PreSanctionVisitRequest preSanctionVisitRequest = new PreSanctionVisitRequest(); 
-            BeanUtils.copyProperties(preSanctionVisit, preSanctionVisitRequest);
-            finalAutoLoanDetailRequest.setPreSanctionVisit(preSanctionVisitRequest);
+            if (!CommonUtils.isObjectNullOrEmpty(preSanctionVisit)) {				
+            	PreSanctionVisitRequest preSanctionVisitRequest = new PreSanctionVisitRequest(); 
+            	BeanUtils.copyProperties(preSanctionVisit, preSanctionVisitRequest);
+            	finalAutoLoanDetailRequest.setPreSanctionVisit(preSanctionVisitRequest);
+            }
 
             if (!CommonUtils.isObjectNullOrEmpty(finalAutoLoanDetailRequest.getEmployeeType())) {				
             	addEmployementDetails(finalAutoLoanDetailRequest);

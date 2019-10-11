@@ -71,6 +71,8 @@ public class PrimaryAutoLoanServiceImpl implements PrimaryAutoLoanService {
 				retailApplicantDetail.setBorrowerContribution(alLoanDetailRequest.getBorrowerContribution());
 				retailApplicantDetail.setLoanPurpose(alLoanDetailRequest.getLoanPurpose());
 				retailApplicantDetail.setLoanPurposeQueType(alLoanDetailRequest.getLoanPurposeQueType());
+				retailApplicantDetail.setLoanPurposeQueType(alLoanDetailRequest.getLoanPurposeQueType());
+				retailApplicantDetail.setIsUserHaveAadhar(alLoanDetailRequest.getIsUserHaveAadhar());
 				retailApplicantDetailRepository.save(retailApplicantDetail);
 		
 				//************************ SAVE VEHICLE DETAILS *****************************
@@ -142,6 +144,7 @@ public class PrimaryAutoLoanServiceImpl implements PrimaryAutoLoanService {
 			res.setGrossMonthlyIncome(retailApplicantDetail.getGrossMonthlyIncome());
 			res.setLoanPurpose(retailApplicantDetail.getLoanPurpose());
 			res.setLoanPurposeQueType(retailApplicantDetail.getLoanPurposeQueType());
+			res.setIsUserHaveAadhar(retailApplicantDetail.getIsUserHaveAadhar());
 		}
 		PrimaryAutoLoanDetail primaryAutoLoanDetail = autoLoanDetailRepository.findById(applicationId);
 		if(!CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetail)) {

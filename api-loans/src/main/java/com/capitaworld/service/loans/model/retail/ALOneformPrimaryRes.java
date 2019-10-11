@@ -27,6 +27,7 @@ public class ALOneformPrimaryRes implements Serializable {
 	private Double monthlyIncome;
 	private Double grossMonthlyIncome;
 	private Long clientId;  
+	private Boolean isUserHaveAadhar;
 	
 	// Vehicle details
 	private Integer vehicleType; 
@@ -56,8 +57,8 @@ public class ALOneformPrimaryRes implements Serializable {
 	private Long supplierStateId;
 	private Long supplierCityId;
 	private Long supplierId;
-	
-	
+
+
 	public ALOneformPrimaryRes() {
 		// TODO Auto-generated constructor stub
 	}
@@ -300,6 +301,14 @@ public class ALOneformPrimaryRes implements Serializable {
 
 	public void setClientId(Long clientId) {
 		this.clientId = clientId;
+	}
+
+	public Boolean getIsUserHaveAadhar() {
+		return isUserHaveAadhar;
+	}
+
+	public void setIsUserHaveAadhar(Boolean isUserHaveAadhar) {
+		this.isUserHaveAadhar = isUserHaveAadhar;
 	}
 
 	public Long getManufacturerId() {

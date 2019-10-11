@@ -4,6 +4,7 @@ package com.capitaworld.service.loans.repository.fundprovider;
         import com.capitaworld.service.loans.domain.fundprovider.LoanArrangementMapping;
         import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
 
+        import org.springframework.data.domain.Pageable;
         import org.springframework.data.jpa.repository.JpaRepository;
         import org.springframework.data.jpa.repository.Modifying;
         import org.springframework.data.jpa.repository.Query;
@@ -159,7 +160,18 @@ public interface ProposalDetailsRepository extends JpaRepository<ProposalDetails
     @Query(value = "SELECT p.id FROM proposal_details p where p.proposal_status_id IN(:proposalStatus) and p.user_org_id=:userOrgId and p.nbfc_flow=:nbfcFlow and p.is_active=true",nativeQuery = true)
     public List<BigInteger> getFPProposalCountByStatusIdAndUserOrgIdForHO(@Param("proposalStatus") List<Long> proposalStatus, @Param("userOrgId") Long userOrgId, @Param("nbfcFlow") Integer nbfcFlow);
 
-    @Query(value = "SELECT p.application_id FROM loan_application.proposal_details p WHERE p.proposal_status_id IN(:proposalStatus) AND nbfc_flow=:nbfcFlow AND p.application_id IN (SELECT p.application_id FROM loan_application.proposal_details p WHERE p.proposal_status_id IN (:proposalStatus) AND user_org_id=:userOrgId AND nbfc_flow=:nbfcFlow AND is_active=TRUE AND p.branch_id =:branchId)",nativeQuery = true)
+    @Query(value = "SELECT p.id FROM loan_application.proposal_details p WHERE p.proposal_status_id IN(:proposalStatus) AND nbfc_flow=:nbfcFlow AND p.application_id IN (SELECT p.application_id FROM loan_application.proposal_details p WHERE p.proposal_status_id IN (:proposalStatus) AND user_org_id=:userOrgId AND nbfc_flow=:nbfcFlow AND is_active=TRUE AND p.branch_id =:branchId)",nativeQuery = true)
     public List<BigInteger> getFPProposalCountOfSanctionedNBFC(@Param("proposalStatus") List<Long> proposalStatus,@Param("userOrgId") Long userOrgId,@Param("nbfcFlow") Integer nbfcFlow,@Param("branchId") Long branchId);
+
+    @Query(value = "select lm.proposal_id from proposal_details lm inner join proposal_details pd on pd.id=lm.proposal_id where pd.branch_id=:branchId and pd.fp_product_id=:fpProductId and (lm.ddr_status_id =:id OR (lm.ddr_status_id IS NULL AND lm.status =:statusId)) and lm.np_user_id=:npUserId and pd.is_active=true and lm.is_active = true and lm.business_type_id=:businessTypeId order by lm.modified_date desc \n#pageable\n",nativeQuery = true)
+    public List<BigInteger> getFPAssignedToCheckerProposalsByNPUserIdPagination(Pageable pageable, @Param("id") Long ddrStatusId, @Param("npUserId") Long npUserId, @Param("branchId") Long branchId, @Param("fpProductId") Long fpProductId, @Param("statusId") Long applicationStatusId, @Param("businessTypeId")Long businessTypeId);
+
+    @Query(value="SELECT * FROM proposal_details WHERE application_id =:applicationId AND id =:proposalId AND is_active = TRUE LIMIT 1",nativeQuery= true)
+    public ProposalDetails getBranchId(@Param("applicationId") Long applicationId, @Param("proposalId") Long proposalId);
+
+    @Query(value = "SELECT p.id FROM proposal_details p where p.proposal_status_id IN (:proposalStatus) and p.user_org_id=:userOrgId and p.nbfc_flow=:nbfcFlow and p.is_active=true and p.branch_id=:branchId limit :pageIndex,:pageSize",nativeQuery = true)
+    public List<BigInteger> getFPProposalCountByStatusIdAndUserOrgIdPageable(@Param("proposalStatus") List<Long> proposalStatus, @Param("userOrgId") Long userOrgId, @Param("nbfcFlow") Integer nbfcFlow, @Param("branchId") Long branchId, @Param("pageIndex") int pageIndex, @Param("pageSize") int pageSize);
+
 }
+
 

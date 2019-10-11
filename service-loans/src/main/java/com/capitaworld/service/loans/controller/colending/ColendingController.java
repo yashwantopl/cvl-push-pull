@@ -4,6 +4,7 @@ import com.capitaworld.service.loans.model.ClientListingCoLending;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.NhbsApplicationRequest;
 import com.capitaworld.service.loans.model.SpClientListing;
+import com.capitaworld.service.loans.model.colending.CoLendingProposalResponse;
 import com.capitaworld.service.loans.model.corporate.CoLendingRequest;
 import com.capitaworld.service.loans.service.colending.CoLendingFlowService;
 import com.capitaworld.service.loans.service.fundprovider.CoLendingService;
@@ -165,6 +166,38 @@ public class ColendingController {
             return new ResponseEntity<LoansResponse>(
                     new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
                     HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+    @PostMapping(value = "/nbfc/fpProposalList", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> fpProposalList(@RequestBody NhbsApplicationRequest nhbsApplicationRequest, HttpServletRequest request){
+        try {
+            Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+            if (CommonUtils.isObjectNullOrEmpty(userId)
+                    || CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest)
+                    || CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest.getBusinessTypeId())) {
+                logger.warn(USER_ID_CAN_NOT_BE_EMPTY_MSG + userId);
+                logger.warn(USER_ROLE_ID_CAN_NOT_BE_EMPTY_MSG + nhbsApplicationRequest.getUserRoleIdString());
+                return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+            }
+            nhbsApplicationRequest.setUserId(userId);
+            LoansResponse loansResponse = new LoansResponse();
+            nhbsApplicationRequest.setUserRoleId(Long.parseLong(CommonUtils.decode(nhbsApplicationRequest.getUserRoleIdString())));
+            List<CoLendingProposalResponse> responseList = coLendingService.getListOfCheckerProposalsFP(nhbsApplicationRequest);
+            if (!CommonUtils.isObjectNullOrEmpty(responseList)) {
+                logger.info(CommonUtils.DATA_FOUND);
+                loansResponse.setMessage(CommonUtils.DATA_FOUND);
+            } else {
+                logger.info(CommonUtils.DATA_NOT_FOUND);
+                loansResponse.setMessage(CommonUtils.DATA_NOT_FOUND);
+            }
+            loansResponse.setStatus(HttpStatus.OK.value());
+            loansResponse.setListData(responseList);
+            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error while getting count of proposals : ", e);
+            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }

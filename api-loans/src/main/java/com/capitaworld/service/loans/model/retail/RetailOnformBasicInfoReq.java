@@ -42,6 +42,7 @@ public class RetailOnformBasicInfoReq implements Serializable {
     private Boolean isBasicInfoFilled;
     private Boolean isItrSkip;
     private Integer residentialStatus;
+    private Boolean isUserHaveAadhar;
     
     
     
@@ -231,10 +232,12 @@ public class RetailOnformBasicInfoReq implements Serializable {
 	public void setResidentialStatus(Integer residentialStatus) {
 		this.residentialStatus = residentialStatus;
 	}
-    
-
-
-    
+	public Boolean getIsUserHaveAadhar() {
+		return isUserHaveAadhar;
+	}
+	public void setIsUserHaveAadhar(Boolean isUserHaveAadhar) {
+		this.isUserHaveAadhar = isUserHaveAadhar;
+	}
     
     
 }

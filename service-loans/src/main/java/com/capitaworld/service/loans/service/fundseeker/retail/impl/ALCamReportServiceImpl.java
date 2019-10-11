@@ -58,6 +58,7 @@ import com.capitaworld.service.loans.model.retail.PrimaryAutoLoanDetailRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
 import com.capitaworld.service.loans.repository.common.CommonRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.BankingRelationlRepository;
@@ -124,6 +125,8 @@ import com.capitaworld.service.scoring.model.ProposalScoreResponse;
 import com.capitaworld.service.scoring.model.ScoringRequest;
 import com.capitaworld.service.scoring.model.ScoringResponse;
 import com.capitaworld.service.scoring.utils.ScoreParameter.Retail;
+import com.capitaworld.service.users.client.UsersClient;
+import com.capitaworld.service.users.model.UserResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
@@ -216,7 +219,13 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 	private PrimaryAutoLoanDetailRepository primaryAutoLoanDetailRepository;
 	
 	@Autowired
+	private ProposalDetailsRepository proposalDetailsRepository;
+	
+	@Autowired
 	private EPFClient epfClient;
+	
+	@Autowired
+	private UsersClient usersClient;
 	
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -311,6 +320,7 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 				if (resNameAsPerITR != null) {
 					itrBasicDetailsResponse = (ITRBasicDetailsResponse)MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)resNameAsPerITR.getData(), ITRBasicDetailsResponse.class);
 					nameAsPerItr = itrBasicDetailsResponse.getName();
+					map.put("nameFromItr", !CommonUtils.isObjectNullOrEmpty(nameAsPerItr) ? nameAsPerItr.replaceAll("null", "") : "-");
 					map.put("itrData" ,resNameAsPerITR.getData() != null ? resNameAsPerITR.getData() : null);
 				} else {
 					logger.warn("-----------:::::::::::::: ItrResponse is null ::::::::::::---------");
@@ -894,6 +904,43 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 			logger.info("Error while getting date of in-principal approval from connect client : ",e2);
 		}*/
 		
+		//Fetch Bank Details
+				try {
+					Map<String, Object> bankData = new HashMap<String, Object>();
+					Long orgId = proposalDetailsRepository.getOrgIdByProposalId(proposalId);
+					List<Object[]> listBankData = commonRepository.getBankDetails(applicationId, orgId);
+					if(!CommonUtils.isListNullOrEmpty(listBankData) && !CommonUtils.isObjectNullOrEmpty(listBankData.get(0))) {
+						
+						String bankAddress = (listBankData.get(0)[5] != null ? listBankData.get(0)[5] : "") + (listBankData.get(0)[6] != null ? ", " + listBankData.get(0)[6] : "") 
+								+ (listBankData.get(0)[7] != null ? ", " +listBankData.get(0)[7] : "") + (listBankData.get(0)[8] != null ? " - " + listBankData.get(0)[8] : "");
+						bankData.put("currentBankAddress", !CommonUtils.isObjectNullOrEmpty(bankAddress) ? StringEscapeUtils.escapeXml(bankAddress) : "-");
+						bankData.put("bankName", listBankData.get(0)[9] != null ? listBankData.get(0)[9] : "-");
+						if(listBankData.size() > 1 && !CommonUtils.isObjectNullOrEmpty(listBankData.get(1))) {
+							String prevBankAddress = (listBankData.get(1)[5] != null ? listBankData.get(1)[5] : "") + (listBankData.get(1)[6] != null ? ", " + listBankData.get(1)[6] : "") 
+									+ (listBankData.get(1)[7] != null ? ", " +listBankData.get(1)[7] : "") + (listBankData.get(1)[8] != null ? " - " + listBankData.get(1)[8] : "");
+							bankData.put("previousBankAddress", !CommonUtils.isObjectNullOrEmpty(bankAddress) ? StringEscapeUtils.escapeXml(prevBankAddress) : "-");
+						}
+					}
+					
+					try {
+			            UserResponse campaignUser=usersClient.isExists(loanApplicationMaster.getUserId(),null);
+			            if(campaignUser != null && campaignUser.getData() != null && campaignUser.getData().equals(true)) {
+			                bankData.put("typeOfUser", "Bank Specific");
+			            }else {
+			            	bankData.put("typeOfUser", "Market Place");
+			            }
+			        } catch (Exception e2) {
+			            logger.info("error while campaign user check ==>" , e2);
+			        }
+					map.put("bankDetails", bankData);
+					
+				}catch (Exception e) {
+					logger.error("Error/Exception while getting Bank Details Of ApplicationId==>{}  ..Error==>{}",applicationId ,e);
+				}
+				
+		
+		
+		
 		//MATCHES RESPONSE
 		try {
 			MatchRequest matchRequest = new MatchRequest();
@@ -902,7 +949,7 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 			matchRequest.setBusinessTypeId(applicationProposalMapping.getBusinessTypeId());
 			MatchDisplayResponse matchResponse= matchEngineClient.displayMatchesOfRetail(matchRequest);
 			logger.info("matchesResponse ==>{}", matchResponse);
-			map.put("matchesResponse", !CommonUtils.isListNullOrEmpty(matchResponse.getMatchDisplayObjectList()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectList(),null) : null);
+			map.put("matchesResponse", !CommonUtils.isObjectNullOrEmpty(matchResponse.getMatchDisplayObjectMap()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectMap(),null) : null);
 		}
 		catch (Exception e) {
 			logger.error("Error while getting matches data : ",e);
@@ -1095,6 +1142,7 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 							collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.BUREAU_SCORE)).collect(Collectors.toList());
 							if(!CommonUtils.isListNullOrEmpty(collect)) {
 								companyMap.put(Retail.AutoLoan.BUREAU_SCORE, CommonUtils.printFields(collect.get(0),null));
+								companyMap.put("versionScore", !collect.isEmpty() && collect.get(0) != null && collect.get(0).getAnswer() != null ? CommonUtils.getCibilV2ScoreRange(collect.get(0).getAnswer().intValue()) : "-");
 							}
 							collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.MARITAL_STATUS)).collect(Collectors.toList());
 							if(!CommonUtils.isListNullOrEmpty(collect)) {
@@ -1232,6 +1280,10 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 							if(!CommonUtils.isListNullOrEmpty(collect)) {
 								companyMap.put(Retail.AutoLoan.BORROWER_MARGIN, CommonUtils.printFields(collect.get(0),null));
 							}
+							collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.PERSONAL_RELATIONSHIP_WITH_BANK)).collect(Collectors.toList());
+							if(!CommonUtils.isListNullOrEmpty(collect)) {
+								companyMap.put(Retail.AutoLoan.PERSONAL_RELATIONSHIP_WITH_BANK, CommonUtils.printFields(collect.get(0),null));
+							}
 							
 							scoreResponse.add(companyMap);
 							map.put("scoringResp", scoreResponse);
@@ -1297,158 +1349,171 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 							newMapList.add(MultipleJSONObjectHelper.getObjectFromMap(mp,ProposalScoreDetailResponse.class));
 						}
 						
-						List<ProposalScoreDetailResponse> collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.AGE)).collect(Collectors.toList());
-							if(!CommonUtils.isListNullOrEmpty(collect)) {
-								companyMap.put(Retail.HomeLoan.AGE, CommonUtils.printFields(collect.get(0),null));
-							}
-							collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.CURRENT_JOB_EXP)).collect(Collectors.toList());
-							if(!CommonUtils.isListNullOrEmpty(collect)) {
-								companyMap.put(Retail.HomeLoan.CURRENT_JOB_EXP, CommonUtils.printFields(collect.get(0),null));
-							}
-							collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.TOTAL_WORK_EXP)).collect(Collectors.toList());
-							if(!CommonUtils.isListNullOrEmpty(collect)) {
-								companyMap.put(Retail.HomeLoan.TOTAL_WORK_EXP, CommonUtils.printFields(collect.get(0),null));
-							}
-							collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.RESIDENCE_TYPE)).collect(Collectors.toList());
-							if(!CommonUtils.isListNullOrEmpty(collect)) {
-								companyMap.put(Retail.HomeLoan.RESIDENCE_TYPE, CommonUtils.printFields(collect.get(0),null));
-							}
-							collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.NO_YEARS_STAY_CURR_LOC)).collect(Collectors.toList());
-							if(!CommonUtils.isListNullOrEmpty(collect)) {
-								companyMap.put(Retail.HomeLoan.NO_YEARS_STAY_CURR_LOC, CommonUtils.printFields(collect.get(0),null));
-							}
-							collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.BUREAU_SCORE)).collect(Collectors.toList());
-							if(!CommonUtils.isListNullOrEmpty(collect)) {
-								companyMap.put(Retail.HomeLoan.BUREAU_SCORE, CommonUtils.printFields(collect.get(0),null));
-							}
-							collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.MARITAL_STATUS)).collect(Collectors.toList());
-							if(!CommonUtils.isListNullOrEmpty(collect)) {
-								companyMap.put(Retail.HomeLoan.MARITAL_STATUS, CommonUtils.printFields(collect.get(0),null));
-							}
-							collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.EMPLOYMENT_TYPE)).collect(Collectors.toList());
-							if(!CommonUtils.isListNullOrEmpty(collect)) {
-								companyMap.put(Retail.HomeLoan.EMPLOYMENT_TYPE, CommonUtils.printFields(collect.get(0),null));
-							}
-							collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.EMPLOYMENT_CATEG_JOB)).collect(Collectors.toList());
-							if(!CommonUtils.isListNullOrEmpty(collect)) {
-								companyMap.put(Retail.HomeLoan.EMPLOYMENT_CATEG_JOB, CommonUtils.printFields(collect.get(0),null));
-							}
-							collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.EMPLOYMENT_CATEG_PROF_SELF_EMPLOYED)).collect(Collectors.toList());
-							if(!CommonUtils.isListNullOrEmpty(collect)) {
-								companyMap.put(Retail.HomeLoan.EMPLOYMENT_CATEG_PROF_SELF_EMPLOYED, CommonUtils.printFields(collect.get(0),null));
-							}
-							collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.CURRENT_EMPLOYMENT_STATUS)).collect(Collectors.toList());
-							if(!CommonUtils.isListNullOrEmpty(collect)) {
-								companyMap.put(Retail.HomeLoan.CURRENT_EMPLOYMENT_STATUS, CommonUtils.printFields(collect.get(0),null));
-							}
-							collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.MIN_BANKING_RELATIONSHIP)).collect(Collectors.toList());
-							if(!CommonUtils.isListNullOrEmpty(collect)) {
-								companyMap.put(Retail.HomeLoan.MIN_BANKING_RELATIONSHIP, CommonUtils.printFields(collect.get(0),null));
-							} // new parameter Pl
-							collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.SPOUSE_EMPLOYEMENT)).collect(Collectors.toList());
-							if(!CommonUtils.isListNullOrEmpty(collect)) {
-								companyMap.put(Retail.HomeLoan.SPOUSE_EMPLOYEMENT, CommonUtils.printFields(collect.get(0),null));
-							}
-							collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.NO_OF_DEPENDANTS)).collect(Collectors.toList());
-							if(!CommonUtils.isListNullOrEmpty(collect)) {
-								companyMap.put(Retail.HomeLoan.NO_OF_DEPENDANTS, CommonUtils.printFields(collect.get(0),null));
-							}
-							collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.DESIGNATION)).collect(Collectors.toList());
-							if(!CommonUtils.isListNullOrEmpty(collect)) {
-								companyMap.put(Retail.HomeLoan.DESIGNATION, CommonUtils.printFields(collect.get(0),null));
-							}
-							collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.EDUCATION_QUALIFICATION)).collect(Collectors.toList());
-							if(!CommonUtils.isListNullOrEmpty(collect)) {
-								companyMap.put(Retail.HomeLoan.EDUCATION_QUALIFICATION, CommonUtils.printFields(collect.get(0),null));
-							}
-							collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.NO_OF_APPLICANTS)).collect(Collectors.toList());
-							if(!CommonUtils.isListNullOrEmpty(collect)) {
-								companyMap.put(Retail.HomeLoan.NO_OF_APPLICANTS, CommonUtils.printFields(collect.get(0),null));
-							}
-							collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.ANNUAL_INCOME)).collect(Collectors.toList());
-							if(!CommonUtils.isListNullOrEmpty(collect)) {
-								companyMap.put(Retail.HomeLoan.ANNUAL_INCOME, CommonUtils.printFields(collect.get(0),null));
-							}
-							collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.AVAILABLE_INCOME)).collect(Collectors.toList());
-							if(!CommonUtils.isListNullOrEmpty(collect)) {
-								companyMap.put(Retail.HomeLoan.AVAILABLE_INCOME, CommonUtils.printFields(collect.get(0),null));
-							}
-							collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.ADDI_INCOME_SPOUSE)).collect(Collectors.toList());
-							if(!CommonUtils.isListNullOrEmpty(collect)) {
-								companyMap.put(Retail.HomeLoan.ADDI_INCOME_SPOUSE, CommonUtils.printFields(collect.get(0),null));
-							}
-							collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.MON_INCOME_DEPENDANT)).collect(Collectors.toList());
-							if(!CommonUtils.isListNullOrEmpty(collect)) {
-								companyMap.put(Retail.HomeLoan.MON_INCOME_DEPENDANT, CommonUtils.printFields(collect.get(0),null));
-							}
-							collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.AVG_INCREASE_INCOME_REPORT_3_YEARS)).collect(Collectors.toList());
-							if(!CommonUtils.isListNullOrEmpty(collect)) {
-								companyMap.put(Retail.HomeLoan.AVG_INCREASE_INCOME_REPORT_3_YEARS, CommonUtils.printFields(collect.get(0),null));
-							}
-							collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.APPLICANT_NW_TO_LOAN_AMOUNT)).collect(Collectors.toList());
-							if(!CommonUtils.isListNullOrEmpty(collect)) {
-								companyMap.put(Retail.HomeLoan.APPLICANT_NW_TO_LOAN_AMOUNT, CommonUtils.printFields(collect.get(0),null));
-							}
-							collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.TENURE)).collect(Collectors.toList());
-							if(!CommonUtils.isListNullOrEmpty(collect)) {
-								companyMap.put(Retail.HomeLoan.TENURE, CommonUtils.printFields(collect.get(0),null));
-							}
-							collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.AGE_PROPERTY)).collect(Collectors.toList());
-							if(!CommonUtils.isListNullOrEmpty(collect)) {
-								companyMap.put(Retail.HomeLoan.AGE_PROPERTY, CommonUtils.printFields(collect.get(0),null));
-							}
-							collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.AVG_DEPOS_LAST_6_MONTH)).collect(Collectors.toList());
-							if(!CommonUtils.isListNullOrEmpty(collect)) {
-								companyMap.put(Retail.HomeLoan.AVG_DEPOS_LAST_6_MONTH, CommonUtils.printFields(collect.get(0),null));
-							}
-							collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.CHECQUE_BOUNSE_LAST_1_MONTH)).collect(Collectors.toList());
-							if(!CommonUtils.isListNullOrEmpty(collect)) {
-								companyMap.put(Retail.HomeLoan.CHECQUE_BOUNSE_LAST_1_MONTH, CommonUtils.printFields(collect.get(0),null));
-							}
-							collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.CHECQUE_BOUNSE_LAST_6_MONTH)).collect(Collectors.toList());
-							if(!CommonUtils.isListNullOrEmpty(collect)) {
-								companyMap.put(Retail.HomeLoan.CHECQUE_BOUNSE_LAST_6_MONTH, CommonUtils.printFields(collect.get(0),null));
-							}
-							collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.DPD)).collect(Collectors.toList());
-							if(!CommonUtils.isListNullOrEmpty(collect)) {
-								companyMap.put(Retail.HomeLoan.DPD, CommonUtils.printFields(collect.get(0),null));
-							}
-							collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.LTV)).collect(Collectors.toList());
-							if(!CommonUtils.isListNullOrEmpty(collect)) {
-								companyMap.put(Retail.HomeLoan.LTV, CommonUtils.printFields(collect.get(0),null));
-							}
-							collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.EMI_NMI_RATIO)).collect(Collectors.toList());
-							if(!CommonUtils.isListNullOrEmpty(collect)) {
-								companyMap.put(Retail.HomeLoan.EMI_NMI_RATIO, CommonUtils.printFields(collect.get(0),null));
-							}
-							collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.LOAN_PURPOSE)).collect(Collectors.toList());
-							if(!CommonUtils.isListNullOrEmpty(collect)) {
-								companyMap.put(Retail.HomeLoan.LOAN_PURPOSE, CommonUtils.printFields(collect.get(0),null));
-							}
-							collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.INCOME_PROOF)).collect(Collectors.toList());
-							if(!CommonUtils.isListNullOrEmpty(collect)) {
-								companyMap.put(Retail.HomeLoan.INCOME_PROOF, CommonUtils.printFields(collect.get(0),null));
-							}
-							collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.EMI_NMI)).collect(Collectors.toList());
-							if(!CommonUtils.isListNullOrEmpty(collect)) {
-								companyMap.put(Retail.HomeLoan.EMI_NMI, CommonUtils.printFields(collect.get(0),null));
-							}
-							collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.AVG_EOD_BALANCE)).collect(Collectors.toList());
-							if(!CommonUtils.isListNullOrEmpty(collect)) {
-								companyMap.put(Retail.HomeLoan.AVG_EOD_BALANCE, CommonUtils.printFields(collect.get(0),null));
-							}
-							collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.LOAN_TO_INCOME_RATIO)).collect(Collectors.toList());
-							if(!CommonUtils.isListNullOrEmpty(collect)) {
-								companyMap.put(Retail.HomeLoan.LOAN_TO_INCOME_RATIO, CommonUtils.printFields(collect.get(0),null));
-							}
-							collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.INCOME_TO_INSTALLMENT_RATIO)).collect(Collectors.toList());
-							if(!CommonUtils.isListNullOrEmpty(collect)) {
-								companyMap.put(Retail.HomeLoan.INCOME_TO_INSTALLMENT_RATIO, CommonUtils.printFields(collect.get(0),null));
-							}
-							collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.REPAYMENT_PERIOD)).collect(Collectors.toList());
-							if(!CommonUtils.isListNullOrEmpty(collect)) {
-								companyMap.put(Retail.HomeLoan.REPAYMENT_PERIOD, CommonUtils.printFields(collect.get(0),null));
-							}
+						List<ProposalScoreDetailResponse> collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.AGE)).collect(Collectors.toList());
+						if(!CommonUtils.isListNullOrEmpty(collect)) {
+							companyMap.put(Retail.AutoLoan.AGE, CommonUtils.printFields(collect.get(0),null));
+						}
+						collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.CURRENT_JOB_EXP)).collect(Collectors.toList());
+						if(!CommonUtils.isListNullOrEmpty(collect)) {
+							companyMap.put(Retail.AutoLoan.CURRENT_JOB_EXP, CommonUtils.printFields(collect.get(0),null));
+						}
+						collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.TOTAL_WORK_EXP)).collect(Collectors.toList());
+						if(!CommonUtils.isListNullOrEmpty(collect)) {
+							companyMap.put(Retail.AutoLoan.TOTAL_WORK_EXP, CommonUtils.printFields(collect.get(0),null));
+						}
+						collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.RESIDENCE_TYPE)).collect(Collectors.toList());
+						if(!CommonUtils.isListNullOrEmpty(collect)) {
+							companyMap.put(Retail.AutoLoan.RESIDENCE_TYPE, CommonUtils.printFields(collect.get(0),null));
+						}
+						collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.NO_YEARS_STAY_CURR_LOC)).collect(Collectors.toList());
+						if(!CommonUtils.isListNullOrEmpty(collect)) {
+							companyMap.put(Retail.AutoLoan.NO_YEARS_STAY_CURR_LOC, CommonUtils.printFields(collect.get(0),null));
+						}
+						collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.BUREAU_SCORE)).collect(Collectors.toList());
+						if(!CommonUtils.isListNullOrEmpty(collect)) {
+							companyMap.put(Retail.AutoLoan.BUREAU_SCORE, CommonUtils.printFields(collect.get(0),null));
+                                                        companyMap.put("versionScoreOfCoApp", !collect.isEmpty() && collect.get(0) != null && collect.get(0).getAnswer() != null ? CommonUtils.getCibilV2ScoreRange(collect.get(0).getAnswer().intValue()) : "-");
+						}
+						collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.MARITAL_STATUS)).collect(Collectors.toList());
+						if(!CommonUtils.isListNullOrEmpty(collect)) {
+							companyMap.put(Retail.AutoLoan.MARITAL_STATUS, CommonUtils.printFields(collect.get(0),null));
+						}
+						collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.EMPLOYMENT_TYPE)).collect(Collectors.toList());
+						if(!CommonUtils.isListNullOrEmpty(collect)) {
+							companyMap.put(Retail.AutoLoan.EMPLOYMENT_TYPE, CommonUtils.printFields(collect.get(0),null));
+						}
+						collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.EMPLOYMENT_CATEG_JOB)).collect(Collectors.toList());
+						if(!CommonUtils.isListNullOrEmpty(collect)) {
+							companyMap.put(Retail.AutoLoan.EMPLOYMENT_CATEG_JOB, CommonUtils.printFields(collect.get(0),null));
+						}
+						collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.EMPLOYMENT_CATEG_PROF_SELF_EMPLOYED)).collect(Collectors.toList());
+						if(!CommonUtils.isListNullOrEmpty(collect)) {
+							companyMap.put(Retail.AutoLoan.EMPLOYMENT_CATEG_PROF_SELF_EMPLOYED, CommonUtils.printFields(collect.get(0),null));
+						}
+						collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.CURRENT_EMPLOYMENT_STATUS)).collect(Collectors.toList());
+						if(!CommonUtils.isListNullOrEmpty(collect)) {
+							companyMap.put(Retail.AutoLoan.CURRENT_EMPLOYMENT_STATUS, CommonUtils.printFields(collect.get(0),null));
+						}
+						collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.MIN_BANKING_RELATIONSHIP)).collect(Collectors.toList());
+						if(!CommonUtils.isListNullOrEmpty(collect)) {
+							companyMap.put(Retail.AutoLoan.MIN_BANKING_RELATIONSHIP, CommonUtils.printFields(collect.get(0),null));
+						} // new parameter Pl
+						collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.SPOUSE_EMPLOYEMENT)).collect(Collectors.toList());
+						if(!CommonUtils.isListNullOrEmpty(collect)) {
+							companyMap.put(Retail.AutoLoan.SPOUSE_EMPLOYEMENT, CommonUtils.printFields(collect.get(0),null));
+						}
+						collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.NO_OF_DEPENDANTS)).collect(Collectors.toList());
+						if(!CommonUtils.isListNullOrEmpty(collect)) {
+							companyMap.put(Retail.AutoLoan.NO_OF_DEPENDANTS, CommonUtils.printFields(collect.get(0),null));
+						}
+						collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.DESIGNATION)).collect(Collectors.toList());
+						if(!CommonUtils.isListNullOrEmpty(collect)) {
+							companyMap.put(Retail.AutoLoan.DESIGNATION, CommonUtils.printFields(collect.get(0),null));
+						}
+						collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.EDUCATION_QUALIFICATION)).collect(Collectors.toList());
+						if(!CommonUtils.isListNullOrEmpty(collect)) {
+							companyMap.put(Retail.AutoLoan.EDUCATION_QUALIFICATION, CommonUtils.printFields(collect.get(0),null));
+						}
+						collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.NO_OF_APPLICANTS)).collect(Collectors.toList());
+						if(!CommonUtils.isListNullOrEmpty(collect)) {
+							companyMap.put(Retail.AutoLoan.NO_OF_APPLICANTS, CommonUtils.printFields(collect.get(0),null));
+						}
+						collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.ANNUAL_INCOME)).collect(Collectors.toList());
+						if(!CommonUtils.isListNullOrEmpty(collect)) {
+							companyMap.put(Retail.AutoLoan.ANNUAL_INCOME, CommonUtils.printFields(collect.get(0),null));
+						}
+						collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.AVAILABLE_INCOME)).collect(Collectors.toList());
+						if(!CommonUtils.isListNullOrEmpty(collect)) {
+							companyMap.put(Retail.AutoLoan.AVAILABLE_INCOME, CommonUtils.printFields(collect.get(0),null));
+						}
+						collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.ADDI_INCOME_SPOUSE)).collect(Collectors.toList());
+						if(!CommonUtils.isListNullOrEmpty(collect)) {
+							companyMap.put(Retail.AutoLoan.ADDI_INCOME_SPOUSE, CommonUtils.printFields(collect.get(0),null));
+						}
+						collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.MON_INCOME_DEPENDANT)).collect(Collectors.toList());
+						if(!CommonUtils.isListNullOrEmpty(collect)) {
+							companyMap.put(Retail.AutoLoan.MON_INCOME_DEPENDANT, CommonUtils.printFields(collect.get(0),null));
+						}
+						collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.AVG_INCREASE_INCOME_REPORT_3_YEARS)).collect(Collectors.toList());
+						if(!CommonUtils.isListNullOrEmpty(collect)) {
+							companyMap.put(Retail.AutoLoan.AVG_INCREASE_INCOME_REPORT_3_YEARS, CommonUtils.printFields(collect.get(0),null));
+						}
+						collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.APPLICANT_NW_TO_LOAN_AMOUNT)).collect(Collectors.toList());
+						if(!CommonUtils.isListNullOrEmpty(collect)) {
+							companyMap.put(Retail.AutoLoan.APPLICANT_NW_TO_LOAN_AMOUNT, CommonUtils.printFields(collect.get(0),null));
+						}
+						collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.TENURE)).collect(Collectors.toList());
+						if(!CommonUtils.isListNullOrEmpty(collect)) {
+							companyMap.put(Retail.AutoLoan.TENURE, CommonUtils.printFields(collect.get(0),null));
+						}
+						/*collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.AGE_PROPERTY)).collect(Collectors.toList());
+						if(!CommonUtils.isListNullOrEmpty(collect)) {
+							companyMap.put(Retail.AutoLoan.AGE_PROPERTY, CommonUtils.printFields(collect.get(0),null));
+						}*/
+						collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.AVG_DEPOS_LAST_6_MONTH)).collect(Collectors.toList());
+						if(!CommonUtils.isListNullOrEmpty(collect)) {
+							companyMap.put(Retail.AutoLoan.AVG_DEPOS_LAST_6_MONTH, CommonUtils.printFields(collect.get(0),null));
+						}
+						collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.CHECQUE_BOUNSE_LAST_1_MONTH)).collect(Collectors.toList());
+						if(!CommonUtils.isListNullOrEmpty(collect)) {
+							companyMap.put(Retail.AutoLoan.CHECQUE_BOUNSE_LAST_1_MONTH, CommonUtils.printFields(collect.get(0),null));
+						}
+						collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.CHECQUE_BOUNSE_LAST_6_MONTH)).collect(Collectors.toList());
+						if(!CommonUtils.isListNullOrEmpty(collect)) {
+							companyMap.put(Retail.AutoLoan.CHECQUE_BOUNSE_LAST_6_MONTH, CommonUtils.printFields(collect.get(0),null));
+						}
+						collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.DPD)).collect(Collectors.toList());
+						if(!CommonUtils.isListNullOrEmpty(collect)) {
+							companyMap.put(Retail.AutoLoan.DPD, CommonUtils.printFields(collect.get(0),null));
+						}
+						collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.LTV)).collect(Collectors.toList());
+						if(!CommonUtils.isListNullOrEmpty(collect)) {
+							companyMap.put(Retail.AutoLoan.LTV, CommonUtils.printFields(collect.get(0),null));
+						}
+						collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.EMI_NMI_RATIO)).collect(Collectors.toList());
+						if(!CommonUtils.isListNullOrEmpty(collect)) {
+							companyMap.put(Retail.AutoLoan.EMI_NMI_RATIO, CommonUtils.printFields(collect.get(0),null));
+						}
+						collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.LOAN_PURPOSE)).collect(Collectors.toList());
+						if(!CommonUtils.isListNullOrEmpty(collect)) {
+							companyMap.put(Retail.AutoLoan.LOAN_PURPOSE, CommonUtils.printFields(collect.get(0),null));
+						}
+						collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.INCOME_PROOF)).collect(Collectors.toList());
+						if(!CommonUtils.isListNullOrEmpty(collect)) {
+							companyMap.put(Retail.AutoLoan.INCOME_PROOF, CommonUtils.printFields(collect.get(0),null));
+						}
+						collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.EMI_NMI)).collect(Collectors.toList());
+						if(!CommonUtils.isListNullOrEmpty(collect)) {
+							companyMap.put(Retail.AutoLoan.EMI_NMI, CommonUtils.printFields(collect.get(0),null));
+						}
+						collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.AVG_EOD_BALANCE)).collect(Collectors.toList());
+						if(!CommonUtils.isListNullOrEmpty(collect)) {
+							companyMap.put(Retail.AutoLoan.AVG_EOD_BALANCE, CommonUtils.printFields(collect.get(0),null));
+						}
+						collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.LOAN_TO_INCOME_RATIO)).collect(Collectors.toList());
+						if(!CommonUtils.isListNullOrEmpty(collect)) {
+							companyMap.put(Retail.AutoLoan.LOAN_TO_INCOME_RATIO, CommonUtils.printFields(collect.get(0),null));
+						}
+						collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.INCOME_TO_INSTALLMENT_RATIO)).collect(Collectors.toList());
+						if(!CommonUtils.isListNullOrEmpty(collect)) {
+							companyMap.put(Retail.AutoLoan.INCOME_TO_INSTALLMENT_RATIO, CommonUtils.printFields(collect.get(0),null));
+						}
+						collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.REPAYMENT_PERIOD)).collect(Collectors.toList());
+						if(!CommonUtils.isListNullOrEmpty(collect)) {
+							companyMap.put(Retail.AutoLoan.REPAYMENT_PERIOD, CommonUtils.printFields(collect.get(0),null));
+						}
+						collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.SECURITY_COVERAGE)).collect(Collectors.toList());
+						if(!CommonUtils.isListNullOrEmpty(collect)) {
+							companyMap.put(Retail.AutoLoan.SECURITY_COVERAGE, CommonUtils.printFields(collect.get(0),null));
+						}
+						collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.BORROWER_MARGIN)).collect(Collectors.toList());
+						if(!CommonUtils.isListNullOrEmpty(collect)) {
+							companyMap.put(Retail.AutoLoan.BORROWER_MARGIN, CommonUtils.printFields(collect.get(0),null));
+						}
+						collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.PERSONAL_RELATIONSHIP_WITH_BANK)).collect(Collectors.toList());
+						if(!CommonUtils.isListNullOrEmpty(collect)) {
+							companyMap.put(Retail.AutoLoan.PERSONAL_RELATIONSHIP_WITH_BANK, CommonUtils.printFields(collect.get(0),null));
+						}
 							scoreResponse.add(companyMap);
 							coAppScoringData.add(scoreResponse);
 					}

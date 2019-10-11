@@ -206,8 +206,10 @@ public class AlTeaserViewResponse {
 	private Long vehicleOnRoadPrice; 
 	private Long vehicleAgreedPurchasePrice;
 	private Boolean isVehicleHypothecation;
-	
+	private String cibilScoreRange;
 	private String  campaignType; 
+	private Boolean  isUserHaveAadhar; 
+	private Map matchDisplayObjectMap;
 	
 	public AlTeaserViewResponse() {
 		// TODO Auto-generated constructor stub
@@ -1642,6 +1644,32 @@ public class AlTeaserViewResponse {
 	public void setCampaignType(String campaignType) {
 		this.campaignType = campaignType;
 	}
+
+	public Map getMatchDisplayObjectMap() {
+		return matchDisplayObjectMap;
+	}
+
+	public void setMatchDisplayObjectMap(Map matchDisplayObjectMap) {
+		this.matchDisplayObjectMap = matchDisplayObjectMap;
+	}
+
+	public String getCibilScoreRange() {
+		return cibilScoreRange;
+	}
+
+	public void setCibilScoreRange(String cibilScoreRange) {
+		this.cibilScoreRange = cibilScoreRange;
+	}
+
+	public Boolean getIsUserHaveAadhar() {
+		return isUserHaveAadhar;
+	}
+
+	public void setIsUserHaveAadhar(Boolean isUserHaveAadhar) {
+		this.isUserHaveAadhar = isUserHaveAadhar;
+	}
+
+
 	
 	
 

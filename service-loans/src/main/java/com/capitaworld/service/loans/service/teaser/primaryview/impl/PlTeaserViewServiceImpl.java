@@ -469,7 +469,10 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 					cibilReq.setPan(plRetailApplicantResponse.getPan());
 					cibilReq.setApplicationId(toApplicationId);
 					CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
-					plTeaserViewResponse.setCibilScore(cibilScoreByPanCard);
+					if(cibilScoreByPanCard != null) {
+						plTeaserViewResponse.setCibilScoreRange(CommonUtils.getCibilV2ScoreRange(Integer.parseInt(cibilScoreByPanCard.getActualScore())));
+					}
+					plTeaserViewResponse.setCibilScore(cibilScoreByPanCard);																
 				} catch (Exception e) {
 					logger.error("Error While calling Cibil Score By PanCard : ",e);
 				}
@@ -1137,6 +1140,9 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 			cibilReq.setPan(plRetailApplicantResponse.getPan());
 			cibilReq.setApplicationId(toApplicationId);
 			CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
+			if (cibilScoreByPanCard != null) {
+				plTeaserViewResponse.setCibilScoreRange(CommonUtils.getCibilV2ScoreRange(Integer.parseInt(cibilScoreByPanCard.getActualScore())));
+			}
 			plTeaserViewResponse.setCibilScore(cibilScoreByPanCard);
 		} catch (Exception e) {
 			logger.error("Error While calling Cibil Score By PanCard : ",e);
