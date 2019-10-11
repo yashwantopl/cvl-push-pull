@@ -99,7 +99,13 @@ public class PrimaryAutoLoanServiceImpl implements PrimaryAutoLoanService {
 					primaryAutoLoanDetail.setIsCheckOffNotChangeSalAcc(alLoanDetailRequest.getIsCheckOffNotChangeSalAcc());
 					primaryAutoLoanDetail.setIsCheckOffPayOutstndAmount(alLoanDetailRequest.getIsCheckOffPayOutstndAmount());
 					primaryAutoLoanDetail.setIsCheckOffShiftSalAcc(alLoanDetailRequest.getIsCheckOffShiftSalAcc());
-					autoLoanDetailRepository.save(primaryAutoLoanDetail); 
+					primaryAutoLoanDetail.setManufacturerId(alLoanDetailRequest.getManufacturerId());
+					primaryAutoLoanDetail.setAssetModelId(alLoanDetailRequest.getAssetModelId());
+					primaryAutoLoanDetail.setAssetMake(alLoanDetailRequest.getAssetMake());
+					primaryAutoLoanDetail.setSupplierStateId(alLoanDetailRequest.getSupplierStateId());
+					primaryAutoLoanDetail.setSupplierCityId(alLoanDetailRequest.getSupplierCityId());
+					primaryAutoLoanDetail.setSupplierId(alLoanDetailRequest.getSupplierId());
+					autoLoanDetailRepository.save(primaryAutoLoanDetail);
 			
 			}
 			return true; 
