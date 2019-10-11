@@ -138,6 +138,9 @@ public class AutoLoanParameterRequest extends RetailProduct implements Serializa
 	private List<Integer> repaymentModeIds = Collections.emptyList();
 	private Boolean isRepaymentModeDisplay = false;
 	private Boolean isRepaymentModeMandatory = false;
+	
+	// Bureau Score
+	private List<Integer> bureauScoreIds = Collections.emptyList();
 
 	// Loan to Value (LTV) %
 	private Boolean isLtvDisplay = false;
@@ -832,5 +835,13 @@ public class AutoLoanParameterRequest extends RetailProduct implements Serializa
 
 	public void setNmiMiIncomeType(Integer nmiMiIncomeType) {
 		this.nmiMiIncomeType = nmiMiIncomeType;
+	}
+
+	public List<Integer> getBureauScoreIds() {
+		return bureauScoreIds;
+	}
+
+	public void setBureauScoreIds(List<Integer> bureauScoreIds) {
+		this.bureauScoreIds = bureauScoreIds;
 	}
 }
