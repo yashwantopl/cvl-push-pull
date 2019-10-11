@@ -161,6 +161,12 @@ public class PrimaryAutoLoanServiceImpl implements PrimaryAutoLoanService {
 			res.setIsCheckOffNotChangeSalAcc(primaryAutoLoanDetail.getIsCheckOffNotChangeSalAcc());
 			res.setIsCheckOffPayOutstndAmount(primaryAutoLoanDetail.getIsCheckOffPayOutstndAmount());
 			res.setIsCheckOffShiftSalAcc(primaryAutoLoanDetail.getIsCheckOffShiftSalAcc());
+			res.setManufacturerId(primaryAutoLoanDetail.getManufacturerId());
+			res.setSupplierId(primaryAutoLoanDetail.getSupplierId());
+			res.setAssetMake(primaryAutoLoanDetail.getAssetMake());
+			res.setAssetModelId(primaryAutoLoanDetail.getAssetModelId());
+			res.setSupplierStateId(primaryAutoLoanDetail.getSupplierStateId());
+			res.setSupplierCityId(primaryAutoLoanDetail.getSupplierCityId());
 		}
 		return res;
 	}
