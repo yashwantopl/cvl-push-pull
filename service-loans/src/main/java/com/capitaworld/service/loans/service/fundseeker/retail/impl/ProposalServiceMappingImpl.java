@@ -1297,7 +1297,10 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						matchRequest.setProductId(fpProductId);
 						MatchDisplayResponse matchResponse = matchEngineClient.displayMatchesOfRetail(matchRequest);
 						retailProposalDetails.setListMatches(matchResponse.getMatchDisplayObjectList());
-						retailProposalDetails.setListMatchesMap(matchResponse.getMatchDisplayObjectMap());
+						if(matchResponse.getMatchDisplayObjectMap() != null) {
+							retailProposalDetails.setListMatchesMap(matchResponse.getMatchDisplayObjectMap().values());	
+						}
+						
 					} catch (Exception e) {
 						logger.error(CommonUtils.EXCEPTION,e);
 					}
