@@ -2811,8 +2811,8 @@ public class LoansClient {
 			throw new LoansException(e.getCause().getMessage());
 		}
 	}
-	public LoansResponse getMultipleBankDayDiffrenceForInprinciple() throws LoansException {
-		String url = loansBaseUrl.concat(GET_DAY_DIFFRENCE_FOR_MULTIPLEBANNK);
+	public LoansResponse getMultipleBankDayDiffrenceForInprinciple(Integer loanType) throws LoansException {
+		String url = loansBaseUrl.concat(GET_DAY_DIFFRENCE_FOR_MULTIPLEBANNK).concat("/")+loanType;
 		try {
 			logger.info("Enter in GET_DAY_DIFFRENCE_FOR_MULTIPLEBANNK ---------->{}" , url);
 			HttpHeaders headers = new HttpHeaders();
@@ -2989,5 +2989,4 @@ public class LoansClient {
 		}
 	}
 }
-
 
