@@ -927,7 +927,13 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 		}
 		
 		try {
-			PLRetailApplicantRequest plRetailApplicantRequest = plRetailApplicantService.getProfileByProposalId(userId, applicationId, proposalId);
+			PLRetailApplicantRequest plRetailApplicantRequest = null;
+			if(proposalId != null) {
+				plRetailApplicantRequest = plRetailApplicantService.getProfileByProposalId(userId, applicationId, proposalId);}
+			else {
+				plRetailApplicantRequest = plRetailApplicantService.getProfile(userId, applicationId);
+			}
+			
 			map.put("salutation", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getTitleId()) ? StringEscapeUtils.escapeXml(Title.getById(plRetailApplicantRequest.getTitleId()).getValue()):"");
 			if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getContactAddress())) {
 				map.put("registeredAddPremise", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getContactAddress().getPremiseNumber()) ? CommonUtils.printFields(plRetailApplicantRequest.getContactAddress().getPremiseNumber(),null) + "," : "");
@@ -1508,7 +1514,12 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 		//Fetch Bank Details
 		Map<String, Object> bankData = new HashMap<String, Object>();
 		try {
-			Long orgId = proposalDetailsRepository.getOrgIdByProposalId(proposalId);
+			Long orgId = null;
+			if(proposalId != null) {
+				orgId = proposalDetailsRepository.getOrgIdByProposalId(proposalId);
+			}else {
+				orgId = ineligibleProposalDetailsRepository.getOrgId(applicationId);
+			}
 			List<Object[]> listBankData = commonRepository.getBankDetails(applicationId, orgId);
 			if(!CommonUtils.isListNullOrEmpty(listBankData) && !CommonUtils.isObjectNullOrEmpty(listBankData.get(0))) {
 				
