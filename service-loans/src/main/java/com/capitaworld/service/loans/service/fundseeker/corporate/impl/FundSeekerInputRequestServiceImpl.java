@@ -112,6 +112,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	private static final String CONT_LIABILITY_SY_AMT = "contLiabilitySyAmt";
 	private static final String CONT_LIABILITY_TY_AMT = "contLiabilityTyAmt";
 	private static final String CONT_LIABILITY_YEAR = "contLiabilityYear";
+	private static final String CAMPAIGN_CODE_SIDBI = "sidbi";
 
 	@Autowired
 	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
@@ -376,7 +377,11 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 					}
 					/*set Pan No for Verify Api*/
 					if(saveDirObj.getIsActive() != null && saveDirObj.getIsActive()) {
-						verifyApiReq.getVerifyAPIDINPANRequest().getPara().getVerifyAPIDINPANs().add(new VerifyAPIDINPAN(reqObj.getDirectorsName(), reqObj.getPanNo()));						
+						StringBuilder sb= new StringBuilder();
+						sb.append(reqObj.getFirstName() != null ? reqObj.getFirstName() : "");
+						sb.append(reqObj.getMiddleName() != null ? " "+ reqObj.getMiddleName() : "");
+						sb.append(reqObj.getLastName() != null ? " " + reqObj.getLastName() : "");
+						verifyApiReq.getVerifyAPIDINPANRequest().getPara().getVerifyAPIDINPANs().add(new VerifyAPIDINPAN(sb.toString(), reqObj.getPanNo()));						
 					}
 					if(!CommonUtils.isObjectNullOrEmpty(reqObj.getIsMainDirector()) && (reqObj.getIsMainDirector())){
 						DirectorPersonalDetailRequest directorPersonalDetailRequest = reqObj.getDirectorPersonalDetailRequest();
@@ -692,13 +697,16 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		try {
 			logger.info("Start invokeFraudAnalytics()");
 			LoansResponse res = new LoansResponse();
-			/* Boolean isMp = false; */
 			UserResponse configResponse = null;
 			UserOrganisationRequest convertRes = null;
 			GeneralConfigData jsonData = null;
+			
+			/*check campaignCode by applicationId Return camp code*/
+			String campCode = loanApplicationService.getApplicationCampaignCode(fundSeekerInputRequestResponse.getApplicationId());
 			try {
 				logger.info("In for Get Configuratin from users for==>"+ fundSeekerInputRequestResponse.getApplicationId());
-				configResponse = userClient.getGeneralConfigByUserId(fundSeekerInputRequestResponse.getUserId());
+				logger.info("Configuratin for ==>"+campCode);
+				configResponse = userClient.getGeneralConfigByCampCode(campCode!= null ? campCode : CAMPAIGN_CODE_SIDBI);
 				if (configResponse != null && configResponse.getData() != null) {
 					convertRes = convertJSONToUserOrganisationRequest(convertObjectToString(configResponse.getData()));
 					jsonData = convertRes != null && convertRes.getGeneralConfig() != null ? CommonUtils.convertJSONToGeneralConfigDataRespo(convertRes.getGeneralConfig()): null;

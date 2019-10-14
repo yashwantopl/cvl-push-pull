@@ -136,6 +136,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                     applicantDetail.setAnnualIncomeOfSpouse(plRetailApplicantRequest.getAnnualIncomeOfSpouse());
                     applicantDetail.setNationality(plRetailApplicantRequest.getNationality());
                     applicantDetail.setNetworth(plRetailApplicantRequest.getNetworth());
+                    applicantDetail.setIsUserHaveAadhar(plRetailApplicantRequest.getIsUserHaveAadhar());
                     applicantDetail.setIsBasicInfoFilled(plRetailApplicantRequest.getIsBasicInfoFilled());
                 } else if(plRetailApplicantRequest.getType() != null && plRetailApplicantRequest.getType() == CommonUtils.RetailOneformType.CONTACT_INFO) {
                 	applicantDetail.setIsContactInfoFilled(plRetailApplicantRequest.getIsContactInfoFilled());

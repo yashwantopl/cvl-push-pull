@@ -168,6 +168,8 @@ public class AutoLoanParameterServiceImpl implements AutoLoanParameterService {
 		fPParameterMappingService.inactiveAndSave(autoLoanParameterRequest.getId(),
 				CommonUtils.ParameterTypes.REPAYMENT_MODE, autoLoanParameterRequest.getRepaymentModeIds());
 		
+		fPParameterMappingService.inactiveAndSave(autoLoanParameterRequest.getId(),
+				CommonUtils.ParameterTypes.BUREAU_SCORE, autoLoanParameterRequest.getBureauScoreIds());
 		//Saving Loan Purpose Amount Mapping
 		loanPurposeAmountMappingService.deleteAndSave(autoLoanParameterRequest.getLoanPurposeAmountMappingRequests(), autoLoanParameterRequest.getId());
 		
@@ -271,6 +273,9 @@ public class AutoLoanParameterServiceImpl implements AutoLoanParameterService {
 		
 		autoLoanParameterRequest.setRepaymentModeIds(fPParameterMappingService
 				.getParameters(autoLoanParameterRequest.getId(), CommonUtils.ParameterTypes.REPAYMENT_MODE));
+		
+		autoLoanParameterRequest.setBureauScoreIds(fPParameterMappingService
+				.getParameters(autoLoanParameterRequest.getId(), CommonUtils.ParameterTypes.BUREAU_SCORE));
 
 		//Getting Loan Purpose Amount Mapping
 		autoLoanParameterRequest.setLoanPurposeAmountMappingRequests(loanPurposeAmountMappingService.getByFpProductId(autoLoanParameterRequest.getId()));
@@ -372,6 +377,9 @@ public class AutoLoanParameterServiceImpl implements AutoLoanParameterService {
 		
 		autoLoanParameterRequest.setRepaymentModeIds(fPParameterMappingService.getParametersTemp(
 				autoLoanParameterRequest.getId(), CommonUtils.ParameterTypes.REPAYMENT_MODE));
+		
+		autoLoanParameterRequest.setBureauScoreIds(fPParameterMappingService.getParametersTemp(
+				autoLoanParameterRequest.getId(), CommonUtils.ParameterTypes.BUREAU_SCORE));
 
 		//Getting Loan Purpose Amount Mapping
 		autoLoanParameterRequest.setLoanPurposeAmountMappingRequests(loanPurposeAmountMappingService.getByFpProductId(autoLoanParameterRequest.getId()));
@@ -465,6 +473,9 @@ public class AutoLoanParameterServiceImpl implements AutoLoanParameterService {
 		
 		fPParameterMappingService.inactiveAndSaveTemp(autoLoanParameterRequest.getId(),
 				CommonUtils.ParameterTypes.REPAYMENT_MODE, autoLoanParameterRequest.getRepaymentModeIds());
+		
+		fPParameterMappingService.inactiveAndSaveTemp(autoLoanParameterRequest.getId(),
+				CommonUtils.ParameterTypes.BUREAU_SCORE, autoLoanParameterRequest.getBureauScoreIds());
 		
 		//Saving Loan Purpose Amount Mapping
 		loanPurposeAmountMappingService.deleteAndSave(autoLoanParameterRequest.getLoanPurposeAmountMappingRequests(), autoLoanParameterRequest.getId());

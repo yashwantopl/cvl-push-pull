@@ -188,7 +188,9 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 						bankRatio = Double.valueOf(ratioValues[3].toString());
 					}
 				}
+				Object[] blendedVal = new Object[2];
 				Long nbfcOrgId = null,bankOrgId = null;
+				Double blRoi = 0d,blEmi = 0d;
 				for (ProposalDetails proposalDetails : proposalDetailsList) {
 					if(!CommonUtils.isObjectNullOrEmpty(proposalDetails.getNbfcFlow())){
 						Double ratioVal = 0d;
@@ -199,10 +201,14 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 							ratioVal = bankRatio;
 							bankOrgId = proposalDetails.getUserOrgId();
 						}
-						calcAndSaveBlednedRate(proposalDetails,tenure,ratioVal,proposalMappingRequest);
+						calcAndSaveBlednedRate(proposalDetails,tenure,ratioVal,proposalMappingRequest,blendedVal);
 					}
 				}
-				Integer isDataSaved = coLendingFlowRepository.saveBlendedValues(applicationId,nbfcOrgId,bankOrgId);
+				if(!CommonUtils.isObjectNullOrEmpty(blendedVal)){
+					blRoi = Double.valueOf(blendedVal[0].toString());
+					blEmi = Double.valueOf(blendedVal[1].toString());
+				}
+				Integer isDataSaved = coLendingFlowRepository.saveBlendedValues(applicationId,nbfcOrgId,bankOrgId,blRoi,blEmi);
 				if(isDataSaved == 0){
 					logger.error("Blended rate Data not saved");
 					throw new LoansException("Blended rate Data not saved for co-origination flow");
@@ -216,13 +222,14 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 		return false;
 	}
 
-	private void calcAndSaveBlednedRate(ProposalDetails proposalDetails,Double tenure,Double ratioVal,ProposalMappingRequest minLoanAmtProposalObj){
+	private void calcAndSaveBlednedRate(ProposalDetails proposalDetails,Double tenure,Double ratioVal,ProposalMappingRequest minLoanAmtProposalObj,Object[] blendedVal){
 		try {
-			Double calcTenure = 0d,calcRoi = 0d,calcProcessingFee = 0d,monthlyRate = 0d,calcEmi = 0d;
+			Double calcTenure = 0d,roi = 0d,calcProcessingFee = 0d,monthlyRate = 0d,calcEmi = 0d;
 			Double loanAmount = minLoanAmtProposalObj.getElAmount(),existingAmt = minLoanAmtProposalObj.getExistingLoanAmount(),additionalAmt = minLoanAmtProposalObj.getAdditionalLoanAmount();
-
+			Double blRoi = 0d,blEmi = 0d;
+			roi = proposalDetails.getElRoi();
 			calcTenure = minLoanAmtProposalObj.getElTenure();
-			calcRoi = (ratioVal * proposalDetails.getElRoi()) / 100;
+			blRoi = (ratioVal * roi) / 100;
 			calcProcessingFee = (ratioVal * proposalDetails.getProcessingFee()) / 100;
 
 			if(!CommonUtils.isObjectNullOrEmpty(additionalAmt) && additionalAmt!=0){
@@ -235,16 +242,32 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 				loanAmount = (ratioVal * loanAmount) / 100;
 			}
 
-			monthlyRate = (calcRoi/100) / 12;
+			monthlyRate = (roi/100) / 12;
 			Double mTenure = calcTenure*12;
 			calcEmi= getPMTCalculationByLoanAmt(monthlyRate,mTenure,loanAmount);
 
 			DecimalFormat df = new DecimalFormat("#.##");
-			calcRoi = Double.valueOf(df.format(calcRoi));
+			blRoi = Double.valueOf(df.format(blRoi));
 			calcProcessingFee = Double.valueOf(df.format(calcProcessingFee));
 
 			DecimalFormat df1 = new DecimalFormat("#");
 			calcEmi = Double.valueOf(df1.format(calcEmi));
+
+
+			if(!CommonUtils.isObjectNullOrEmpty(blendedVal)){
+				if(!CommonUtils.isObjectNullOrEmpty(blendedVal[0])){
+					blRoi+= Double.valueOf(blendedVal[0].toString());
+
+					monthlyRate = (blRoi/100) / 12;
+					blEmi= getPMTCalculationByLoanAmt(monthlyRate,mTenure,minLoanAmtProposalObj.getElAmount());
+					blEmi = Double.valueOf(df1.format(blEmi));
+					blRoi = Double.valueOf(df.format(blRoi));
+					blendedVal[0] = blRoi;
+					blendedVal[1] = blEmi;
+				}else {
+					blendedVal[0] = blRoi;
+				}
+			}
 
 			ProposalDetailsAuditNbfc proposalDetailsAuditNbfc = new ProposalDetailsAuditNbfc();
 			BeanUtils.copyProperties(proposalDetails,proposalDetailsAuditNbfc);
@@ -257,7 +280,7 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 			proposalDetails.setExistingLoanAmount(existingAmt);
 			proposalDetails.setEmi(calcEmi);
 			proposalDetails.setProcessingFee(calcProcessingFee);
-			proposalDetails.setElRoi(calcRoi);
+			//proposalDetails.setElRoi(calcRoi);
 			proposalDetails.setElTenure(calcTenure);
 			proposalDetails.setModifiedDate(new Date());
 

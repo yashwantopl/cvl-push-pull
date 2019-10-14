@@ -164,6 +164,7 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 			arrangementsDetail.setDirectorBackgroundDetail(directorId);
 			arrangementsDetail.setBureauOrCalculatedEmi(req.getEmi());
 			arrangementsDetail.setBureauOutstandingAmount(req.getOutstandingAmount());
+			arrangementsDetail.setDpdDetails(req.getDpdDetails());
 			/*if(arrangementsDetail.getAmount() != null && arrangementsDetail.getAmount() > 0 && arrangementsDetail.getOutstandingAmount() > arrangementsDetail.getAmount()) {
 				arrangementsDetail.setOutstandingAmount(arrangementsDetail.getAmount());
 			}*/

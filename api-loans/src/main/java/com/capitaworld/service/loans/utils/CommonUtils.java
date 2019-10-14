@@ -270,6 +270,119 @@ public class CommonUtils {
 			throw new IllegalArgumentException(v != null ? v.toString() : null);
 		}
 	}
+	
+//	public enum CSPCode {
+//		
+//		SBCHQ_CSA_PUBIND_SILVER_INR("10291431","SBCHQ-CSA-PUBIND-SILVER-INR","CSP","Silver","Category 1","Corporate Salary Package",16l),
+//		STARTUP_SALARY_PACKAGE_SUSP("10291432","Startup Salary Package (SUSP)","CSP","Silver","Category 1","Corporate Salary Package",16l),
+//		SBCHQ_START_UP_SAL_PACK_GOLD("10291442","SBCHQ-START UP SAL PACK GOLD","CSP","Gold","Category 1","Corporate Salary Package",16l),
+//		SBCHQ_CSA_PUBIND_DIAMOND_INR("10291451","SBCHQ-CSA-PUBIND-DIAMOND-INR","CSP","Diamond","Category 1","Corporate Salary Package",16l),
+//		SBCHQ_START_UP_SAL_PAC_DIAMOND("10291452","SBCHQ-START UP SAL PAC DIAMOND","CSP","Diamond","Category 1","Corporate Salary Package",16l),
+//		SBCHQ_START_UP_SAL_PAC_PLATNUM("10291462","SBCHQ-START UP SAL PAC PLATNUM","CSP","Platinum","Category 1","Corporate Salary Package",16l),
+//		SBCHQ_CSA_PUBIND_CONT_SILVER("10291531","SBCHQ-CSA-PUBIND-CONT SILVER","CSP","Silver","Category 1","Corporate Salary Package",16l),
+//		SBCHQ_CSA_PUBIND_CONT_GOLD("10291541","SBCHQ-CSA-PUBIND-CONT GOLD","CSP","Gold","Category 1","Corporate Salary Package",16l),
+//		SBCHQ_CSA_PUBIND_GOLD_INR("10291441","SBCHQ-CSA-PUBIND-GOLD-INR","CSP","Gold","Category 1","Corporate Salary Package",16l),
+//		SBCHQ_CSA_PUBIND_PLATINUM_INR("10291461","SBCHQ-CSA-PUBIND-PLATINUM-INR","CSP","Platinum","Category 1","Corporate Salary Package",16l),
+//		SBCHQ_RSP_PUBIND_SILVER_INR("10951431","SBCHQ-RSP-PUBIND-SILVER-INR","RSP","Silver","Category 2","Corporate Salary Package",16l),
+//		SBCHQ_RSP_PUBIND_GOLD_INR("10951441","SBCHQ-RSP-PUBIND-GOLD-INR","RSP","Gold","Category 2","Corporate Salary Package",16l),
+//		SBCHQ_RSP_PUBIND_DIAMOND_INR("10951451","SBCHQ-RSP-PUBIND-DIAMOND-INR","RSP","Diamond","Category 2","Corporate Salary Package",16l),
+//		SBCHQ_RSP_PUBIND_PLATINUM_INR("10951461","SBCHQ-RSP-PUBIND-PLATINUM-INR","RSP","Platinum","Category 2","Corporate Salary Package",16l),
+//		STATE_GOVERNMENT_SALARY_PACKAGE_SGSP("10961431","State Government Salary Package (SGSP)","SGSP","Silver","Category 2","Corporate Salary Package",16l),
+//		SBCHQ_SGSP_PUBIND_SILVER_INR("10961441","SBCHQ-SGSP-PUBIND-SILVER-INR","SGSP","Gold","Category 2","Corporate Salary Package",16l),
+//		SBCHQ_SGSP_PUBIND_GOLD_INR("10961451","SBCHQ-SGSP-PUBIND-GOLD-INR","SGSP","Diamond","Category 2","Corporate Salary Package",16l),
+//		SBCHQ_SGSP_PUBIND_DIAMOND_INR("10961461","SBCHQ-SGSP-PUBIND-DIAMOND-INR","SGSP","Platinum","Category 2","Corporate Salary Package",16l),
+//		SBCHQ_CGSP_PUBIND_SILVER_INR("10981431","SBCHQ-CGSP-PUBIND-SILVER-INR","CGSP","Silver","Category 2","Corporate Salary Package",16l),
+//		SBCHQ_CGSP_PUBIND_GOLD_INR("10981441","SBCHQ-CGSP-PUBIND-GOLD-INR","CGSP","Gold","Category 2","Corporate Salary Package",16l),
+//		SBCHQ_CGSP_PUBIND_DIAMOND_INR("10981451","SBCHQ-CGSP-PUBIND-DIAMOND-INR","CGSP","Diamond","Category 2","Corporate Salary Package",16l),
+//		SBCHQ_CGSP_PUBIND_PLATINUM_INR("10981461","SBCHQ-CGSP-PUBIND-PLATINUM-INR","CGSP","Platinum","Category 2","Corporate Salary Package",16l),
+//		SBCHQ_DSP_PUBIND_SILVER_INR("10921431","SBCHQ-DSP-PUBIND-SILVER-INR","DSP","Silver","Category 2","Corporate Salary Package",16l),
+//		SBCHQ_DSP_PUBIND_GOLD_INR("10921441","SBCHQ-DSP-PUBIND-GOLD-INR","DSP","Gold","Category 2","Corporate Salary Package",16l),
+//		SBCHQ_DSP_PUBIND_DIAMOND_INR("10921451","SBCHQ-DSP-PUBIND-DIAMOND-INR","DSP","Diamond","Category 2","Corporate Salary Package",16l),
+//		SBCHQ_DSP_PUBIND_PLATINUM_INR("10921461","SBCHQ-DSP-PUBIND-PLATINUM-INR","DSP","Platinum","Category 2","Corporate Salary Package",16l),
+//		SBCHQ_DSP_PUBIND_SAILOR ("10921471","SBCHQ-DSP-PUBIND-SAILOR < 18 YR","DSP","Silver","Category 2","Corporate Salary Package",16l),
+//		SBCHQ_PMSP_PUBIND_SILVER_INR("10941431","SBCHQ-PMSP-PUBIND-SILVER-INR","PMSP","Silver","Category 2","Corporate Salary Package",16l),
+//		SBCHQ_PMSP_PUBIND_GOLD_INR("10941441","SBCHQ-PMSP-PUBIND-GOLD-INR","PMSP","Gold","Category 2","Corporate Salary Package",16l),
+//		SBCHQ_PMSP_PUBIND_DIAMOND_INR("10941451","SBCHQ-PMSP-PUBIND-DIAMOND-INR","PMSP","Diamond","Category 2","Corporate Salary Package",16l),
+//		SBCHQ_PMSP_PUBIND_PLATINUM_INR("10941461","SBCHQ-PMSP-PUBIND-PLATINUM-INR","PMSP","Platinum","Category 2","Corporate Salary Package",16l),
+//		SBCHQ_PMPENSIONER_SILVER_INR("10941471","SBCHQ-PMPENSIONER-SILVER-INR","PMSP","Silver","Category 2","Corporate Salary Package",16l),
+//		SBCHQ_PMPENSIONER_GOLD_INR("10941481","SBCHQ-PMPENSIONER-GOLD-INR","PMSP","Gold","Category 2","Corporate Salary Package",16l),
+//		SBCHQ_PMPENSIONER_DIAMOND_INR("10941491","SBCHQ-PMPENSIONER-DIAMOND-INR","PMSP","Diamond","Category 2","Corporate Salary Package",16l),
+//		SBCHQ_PMPENSIONER_PLATINUM_INR("10941501","SBCHQ-PMPENSIONER-PLATINUM-INR","PMSP","Platinum","Category 2","Corporate Salary Package",16l),
+//		SBCHQ_ICGSP_PUBIND_SILVER_INR("10991431","SBCHQ-ICGSP-PUBIND-SILVER-INR","ICGSP","Silver","Category 2","Corporate Salary Package",16l),
+//		SBCHQ_ICGSP_PUBIND_GOLD_INR("10991441","SBCHQ-ICGSP-PUBIND-GOLD-INR","ICGSP","Gold","Category 2","Corporate Salary Package",16l),
+//		SBCHQ_ICGSP_PUBIND_DIAMOND_INR("10991451","SBCHQ-ICGSP-PUBIND-DIAMOND-INR","ICGSP","Diamond","Category 2","Corporate Salary Package",16l),
+//		SBCHQ_ICGSP_PUBIND_PLATINUM_INR("10991461","SBCHQ-ICGSP-PUBIND-PLATINUM-INR","ICGSP","Platinum","Category 2","Corporate Salary Package",16l),
+//		SBCHQ_PSP_PUBIND_SILVER_INR("10971431","SBCHQ-PSP-PUBIND-SILVER-INR","PSP","Silver","Category 2","Corporate Salary Package",16l),
+//		SBCHQ_PSP_PUBIND_GOLD_INR("10971441","SBCHQ-PSP-PUBIND-GOLD-INR","PSP","Gold","Category 2","Corporate Salary Package",16l),
+//		SBCHQ_PSP_PUBIND_DIAMOND_INR("10971451","SBCHQ-PSP-PUBIND-DIAMOND-INR","PSP","Diamond","Category 2","Corporate Salary Package",16l),
+//		SBCHQ_PSP_PUBIND_PLATINUM_INR("10971461","SBCHQ-PSP-PUBIND-PLATINUM-INR","PSP","Platinum","Category 2","Corporate Salary Package",16l);
+//		
+//		private String productCode;
+//		private String desc;
+//		private String variant;
+//		private String category;
+//		private String rsm;
+//		private String rsmRelationWithBank;
+//		private Long orgId;
+//		
+//		private CSPCode(String productCode, String desc, String variant, String category, String rsm,
+//				String rsmRelationWithBank, Long orgId) {
+//			this.productCode = productCode;
+//			this.desc = desc;
+//			this.variant = variant;
+//			this.category = category;
+//			this.rsm = rsm;
+//			this.rsmRelationWithBank = rsmRelationWithBank;
+//			this.orgId = orgId;
+//		}
+//
+//		public String getProductCode() {
+//			return productCode;
+//		}
+//
+//		public String getDesc() {
+//			return desc;
+//		}
+//
+//		public String getVariant() {
+//			return variant;
+//		}
+//
+//		public String getCategory() {
+//			return category;
+//		}
+//
+//		public String getRsm() {
+//			return rsm;
+//		}
+//
+//		public String getRsmRelationWithBank() {
+//			return rsmRelationWithBank;
+//		}
+//
+//		public Long getOrgId() {
+//			return orgId;
+//		}
+//		
+//		public static CSPCode fromDescAndOrgId(String desc,Long orgId) {
+//			for (CSPCode c : CSPCode.values()) {
+//				if (c.desc.replaceAll("[^a-zA-Z0-9]", "").equalsIgnoreCase(desc.replaceAll("[^a-zA-Z0-9]", "")) && c.orgId.equals(orgId)) {
+//					return c;
+//				}
+//			}
+//			return null;
+//		}
+//		
+//		public static CSPCode fromProductCode(String productCode) {
+//			for (CSPCode c : CSPCode.values()) {
+//				if (c.productCode.equalsIgnoreCase(productCode)) {
+//					return c;
+//				}
+//			}
+//			return null;
+//		}
+//
+//	}
 
 	public static final class DenominationId {
 		private DenominationId() {
@@ -721,6 +834,7 @@ public class CommonUtils {
 		public static final Integer CROP = 9;
 		public static final Integer IRRIGATED_UNIRRIGATED = 10;
 		public static final Integer REPAYMENT_MODE = 11;
+		public static final Integer BUREAU_SCORE = 12;
 	}
 
 	public static final class InEligibleProposalStatus {
@@ -2319,4 +2433,40 @@ public class CommonUtils {
 			 return null;
 		 }
 	 }
+	/**
+	 * @author nilay.darji
+	 * @param score
+	 * @return CIBIL Version 2 Score Range Return
+	 * 
+	 */
+	public static String getCibilV2ScoreRange(String score) {
+		if (score.equals(-1)||score.equals("000-1")) {
+			return "-1";
+		} else if (score.equals(0) || score.equals(1)) {
+			return "1 - 5";
+		} else if (isBetween(score, 300, 550)) {
+			return "300 - 514";
+		} else if (isBetween(score, 551, 600)) {
+			return "515 - 520";
+		} else if (isBetween(score, 601, 650)) {
+			return "521 - 566";
+		} else if (isBetween(score, 651, 700)) {
+			return "567 - 618";
+		} else if (isBetween(score, 701, 750)) {
+			return "619 - 661";
+		} else if (isBetween(score, 751, 800)) {
+			return "662 - 697";
+		} else if (isBetween(score, 801, 850)) {
+			return "698 - 840";
+		} else if (isBetween(score, 851, 900)) {
+			return "841 - 900";
+		} else {
+			return null;
+		}
+	} 
+
+	public static boolean isBetween(String actualVal, int min, int max) {
+		
+		return min <= Integer.parseInt(actualVal) && Integer.parseInt(actualVal) <= max;
+	}
 }

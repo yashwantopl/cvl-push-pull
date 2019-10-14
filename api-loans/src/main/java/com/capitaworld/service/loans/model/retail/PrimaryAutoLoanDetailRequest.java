@@ -50,6 +50,14 @@ public class PrimaryAutoLoanDetailRequest extends LoanApplicationRequest impleme
 
 	private String currencyValue;
 
+	//additional Parameters
+	private Long manufacturerId;
+	private Long assetModelId;
+	private Integer assetMake;
+	private Long supplierStateId;
+	private Long supplierCityId;
+	private Long supplierId;
+
 	private List<Long> negativeList = Collections.emptyList();
 
 	public Long getApplicationId() {
@@ -292,4 +300,51 @@ public class PrimaryAutoLoanDetailRequest extends LoanApplicationRequest impleme
 		this.primaryFilledCount = primaryFilledCount;
 	}
 
+	public Long getManufacturerId() {
+		return manufacturerId;
+	}
+
+	public void setManufacturerId(Long manufacturerId) {
+		this.manufacturerId = manufacturerId;
+	}
+
+	public Long getAssetModelId() {
+		return assetModelId;
+	}
+
+	public void setAssetModelId(Long assetModelId) {
+		this.assetModelId = assetModelId;
+	}
+
+	public Integer getAssetMake() {
+		return assetMake;
+	}
+
+	public void setAssetMake(Integer assetMake) {
+		this.assetMake = assetMake;
+	}
+
+	public Long getSupplierStateId() {
+		return supplierStateId;
+	}
+
+	public void setSupplierStateId(Long supplierStateId) {
+		this.supplierStateId = supplierStateId;
+	}
+
+	public Long getSupplierCityId() {
+		return supplierCityId;
+	}
+
+	public void setSupplierCityId(Long supplierCityId) {
+		this.supplierCityId = supplierCityId;
+	}
+
+	public Long getSupplierId() {
+		return supplierId;
+	}
+
+	public void setSupplierId(Long supplierId) {
+		this.supplierId = supplierId;
+	}
 }

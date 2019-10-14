@@ -449,75 +449,35 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 							mailParameters.put(CommonUtils.PARAMETERS_LOAN_AMOUNT, "NA");
 						}
 					}
-					// ======send email to maker bo checker===========================
-					if(branchId!=null && userOrgId!=null) {
-					List<Map<String, Object>> usersRespList = null;
-					String to = null;
-					userResponse = userClient.getUserDetailByOrgRoleBranchId(userOrgId,
-							com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_MAKER, branchId);
-					usersRespList = (List<Map<String, Object>>) userResponse.getListData();
-					if (!CommonUtils.isObjectNullOrEmpty(usersRespList)) {
-						for (int i = 0; i < usersRespList.size(); i++) {
-							UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap(usersRespList.get(i),
-									UsersRequest.class);
-							if (!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
-								to = userObj.getEmail();
-
-								 mailParameters.put(CommonUtils.PARAMETERS_IS_DYNAMIC, false);
-								String[] bcc=null;
-								if(i==0)
-								{
-									bcc = new String[]{environment.getRequiredProperty("bccforcam")};
-								}
-
-
-								createNotificationForEmail(to, applicationRequest.getUserId().toString(),
-										mailParameters, NotificationAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE, subject,applicationId,false,null,null,null);
-							}
-						}
-
-					} else {
-						logger.info("No Maker found=================>");
-					}
-					//add condition on branch id and orgId 
-					userResponse = userClient.getUserDetailByOrgRoleBranchId(userOrgId,
-							com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_CHECKER, branchId);
-					usersRespList = (List<Map<String, Object>>) userResponse.getListData();
-					if (!CommonUtils.isObjectNullOrEmpty(usersRespList)) {
-						for (int i = 0; i < usersRespList.size(); i++) {
-							UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap(usersRespList.get(i),
-									UsersRequest.class);
-							if (!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
-								to = userObj.getEmail();
-								mailParameters.put(CommonUtils.PARAMETERS_IS_DYNAMIC, true);
-								createNotificationForEmail(to, applicationRequest.getUserId().toString(),
-										mailParameters, NotificationAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE, subject,applicationId,false,null,null,null);
-							}
-						}
-
-					} else {
-						logger.info("No Checker found=================>");
-					}
-					userResponse = userClient.getUserDetailByOrgRoleBranchId(userOrgId,
-							com.capitaworld.service.users.utils.CommonUtils.UserRoles.BRANCH_OFFICER, branchId);
-					usersRespList = (List<Map<String, Object>>) userResponse.getListData();
-					if (!CommonUtils.isObjectNullOrEmpty(usersRespList)) {
-						for (int i = 0; i < usersRespList.size(); i++) {
-							UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap(usersRespList.get(i),
-									UsersRequest.class);
-							if (!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
-								to = userObj.getEmail();
-								mailParameters.put(CommonUtils.PARAMETERS_IS_DYNAMIC, true);
-								createNotificationForEmail(to, applicationRequest.getUserId().toString(),
-										mailParameters, NotificationAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE, subject,applicationId,false,null,null,null);
-							}
-						}
-
-					} else {
-						logger.info("No BO found=================>");
-					}
-					}
 					
+					// ======send email to maker bo checker===========================
+					List<Long> roleTypeList = new ArrayList<Long>();
+					roleTypeList.add(com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_MAKER);
+					roleTypeList.add(com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_CHECKER);
+					roleTypeList.add(com.capitaworld.service.users.utils.CommonUtils.UserRoles.BRANCH_OFFICER);
+					
+					List<String> ccList = new ArrayList<String>();
+					String[] bcc = new String[]{environment.getRequiredProperty("bccforcam")};
+					String to = null;
+					
+					if(branchId != null && userOrgId != null) {
+						for (Long roleTypeId : roleTypeList) {
+							List<String> emailIds = commonRepository.getUserDetailsByUserOrgIdAndUserRoleIdAndBranchId(userOrgId, roleTypeId, branchId);
+							for(String emailId : emailIds) {
+								if(to == null) {
+									to = emailId;
+									mailParameters.put(CommonUtils.PARAMETERS_IS_DYNAMIC, false);
+								}else {
+									ccList.add(emailId);
+								}
+							}
+						}
+						
+						String[] cc = ccList != null && !ccList.isEmpty() ? ccList.toArray(new String[ccList.size()]) : null;
+						
+						createNotificationForEmail(to, applicationRequest.getUserId().toString(),
+								mailParameters, NotificationAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE, subject,applicationId,false,bcc,cc,null);
+					}
 					isSent = true;
 				}
 
