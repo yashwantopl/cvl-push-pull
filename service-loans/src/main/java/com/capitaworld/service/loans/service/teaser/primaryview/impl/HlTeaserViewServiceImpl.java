@@ -679,7 +679,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 			cibilReq.setApplicationId(toApplicationId);
 			CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
 			if(cibilScoreByPanCard != null) {
-				hlTeaserViewResponse.setCibilScoreRange(CommonUtils.getCibilV2ScoreRange(Integer.parseInt(cibilScoreByPanCard.getActualScore())));
+				hlTeaserViewResponse.setCibilScoreRange(CommonUtils.getCibilV2ScoreRange(cibilScoreByPanCard.getActualScore()));
 			}
 			hlTeaserViewResponse.setCibilScore(cibilScoreByPanCard);
 		} catch (Exception e) {
@@ -1248,7 +1248,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 					cibilReq.setApplicationId(applicationId);
 					CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
 					if(cibilScoreByPanCard != null) {
-						plRetailApplicantResponse.setCibilScoreRange(CommonUtils.getCibilV2ScoreRange(Integer.parseInt(cibilScoreByPanCard.getActualScore())));
+						plRetailApplicantResponse.setCibilScoreRange(CommonUtils.getCibilV2ScoreRange(cibilScoreByPanCard.getActualScore()));
 					}
 					plRetailApplicantResponse.setCibilScore(cibilScoreByPanCard);
 				} catch (Exception e) {
