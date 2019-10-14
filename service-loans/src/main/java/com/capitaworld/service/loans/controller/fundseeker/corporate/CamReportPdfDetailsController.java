@@ -751,12 +751,12 @@ public class CamReportPdfDetailsController {
 		}
 	}
 	
-	@GetMapping(value = {"/getApplicationForm/{applicationId}/{productMappingId}/{proposalId}","/getApplicationForm/{applicationId}/{productMappingId}/{proposalId}/{loanTypeId}"} , produces = MediaType.APPLICATION_JSON_VALUE)
-	public byte[] getApplicationFormReport(@PathVariable(value = "applicationId") Long applicationId ,@PathVariable(value = "productMappingId") Long productId, 
-			@PathVariable(value = "proposalId") Long proposalId ,@PathVariable(name = "loanTypeId" , required = false) Long loanTypeId, HttpServletResponse  httpServletResponse,HttpServletRequest httpReq) {
+	@GetMapping(value = {"/getApplicationForm/{applicationId}","/getApplicationForm/{applicationId}/{productMappingId}/{proposalId}","/getApplicationForm/{applicationId}/{productMappingId}/{proposalId}/{loanTypeId}"} , produces = MediaType.APPLICATION_JSON_VALUE)
+	public byte[] getApplicationFormReport(@PathVariable(value = "applicationId") Long applicationId ,@PathVariable(name = "productMappingId" , required = false) Long productId, 
+			@PathVariable(name = "proposalId" , required = false) Long proposalId ,@PathVariable(name = "loanTypeId" , required = false) Long loanTypeId, HttpServletResponse  httpServletResponse,HttpServletRequest httpReq) {
 		
 		logger.info("Into get Application Form Report with ApplicationId==>{} ,ProductId==>{} and ProposalId==>{} with LoanTypeId==>{}" , applicationId ,productId ,proposalId ,loanTypeId);
-		if (CommonUtils.isObjectNullOrEmpty(applicationId)||CommonUtils.isObjectNullOrEmpty(productId)||CommonUtils.isObjectListNull(proposalId)) {
+		if (CommonUtils.isObjectNullOrEmpty(applicationId)) {
 			logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND , applicationId);
 			return null;
 		}
