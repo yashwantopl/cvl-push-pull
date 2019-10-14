@@ -78,6 +78,7 @@ import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtility;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.BusinessType;
+import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
@@ -3272,9 +3273,15 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	}
 
 	@Override
-	public String getDayDiffrenceForInprinciple() {
-		if(daysDiff != null) {
+	public String getDayDiffrenceForInprinciple(Integer loanType) {
+		if(loanType == LoanType.WORKING_CAPITAL.getValue() ||loanType ==  LoanType.WCTL_LOAN.getValue() || loanType ==  LoanType.TERM_LOAN.getValue()) {
 			return daysDiff;
+		}else if(loanType == LoanType.PERSONAL_LOAN.getValue()) {
+			return daysDiffRetail;
+		}else if(loanType == LoanType.HOME_LOAN.getValue()) {
+			return daysDiffRetailHL;
+		}else if(loanType == LoanType.AUTO_LOAN.getValue()) {
+			return daysDiffRetailAL;
 		}
 		return null;
 	}
