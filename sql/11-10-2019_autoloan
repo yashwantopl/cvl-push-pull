@@ -6,13 +6,13 @@ ALTER TABLE loan_application.fs_retail_primary_auto_loan_details
   ADD COLUMN asset_model_id BIGINT(20) DEFAULT NULL;
 
 ALTER TABLE loan_application.fs_retail_primary_auto_loan_details
-  ADD COLUMN assetMake INT(11) DEFAULT NULL;
+  ADD COLUMN asset_make INT(11) DEFAULT NULL;
 
 ALTER TABLE loan_application.fs_retail_primary_auto_loan_details
-  ADD COLUMN supplierStateId BIGINT(20) DEFAULT NULL;
+  ADD COLUMN supplier_state_id BIGINT(20) DEFAULT NULL;
 
 ALTER TABLE loan_application.fs_retail_primary_auto_loan_details
-  ADD COLUMN supplierCityId BIGINT(20) DEFAULT NULL;
+  ADD COLUMN supplier_city_id BIGINT(20) DEFAULT NULL;
 
 ALTER TABLE loan_application.fs_retail_primary_auto_loan_details
-  ADD COLUMN supplierId BIGINT(20) DEFAULT NULL;
+  ADD COLUMN supplier_id BIGINT(20) DEFAULT NULL;
