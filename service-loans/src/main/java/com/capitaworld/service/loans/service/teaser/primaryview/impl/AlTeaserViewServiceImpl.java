@@ -345,7 +345,7 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 				plRetailApplicantResponse.setPan(plRetailApplicantRequest.getPan());
 				plRetailApplicantResponse.setAadharNumber(plRetailApplicantRequest.getAadharNumber());
 				plRetailApplicantResponse.setMobile(plRetailApplicantRequest.getMobile());
-				alTeaserViewResponse.setIsUserHaveAadhar(CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getIsUserHaveAadhar()) ?  false : plRetailApplicantRequest.getIsUserHaveAadhar());
+				alTeaserViewResponse.setIsUserHaveAadhar(plRetailApplicantRequest.getIsUserHaveAadhar());
 				
 				//Emp Salaried Type of Applicant
 				if(plRetailApplicantRequest.getEmploymentType() != null && plRetailApplicantRequest.getEmploymentType() == OccupationNature.SALARIED.getId()) {
@@ -652,7 +652,7 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 			cibilReq.setApplicationId(toApplicationId);
 			CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
 			if (cibilScoreByPanCard != null) {
-				alTeaserViewResponse.setCibilScoreRange(CommonUtils.getCibilV2ScoreRange(Integer.parseInt(cibilScoreByPanCard.getActualScore())));
+				alTeaserViewResponse.setCibilScoreRange(CommonUtils.getCibilV2ScoreRange(cibilScoreByPanCard.getActualScore()));
 			}
 			alTeaserViewResponse.setCibilScore(cibilScoreByPanCard);
 		} catch (Exception e) {
@@ -1213,6 +1213,20 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 				} catch (Exception e) {
 					logger.error(":::::::::::---------Error while fetching name as per itr----------:::::::::::",e);
 				}*/
+				
+			    try {
+	                    CibilRequest cibilReq=new CibilRequest();
+	                    cibilReq.setPan(coApplicantDetail.getPan());
+	                    cibilReq.setApplicationId(applicationId);
+	                    CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
+	                    if(cibilScoreByPanCard != null) {
+	                        plRetailApplicantResponse.setCibilScoreRange(CommonUtils.getCibilV2ScoreRange(cibilScoreByPanCard.getActualScore()));
+	                    }
+	                    plRetailApplicantResponse.setCibilScore(cibilScoreByPanCard);
+	                } catch (Exception e) {
+	                    logger.error("Error While calling Cibil Score By PanCard : ",e);
+	                }
+
 				
 				/* FOR COAPP */
 				ITRBasicDetailsResponse itrReq = new ITRBasicDetailsResponse();

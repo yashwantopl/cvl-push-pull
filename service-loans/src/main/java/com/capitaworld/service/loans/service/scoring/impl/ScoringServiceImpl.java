@@ -114,6 +114,7 @@ import com.capitaworld.service.oneform.enums.OccupationHL;
 import com.capitaworld.service.oneform.enums.OccupationNatureNTB;
 import com.capitaworld.service.oneform.enums.ResidenceStatusRetailMst;
 import com.capitaworld.service.oneform.enums.VehicleType;
+import com.capitaworld.service.oneform.enums.YesNo;
 import com.capitaworld.service.oneform.enums.scoring.EnvironmentCategory;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.rating.RatingClient;
@@ -2561,7 +2562,7 @@ public class ScoringServiceImpl implements ScoringService {
             			case ScoreParameter.Retail.HomeLoan.AVG_EOD_BALANCE:
             				Double totalEODBalAvg = 0.0d;
             				Double totalCredit = 0.0d;
-
+            				scoreParameterRetailRequest.setAvgEodBalToToalDep(0.0d);
             				for(Data bankStatementData : bankStatementDatas) {
             					if(bankStatementData.getSummaryInfo() != null) {
                 					if(!CommonUtils.isObjectNullOrEmpty(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getBalAvg()) && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalCredit())) {
@@ -2570,7 +2571,9 @@ public class ScoringServiceImpl implements ScoringService {
                 					}
                 				}
             				}
-            				scoreParameterRetailRequest.setAvgEodBalToToalDep((totalEODBalAvg / totalCredit));
+            				if(totalEODBalAvg > 0 && totalCredit > 0) {
+            					scoreParameterRetailRequest.setAvgEodBalToToalDep((totalEODBalAvg / totalCredit));            					
+            				}
     						scoreParameterRetailRequest.setIsAvgEodBalToToalDep_p(true);
             				break;
             			case ScoreParameter.Retail.HomeLoan.LOAN_TO_INCOME_RATIO:
@@ -3869,6 +3872,15 @@ public class ScoringServiceImpl implements ScoringService {
         			case ScoreParameter.Retail.AutoLoan.PERSONAL_RELATIONSHIP_WITH_BANK: //
         				scoreParameterRetailRequest.setIsPersonalRelationShipWithBank_p(true);
         				 break;
+//        			case ScoreParameter.Retail.AutoLoan.IS_ADHAAR_CARD:
+//        				scoreParameterRetailRequest.setIsAdhaarCard_p(true);
+//        				scoreParameterRetailRequest.setAdhaarCardValue(YesNo.NO.getId()); // Default No
+//        				if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getIsUserHaveAadhar())) {
+//        					if(coApplicantDetail.getIsUserHaveAadhar()) {
+//        						scoreParameterRetailRequest.setAdhaarCardValue(YesNo.YES.getId()); // Default Yes	
+//        					}
+//        				}
+//        				break;
                         default:
                          break;
 
@@ -8923,6 +8935,13 @@ public class ScoringServiceImpl implements ScoringService {
             				break;
             			case ScoreParameter.Retail.AutoLoan.PERSONAL_RELATIONSHIP_WITH_BANK: //
             				scoreParameterRetailRequest.setIsPersonalRelationShipWithBank_p(true);
+            				break;	
+            			case ScoreParameter.Retail.AutoLoan.IS_ADHAAR_CARD:
+            				scoreParameterRetailRequest.setIsAdhaarCard_p(true);
+            				scoreParameterRetailRequest.setAdhaarCardValue(YesNo.NO.getId()); // Default No
+            				if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getIsUserHaveAadhar()) && retailApplicantDetail.getIsUserHaveAadhar()) {
+            					scoreParameterRetailRequest.setAdhaarCardValue(YesNo.YES.getId()); // Default Yes	
+            				}
             				break;	
                             default:
                                 break;
