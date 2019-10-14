@@ -425,7 +425,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
 						companyMap.put(Retail.CIBIL_SCORE_PL, CommonUtils.printFields(collect.get(0),null));
 						companyMap.put("CIBIL_SCORE_PL_NEW", collect.get(0).getParameterOption() != null ?  collect.get(0).getParameterOption().replace("amp;", "") : "-");
-						companyMap.put("versionScore", !collect.isEmpty() && collect.get(0) != null && collect.get(0).getAnswer() != null ? CommonUtils.getCibilV2ScoreRange(collect.get(0).getAnswer().intValue()) : "-");
+						companyMap.put("versionScore", !collect.isEmpty() && collect.get(0) != null && collect.get(0).getAnswer() != null ? CommonUtils.getCibilV2ScoreRange(collect.get(0).getAnswer().toString()) : "-");
 					}
 					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AGE_PL)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
