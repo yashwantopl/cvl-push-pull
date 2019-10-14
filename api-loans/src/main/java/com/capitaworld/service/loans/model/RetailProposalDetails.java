@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.model;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author nilay.darji
@@ -38,6 +39,8 @@ public class RetailProposalDetails {
 	private Date lastStatusActionDate;
 	
 	private Long proposalStatus;
+	private List<?> listMatches = Collections.emptyList();
+	private Object listMatchesMap;
 	 
 
 	public String getBranchLocationName() {
@@ -72,8 +75,6 @@ public class RetailProposalDetails {
 		this.amount = amount;
 	}
 
-	private List<?> listMatches = Collections.emptyList();
-	
 	public List<?> getListMatches() {
 		return listMatches;
 	}
@@ -176,6 +177,14 @@ public class RetailProposalDetails {
 
 	public void setProductId(Integer productId) {
 		this.productId = productId;
+	}
+
+	public Object getListMatchesMap() {
+		return listMatchesMap;
+	}
+
+	public void setListMatchesMap(Object listMatchesMap) {
+		this.listMatchesMap = listMatchesMap;
 	}
 	
 	  

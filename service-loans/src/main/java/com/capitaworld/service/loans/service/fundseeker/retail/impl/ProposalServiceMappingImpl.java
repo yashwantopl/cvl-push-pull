@@ -83,6 +83,7 @@ import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
 import com.capitaworld.service.matchengine.model.ConnectionResponse;
 import com.capitaworld.service.matchengine.model.DisbursementDetailsModel;
+import com.capitaworld.service.matchengine.model.MatchDisplayObject;
 import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
 import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.matchengine.model.ProposalCountResponse;
@@ -1296,6 +1297,10 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						matchRequest.setProductId(fpProductId);
 						MatchDisplayResponse matchResponse = matchEngineClient.displayMatchesOfRetail(matchRequest);
 						retailProposalDetails.setListMatches(matchResponse.getMatchDisplayObjectList());
+						if(matchResponse.getMatchDisplayObjectMap() != null) {
+							retailProposalDetails.setListMatchesMap(matchResponse.getMatchDisplayObjectMap().values());	
+						}
+						
 					} catch (Exception e) {
 						logger.error(CommonUtils.EXCEPTION,e);
 					}
