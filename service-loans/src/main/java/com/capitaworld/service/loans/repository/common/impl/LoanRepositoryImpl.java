@@ -426,7 +426,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 			return (String) entityManager
 					.createNativeQuery("SELECT CAST(JSON_ARRAYAGG(JSON_OBJECT('applicationId',con.`application_id`,'name',CONCAT(IFNULL(fs.`first_name`,''),' ',IFNULL(fs.`last_name`,'')),\r\n" +  
 							"'status',IF(con.`stage_id` = 207,'In-Eligible','In-Principle'),'applicationCode',\r\n" + 
-							"IF(con.`stage_id` = 207,IF(con.`loan_type_id` = 3,'HomeLoan','PersonalLoan'),CONCAT(IF(con.`loan_type_id` = 3,'HomeLoan','PersonalLoan'),' - Date:', IF(con.stage_id = 207,DATE_FORMAT(con.modified_date, '%d-%m-%Y'),DATE_FORMAT(con.In_principle_date, '%d-%m-%Y')),' - Rs.',pp.`el_amount`))\r\n" + 
+							"IF(con.`stage_id` = 207,IF(con.`loan_type_id` = 3,'HomeLoan',IF(con.`loan_type_id` = 12,'Auto Loan','PersonalLoan')),CONCAT(IF(con.`loan_type_id` = 3,'HomeLoan',IF(con.`loan_type_id` = 12,'Auto Loan','PersonalLoan')),' - Date:', IF(con.stage_id = 207,DATE_FORMAT(con.modified_date, '%d-%m-%Y'),DATE_FORMAT(con.In_principle_date, '%d-%m-%Y')),' - Rs.',pp.`el_amount`))\r\n" + 
 							")) AS CHAR ) \r\n" + 
 							"FROM connect.`connect_log` con  \r\n" + 
 							"LEFT JOIN `loan_application`.`fs_retail_applicant_details` fs ON fs.`application_id` = con.`application_id` AND fs.`proposal_mapping_id` IS NULL \r\n" + 
