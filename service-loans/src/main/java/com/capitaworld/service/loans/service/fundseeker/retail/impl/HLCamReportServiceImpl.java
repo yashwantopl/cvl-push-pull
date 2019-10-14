@@ -1128,7 +1128,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.BUREAU_SCORE)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
 						companyMap.put(Retail.HomeLoan.BUREAU_SCORE, CommonUtils.printFields(collect.get(0),null));
-						companyMap.put("versionScore", !collect.isEmpty() && collect.get(0) != null && collect.get(0).getAnswer() != null ? CommonUtils.getCibilV2ScoreRange(collect.get(0).getAnswer().intValue()) : "-");
+						companyMap.put("versionScore", !collect.isEmpty() && collect.get(0) != null && collect.get(0).getAnswer() != null ? CommonUtils.getCibilV2ScoreRange(collect.get(0).getAnswer().toString()) : "-");
 					}
 					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.MARITAL_STATUS)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
@@ -1345,7 +1345,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.BUREAU_SCORE)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
 						companyMap.put(Retail.HomeLoan.BUREAU_SCORE, CommonUtils.printFields(collect.get(0),null));
-						companyMap.put("versionScore", !collect.isEmpty() && collect.get(0) != null && collect.get(0).getAnswer() != null ? CommonUtils.getCibilV2ScoreRange(collect.get(0).getAnswer().intValue()) : "-");
+						companyMap.put("versionScore", !collect.isEmpty() && collect.get(0) != null && collect.get(0).getAnswer() != null ? CommonUtils.getCibilV2ScoreRange(collect.get(0).getAnswer().toString()) : "-");
 					}
 					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HomeLoan.MARITAL_STATUS)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {

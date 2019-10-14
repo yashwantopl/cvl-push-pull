@@ -2439,8 +2439,8 @@ public class CommonUtils {
 	 * @return CIBIL Version 2 Score Range Return
 	 * 
 	 */
-	public static String getCibilV2ScoreRange(Integer score) {
-		if (score.equals(-1)) {
+	public static String getCibilV2ScoreRange(String score) {
+		if (score.equals(-1)||score.equals("000-1")) {
 			return "-1";
 		} else if (score.equals(0) || score.equals(1)) {
 			return "1 - 5";
@@ -2465,7 +2465,8 @@ public class CommonUtils {
 		}
 	} 
 
-	public static boolean isBetween(int actualVal, int min, int max) {
-		return min <= actualVal && actualVal <= max;
+	public static boolean isBetween(String actualVal, int min, int max) {
+		
+		return min <= Integer.parseInt(actualVal) && Integer.parseInt(actualVal) <= max;
 	}
 }
