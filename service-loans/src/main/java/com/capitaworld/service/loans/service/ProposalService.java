@@ -78,5 +78,5 @@ public interface ProposalService {
 
 	public List<SchedulerDataMultipleBankRequest> getApplicationListForMultipleBank();
 	
-	public String getDayDiffrenceForInprinciple();
+	public String getDayDiffrenceForInprinciple(Integer loanType);
 }

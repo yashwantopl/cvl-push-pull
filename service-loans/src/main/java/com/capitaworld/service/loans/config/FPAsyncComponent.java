@@ -1158,7 +1158,7 @@ public class FPAsyncComponent {
 
 			}
 			// ==sending email to fs when maker accepted proposL==Email_FS_Accepted_By_MAKER==add mail for  Email_FS_Accepted_By_MAKER
-//	->		sendMailToFsWhenMakerAcceptPorposal(fsName, proposalresp, assignedMakerName,applicationRequest,signUpUser,address,NotificationAliasId,domainId);
+		sendMailToFsWhenMakerAcceptPorposal(fsName, proposalresp, assignedMakerName,applicationRequest,signUpUser,address,NotificationAliasId,domainId);
 			// ====================Sending Mail to other Makers that maker has accepted Proposal============== ------ no sending mail on uniform product			
 			/*if (!CommonUtils.isObjectNullOrEmpty(applicationRequest) && !CommonUtils.isObjectNullOrEmpty(applicationRequest.getBusinessTypeId()) 
 					&& !applicationRequest.getBusinessTypeId().equals(CommonUtils.BusinessType.ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS.getId())) {
