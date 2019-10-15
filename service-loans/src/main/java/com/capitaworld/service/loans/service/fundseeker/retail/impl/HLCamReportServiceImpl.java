@@ -64,6 +64,7 @@ import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
 import com.capitaworld.service.loans.repository.common.CommonRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.IneligibleProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.BankingRelationlRepository;
@@ -87,6 +88,7 @@ import com.capitaworld.service.loans.service.fundseeker.retail.OtherIncomeDetail
 import com.capitaworld.service.loans.service.fundseeker.retail.PlRetailApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryHomeLoanService;
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantIncomeService;
+import com.capitaworld.service.loans.utils.BanksEnumForReports;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.MatchEngineClient;
@@ -1835,10 +1837,20 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 		return null;
 	}
 	
+	@Autowired
+	private IneligibleProposalDetailsRepository ineligibleProposalDetailsRepository;
+	
 	//Fetch Bank Details
 	public Map<String ,Object> fetchBankDetails(Long applicationId ,Long userId ,Long proposalId){
 		Map<String, Object> bankData = new HashMap<String, Object>();
-		Long orgId = proposalDetailsRepository.getOrgIdByProposalId(proposalId);
+		
+		Long orgId = null;
+		if(proposalId != null) {
+			orgId = proposalDetailsRepository.getOrgIdByProposalId(proposalId);
+		}else {
+			orgId = ineligibleProposalDetailsRepository.getOrgId(applicationId);
+		}
+		
 		List<Object[]> listBankData = commonRepository.getBankDetails(applicationId, orgId);
 		if(!CommonUtils.isListNullOrEmpty(listBankData) && !CommonUtils.isObjectNullOrEmpty(listBankData.get(0))) {
 			
@@ -1949,6 +1961,14 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 			logger.error("Error while getting profile Details of Applicant in ApplicationForm: ",e);
 		}
 		
+		//INCOME DETAILS - NET INCOME
+		try {
+			List<RetailApplicantIncomeRequest> retailApplicantIncomeDetail = retailApplicantIncomeService.getAllByProposalId(applicationId, proposalId);
+			map.put("incomeDetails", !CommonUtils.isListNullOrEmpty(retailApplicantIncomeDetail) ? retailApplicantIncomeDetail : null);
+		} catch (Exception e) {
+			logger.error("Error while getting income details : ",e);
+		}
+		
 		try {
 			//Fetch All CoApplicant Related Data of Each CoApplicant
 			map.put("retailCoApplicantDetails", bindDataOfRetailCoApplicant(applicationId, proposalId, false));
@@ -1961,6 +1981,21 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 			map.put("bankDetails", fetchBankDetails(applicationId, userId, proposalId));
 		}catch (Exception e) {
 			logger.error("Error/Exception while getting Bank Details Of ApplicationId==>{}  ..Error==>{}",applicationId ,e);
+		}
+		
+		Long orgId = null;
+		if(proposalId != null) {
+			orgId = proposalDetailsRepository.getOrgIdByProposalId(proposalId);
+		}else {
+			orgId = ineligibleProposalDetailsRepository.getOrgId(applicationId);
+		}
+		
+		String[] str = BanksEnumForReports.getBankNameAndUrl(orgId);
+		
+		if(orgId != null) {
+			map.put("bankName", str != null && str.length > 0 && str[0] != null ? str[0] : "" );
+			map.put("bankUrl", str != null && str.length > 1 && str[1] != null ? str[1] : null);
+			
 		}
 		
 		return map;
