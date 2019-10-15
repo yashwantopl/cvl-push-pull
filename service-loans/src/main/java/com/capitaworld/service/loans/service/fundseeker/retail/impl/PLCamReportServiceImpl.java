@@ -68,6 +68,7 @@ import com.capitaworld.service.loans.service.fundseeker.retail.PLCamReportServic
 import com.capitaworld.service.loans.service.fundseeker.retail.PlRetailApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.retail.ReferenceRetailDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantIncomeService;
+import com.capitaworld.service.loans.utils.BanksEnumForReports;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.MatchEngineClient;
@@ -1565,6 +1566,12 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 		}
 		
 		map.put("bankDetails", getBranchDetails(applicationId, userId, proposalId));
+		Long orgId = proposalDetailsRepository.getOrgIdByProposalId(proposalId);
+		
+		String[] str = BanksEnumForReports.getBankNameAndUrl(orgId);
+		
+		map.put("bankName", str != null && str.length > 0 && str[0] != null ? str[0] : "-");
+		map.put("bankUrl", str != null && str.length > 1 && str[1] != null ? str[1] : "-");
 		
 		return map;
 	}

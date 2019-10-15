@@ -771,29 +771,25 @@ public class CamReportPdfDetailsController {
 			if(loanTypeId == LoanType.PERSONAL_LOAN.getValue()) {
 				logger.info("Fetching Data of Personal Loan by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}" ,applicationId ,productId, proposalId);
 				response = plCamReportService.getDataForApplicationForm(applicationId, productId, proposalId);
+				ReportRequest reportRequest = new ReportRequest();
+				reportRequest.setParams(response);
+				reportRequest.setTemplate("PLAPPLICATIONFORM");
+				reportRequest.setType("PLAPPLICATIONFORM");
+				byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
+				
+				if (byteArr != null && byteArr.length > 0) {
+					return byteArr;
+				}else {
+					return null;
+				}
 			}
-			/*else if(loanTypeId == LoanType.HOME_LOAN.getValue()) {
-				logger.info("Fetching Data of Home Loan by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}" ,applicationId ,productId, proposalId);
-				response = hlCamReportService.getCamReportDetailsByProposalId(applicationId, productId,proposalId, camType);
-			}else if(loanTypeId == LoanType.AUTO_LOAN.getValue()) {
-				logger.info("Fetching Data of Auto Loan by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}" ,applicationId ,productId, proposalId);
-				response = alCamReportService.getCamReportDetailsByProposalId(applicationId, productId,proposalId, camType);
-			}else {
-				logger.info("Fetching Data of MSME by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}" ,applicationId ,productId, proposalId);
-				response = camReportPdfDetailsService.getCamReportPrimaryDetails(applicationId,productId,proposalId, camType);
-			}*/
-			
-			
-			/*byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
-			
-			if (byteArr != null && byteArr.length > 0) {
-				return byteArr;
-			}*/
-			
-		} catch (Exception e) {
+		}
+			catch (Exception e) {
 			logger.error(ERROR_WHILE_GETTING_MAP_DETAILS, e);
 		}
 		return null;
+			
+			
 	}
 	
 	@Autowired
