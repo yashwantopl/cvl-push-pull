@@ -921,10 +921,26 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 
 	public Map<String ,Object> bindDataOfPLApplicantRequestIntoMap(Long applicationId ,Long userId ,Long proposalId){
 		Map<String ,Object> map = new HashMap<String, Object>();
-		ApplicationProposalMapping applicationProposalMapping = applicationMappingRepository.getByApplicationIdAndProposalId(applicationId, proposalId);
-		if(!CommonUtils.isObjectNullOrEmpty(applicationProposalMapping)){
-			map.put("applicationCode", applicationProposalMapping.getApplicationCode());
-			map.put("loanType", !CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getProductId()) ? CommonUtils.LoanType.getType(applicationProposalMapping.getProductId()).getName() : " ");
+		
+		if(proposalId != null) {
+			ApplicationProposalMapping applicationProposalMapping = applicationMappingRepository.getByApplicationIdAndProposalId(applicationId, proposalId);
+			if(!CommonUtils.isObjectNullOrEmpty(applicationProposalMapping)){
+				map.put("applicationCode", applicationProposalMapping.getApplicationCode());
+				map.put("loanType", !CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getProductId()) ? CommonUtils.LoanType.getType(applicationProposalMapping.getProductId()).getName() : " ");
+				map.put("eligibleLoanAmount", applicationProposalMapping != null && applicationProposalMapping.getLoanAmount() != null ? CommonUtils.convertValue(applicationProposalMapping.getLoanAmount()) : "-");
+				map.put("eligibleTenure", applicationProposalMapping != null && applicationProposalMapping.getTenure() != null ? CommonUtils.convertValueWithoutDecimal(applicationProposalMapping.getTenure()) :"-");
+			}
+		}else {
+			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
+			if(loanApplicationMaster != null) {
+	     		map.put("applicationType", (loanApplicationMaster.getWcRenewalStatus() != null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue() : "New" ));
+	     		map.put("dateOfProposal", !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCreatedDate())? simpleDateFormat.format(loanApplicationMaster.getCreatedDate()):"-");
+	     		map.put("applicationCode", loanApplicationMaster.getApplicationCode() != null ? loanApplicationMaster.getApplicationCode() : "-");
+	     		map.put("loanType", !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getProductId()) ? CommonUtils.LoanType.getType(loanApplicationMaster.getProductId()).getName() : " ");
+	     		map.put("eligibleLoanAmount", loanApplicationMaster.getAmount() != null ? CommonUtils.convertValue(loanApplicationMaster.getAmount()) : "-");
+				map.put("eligibleTenure", loanApplicationMaster.getTenure() != null ? CommonUtils.convertValueWithoutDecimal(loanApplicationMaster.getTenure()) :"-");
+				
+	     	}
 		}
 		
 		try {
@@ -988,8 +1004,6 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			map.put("fathersName", (plRetailApplicantRequest.getFatherName() != null ? (plRetailApplicantRequest.getFatherName()) : " "));
 			map.put("applicantCategory", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getCategory()) ? CastCategory.getById(plRetailApplicantRequest.getCategory()).getValue() : "-");
 			map.put("residenceSinceYearMonths", (plRetailApplicantRequest.getResidenceSinceYear() !=null ? (plRetailApplicantRequest.getCurrentJobYear() +" year") : "") + " " +(plRetailApplicantRequest.getResidenceSinceMonth()!= null ? (plRetailApplicantRequest.getResidenceSinceMonth()+" months") :  "" ));
-			map.put("eligibleLoanAmount", applicationProposalMapping != null && applicationProposalMapping.getLoanAmount() != null ? CommonUtils.convertValue(applicationProposalMapping.getLoanAmount()) : "-");
-			map.put("eligibleTenure", applicationProposalMapping != null && applicationProposalMapping.getTenure() != null ? CommonUtils.convertValueWithoutDecimal(applicationProposalMapping.getTenure()) :"-");
 			map.put("residenceType", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getResidenceType()) ? ResidenceStatusRetailMst.getById(plRetailApplicantRequest.getResidenceType()).getValue() : "-");
 			map.put("applicantNetWorth", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getNetworth()) ? CommonUtils.convertValueWithoutDecimal(plRetailApplicantRequest.getNetworth()) : "-");
 			map.put("annualIncomeOfSpouse", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getAnnualIncomeOfSpouse()) ? CommonUtils.convertValueWithoutDecimal(plRetailApplicantRequest.getAnnualIncomeOfSpouse()) : "-");

@@ -785,11 +785,13 @@ public class CamReportPdfDetailsController {
 				reportRequest.setType("HLAPPLICATIONFORM");
 			}
 			
-			if(reportRequest != null) {
+			if(reportRequest != null && !response.isEmpty()) {
 				byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
 				if (byteArr != null && byteArr.length > 0) {
 					return byteArr;
 				}
+			}else {
+				logger.error("Error/Excpetion while fetching data for report for ApplicationId==>{} ,ProductId==>{} and ProposalId==>{} with LoanTypeId==>{}" , applicationId ,productId ,proposalId ,loanTypeId);
 			}
 		}catch (Exception e) {
 			logger.error(ERROR_WHILE_GETTING_MAP_DETAILS, e);
