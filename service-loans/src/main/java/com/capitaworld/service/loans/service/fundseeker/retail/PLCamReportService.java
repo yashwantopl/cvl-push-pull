@@ -9,4 +9,6 @@ public interface PLCamReportService {
 	public Map<String, Object> getPLInEligibleCamReport(Long applicationId);
 
 	public byte[] generateIneligibleCamReportFromMap(Long applicationId);
+	
+	public Map<String , Object> getDataForApplicationForm(Long applicationId, Long productId, Long proposalId);
 }

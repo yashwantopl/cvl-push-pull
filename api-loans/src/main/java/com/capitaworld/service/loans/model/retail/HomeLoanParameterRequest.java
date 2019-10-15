@@ -117,6 +117,9 @@ public class HomeLoanParameterRequest extends RetailProduct implements Serializa
 	private Double maxLtv;
 	private Boolean isLtvDisplay = false;
 	private Boolean isLtvMandatory = false;
+	
+	// Bureau Score
+	private List<Integer> bureauScoreIds = Collections.emptyList();
 
 	List<LoanPurposeAmountMappingRequest> loanPurposeAmountMappingRequests = Collections.emptyList();
 	private Integer salaryAcType;
@@ -639,4 +642,13 @@ public class HomeLoanParameterRequest extends RetailProduct implements Serializa
 	public void setIsMinNetTakeHomeSalaryMandatory(Boolean isMinNetTakeHomeSalaryMandatory) {
 		this.isMinNetTakeHomeSalaryMandatory = isMinNetTakeHomeSalaryMandatory;
 	}
+
+	public List<Integer> getBureauScoreIds() {
+		return bureauScoreIds;
+	}
+
+	public void setBureauScoreIds(List<Integer> bureauScoreIds) {
+		this.bureauScoreIds = bureauScoreIds;
+	}
+	
 }
