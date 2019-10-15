@@ -537,14 +537,21 @@ public class ProposalController {
 			return new ResponseEntity<LoansResponse>(new LoansResponse(e.getMessage()) , HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	@GetMapping(value = "/getDayDiffrenceForMultipleBank",produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getDayDiffrenceForMultipleBank() {
+	@GetMapping(value = "/getDayDiffrenceForMultipleBank/{loanType}",produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getDayDiffrenceForMultipleBank(@PathVariable("loanType") Integer loanType) {
 		try {
-			String dayDiff = proposalService.getDayDiffrenceForInprinciple();
-			
+			if(loanType == null) {
+				return new ResponseEntity<LoansResponse>(new LoansResponse("loanType can not be null") , HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+			String dayDiff = proposalService.getDayDiffrenceForInprinciple(loanType);
 			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
-			loansResponse.setData(dayDiff);
-			loansResponse.setStatus(HttpStatus.OK.value());
+			if(dayDiff != null && dayDiff != "") {
+				loansResponse.setData(dayDiff);
+				loansResponse.setStatus(HttpStatus.OK.value());
+			}else{
+				loansResponse.setMessage("diffrence not found"); 
+				loansResponse.setStatus(HttpStatus.OK.value());
+			}
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
