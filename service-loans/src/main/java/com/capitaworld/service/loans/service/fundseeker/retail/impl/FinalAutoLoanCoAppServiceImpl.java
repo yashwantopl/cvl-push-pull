@@ -180,7 +180,8 @@ public class FinalAutoLoanCoAppServiceImpl implements FinalAutoLoanCoAppService 
         CoApplicantDetail retailApplicantDetail = coApplicantDetailRepository.findByIdAndIsActive(finalAutoLoanDetailRequest.getCoApplicantId(),true);
         try {
             Title.getById(retailApplicantDetail.getTitleId()).getValue();
-            finalAutoLoanDetailRequest.setName(Title.getById(retailApplicantDetail.getTitleId()).getValue() + " " + retailApplicantDetail.getFirstName() + " " + retailApplicantDetail.getMiddleName() + " " + retailApplicantDetail.getFatherName());
+//            finalAutoLoanDetailRequest.setName(Title.getById(retailApplicantDetail.getTitleId()).getValue() + " " + retailApplicantDetail.getFirstName() + " " + retailApplicantDetail.getMiddleName() + " " + retailApplicantDetail.getFatherName());
+            finalAutoLoanDetailRequest.setName(Title.getById(retailApplicantDetail.getTitleId()).getValue() +" " + retailApplicantDetail.getFirstName() + " " +   (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getMiddleName()) ? retailApplicantDetail.getMiddleName() : "" ) + " " + (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getLastName()) ? retailApplicantDetail.getLastName() : "" ));
             finalAutoLoanDetailRequest.setFatherFullName(retailApplicantDetail.getFatherName());
 
             Address permanentAddress = new Address();
