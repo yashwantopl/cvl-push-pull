@@ -2466,7 +2466,6 @@ public class CommonUtils {
 	} 
 
 	public static boolean isBetween(String actualVal, int min, int max) {
-		
-		return min <= Integer.parseInt(actualVal) && Integer.parseInt(actualVal) <= max;
+		return min <= Double.valueOf(actualVal).intValue() && Double.valueOf(actualVal).intValue() <= max;
 	}
 }
