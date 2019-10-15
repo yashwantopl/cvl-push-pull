@@ -731,7 +731,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					retailProposalDetails.setFsType(CommonUtils.UserMainType.RETAIL);
 					retailProposalDetails.setBusinessTypeId(applicationProposalMapping.getBusinessTypeId());
 					retailProposalDetails.setFpProductid(fpProductId);
-					retailProposalDetails.setProductId(applicationProposalMapping.getProductId());
+					retailProposalDetails.setProductId(applicationProposalMapping.getProductId()); 
 
 					retailProposalDetails.setProposalStatus(proposalrequest.getProposalStatusId());
 					if(proposalrequest.getProposalStatusId() == ProposalStatus.HOLD || proposalrequest.getProposalStatusId() == ProposalStatus.DECLINE) {
