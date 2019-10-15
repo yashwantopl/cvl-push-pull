@@ -83,6 +83,9 @@ public class PrimaryAutoLoanDetail extends LoanApplicationMaster implements Seri
 
 	@Column(name="supplier_id")
 	private Long supplierId;
+
+	@Column(name="other_suplier_name")
+	private String otherSuplierName;
 	
 	
 	public PrimaryAutoLoanDetail() {
@@ -272,5 +275,13 @@ public class PrimaryAutoLoanDetail extends LoanApplicationMaster implements Seri
 
 	public void setSupplierId(Long supplierId) {
 		this.supplierId = supplierId;
+	}
+
+	public String getOtherSuplierName() {
+		return otherSuplierName;
+	}
+
+	public void setOtherSuplierName(String otherSuplierName) {
+		this.otherSuplierName = otherSuplierName;
 	}
 }

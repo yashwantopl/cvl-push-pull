@@ -16,3 +16,6 @@ ALTER TABLE loan_application.fs_retail_primary_auto_loan_details
 
 ALTER TABLE loan_application.fs_retail_primary_auto_loan_details
   ADD COLUMN supplier_id BIGINT(20) DEFAULT NULL;
+
+ALTER TABLE loan_application.fs_retail_primary_auto_loan_details
+  ADD COLUMN supplier_id BIGINT(20) DEFAULT NULL;
