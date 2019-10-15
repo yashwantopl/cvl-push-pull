@@ -1113,6 +1113,41 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
+			
+			//INCOME DETAILS - NET INCOME
+			try {
+				List<RetailApplicantIncomeRequest> retailApplicantIncomeDetail = retailApplicantIncomeService.getAllByProposalId(applicationId, proposalId);
+				
+				if(!CommonUtils.isObjectNullOrEmpty(retailApplicantIncomeDetail)) {
+					map.put("incomeDetails", retailApplicantIncomeDetail);
+				}
+			} catch (Exception e) {
+				logger.error("Error while getting income details : ",e);
+			}
+			
+			//FINANCIAL ARRANGEMENTS
+			try {
+	            List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService.getFinancialArrangementDetailsList(applicationId, userId);
+	            List<FinancialArrangementDetailResponseString> financialArrangementsDetailResponseList = new ArrayList<>();
+	            for (FinancialArrangementsDetailRequest financialArrangementsDetailRequest : financialArrangementsDetailRequestList) {
+	            	FinancialArrangementDetailResponseString financialArrangementsDetailResponse = new FinancialArrangementDetailResponseString();
+	                financialArrangementsDetailResponse.setOutstandingAmount(CommonUtils.convertValueWithoutDecimal(financialArrangementsDetailRequest.getOutstandingAmount()));
+	                financialArrangementsDetailResponse.setSecurityDetails(financialArrangementsDetailRequest.getSecurityDetails());
+	                financialArrangementsDetailResponse.setAmount(CommonUtils.convertValueWithoutDecimal(financialArrangementsDetailRequest.getAmount()));
+	                financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());
+	                financialArrangementsDetailResponse.setLoanType(financialArrangementsDetailRequest.getLoanType());
+	                financialArrangementsDetailResponse.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
+	                financialArrangementsDetailResponse.setEmi(CommonUtils.convertValueWithoutDecimal(financialArrangementsDetailRequest.getEmi()));
+	                financialArrangementsDetailResponse.setBureauOrCalculatedEmi(CommonUtils.convertValueWithoutDecimal(financialArrangementsDetailRequest.getBureauOrCalculatedEmi()));
+	                //financialArrangementsDetailResponse.setLcbgStatus(!CommonUtils.isObjectNullOrEmpty(financialArrangementsDetailRequest.getLcBgStatus()) ? LCBG_Status_SBI.getById(financialArrangementsDetailRequest.getLcBgStatus()).getValue().toString() : "-");
+	                financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
+	            }
+	            	map.put("financialArrangments",!CommonUtils.isListNullOrEmpty(financialArrangementsDetailResponseList) ? CommonUtils.printFields(financialArrangementsDetailResponseList,null) : null);
+	        } catch (Exception e) {
+	            logger.error("Problem to get Data of Financial Arrangements Details {}", e);
+	        }	
+			
+			
 			//KEY VERTICAL SECTOR
 			List<Long> keyVerticalSectorId = new ArrayList<>();
 			if (!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getKeyVerticalSector()))
