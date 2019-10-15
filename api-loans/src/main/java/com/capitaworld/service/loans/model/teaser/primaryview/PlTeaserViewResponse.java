@@ -220,7 +220,7 @@ public class PlTeaserViewResponse {
 	private String scoringBasedOn;
 	private String campaignType;
 	private String cibilScoreRange;
-	
+	private Long orgId;
 	public String getScoringBasedOn() {
 		return scoringBasedOn;
 	}
@@ -1244,6 +1244,12 @@ public class PlTeaserViewResponse {
 	}
 	public void setCibilScoreRange(String cibilScoreRange) {
 		this.cibilScoreRange = cibilScoreRange;
+	}
+	public Long getOrgId() {
+		return orgId;
+	}
+	public void setOrgId(Long orgId) {
+		this.orgId = orgId;
 	}
 	
 	
