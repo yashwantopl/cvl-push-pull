@@ -768,28 +768,33 @@ public class CamReportPdfDetailsController {
 		Map<String, Object> response = new HashMap<String, Object>();
 		
 		try {
+			ReportRequest reportRequest = null;
 			if(loanTypeId == LoanType.PERSONAL_LOAN.getValue()) {
 				logger.info("Fetching Data of Personal Loan by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}" ,applicationId ,productId, proposalId);
 				response = plCamReportService.getDataForApplicationForm(applicationId, productId, proposalId);
-				ReportRequest reportRequest = new ReportRequest();
+				reportRequest = new ReportRequest();
 				reportRequest.setParams(response);
 				reportRequest.setTemplate("PLAPPLICATIONFORM");
 				reportRequest.setType("PLAPPLICATIONFORM");
+			}else if(loanTypeId == LoanType.HOME_LOAN.getValue()) {
+				logger.info("Fetching Data of Home Loan by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}" ,applicationId ,productId, proposalId);
+				response = hlCamReportService.getDataForApplicationForm(applicationId, productId, proposalId);
+				reportRequest = new ReportRequest();
+				reportRequest.setParams(response);
+				reportRequest.setTemplate("HLAPPLICATIONFORM");
+				reportRequest.setType("HLAPPLICATIONFORM");
+			}
+			
+			if(reportRequest != null) {
 				byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
-				
 				if (byteArr != null && byteArr.length > 0) {
 					return byteArr;
-				}else {
-					return null;
 				}
 			}
-		}
-			catch (Exception e) {
+		}catch (Exception e) {
 			logger.error(ERROR_WHILE_GETTING_MAP_DETAILS, e);
 		}
 		return null;
-			
-			
 	}
 	
 	@Autowired
