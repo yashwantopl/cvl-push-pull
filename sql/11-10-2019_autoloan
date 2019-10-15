@@ -18,4 +18,4 @@ ALTER TABLE loan_application.fs_retail_primary_auto_loan_details
   ADD COLUMN supplier_id BIGINT(20) DEFAULT NULL;
 
 ALTER TABLE loan_application.fs_retail_primary_auto_loan_details
-  ADD COLUMN supplier_name VARCHAR(255) DEFAULT NULL;
+  ADD COLUMN other_suplier_name VARCHAR(255) DEFAULT NULL;
