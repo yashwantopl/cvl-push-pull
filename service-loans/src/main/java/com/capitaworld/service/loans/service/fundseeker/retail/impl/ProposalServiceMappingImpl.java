@@ -731,7 +731,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					retailProposalDetails.setFsType(CommonUtils.UserMainType.RETAIL);
 					retailProposalDetails.setBusinessTypeId(applicationProposalMapping.getBusinessTypeId());
 					retailProposalDetails.setFpProductid(fpProductId);
-					retailProposalDetails.setProductId(applicationProposalMapping.getProductId());
+					retailProposalDetails.setProductId(applicationProposalMapping.getProductId()); 
 
 					retailProposalDetails.setProposalStatus(proposalrequest.getProposalStatusId());
 					if(proposalrequest.getProposalStatusId() == ProposalStatus.HOLD || proposalrequest.getProposalStatusId() == ProposalStatus.DECLINE) {
@@ -760,6 +760,9 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						matchRequest.setProductId(fpProductId);
 						MatchDisplayResponse matchResponse = matchEngineClient.displayMatchesOfRetail(matchRequest);
 						retailProposalDetails.setListMatches(matchResponse.getMatchDisplayObjectList());
+						if(matchResponse.getMatchDisplayObjectMap() != null) {
+							retailProposalDetails.setListMatchesMap(matchResponse.getMatchDisplayObjectMap());	
+						}
 					} catch (Exception e) {
 						logger.error(CommonUtils.EXCEPTION,e);
 					}
@@ -1298,10 +1301,6 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						matchRequest.setProductId(fpProductId);
 						MatchDisplayResponse matchResponse = matchEngineClient.displayMatchesOfRetail(matchRequest);
 						retailProposalDetails.setListMatches(matchResponse.getMatchDisplayObjectList());
-						if(matchResponse.getMatchDisplayObjectMap() != null) {
-							retailProposalDetails.setListMatchesMap(matchResponse.getMatchDisplayObjectMap().values());	
-						}
-						
 					} catch (Exception e) {
 						logger.error(CommonUtils.EXCEPTION,e);
 					}
