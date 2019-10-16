@@ -19,3 +19,9 @@ ALTER TABLE loan_application.fs_retail_primary_auto_loan_details
 
 ALTER TABLE loan_application.fs_retail_primary_auto_loan_details
   ADD COLUMN other_suplier_name VARCHAR(255) DEFAULT NULL;
+
+ALTER TABLE loan_application.fs_retail_primary_auto_loan_details
+  ADD COLUMN other_asset_model_name VARCHAR(255) DEFAULT NULL;
+
+ALTER TABLE loan_application.fs_retail_primary_auto_loan_details
+  ADD COLUMN other_manufacturer_name VARCHAR(255) DEFAULT NULL;

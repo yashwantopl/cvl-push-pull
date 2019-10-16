@@ -86,6 +86,10 @@ public class PrimaryAutoLoanDetail extends LoanApplicationMaster implements Seri
 
 	@Column(name="other_suplier_name")
 	private String otherSuplierName;
+	@Column(name="other_asset_model_name")
+	private String otherAssetModelName;
+	@Column(name="other_manufacturer_name")
+	private String otherManufacturerName;
 	
 	
 	public PrimaryAutoLoanDetail() {
@@ -283,5 +287,21 @@ public class PrimaryAutoLoanDetail extends LoanApplicationMaster implements Seri
 
 	public void setOtherSuplierName(String otherSuplierName) {
 		this.otherSuplierName = otherSuplierName;
+	}
+
+	public String getOtherAssetModelName() {
+		return otherAssetModelName;
+	}
+
+	public void setOtherAssetModelName(String otherAssetModelName) {
+		this.otherAssetModelName = otherAssetModelName;
+	}
+
+	public String getOtherManufacturerName() {
+		return otherManufacturerName;
+	}
+
+	public void setOtherManufacturerName(String otherManufacturerName) {
+		this.otherManufacturerName = otherManufacturerName;
 	}
 }

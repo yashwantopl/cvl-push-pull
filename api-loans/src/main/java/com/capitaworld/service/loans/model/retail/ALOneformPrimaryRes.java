@@ -58,6 +58,8 @@ public class ALOneformPrimaryRes implements Serializable {
 	private Long supplierCityId;
 	private Long supplierId;
 	private String otherSuplierName;
+	private String otherAssetModelName;
+	private String otherManufacturerName;
 
 
 	public ALOneformPrimaryRes() {
@@ -366,5 +368,21 @@ public class ALOneformPrimaryRes implements Serializable {
 
 	public void setOtherSuplierName(String otherSuplierName) {
 		this.otherSuplierName = otherSuplierName;
+	}
+
+	public String getOtherAssetModelName() {
+		return otherAssetModelName;
+	}
+
+	public void setOtherAssetModelName(String otherAssetModelName) {
+		this.otherAssetModelName = otherAssetModelName;
+	}
+
+	public String getOtherManufacturerName() {
+		return otherManufacturerName;
+	}
+
+	public void setOtherManufacturerName(String otherManufacturerName) {
+		this.otherManufacturerName = otherManufacturerName;
 	}
 }
