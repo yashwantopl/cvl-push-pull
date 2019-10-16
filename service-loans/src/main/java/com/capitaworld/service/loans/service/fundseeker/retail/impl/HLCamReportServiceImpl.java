@@ -1325,7 +1325,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				Period sinceWhen = Period.between(since, now);
 				operatingBusinessSince = (sinceWhen.getYears()) + " years" + " " +(!CommonUtils.isObjectNullOrEmpty(sinceWhen.getMonths()) ? sinceWhen.getMonths() + " months" : "");
 			}
-			
+			map.put("loanPurpose", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getLoanPurpose()) ? StringEscapeUtils.escapeXml(HomeLoanPurpose.getById(plRetailApplicantRequest.getLoanPurpose()).getValue()): "-");
 			map.put("loanPurposeType" ,!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getLoanPurposeQueType()) ? LoanPurposeQuestion.fromId(plRetailApplicantRequest.getLoanPurposeQueType()).getValue() : "-");
 			map.put("loanPurposeValue", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getLoanPurposeQueValue()) ? plRetailApplicantRequest.getLoanPurposeQueValue() : "-");
 			
@@ -2045,7 +2045,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 		if(orgId != null) {
 			map.put("bankName", str != null && str.length > 0 && str[0] != null ? str[0] : "" );
 			map.put("bankUrl", str != null && str.length > 1 && str[1] != null ? str[1] : null);
-			map.put("bankFullName", str != null && str.length > 2 && str[2] != null ? str[2] : "-");
+			map.put("bankFullName", str != null && str.length > 2 && str[2] != null ? str[2] : "");
 		}
 		
 		//MATCHES RESPONSE
