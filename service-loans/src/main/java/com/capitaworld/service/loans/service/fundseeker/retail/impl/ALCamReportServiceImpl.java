@@ -1787,7 +1787,7 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 				}
 				listMap.add(coApp);
 			}
-			return listMap;
+			return !CommonUtils.isListNullOrEmpty(listMap) ? listMap : null;
 		}catch (Exception e) {
 			logger.error("Error while getting profile Details : ",e);
 		}
