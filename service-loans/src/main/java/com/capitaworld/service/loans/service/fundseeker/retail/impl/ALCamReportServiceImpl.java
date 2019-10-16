@@ -1397,15 +1397,16 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 				keyVerticalFundingId.add(plRetailApplicantRequest.getKeyVerticalFunding());
 			if (!CommonUtils.isListNullOrEmpty(keyVerticalFundingId)) {
 				try {
-					OneFormResponse oneFormResponse = oneFormClient.getIndustryById(keyVerticalFundingId);
-					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
-					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-						MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-						map.put("keyVerticalFunding", StringEscapeUtils.escapeXml(masterResponse.getValue()));
-					} else {
-						map.put("keyVerticalFunding", "-");
+					if(keyVerticalFundingId!= null && !keyVerticalFundingId.isEmpty()) {
+						OneFormResponse oneFormResponse = oneFormClient.getIndustryById(keyVerticalFundingId);
+						List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
+						if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+							MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+							map.put("keyVerticalFunding", StringEscapeUtils.escapeXml(masterResponse.getValue()));
+						} else {
+							map.put("keyVerticalFunding", "-");
+						}
 					}
-
 				} catch (Exception e) {
 					logger.error(CommonUtils.EXCEPTION,e);
 				}
@@ -1415,16 +1416,19 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 			if (!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getKeyVerticalSector()))
 				keyVerticalSectorId.add(plRetailApplicantRequest.getKeyVerticalSector());
 			try {
-				OneFormResponse formResponse = oneFormClient.getIndustrySecByMappingId(plRetailApplicantRequest.getKeyVerticalSector());
-				SectorIndustryModel sectorIndustryModel = MultipleJSONObjectHelper.getObjectFromMap((Map) formResponse.getData(), SectorIndustryModel.class);
-				OneFormResponse oneFormResponse = oneFormClient.getSectorById(Arrays.asList(sectorIndustryModel.getSectorId()));
-				List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
-				if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-					MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-					map.put("keyVerticalSector", StringEscapeUtils.escapeXml(masterResponse.getValue()));
-				} else {
-					map.put("keyVerticalSector", "-");
+				if(keyVerticalSectorId != null && !keyVerticalSectorId.isEmpty()) {
+					OneFormResponse formResponse = oneFormClient.getIndustrySecByMappingId(plRetailApplicantRequest.getKeyVerticalSector());
+					SectorIndustryModel sectorIndustryModel = MultipleJSONObjectHelper.getObjectFromMap((Map) formResponse.getData(), SectorIndustryModel.class);
+					OneFormResponse oneFormResponse = oneFormClient.getSectorById(Arrays.asList(sectorIndustryModel.getSectorId()));
+					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
+					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+						MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+						map.put("keyVerticalSector", StringEscapeUtils.escapeXml(masterResponse.getValue()));
+					} else {
+						map.put("keyVerticalSector", "-");
+					}
 				}
+				
 			} catch (Exception e) {
 				logger.error(CommonUtils.EXCEPTION,e);
 			}
@@ -1959,10 +1963,11 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 			ProposalMappingResponse proposalMappingResponse= proposalDetailsClient.getActiveProposalByApplicationID(applicationId);
 			
 			ProposalMappingRequestString proposalMappingRequestString = mapper.convertValue(proposalMappingResponse.getData(), ProposalMappingRequestString.class);
-			
-			map.put("proposalDate", simpleDateFormat.format(proposalMappingRequestString.getModifiedDate()));
-			map.put("proposalResponseEmi", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? CommonUtils.convertValueWithoutDecimal((Double)((LinkedHashMap<String, Object>)proposalMappingResponse.getData()).get("emi")) : "");
-			map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? proposalMappingResponse.getData() : " ");
+			if(proposalMappingRequestString != null) {
+				map.put("proposalDate", simpleDateFormat.format(proposalMappingRequestString.getModifiedDate()));
+				map.put("proposalResponseEmi", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? CommonUtils.convertValueWithoutDecimal((Double)((LinkedHashMap<String, Object>)proposalMappingResponse.getData()).get("emi")) : "");
+				map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? proposalMappingResponse.getData() : " ");
+			}
 		}
 		catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);

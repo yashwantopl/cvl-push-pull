@@ -293,6 +293,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 		logger.info("applicationProposalMapping  ==>{}",applicationProposalMapping );
 		Long userid=applicationProposalMapping.getUserId();
 		hlTeaserViewResponse.setLoanType(applicationProposalMapping.getProductId() != null ? LoanType.getById(applicationProposalMapping.getProductId()).getValue().toString() : "");
+		hlTeaserViewResponse.setProductId(applicationProposalMapping.getProductId());
 		hlTeaserViewResponse.setLoanAmount(applicationProposalMapping.getLoanAmount().longValue());
 		hlTeaserViewResponse.setTenure(applicationProposalMapping.getTenure()!=null ? ((applicationProposalMapping.getTenure()).toString()) + " Years":" - ");
 		hlTeaserViewResponse.setCurrencyDenomination(applicationProposalMapping.getCurrencyId() != null ? Currency.getById(applicationProposalMapping.getCurrencyId()).getValue().toString() : "-");
