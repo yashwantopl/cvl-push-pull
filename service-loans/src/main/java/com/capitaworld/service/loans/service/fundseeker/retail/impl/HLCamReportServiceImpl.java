@@ -2045,6 +2045,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 		if(orgId != null) {
 			map.put("bankName", str != null && str.length > 0 && str[0] != null ? str[0] : "" );
 			map.put("bankUrl", str != null && str.length > 1 && str[1] != null ? str[1] : null);
+			map.put("bankFullName", str != null && str.length > 2 && str[2] != null ? str[2] : "-");
 		}
 		
 		//MATCHES RESPONSE
