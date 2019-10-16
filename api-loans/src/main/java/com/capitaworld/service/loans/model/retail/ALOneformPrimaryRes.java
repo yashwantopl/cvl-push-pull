@@ -57,6 +57,7 @@ public class ALOneformPrimaryRes implements Serializable {
 	private Long supplierStateId;
 	private Long supplierCityId;
 	private Long supplierId;
+	private String otherSuplierName;
 
 
 	public ALOneformPrimaryRes() {
@@ -357,5 +358,13 @@ public class ALOneformPrimaryRes implements Serializable {
 
 	public void setSupplierId(Long supplierId) {
 		this.supplierId = supplierId;
+	}
+
+	public String getOtherSuplierName() {
+		return otherSuplierName;
+	}
+
+	public void setOtherSuplierName(String otherSuplierName) {
+		this.otherSuplierName = otherSuplierName;
 	}
 }

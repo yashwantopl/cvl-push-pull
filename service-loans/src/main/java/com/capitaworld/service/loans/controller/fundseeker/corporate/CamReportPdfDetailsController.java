@@ -751,12 +751,12 @@ public class CamReportPdfDetailsController {
 		}
 	}
 	
-	@GetMapping(value = {"/getApplicationForm/{applicationId}/{productMappingId}/{proposalId}","/getApplicationForm/{applicationId}/{productMappingId}/{proposalId}/{loanTypeId}"} , produces = MediaType.APPLICATION_JSON_VALUE)
-	public byte[] getApplicationFormReport(@PathVariable(value = "applicationId") Long applicationId ,@PathVariable(value = "productMappingId") Long productId, 
-			@PathVariable(value = "proposalId") Long proposalId ,@PathVariable(name = "loanTypeId" , required = false) Long loanTypeId, HttpServletResponse  httpServletResponse,HttpServletRequest httpReq) {
+	@GetMapping(value = {"/getApplicationForm/{applicationId}","/getApplicationForm/{applicationId}/{productMappingId}/{proposalId}","/getApplicationForm/{applicationId}/{productMappingId}/{proposalId}/{loanTypeId}"} , produces = MediaType.APPLICATION_JSON_VALUE)
+	public byte[] getApplicationFormReport(@PathVariable(value = "applicationId") Long applicationId ,@PathVariable(name = "productMappingId" , required = false) Long productId, 
+			@PathVariable(name = "proposalId" , required = false) Long proposalId ,@PathVariable(name = "loanTypeId" , required = false) Long loanTypeId, HttpServletResponse  httpServletResponse,HttpServletRequest httpReq) {
 		
 		logger.info("Into get Application Form Report with ApplicationId==>{} ,ProductId==>{} and ProposalId==>{} with LoanTypeId==>{}" , applicationId ,productId ,proposalId ,loanTypeId);
-		if (CommonUtils.isObjectNullOrEmpty(applicationId)||CommonUtils.isObjectNullOrEmpty(productId)||CommonUtils.isObjectListNull(proposalId)) {
+		if (CommonUtils.isObjectNullOrEmpty(applicationId)) {
 			logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND , applicationId);
 			return null;
 		}
@@ -768,29 +768,32 @@ public class CamReportPdfDetailsController {
 		Map<String, Object> response = new HashMap<String, Object>();
 		
 		try {
+			ReportRequest reportRequest = null;
 			if(loanTypeId == LoanType.PERSONAL_LOAN.getValue()) {
 				logger.info("Fetching Data of Personal Loan by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}" ,applicationId ,productId, proposalId);
 				response = plCamReportService.getDataForApplicationForm(applicationId, productId, proposalId);
-			}
-			/*else if(loanTypeId == LoanType.HOME_LOAN.getValue()) {
+				reportRequest = new ReportRequest();
+				reportRequest.setParams(response);
+				reportRequest.setTemplate("PLAPPLICATIONFORM");
+				reportRequest.setType("PLAPPLICATIONFORM");
+			}else if(loanTypeId == LoanType.HOME_LOAN.getValue()) {
 				logger.info("Fetching Data of Home Loan by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}" ,applicationId ,productId, proposalId);
-				response = hlCamReportService.getCamReportDetailsByProposalId(applicationId, productId,proposalId, camType);
-			}else if(loanTypeId == LoanType.AUTO_LOAN.getValue()) {
-				logger.info("Fetching Data of Auto Loan by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}" ,applicationId ,productId, proposalId);
-				response = alCamReportService.getCamReportDetailsByProposalId(applicationId, productId,proposalId, camType);
+				response = hlCamReportService.getDataForApplicationForm(applicationId, productId, proposalId);
+				reportRequest = new ReportRequest();
+				reportRequest.setParams(response);
+				reportRequest.setTemplate("HLAPPLICATIONFORM");
+				reportRequest.setType("HLAPPLICATIONFORM");
+			}
+			
+			if(reportRequest != null && !response.isEmpty()) {
+				byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
+				if (byteArr != null && byteArr.length > 0) {
+					return byteArr;
+				}
 			}else {
-				logger.info("Fetching Data of MSME by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}" ,applicationId ,productId, proposalId);
-				response = camReportPdfDetailsService.getCamReportPrimaryDetails(applicationId,productId,proposalId, camType);
-			}*/
-			
-			
-			/*byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
-			
-			if (byteArr != null && byteArr.length > 0) {
-				return byteArr;
-			}*/
-			
-		} catch (Exception e) {
+				logger.error("Error/Excpetion while fetching data for report for ApplicationId==>{} ,ProductId==>{} and ProposalId==>{} with LoanTypeId==>{}" , applicationId ,productId ,proposalId ,loanTypeId);
+			}
+		}catch (Exception e) {
 			logger.error(ERROR_WHILE_GETTING_MAP_DETAILS, e);
 		}
 		return null;

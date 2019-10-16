@@ -8475,12 +8475,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						gstRelatedPartyRequest.setPurchase(" - ");
 						
 						if(gstRelatedPartyRequest.getTransactionType() != null && "Sales".equals(gstRelatedPartyRequest.getTransactionType()) && gstRelatedPartyRequest.getInvoiceValue() != null ) {
-							gstRelatedPartyRequest.setSales(gstRelatedPartyRequest.getInvoiceValue().toString());
+							gstRelatedPartyRequest.setSales(String.valueOf(CommonUtils.convertValueIndianCurrency(gstRelatedPartyRequest.getInvoiceValue().toString())));
 							grandTotalOfSales=gstRelatedPartyRequest.getGrandTotal();
 							if(gstRelatedPartyRequest.getInvoiceValue() != null)
 								totalOfSales+=gstRelatedPartyRequest.getInvoiceValue();
 						}else if(gstRelatedPartyRequest.getTransactionType() != null && "Purchase".equals(gstRelatedPartyRequest.getTransactionType()) && gstRelatedPartyRequest.getInvoiceValue() != null) {
-							gstRelatedPartyRequest.setPurchase(gstRelatedPartyRequest.getInvoiceValue().toString());
+							gstRelatedPartyRequest.setPurchase(String.valueOf(CommonUtils.convertValueIndianCurrency(gstRelatedPartyRequest.getInvoiceValue().toString())));
 							grandTotalOfPurchase=gstRelatedPartyRequest.getGrandTotal();
 							if(gstRelatedPartyRequest.getInvoiceValue() != null)
 								totalOfPurchase+=gstRelatedPartyRequest.getInvoiceValue();

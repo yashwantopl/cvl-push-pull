@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.controller.colending;
 
+import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.colending.CoLendingApplicationBankMappingRequest;
 import com.capitaworld.service.loans.service.colending.CoLendingApplicationBankMappingService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -42,6 +43,24 @@ public class CoLendingApplicationBankMappingController {
         } catch (Exception e) {
             logger.error(CommonUtils.SOMETHING_WENT_WRONG, e);
             return new ResponseEntity<UserResponse>(new UserResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+        }
+    }
+
+    @PostMapping(value = "/application/bank/mapping/get", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> get(@RequestBody CoLendingApplicationBankMappingRequest request) {
+        if (CommonUtils.isObjectNullOrEmpty(request)) {
+            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+        }
+        try {
+            CoLendingApplicationBankMappingRequest applicationBankMappingRequest = coLendingApplicationBankMappingService.get(request);
+            if(!CommonUtils.isObjectNullOrEmpty(applicationBankMappingRequest) && !CommonUtils.isListNullOrEmpty(applicationBankMappingRequest.getBankOrgIdList())){
+                return new ResponseEntity<LoansResponse>(new LoansResponse("Data Found", HttpStatus.OK.value(),applicationBankMappingRequest.getBankOrgIdList()), HttpStatus.OK);
+            }else {
+                return new ResponseEntity<LoansResponse>(new LoansResponse("No data found", HttpStatus.OK.value()), HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            logger.error(CommonUtils.SOMETHING_WENT_WRONG, e);
+            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
         }
     }
 }

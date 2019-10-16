@@ -9,4 +9,6 @@ import com.capitaworld.service.loans.model.colending.CoLendingApplicationBankMap
 public interface CoLendingApplicationBankMappingService {
 
     boolean save(CoLendingApplicationBankMappingRequest coLendingApplicationBankMappingRequest);
+
+    CoLendingApplicationBankMappingRequest get(CoLendingApplicationBankMappingRequest coLendingApplicationBankMappingRequest);
 }

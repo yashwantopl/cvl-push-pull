@@ -107,6 +107,7 @@ public class PrimaryAutoLoanServiceImpl implements PrimaryAutoLoanService {
 					primaryAutoLoanDetail.setSupplierStateId(alLoanDetailRequest.getSupplierStateId());
 					primaryAutoLoanDetail.setSupplierCityId(alLoanDetailRequest.getSupplierCityId());
 					primaryAutoLoanDetail.setSupplierId(alLoanDetailRequest.getSupplierId());
+					primaryAutoLoanDetail.setOtherSuplierName(alLoanDetailRequest.getOtherSuplierName());
 					autoLoanDetailRepository.save(primaryAutoLoanDetail);
 			
 			}
@@ -167,6 +168,7 @@ public class PrimaryAutoLoanServiceImpl implements PrimaryAutoLoanService {
 			res.setAssetModelId(primaryAutoLoanDetail.getAssetModelId());
 			res.setSupplierStateId(primaryAutoLoanDetail.getSupplierStateId());
 			res.setSupplierCityId(primaryAutoLoanDetail.getSupplierCityId());
+			res.setOtherSuplierName(primaryAutoLoanDetail.getOtherSuplierName());
 		}
 		return res;
 	}
@@ -244,6 +246,7 @@ public class PrimaryAutoLoanServiceImpl implements PrimaryAutoLoanService {
 				res.setAssetModelId(primaryAutoLoanDetail.getAssetModelId());
 				res.setSupplierStateId(primaryAutoLoanDetail.getSupplierStateId());
 				res.setSupplierCityId(primaryAutoLoanDetail.getSupplierCityId());
+				res.setOtherSuplierName(primaryAutoLoanDetail.getOtherSuplierName());
 			}
 			
 			Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationId);

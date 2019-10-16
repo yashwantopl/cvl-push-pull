@@ -57,6 +57,7 @@ public class PrimaryAutoLoanDetailRequest extends LoanApplicationRequest impleme
 	private Long supplierStateId;
 	private Long supplierCityId;
 	private Long supplierId;
+	private String otherSuplierName;
 
 	private List<Long> negativeList = Collections.emptyList();
 
@@ -346,5 +347,13 @@ public class PrimaryAutoLoanDetailRequest extends LoanApplicationRequest impleme
 
 	public void setSupplierId(Long supplierId) {
 		this.supplierId = supplierId;
+	}
+
+	public String getOtherSuplierName() {
+		return otherSuplierName;
+	}
+
+	public void setOtherSuplierName(String otherSuplierName) {
+		this.otherSuplierName = otherSuplierName;
 	}
 }
