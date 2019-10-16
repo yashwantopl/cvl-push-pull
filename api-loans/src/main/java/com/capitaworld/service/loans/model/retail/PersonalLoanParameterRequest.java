@@ -195,6 +195,8 @@ public class PersonalLoanParameterRequest extends ProductMasterRequest implement
 	
 	//No Credit History
 	private Boolean noBureauCreditHistory = true;
+	
+	private List<Integer> bureauScoreIds = Collections.emptyList();
 
 	/*
 	 * //FP NEW REQUIREMENT private Integer employmentId;
@@ -938,109 +940,12 @@ public class PersonalLoanParameterRequest extends ProductMasterRequest implement
 		this.noBureauCreditHistory = noBureauCreditHistory;
 	}
 
-	/*
-	 * public Integer getEmploymentId() { return employmentId; }
-	 * 
-	 * public void setEmploymentId(Integer employmentId) { this.employmentId =
-	 * employmentId; }
-	 * 
-	 * public Integer getEmploymentPlaceId() { return employmentPlaceId; }
-	 * 
-	 * public void setEmploymentPlaceId(Integer employmentPlaceId) {
-	 * this.employmentPlaceId = employmentPlaceId; }
-	 * 
-	 * public Integer getHomeLoanTypeId() { return homeLoanTypeId; }
-	 * 
-	 * public void setHomeLoanTypeId(Integer homeLoanTypeId) {
-	 * this.homeLoanTypeId = homeLoanTypeId; }
-	 * 
-	 * public Integer getMincurrentJobExperience() { return
-	 * mincurrentJobExperience; }
-	 * 
-	 * public void setMincurrentJobExperience(Integer mincurrentJobExperience) {
-	 * this.mincurrentJobExperience = mincurrentJobExperience; }
-	 * 
-	 * public Integer getMaxCurrentJobExperience() { return
-	 * maxCurrentJobExperience; }
-	 * 
-	 * public void setMaxCurrentJobExperience(Integer maxCurrentJobExperience) {
-	 * this.maxCurrentJobExperience = maxCurrentJobExperience; }
-	 * 
-	 * public Integer getMinTotalJobExperience() { return minTotalJobExperience;
-	 * }
-	 * 
-	 * public void setMinTotalJobExperience(Integer minTotalJobExperience) {
-	 * this.minTotalJobExperience = minTotalJobExperience; }
-	 * 
-	 * public Integer getMaxTotalJobExperience() { return maxTotalJobExperience;
-	 * }
-	 * 
-	 * public void setMaxTotalJobExperience(Integer maxTotalJobExperience) {
-	 * this.maxTotalJobExperience = maxTotalJobExperience; }
-	 * 
-	 * public Double getFoir() { return foir; }
-	 * 
-	 * public void setFoir(Double foir) { this.foir = foir; }
-	 * 
-	 * public Boolean getIsEmploymentTypeDisplay() { return
-	 * isEmploymentTypeDisplay; }
-	 * 
-	 * public void setIsEmploymentTypeDisplay(Boolean isEmploymentTypeDisplay) {
-	 * this.isEmploymentTypeDisplay = isEmploymentTypeDisplay; }
-	 * 
-	 * public Boolean getIsEmploymentTypeMandatory() { return
-	 * isEmploymentTypeMandatory; }
-	 * 
-	 * public void setIsEmploymentTypeMandatory(Boolean
-	 * isEmploymentTypeMandatory) { this.isEmploymentTypeMandatory =
-	 * isEmploymentTypeMandatory; }
-	 * 
-	 * public Boolean getIsEmploymentPlaceDisplay() { return
-	 * isEmploymentPlaceDisplay; }
-	 * 
-	 * public void setIsEmploymentPlaceDisplay(Boolean isEmploymentPlaceDisplay)
-	 * { this.isEmploymentPlaceDisplay = isEmploymentPlaceDisplay; }
-	 * 
-	 * public Boolean getIsEmploymentPlaceMandatory() { return
-	 * isEmploymentPlaceMandatory; }
-	 * 
-	 * public void setIsEmploymentPlaceMandatory(Boolean
-	 * isEmploymentPlaceMandatory) { this.isEmploymentPlaceMandatory =
-	 * isEmploymentPlaceMandatory; }
-	 * 
-	 * public Boolean getIsCurrentJobExperienceDisplay() { return
-	 * isCurrentJobExperienceDisplay; }
-	 * 
-	 * public void setIsCurrentJobExperienceDisplay(Boolean
-	 * isCurrentJobExperienceDisplay) { this.isCurrentJobExperienceDisplay =
-	 * isCurrentJobExperienceDisplay; }
-	 * 
-	 * public Boolean getIsCurrentJobExperienceMandatory() { return
-	 * isCurrentJobExperienceMandatory; }
-	 * 
-	 * public void setIsCurrentJobExperienceMandatory(Boolean
-	 * isCurrentJobExperienceMandatory) { this.isCurrentJobExperienceMandatory =
-	 * isCurrentJobExperienceMandatory; }
-	 * 
-	 * public Boolean getIsTotalJobExperienceDisplay() { return
-	 * isTotalJobExperienceDisplay; }
-	 * 
-	 * public void setIsTotalJobExperienceDisplay(Boolean
-	 * isTotalJobExperienceDisplay) { this.isTotalJobExperienceDisplay =
-	 * isTotalJobExperienceDisplay; }
-	 * 
-	 * public Boolean getIsTotalJobExperienceMandatory() { return
-	 * isTotalJobExperienceMandatory; }
-	 * 
-	 * public void setIsTotalJobExperienceMandatory(Boolean
-	 * isTotalJobExperienceMandatory) { this.isTotalJobExperienceMandatory =
-	 * isTotalJobExperienceMandatory; }
-	 */
-	
-	
-	
-	
-	
-	
+	public List<Integer> getBureauScoreIds() {
+		return bureauScoreIds;
+	}
+
+	public void setBureauScoreIds(List<Integer> bureauScoreIds) {
+		this.bureauScoreIds = bureauScoreIds;
+	}
 
 }
