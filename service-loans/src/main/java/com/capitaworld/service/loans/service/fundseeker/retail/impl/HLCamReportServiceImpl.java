@@ -1995,7 +1995,23 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 		if(orgId != null) {
 			map.put("bankName", str != null && str.length > 0 && str[0] != null ? str[0] : "" );
 			map.put("bankUrl", str != null && str.length > 1 && str[1] != null ? str[1] : null);
-			
+		}
+		
+		//MATCHES RESPONSE
+		if(proposalId != null) {
+			try {
+				ApplicationProposalMapping applicationProposalMapping = applicationMappingRepository.getByApplicationIdAndProposalId(applicationId, proposalId);
+				MatchRequest matchRequest = new MatchRequest();
+				matchRequest.setApplicationId(applicationId);
+				matchRequest.setProductId(productId);
+				matchRequest.setBusinessTypeId(applicationProposalMapping.getBusinessTypeId());
+				MatchDisplayResponse matchResponse= matchEngineClient.displayMatchesOfRetail(matchRequest);
+				logger.info("matchesResponse ==>{} " , matchResponse);
+				map.put("matchesResponse", !CommonUtils.isListNullOrEmpty(matchResponse.getMatchDisplayObjectList()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectList(),null) : " ");
+			}
+			catch (Exception e) {
+				logger.error("Error while getting matches data in ApplicationForm: ",e);
+			}
 		}
 		
 		return map;
