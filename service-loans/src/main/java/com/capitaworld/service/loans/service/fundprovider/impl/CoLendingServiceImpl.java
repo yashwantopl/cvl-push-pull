@@ -23,6 +23,7 @@ import com.capitaworld.service.loans.model.corporate.CoLendingRequest;
 import com.capitaworld.service.loans.repository.colending.CoLendingFlowRepository;
 import com.capitaworld.service.loans.repository.fundprovider.CoLendingRatioRepository;
 import com.capitaworld.service.loans.repository.fundprovider.FpCoLendingBanksRepository;
+import com.capitaworld.service.loans.repository.fundprovider.NbfcRatioMappingTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
@@ -85,6 +86,9 @@ public class CoLendingServiceImpl implements CoLendingService {
 
 	@Autowired
 	private ConnectClient connectClient;
+	
+	@Autowired
+	private NbfcRatioMappingTempRepository nbfcRatioMappingTempRepository;
 
 	DecimalFormat df = new DecimalFormat("#");
 
@@ -249,7 +253,7 @@ public class CoLendingServiceImpl implements CoLendingService {
 		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "removeCoLendingProposal");
 		try {
-			
+			nbfcRatioMappingTempRepository.inActiveTempByRatioId(id);
 			coLendingRatioRepository.inActiveRatio(id);
 			return true;
 		}
