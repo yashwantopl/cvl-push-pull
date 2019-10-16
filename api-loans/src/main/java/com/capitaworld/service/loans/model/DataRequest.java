@@ -2,6 +2,8 @@ package com.capitaworld.service.loans.model;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -16,6 +18,9 @@ public class DataRequest implements Serializable{
 	private Long mappingId;
 	private Double tenure;
 	private String label;
+	private Long bankId;
+	private Long userOrgId;
+	
 	
 	
 	public DataRequest() {
@@ -69,6 +74,24 @@ public class DataRequest implements Serializable{
 	public void setLabel(String label) {
 		this.label = label;
 	}
+
+	public Long getBankId() {
+		return bankId;
+	}
+
+	public void setBankId(Long bankId) {
+		this.bankId = bankId;
+	}
+
+	public Long getUserOrgId() {
+		return userOrgId;
+	}
+
+	public void setUserOrgId(Long userOrgId) {
+		this.userOrgId = userOrgId;
+	}
+	
+	
 
 	
 	
