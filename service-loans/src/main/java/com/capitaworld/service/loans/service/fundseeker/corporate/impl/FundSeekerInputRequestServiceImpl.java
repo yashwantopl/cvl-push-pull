@@ -705,7 +705,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			String campCode = loanApplicationService.getApplicationCampaignCode(fundSeekerInputRequestResponse.getApplicationId());
 			try {
 				logger.info("In for Get Configuratin from users for==>"+ fundSeekerInputRequestResponse.getApplicationId());
-				logger.info("Configuratin for ==>"+campCode);
+				logger.info("Configuratin for ==>"+ (campCode!= null ? campCode : CAMPAIGN_CODE_SIDBI));
 				configResponse = userClient.getGeneralConfigByCampCode(campCode!= null ? campCode : CAMPAIGN_CODE_SIDBI);
 				if (configResponse != null && configResponse.getData() != null) {
 					convertRes = convertJSONToUserOrganisationRequest(convertObjectToString(configResponse.getData()));
@@ -753,10 +753,10 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				logger.info("End invokeFraudAnalytics() with resp : " + res.getData());
 				return new LoansResponse(CommonUtils.ONE_FORM_SAVED_SUCCESSFULLY, HttpStatus.OK.value());
 			} else if (jsonData != null && !jsonData.getIsHunterActive()) {
-				logger.info("Hunter is not Activated for userId==>" + fundSeekerInputRequestResponse.getUserId());
+				logger.info("Hunter is not Activated for appId==>" + fundSeekerInputRequestResponse.getApplicationId());
 				return new LoansResponse(CommonUtils.ONE_FORM_SAVED_SUCCESSFULLY, HttpStatus.OK.value());
 			} else if (jsonData == null) {
-				logger.info("Hunter Credentials is null for userId==>" + fundSeekerInputRequestResponse.getUserId());
+				logger.info("Hunter Credentials is null for appId==>" + fundSeekerInputRequestResponse.getApplicationId());
 				return new LoansResponse(CommonUtils.ONE_FORM_SAVED_SUCCESSFULLY, HttpStatus.OK.value());
 			} else {
 				logger.info("End invokeFraudAnalytics() Skiping Fraud Analytics call");
@@ -1203,6 +1203,4 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		}
 		return new LoansResponse("Successfully Reset the Form.", HttpStatus.OK.value(), getDataForOnePagerOneForm(connectResponse.getApplicationId()));
 	}
-	
-
 }

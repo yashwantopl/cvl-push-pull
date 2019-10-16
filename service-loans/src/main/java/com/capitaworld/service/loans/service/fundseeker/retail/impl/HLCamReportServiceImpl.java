@@ -386,7 +386,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 			}
 			map.put("propertyDetails", !CommonUtils.isObjectNullOrEmpty(propertyDetails) ? propertyDetails : null);
 		} catch (Exception e) {
-			logger.error("Error while getting property Details : ",e);
+			logger.error("Error while getting property Details : {}",e);
 		}
 
 		//INCOME DETAILS - NET INCOME
@@ -395,33 +395,18 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 
 			map.put("incomeDetails", !CommonUtils.isListNullOrEmpty(retailApplicantIncomeDetail) ? retailApplicantIncomeDetail : null);
 		} catch (Exception e) {
-			logger.error("Error while getting income details : ",e);
+			logger.error("Error while getting income details : {}",e);
 		}
 		
-		//FINANCIAL ARRANGEMENTS
+		//Fetch FinancialArrangementData For All CoApplicant
 		try {
-            List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService.getFinancialArrangementDetailsList(applicationId, userId);
-            List<FinancialArrangementDetailResponseString> financialArrangementsDetailResponseList = new ArrayList<>();
-            for (FinancialArrangementsDetailRequest financialArrangementsDetailRequest : financialArrangementsDetailRequestList) {
-            	FinancialArrangementDetailResponseString financialArrangementsDetailResponse = new FinancialArrangementDetailResponseString();
-                financialArrangementsDetailResponse.setOutstandingAmount(CommonUtils.convertValueWithoutDecimal(financialArrangementsDetailRequest.getOutstandingAmount()));
-                financialArrangementsDetailResponse.setSecurityDetails(financialArrangementsDetailRequest.getSecurityDetails());
-                financialArrangementsDetailResponse.setAmount(CommonUtils.convertValueWithoutDecimal(financialArrangementsDetailRequest.getAmount()));
-                financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());
-                financialArrangementsDetailResponse.setLoanType(financialArrangementsDetailRequest.getLoanType());
-                financialArrangementsDetailResponse.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
-                financialArrangementsDetailResponse.setEmi(CommonUtils.convertValueWithoutDecimal(financialArrangementsDetailRequest.getEmi()));
-                financialArrangementsDetailResponse.setBureauOrCalculatedEmi(CommonUtils.convertValueWithoutDecimal(financialArrangementsDetailRequest.getBureauOrCalculatedEmi()));
-                //financialArrangementsDetailResponse.setLcbgStatus(!CommonUtils.isObjectNullOrEmpty(financialArrangementsDetailRequest.getLcBgStatus()) ? LCBG_Status_SBI.getById(financialArrangementsDetailRequest.getLcBgStatus()).getValue().toString() : "-");
-                financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
-            }
-            	map.put("financialArrangments",!CommonUtils.isListNullOrEmpty(financialArrangementsDetailResponseList) ? CommonUtils.printFields(financialArrangementsDetailResponseList,null) : null);
-        } catch (Exception e) {
-            logger.error("Problem to get Data of Financial Arrangements Details {}", e);
-        }	
+			map.put("financialArrangmentsofCoApplicant" ,bindDataOfFinancialArrangementOfCoApplicant(applicationId));
+		}catch (Exception e) {
+			logger.error("Error while getting Financial Arrangement Data for CoApplicants : Error==>{} ",e);
+		}	
 		
 		//Co-Applicant FINANCIAL ARRANGEMENTS
-		try {	
+		/*try {	
 			List<CoApplicantDetail> coApplicantDetails = coApplicantService.getCoApplicantList(applicationId);
 			List<Map<String , Object>> listMap = new ArrayList<Map<String,Object>>();
 			for(CoApplicantDetail coApplicantDetail : coApplicantDetails) {
@@ -451,7 +436,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 			map.put("financialArrangmentsofCoApplicant",!CommonUtils.isListNullOrEmpty(listMap) ? CommonUtils.printFields(listMap,null) : null);
          } catch (Exception e) {	
             logger.error("Problem to get Data of Financial Arrangements Details {}", e);	
-        }
+        }*/
 		
 		//SCORING for Applicant
 		try {
@@ -1483,6 +1468,29 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 		} catch (Exception e) {
 			logger.error("Error while getting profile Details : ",e);
 		}
+		
+		//FINANCIAL ARRANGEMENTS
+		try {
+            List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService.getFinancialArrangementDetailsList(applicationId, userId);
+            List<FinancialArrangementDetailResponseString> financialArrangementsDetailResponseList = new ArrayList<>();
+            for (FinancialArrangementsDetailRequest financialArrangementsDetailRequest : financialArrangementsDetailRequestList) {
+            	FinancialArrangementDetailResponseString financialArrangementsDetailResponse = new FinancialArrangementDetailResponseString();
+                financialArrangementsDetailResponse.setOutstandingAmount(CommonUtils.convertValueWithoutDecimal(financialArrangementsDetailRequest.getOutstandingAmount()));
+                financialArrangementsDetailResponse.setSecurityDetails(financialArrangementsDetailRequest.getSecurityDetails());
+                financialArrangementsDetailResponse.setAmount(CommonUtils.convertValueWithoutDecimal(financialArrangementsDetailRequest.getAmount()));
+                financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());
+                financialArrangementsDetailResponse.setLoanType(financialArrangementsDetailRequest.getLoanType());
+                financialArrangementsDetailResponse.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
+                financialArrangementsDetailResponse.setEmi(CommonUtils.convertValueWithoutDecimal(financialArrangementsDetailRequest.getEmi()));
+                financialArrangementsDetailResponse.setBureauOrCalculatedEmi(CommonUtils.convertValueWithoutDecimal(financialArrangementsDetailRequest.getBureauOrCalculatedEmi()));
+                //financialArrangementsDetailResponse.setLcbgStatus(!CommonUtils.isObjectNullOrEmpty(financialArrangementsDetailRequest.getLcBgStatus()) ? LCBG_Status_SBI.getById(financialArrangementsDetailRequest.getLcBgStatus()).getValue().toString() : "-");
+                financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
+            }
+            map.put("financialArrangments",!CommonUtils.isListNullOrEmpty(financialArrangementsDetailResponseList) ? CommonUtils.printFields(financialArrangementsDetailResponseList,null) : null);
+        } catch (Exception e) {
+            logger.error("Problem to get Data of Financial Arrangements Details in ApplicationForm {}", e);
+        }
+		
 		return map;
 	}
 	
@@ -1826,14 +1834,49 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 					
 					coApp.put("finalData" ,coAppData != null ? coAppData : null);
 				}
-				
-				listMap.add(coApp);
-				
+				listMap.add(coApp);	
 			}
+			
 			return listMap;
 		}catch (Exception e) {
 			logger.error("Error while getting profile Details : ",e);
 		}
+		return null;
+	}
+	
+	public Object bindDataOfFinancialArrangementOfCoApplicant(Long applicationId){
+		try {
+			List<CoApplicantDetail> coApplicantDetails = coApplicantService.getCoApplicantList(applicationId);
+			List<Map<String , Object>> listMap = new ArrayList<Map<String,Object>>();
+			for(CoApplicantDetail coApplicantDetail : coApplicantDetails) {
+				CoApplicantRequest coApplicantRequest = new CoApplicantRequest();
+				copyAddressFromDomainToRequestOfCoApplicant(coApplicantDetail, coApplicantRequest);
+				BeanUtils.copyProperties(coApplicantDetail, coApplicantRequest);
+				Map<String, Object> map1 = new HashMap<String, Object>();
+				List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService.getFinancialArrangementDetailsListDirId(coApplicantDetail.getId() , applicationId);	
+				List<FinancialArrangementDetailResponseString> financialArrangementsDetailResponseList = new ArrayList<>();	
+				for (FinancialArrangementsDetailRequest financialArrangementsDetailRequest : financialArrangementsDetailRequestList) {
+					FinancialArrangementDetailResponseString financialArrangementsDetailResponse = new FinancialArrangementDetailResponseString();
+					financialArrangementsDetailResponse.setOutstandingAmount(CommonUtils.convertValueWithoutDecimal(financialArrangementsDetailRequest.getOutstandingAmount()));	
+					financialArrangementsDetailResponse.setSecurityDetails(financialArrangementsDetailRequest.getSecurityDetails());	
+					financialArrangementsDetailResponse.setAmount(CommonUtils.convertValueWithoutDecimal(financialArrangementsDetailRequest.getAmount()));	
+					financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());	
+					financialArrangementsDetailResponse.setLoanType(financialArrangementsDetailRequest.getLoanType());	
+					financialArrangementsDetailResponse.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());	
+					financialArrangementsDetailResponse.setEmi(CommonUtils.convertValueWithoutDecimal(financialArrangementsDetailRequest.getEmi()));
+					financialArrangementsDetailResponse.setBureauOrCalculatedEmi(CommonUtils.convertValueWithoutDecimal(financialArrangementsDetailRequest.getBureauOrCalculatedEmi()));
+					//financialArrangementsDetailResponse.setLcbgStatus(!CommonUtils.isObjectNullOrEmpty(financialArrangementsDetailRequest.getLcBgStatus()) ? LCBG_Status_SBI.getById(financialArrangementsDetailRequest.getLcBgStatus()).getValue().toString() : "-");	
+					financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);	
+				}
+				map1.put("financialDetails", !CommonUtils.isListNullOrEmpty(financialArrangementsDetailResponseList) ? CommonUtils.printFields(financialArrangementsDetailResponseList,null) : null);
+				map1.put("coAppDetail", CommonUtils.printFields(coApplicantRequest, null));
+				listMap.add(map1);		
+			}
+			return !CommonUtils.isListNullOrEmpty(listMap) ? CommonUtils.printFields(listMap,null) : null;
+			//map.put("financialArrangmentsofCoApplicant",!CommonUtils.isListNullOrEmpty(listMap) ? CommonUtils.printFields(listMap,null) : null);
+		} catch (Exception e) {	
+	        logger.error("Problem to get Data of Financial Arrangements Details {}", e);
+	    }
 		return null;
 	}
 	
@@ -1976,6 +2019,13 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 			logger.error("Error while getting profile Details for CoApplicants in ApplicationForm : ",e);
 		}
 		
+		//Fetch FinancialArrangementData For All CoApplicant
+		try {
+			map.put("financialArrangmentsofCoApplicant" ,bindDataOfFinancialArrangementOfCoApplicant(applicationId));
+		}catch (Exception e) {
+			logger.error("Error while getting Financial Arrangement Data for CoApplicants in ApplicationForm : ",e);
+		}
+		
 		//Fetch Bank Details
 		try {
 			map.put("bankDetails", fetchBankDetails(applicationId, userId, proposalId));
@@ -1995,7 +2045,24 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 		if(orgId != null) {
 			map.put("bankName", str != null && str.length > 0 && str[0] != null ? str[0] : "" );
 			map.put("bankUrl", str != null && str.length > 1 && str[1] != null ? str[1] : null);
-			
+			map.put("bankFullName", str != null && str.length > 2 && str[2] != null ? str[2] : "-");
+		}
+		
+		//MATCHES RESPONSE
+		if(proposalId != null) {
+			try {
+				ApplicationProposalMapping applicationProposalMapping = applicationMappingRepository.getByApplicationIdAndProposalId(applicationId, proposalId);
+				MatchRequest matchRequest = new MatchRequest();
+				matchRequest.setApplicationId(applicationId);
+				matchRequest.setProductId(productId);
+				matchRequest.setBusinessTypeId(applicationProposalMapping.getBusinessTypeId());
+				MatchDisplayResponse matchResponse= matchEngineClient.displayMatchesOfRetail(matchRequest);
+				logger.info("matchesResponse ==>{} " , matchResponse);
+				map.put("matchesResponse", !CommonUtils.isListNullOrEmpty(matchResponse.getMatchDisplayObjectList()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectList(),null) : " ");
+			}
+			catch (Exception e) {
+				logger.error("Error while getting matches data in ApplicationForm: ",e);
+			}
 		}
 		
 		return map;

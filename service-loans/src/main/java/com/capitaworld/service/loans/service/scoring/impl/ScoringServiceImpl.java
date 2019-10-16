@@ -1719,7 +1719,7 @@ public class ScoringServiceImpl implements ScoringService {
                  		 	isCreaditHisotryGreaterSixMonths = true;
                  	 	}
 
-                 	 if(cibilActualScore>= 1 && cibilActualScore <= 5){
+                 	 if(cibilActualScore>= 0 && cibilActualScore <= 5){
                   			isCreaditHisotryLessThenSixMonths = true;
                   	}
 

@@ -211,6 +211,7 @@ public class RetailProduct extends ProductMasterRequest {
 	private Boolean isMinNetTakeHomeSalaryMandatory = false;
 	
 	
+	private List<Integer> bureauScoreIds = Collections.emptyList();
 	
 
 	public Long getFpProductId() {
@@ -987,5 +988,13 @@ public class RetailProduct extends ProductMasterRequest {
 
 	public void setIsRiskScoreRetailCoAppOthThnSalMandatory(Boolean isRiskScoreRetailCoAppOthThnSalMandatory) {
 		this.isRiskScoreRetailCoAppOthThnSalMandatory = isRiskScoreRetailCoAppOthThnSalMandatory;
+	}
+
+	public List<Integer> getBureauScoreIds() {
+		return bureauScoreIds;
+	}
+
+	public void setBureauScoreIds(List<Integer> bureauScoreIds) {
+		this.bureauScoreIds = bureauScoreIds;
 	}
 }

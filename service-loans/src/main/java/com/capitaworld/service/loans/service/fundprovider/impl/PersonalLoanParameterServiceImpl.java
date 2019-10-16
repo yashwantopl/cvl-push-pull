@@ -7,7 +7,6 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -38,6 +37,7 @@ import com.capitaworld.service.loans.domain.fundprovider.PersonalLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.PersonalLoanParameterTemp;
 import com.capitaworld.service.loans.domain.fundprovider.SalaryModeDetail;
 import com.capitaworld.service.loans.domain.fundprovider.SalaryModeDetailTemp;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.retail.CreditRatingPlParameter;
 import com.capitaworld.service.loans.model.retail.EmiNmiDetailRequest;
@@ -60,6 +60,7 @@ import com.capitaworld.service.loans.repository.fundprovider.GeographicalStateRe
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalStateTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.PersonalLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.PersonalLoanParameterTempRepository;
+import com.capitaworld.service.loans.service.fundprovider.FPParameterMappingService;
 import com.capitaworld.service.loans.service.fundprovider.PersonalLoanParameterService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -132,6 +133,9 @@ public class  PersonalLoanParameterServiceImpl implements PersonalLoanParameterS
 	
 	@Autowired
 	private EmiNmiMappingRepository emiNmiMappingRepository;
+	
+	@Autowired
+	private FPParameterMappingService fPParameterMappingService;
 	
 	@Override
 	public boolean saveOrUpdate(PersonalLoanParameterRequest personalLoanParameterRequest,Long mappingId) {
@@ -206,6 +210,8 @@ public class  PersonalLoanParameterServiceImpl implements PersonalLoanParameterS
 		fpRatingAgencyRepository.inActiveEmpWithByFpProductId(personalLoanParameterRequest.getId());
 		saveRatingAgencyInfoMaster(personalLoanParameterRequest);
 		
+		fPParameterMappingService.inactiveAndSave(personalLoanParameterRequest.getId(),
+				CommonUtils.ParameterTypes.BUREAU_SCORE, personalLoanParameterRequest.getBureauScoreIds());
 
 		/*//Dhaval
 		boolean isUpdate = msmeValueMappingService.updateMsmeValueMapping(false, mappingId,workingCapitalParameter2.getId());
@@ -373,6 +379,9 @@ public class  PersonalLoanParameterServiceImpl implements PersonalLoanParameterS
 				{
 					personalLoanParameterRequest.setCreditRatingSelectedList(null);
 				}
+				
+				personalLoanParameterRequest.setBureauScoreIds(fPParameterMappingService
+						.getParameters(personalLoanParameterRequest.getId(), CommonUtils.ParameterTypes.BUREAU_SCORE));
 		CommonDocumentUtils.endHook(logger, "getPersonalLoanParameterRequest");
 		return personalLoanParameterRequest;
 	}
@@ -594,6 +603,9 @@ private void saveCountry(PersonalLoanParameterRequest personalLoanParameterReque
 			personalLoanParameterRequest.setCreditRatingSelectedList(null);
 		}
 		
+		personalLoanParameterRequest.setBureauScoreIds(fPParameterMappingService.getParametersTemp(
+				personalLoanParameterRequest.getId(), CommonUtils.ParameterTypes.BUREAU_SCORE));
+		
 		personalLoanParameterRequest.setJobId(loanParameter.getJobId());
 		
 		//set workflow buttons
@@ -716,6 +728,9 @@ private void saveCountry(PersonalLoanParameterRequest personalLoanParameterReque
 		//save rating info
 		fpRatingAgencyTempRepository.inActiveEmpWithByFpProductId(personalLoanParameterTemp.getId());
 		saveRatingAgencyInfo(personalLoanParameterRequest);
+		
+		fPParameterMappingService.inactiveAndSaveTemp(personalLoanParameterTemp.getId(),
+				CommonUtils.ParameterTypes.BUREAU_SCORE, personalLoanParameterRequest.getBureauScoreIds());
 		
 		
 		/*//Dhaval

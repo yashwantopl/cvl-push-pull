@@ -998,7 +998,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			map.put("spouseEmployment", plRetailApplicantRequest.getSpouseEmployment() != null ? SpouseEmploymentList.getById(plRetailApplicantRequest.getSpouseEmployment()).getValue().toString() : "-");
 			map.put("designation", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getDesignation())? DesignationList.getById(plRetailApplicantRequest.getDesignation()).getValue().toString() : "-");
 			map.put("noOfDependent", plRetailApplicantRequest.getNoOfDependent());
-			
+			map.put("loanPurpose", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getLoanPurpose()) ? LoanPurposePL.getById(plRetailApplicantRequest.getLoanPurpose()).getValue(): "");
 			/* Addition */
 			map.put("email", (plRetailApplicantRequest.getEmail() != null ? (plRetailApplicantRequest.getEmail()) : "-"));
 			map.put("fathersName", (plRetailApplicantRequest.getFatherName() != null ? (plRetailApplicantRequest.getFatherName()) : " "));
@@ -1100,15 +1100,16 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 				keyVerticalFundingId.add(plRetailApplicantRequest.getKeyVerticalFunding());
 			if (!CommonUtils.isListNullOrEmpty(keyVerticalFundingId)) {
 				try {
-					OneFormResponse oneFormResponse = oneFormClient.getIndustryById(keyVerticalFundingId);
-					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
-					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-						MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-						map.put("keyVerticalFunding", StringEscapeUtils.escapeXml(masterResponse.getValue()));
-					} else {
-						map.put("keyVerticalFunding", "-");
+					if(keyVerticalFundingId!= null && !keyVerticalFundingId.isEmpty()) {
+						OneFormResponse oneFormResponse = oneFormClient.getIndustryById(keyVerticalFundingId);
+						List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
+						if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+							MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+							map.put("keyVerticalFunding", StringEscapeUtils.escapeXml(masterResponse.getValue()));
+						} else {
+							map.put("keyVerticalFunding", "-");
+						}
 					}
-	
 				} catch (Exception e) {
 					logger.error(CommonUtils.EXCEPTION,e);
 				}
@@ -1153,15 +1154,17 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			if (!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getKeyVerticalSector()))
 				keyVerticalSectorId.add(plRetailApplicantRequest.getKeyVerticalSector());
 			try {
-				OneFormResponse formResponse = oneFormClient.getIndustrySecByMappingId(plRetailApplicantRequest.getKeyVerticalSector());
-				SectorIndustryModel sectorIndustryModel = MultipleJSONObjectHelper.getObjectFromMap((Map) formResponse.getData(), SectorIndustryModel.class);
-				OneFormResponse oneFormResponse = oneFormClient.getSectorById(Arrays.asList(sectorIndustryModel.getSectorId()));
-				List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
-				if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-					MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-					map.put("keyVerticalSector", StringEscapeUtils.escapeXml(masterResponse.getValue()));
-				} else {
-					map.put("keyVerticalSector", "-");
+				if(keyVerticalSectorId!= null && !keyVerticalSectorId.isEmpty()) {
+					OneFormResponse formResponse = oneFormClient.getIndustrySecByMappingId(plRetailApplicantRequest.getKeyVerticalSector());
+					SectorIndustryModel sectorIndustryModel = MultipleJSONObjectHelper.getObjectFromMap((Map) formResponse.getData(), SectorIndustryModel.class);
+					OneFormResponse oneFormResponse = oneFormClient.getSectorById(Arrays.asList(sectorIndustryModel.getSectorId()));
+					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
+					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+						MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+						map.put("keyVerticalSector", StringEscapeUtils.escapeXml(masterResponse.getValue()));
+					} else {
+						map.put("keyVerticalSector", "-");
+					}
 				}
 			} catch (Exception e) {
 				logger.error(CommonUtils.EXCEPTION,e);
@@ -1615,12 +1618,35 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 		}
 		
 		map.put("bankDetails", getBranchDetails(applicationId, userId, proposalId));
-		Long orgId = proposalDetailsRepository.getOrgIdByProposalId(proposalId);
+		Long orgId = null;
+		if(proposalId != null) {
+			orgId = proposalDetailsRepository.getOrgIdByProposalId(proposalId);
+		}else {
+			orgId = ineligibleProposalDetailsRepository.getOrgId(applicationId);
+		}
 		
 		String[] str = BanksEnumForReports.getBankNameAndUrl(orgId);
 		
 		map.put("bankName", str != null && str.length > 0 && str[0] != null ? str[0] : "-");
 		map.put("bankUrl", str != null && str.length > 1 && str[1] != null ? str[1] : "-");
+		map.put("bankFullName", str != null && str.length > 2 && str[2] != null ? str[2] : "-");
+		
+		//MATCHES RESPONSE
+		if(proposalId != null) {
+			try {
+				ApplicationProposalMapping applicationProposalMapping = applicationMappingRepository.getByApplicationIdAndProposalId(applicationId, proposalId);
+				MatchRequest matchRequest = new MatchRequest();
+				matchRequest.setApplicationId(applicationId);
+				matchRequest.setProductId(productId);
+				matchRequest.setBusinessTypeId(applicationProposalMapping.getBusinessTypeId());
+				MatchDisplayResponse matchResponse= matchEngineClient.displayMatchesOfRetail(matchRequest);
+				logger.info("matchesResponse ==>{} " , matchResponse);
+				map.put("matchesResponse", !CommonUtils.isListNullOrEmpty(matchResponse.getMatchDisplayObjectList()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectList(),null) : " ");
+			}
+			catch (Exception e) {
+				logger.error("Error while getting matches data in ApplicationForm: ",e);
+			}
+		}
 		
 		return map;
 	}
