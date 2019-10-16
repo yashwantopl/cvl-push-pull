@@ -111,7 +111,7 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 					Integer status = (Integer) objects[1];
 					if ((stage == 7 || stage == 9) && status == 3) {
 						clientDetailCoLending.setClientStatus("Completed");
-					} else if (stage == 4 && status == 3) {
+					} else if (stage == 4 && status == 6) {
 						clientDetailCoLending.setClientStatus("In-Eligible");
 					} else {
 						clientDetailCoLending.setClientStatus("In-Progress");
