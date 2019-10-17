@@ -679,7 +679,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			 mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
 			 return mapper.readValue(response, UserOrganisationRequest.class);
 		 } catch (Exception e) {
-			 e.printStackTrace();
+			 logger.error(CommonUtils.EXCEPTION ,e);
 			 return null;
 		 }
 	 }
@@ -688,7 +688,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
         try {
             return mapper.writeValueAsString(value);
         } catch (Exception e) {
-            logger.error(CommonUtils.EXCEPTION ,e);
+        	logger.error(CommonUtils.EXCEPTION ,e);
             return null;
         }
     }
