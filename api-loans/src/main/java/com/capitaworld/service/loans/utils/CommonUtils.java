@@ -2440,9 +2440,9 @@ public class CommonUtils {
 	 * 
 	 */
 	public static String getCibilV2ScoreRange(String score) {
-		if (score.equals(-1)||score.equals("000-1")) {
+		if (score.equals("-1")||score.equals("000-1")) {
 			return "-1";
-		} else if (score.equals(0) || score.equals(1)) {
+		} else if (score.equals("0") || score.equals("1")) {
 			return "1 - 5";
 		} else if (isBetween(score, 300, 550)) {
 			return "300 - 514";
