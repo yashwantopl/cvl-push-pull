@@ -45,6 +45,7 @@ import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.FinancialArrangementDetailResponseString;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
+import com.capitaworld.service.loans.model.retail.ALOneformPrimaryRes;
 import com.capitaworld.service.loans.model.retail.BankAccountHeldDetailsRequest;
 import com.capitaworld.service.loans.model.retail.BankRelationshipRequest;
 import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
@@ -81,6 +82,7 @@ import com.capitaworld.service.loans.service.fundseeker.retail.FixedDepositsDeta
 import com.capitaworld.service.loans.service.fundseeker.retail.OtherCurrentAssetDetailService;
 import com.capitaworld.service.loans.service.fundseeker.retail.OtherIncomeDetailService;
 import com.capitaworld.service.loans.service.fundseeker.retail.PlRetailApplicantService;
+import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryAutoLoanService;
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantIncomeService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
@@ -205,6 +207,9 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 	
 	@Autowired
 	private ITRClient itrClient;
+        
+        @Autowired
+	PrimaryAutoLoanService primaryAutoloanService;
 	
 	@Autowired
 	private ProductMasterRepository productMasterRepository;
@@ -281,11 +286,14 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 		try {
 			if(userId != null) {
 				Map<String ,Object> loanDetails = new HashMap<String, Object>();
+                                ALOneformPrimaryRes autoDetails = primaryAutoloanService.getOneformPrimaryDetails(applicationId);
 				PrimaryAutoLoanDetail primaryAutoLoanDetail = primaryAutoLoanDetailRepository.getByApplicationAndUserId(applicationId, userId);
 				if(!CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetail)) {
+                                    
 					PrimaryAutoLoanDetailRequest primaryAutoLoanDetailRequest = new PrimaryAutoLoanDetailRequest();
 					BeanUtils.copyProperties(primaryAutoLoanDetail, primaryAutoLoanDetailRequest);
 					loanDetails.put("primaryLoanDetails", primaryAutoLoanDetailRequest);
+                                        loanDetails.put("borrowersConstribution", !CommonUtils.isObjectNullOrEmpty(autoDetails.getBorrowerContribution()) ? autoDetails.getBorrowerContribution() : "-" );
 					loanDetails.put("vehicleSegment", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getVehicleSegment()) ? VehicleSegment.getById(primaryAutoLoanDetailRequest.getVehicleSegment()).getValue() : "-");
 					loanDetails.put("vehicleEngineVolume", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getVehicleEngineVolume()) ? VehicleEngineVolume.getById(primaryAutoLoanDetailRequest.getVehicleEngineVolume()).getValue() : "-");
 					loanDetails.put("vehicleUse", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getVehicleUse()) ? VehicleUse.getById(primaryAutoLoanDetailRequest.getVehicleUse()).getValue() : "-");
@@ -618,6 +626,15 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
 						companyMap.put(Retail.AutoLoan.PERSONAL_RELATIONSHIP_WITH_BANK, CommonUtils.printFields(collect.get(0),null));
 					}
+                                        collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.IS_ADHAAR_CARD)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.AutoLoan.IS_ADHAAR_CARD, CommonUtils.printFields(collect.get(0),null));
+					}
+                                        collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.CAR_SEGMENT)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.AutoLoan.CAR_SEGMENT, CommonUtils.printFields(collect.get(0),null));
+					}
+                                        
 					
 					scoreResponse.add(companyMap);
 					map.put("scoringResp", scoreResponse);
@@ -1175,7 +1192,7 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 			
 			map.put("salutation", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getTitleId()) ? StringEscapeUtils.escapeXml(Title.getById(plRetailApplicantRequest.getTitleId()).getValue()):"");
 			if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest)) {
-                                map.put("isUserHaveAadhar", plRetailApplicantRequest.getIsUserHaveAadhar() != null ? (plRetailApplicantRequest.getIsUserHaveAadhar() ? "YES" : "NO") :  "-");
+                                map.put("isUserHaveAadhar", plRetailApplicantRequest.getIsUserHaveAadhar() != null ? (plRetailApplicantRequest.getIsUserHaveAadhar() ? "Yes" : "No") :  "-");
 				map.put("registeredAddPremise", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getAddressPremiseName()) ? CommonUtils.printFields(plRetailApplicantRequest.getAddressPremiseName(),null) + "," : "");
 				map.put("registeredAddStreetName", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getAddressStreetName()) ? CommonUtils.printFields(plRetailApplicantRequest.getAddressStreetName(),null) + "," : "");
 				map.put("registeredAddLandmark", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getAddressLandmark()) ? CommonUtils.printFields(plRetailApplicantRequest.getAddressLandmark(),null) + "," : "");
