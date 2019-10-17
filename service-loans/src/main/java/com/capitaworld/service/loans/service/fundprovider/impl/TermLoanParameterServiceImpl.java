@@ -1495,7 +1495,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			dataRequest.setId(coLendingRatio.getId());
 			dataRequest.setValue(coLendingRatio.getName());
 			dataRequest.setTenure(coLendingRatio.getTenure());
-			String label="Bank:"+coLendingRatio.getBankRatio().toString()+" Nbfc:"+coLendingRatio.getNbfcRatio()+" tenure:"+coLendingRatio.getTenure();
+			String label="Bank:"+coLendingRatio.getBankRatio().toString()+" NBFC:"+coLendingRatio.getNbfcRatio()+" Tenure:"+coLendingRatio.getTenure();
 			dataRequest.setLabel(label);
 			dataRequest.setUserOrgId(coLendingRatio.getUserOrgId());
 			dataRequest.setBankId(coLendingRatio.getBankId());
