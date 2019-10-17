@@ -1520,9 +1520,34 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 			Boolean isButtonDisplay=true;
 			String messageOfButton=null;
+
+			if((!CommonUtils.isObjectNullOrEmpty(proposalDetails)) && proposalDetails.getNbfcFlow() == 2) {
+				ProposalDetails proposalSanctionDisbusedByNbfc = null;
+				String msg = "";
+
+				proposalSanctionDisbusedByNbfc = proposalDetailRepository.getSanctionProposalByApplicationNBFCFlow(proposalMappingRequest.getApplicationId());
+
+				if(!CommonUtils.isObjectNullOrEmpty(proposalSanctionDisbusedByNbfc)){
+					if(proposalSanctionDisbusedByNbfc.getProposalStatusId().getId() == CommonUtils.ApplicationStatus.ASSIGNED){
+						msg = "Sanction pending from NBFC";
+						isButtonDisplay=false;
+					}else if(proposalSanctionDisbusedByNbfc.getProposalStatusId().getId() == CommonUtils.ApplicationStatus.APPROVED){
+						msg = "Disbursement pending from NBFC";
+						isButtonDisplay=false;
+					}
+				}
+
+				if(!CommonUtils.isObjectNullOrEmpty(proposalSanctionDisbusedByNbfc)){
+					isButtonDisplay=false;
+					messageOfButton=msg;
+					proposalMappingRequest.setMessageOfButton(messageOfButton);
+					proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+				}
+			}
+
 			if(!CommonUtils.isObjectNullOrEmpty(proposalDetails))
 			{
-				if(!proposalDetails.getUserOrgId().toString().equals(request.getUserOrgId().toString()))
+				if((!proposalDetails.getUserOrgId().toString().equals(request.getUserOrgId().toString())) && proposalDetails.getNbfcFlow() == null)
 				{
 					if(ProposalStatus.APPROVED ==  proposalDetails.getProposalStatusId().getId())
 						messageOfButton="This proposal has been Sanctioned by Other Bank.";
