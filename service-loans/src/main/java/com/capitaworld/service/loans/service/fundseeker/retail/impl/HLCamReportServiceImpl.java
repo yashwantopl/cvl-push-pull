@@ -1443,16 +1443,19 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 			if (!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getKeyVerticalSector()))
 				keyVerticalSectorId.add(plRetailApplicantRequest.getKeyVerticalSector());
 			try {
-				OneFormResponse formResponse = oneFormClient.getIndustrySecByMappingId(plRetailApplicantRequest.getKeyVerticalSector());
-				SectorIndustryModel sectorIndustryModel = MultipleJSONObjectHelper.getObjectFromMap((Map) formResponse.getData(), SectorIndustryModel.class);
-				OneFormResponse oneFormResponse = oneFormClient.getSectorById(Arrays.asList(sectorIndustryModel.getSectorId()));
-				List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
-				if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-					MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-					map.put("keyVerticalSector", StringEscapeUtils.escapeXml(masterResponse.getValue()));
-				} else {
-					map.put("keyVerticalSector", "-");
+				if(keyVerticalSectorId!= null && !keyVerticalSectorId.isEmpty()) {
+					OneFormResponse formResponse = oneFormClient.getIndustrySecByMappingId(plRetailApplicantRequest.getKeyVerticalSector());
+					SectorIndustryModel sectorIndustryModel = MultipleJSONObjectHelper.getObjectFromMap((Map) formResponse.getData(), SectorIndustryModel.class);
+					OneFormResponse oneFormResponse = oneFormClient.getSectorById(Arrays.asList(sectorIndustryModel.getSectorId()));
+					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
+					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+						MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+						map.put("keyVerticalSector", StringEscapeUtils.escapeXml(masterResponse.getValue()));
+					} else {
+						map.put("keyVerticalSector", "-");
+					}
 				}
+				
 			} catch (Exception e) {
 				logger.error(CommonUtils.EXCEPTION,e);
 			}

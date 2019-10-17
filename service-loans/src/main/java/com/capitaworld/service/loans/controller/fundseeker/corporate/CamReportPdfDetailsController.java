@@ -811,7 +811,7 @@ public class CamReportPdfDetailsController {
 			ReportRequest reportRequest = null;
 			if(loanTypeId == LoanType.PERSONAL_LOAN.getValue()) {
 				logger.info("Fetching Data of Personal Loan by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}" ,applicationId ,productId, proposalId);
-				response = plCamReportService.getDataForApplicationForm(applicationId, productId, proposalId);
+				response = plCamService.getDataForApplicationForm(applicationId, productId, proposalId);
 				reportRequest = new ReportRequest();
 				reportRequest.setParams(response);
 				reportRequest.setTemplate("PLAPPLICATIONFORM");
@@ -838,10 +838,7 @@ public class CamReportPdfDetailsController {
 		}
 		return null;
 	}
-	
-	@Autowired
-	private PLCamReportService plCamReportService;
-	
+		
 	//only to view cam data of All types
 	@GetMapping(value = {"/getCamData/{applicationId}/{productMappingId}/{proposalId}","/getCamData/{applicationId}/{productMappingId}/{proposalId}/{loanType}","/getCamData/{applicationId}/{productMappingId}/{proposalId}/{loanType}/{camType}"}, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getCamDataByProposalId(@PathVariable(value = "proposalId") Long proposalId, @PathVariable(value = "applicationId") Long applicationId, @PathVariable(value = "productMappingId") Long productId,
@@ -867,7 +864,7 @@ public class CamReportPdfDetailsController {
 				
 			if(loanType == LoanType.PERSONAL_LOAN.getValue()) {
 				logger.info("Fetching Data of Personal Loan by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}" ,applicationId ,productId, proposalId);
-				response = plCamReportService.getCamReportDetailsByProposalId(applicationId, productId,proposalId, camType);
+				response = plCamService.getCamReportDetailsByProposalId(applicationId, productId,proposalId, camType);
 			}else if(loanType == LoanType.HOME_LOAN.getValue()) {
 				logger.info("Fetching Data of Home Loan by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}" ,applicationId ,productId, proposalId);
 				response = hlCamReportService.getCamReportDetailsByProposalId(applicationId, productId,proposalId, camType);
