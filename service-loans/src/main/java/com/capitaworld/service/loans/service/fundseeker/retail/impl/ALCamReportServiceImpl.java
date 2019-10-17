@@ -1160,6 +1160,12 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 	public Map<String ,Object> bindDataOfRetailApplicant(Long applicationId, Long userId, Long proposalId){
 		Map<String ,Object> map = new HashMap<String, Object>();
 		
+		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
+		if(loanApplicationMaster != null) {
+			map.put("applicationType", (loanApplicationMaster.getWcRenewalStatus() != null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue() : "New" ));
+			map.put("dateOfProposal", !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCreatedDate())? simpleDateFormat.format(loanApplicationMaster.getCreatedDate()):"-");
+		}
+		
 		if(proposalId != null) {
 			ApplicationProposalMapping applicationProposalMapping = applicationMappingRepository.getByApplicationIdAndProposalId(applicationId, proposalId);
 			if(!CommonUtils.isObjectNullOrEmpty(applicationProposalMapping)){
@@ -1170,10 +1176,7 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 	     		map.put("currency", !CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getCurrencyId()) ? Currency.getById(applicationProposalMapping.getCurrencyId()).getValue().toString() : null);
 			}
 		}else {
-			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
 			if(loanApplicationMaster != null) {
-	     		map.put("applicationType", (loanApplicationMaster.getWcRenewalStatus() != null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue() : "New" ));
-	     		map.put("dateOfProposal", !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCreatedDate())? simpleDateFormat.format(loanApplicationMaster.getCreatedDate()):"-");
 	     		map.put("applicationCode", loanApplicationMaster.getApplicationCode() != null ? loanApplicationMaster.getApplicationCode() : "-");
 	     		map.put("loanType", !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getProductId()) ? CommonUtils.LoanType.getType(loanApplicationMaster.getProductId()).getName() : " ");
 	     		map.put("eligibleLoanAmount", loanApplicationMaster.getAmount() != null ? CommonUtils.convertValue(loanApplicationMaster.getAmount()) : "-");
