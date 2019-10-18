@@ -13,9 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.capitaworld.itr.api.model.ITRBasicDetailsResponse;
-import com.capitaworld.itr.api.model.ITRConnectionResponse;
-import com.capitaworld.itr.client.ITRClient;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,14 +20,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.capitaworld.api.ekyc.model.EkycResponse;
-import com.capitaworld.api.ekyc.model.epf.request.EmployerRequest;
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
-import com.capitaworld.api.eligibility.model.PersonalEligibilityRequest;
 import com.capitaworld.client.ekyc.EPFClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.client.reports.ReportsClient;
+import com.capitaworld.itr.api.model.ITRBasicDetailsResponse;
+import com.capitaworld.itr.api.model.ITRConnectionResponse;
+import com.capitaworld.itr.client.ITRClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
 import com.capitaworld.service.analyzer.model.common.Data;
@@ -1051,7 +1048,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			}else{
 				map.put("nameEdited",fullName);
 			}
-			
+			map.put("tenureRequired", plRetailApplicantRequest.getTenureRequired());
 			map.put("nameOfEmployer",plRetailApplicantRequest.getNameOfEmployer() != null ? StringEscapeUtils.escapeXml(plRetailApplicantRequest.getNameOfEmployer()) : "-");
 			
 			try {
@@ -1646,6 +1643,27 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			catch (Exception e) {
 				logger.error("Error while getting matches data in ApplicationForm: ",e);
 			}
+		}
+		
+		ReportRequest reportRequest = new ReportRequest();
+		reportRequest.setApplicationId(applicationId);
+		reportRequest.setUserId(userId);
+
+//		List<Object> bankStatement = new ArrayList<Object>();
+		List<Object> customerInfo = new ArrayList<Object>();
+
+		try {
+			AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
+			List<HashMap<String, Object>> hashMap = (List<HashMap<String, Object>>) analyzerResponse.getData();
+			if (!CommonUtils.isListNullOrEmpty(hashMap)) {
+				for (HashMap<String, Object> rec : hashMap) {
+					Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
+					customerInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getCustomerInfo()) ? CommonUtils.printFields(data.getCustomerInfo(),null) : " ");
+				}
+				map.put("customerInfo", customerInfo);
+			}
+		} catch (Exception e) {
+			logger.error("Error while getting perfios data : ",e);
 		}
 		
 		return map;
