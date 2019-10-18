@@ -866,62 +866,8 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 			logger.error("Error while getting scoring data : ",e);
 		}
 		
-		//PERFIOS API DATA (BANK STATEMENT ANALYSIS)
-		ReportRequest reportRequest = new ReportRequest();
-		reportRequest.setApplicationId(applicationId);
-		reportRequest.setUserId(userId);
-		List<Data> datas = new ArrayList<>();
-	  //List<Object> bankStatement = new ArrayList<Object>();
-	/**	List<Object> monthlyDetails = new ArrayList<Object>();
-		List<Object> top5FundReceived = new ArrayList<Object>();
-		List<Object> top5FundTransfered = new ArrayList<Object>();
-		List<Object> bouncedChequeList = new ArrayList<Object>();
-		List<Object> customerInfo = new ArrayList<Object>();
-		List<Object> summaryInfo = new ArrayList<Object>();*/
-
-
-		try {
-			AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
-			List<HashMap<String, Object>> listhashMap = (List<HashMap<String, Object>>) analyzerResponse.getData();
-			//List<HashMap<String, Object>> bankDataDetails = new ArrayList<HashMap<String,Object>>(); 
-
-			if (!CommonUtils.isListNullOrEmpty(listhashMap)) {	
-				for (HashMap<String, Object> rec : listhashMap) {
-					Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
-					datas.add(data);
-							
-					//bankStatement.add(!CommonUtils.isObjectNullOrEmpty(data.getXns()) ? CommonUtils.printFields(data.getXns().getXn(),null) : " ");
-					/**monthlyDetails.add(!CommonUtils.isObjectNullOrEmpty(data.getMonthlyDetailList()) ? CommonUtils.printFields(data.getMonthlyDetailList(),null) : "");
-					top5FundReceived.add(!CommonUtils.isObjectNullOrEmpty(data.getTop5FundReceivedList()) ? CommonUtils.printFields(data.getTop5FundReceivedList().getItem(),null) : "");
-					top5FundTransfered.add(!CommonUtils.isObjectNullOrEmpty(data.getTop5FundTransferedList()) ? CommonUtils.printFields(data.getTop5FundTransferedList().getItem(),null) : "");
-					bouncedChequeList.add(!CommonUtils.isObjectNullOrEmpty(data.getBouncedOrPenalXnList()) ? CommonUtils.printFields(data.getBouncedOrPenalXnList().getBouncedOrPenalXns(),null) : " ");
-					customerInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getCustomerInfo()) ? CommonUtils.printFields(data.getCustomerInfo(),null) : " ");
-					summaryInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getSummaryInfo()) ?CommonUtils.printFields(data.getSummaryInfo(),null) : " ");*/
-						
-				/**HashMap<String, Object>  bankData = new HashMap<>();
-					bankData.put("monthlyDetails", monthlyDetails);
-					bankData.put("top5FundReceived", top5FundReceived);
-					bankData.put("top5FundTransfered", top5FundTransfered);
-					bankData.put("bouncedChequeList", bouncedChequeList);
-					bankData.put("customerInfo", customerInfo);
-					bankData.put("summaryInfo", summaryInfo);
-					bankData.put("bankStatementAnalysis", CommonUtils.printFields(datas, null));
-					bankDataDetails.add(bankData);*/
-				}
-						
-				map.put("bankRelatedData" , CommonUtils.printFields(datas, null));
-				//map.put("bankStatement", bankStatement);
-				/**map.put("monthlyDetails", monthlyDetails);
-				map.put("top5FundReceived", top5FundReceived);
-				map.put("top5FundTransfered", top5FundTransfered);
-				map.put("bouncedChequeList", bouncedChequeList);
-				map.put("customerInfo", customerInfo);
-				map.put("summaryInfo", summaryInfo);
-				map.put("bankStatementAnalysis", CommonUtils.printFields(datas, null));*/
-			}
-		} catch (Exception e) {
-			logger.error("Error while getting perfios data : ",e);
-		}
+		//PERFIOS API DATA (BANK STATEMENT ANALYSIS)				
+		map.put("bankRelatedData" , getBankRelatedData(applicationId, userId));
 
 		//ELIGIBILITY DATA (ASSESSMENT TO LIMITS)
 		try{
@@ -1328,7 +1274,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 			map.put("loanPurpose", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getLoanPurpose()) ? StringEscapeUtils.escapeXml(HomeLoanPurpose.getById(plRetailApplicantRequest.getLoanPurpose()).getValue()): "-");
 			map.put("loanPurposeType" ,!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getLoanPurposeQueType()) ? LoanPurposeQuestion.fromId(plRetailApplicantRequest.getLoanPurposeQueType()).getValue() : "-");
 			map.put("loanPurposeValue", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getLoanPurposeQueValue()) ? plRetailApplicantRequest.getLoanPurposeQueValue() : "-");
-			
+			map.put("tenureRequired", plRetailApplicantRequest.getTenureRequired());
 			map.put("gender", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getGenderId()) ? Gender.getById(plRetailApplicantRequest.getGenderId()).getValue(): "-");
 			map.put("birthDate",!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBirthDate())? simpleDateFormat.format(plRetailApplicantRequest.getBirthDate()):"-");
 			
@@ -1938,6 +1884,12 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 		}
 		
 		//PERFIOS API DATA (BANK STATEMENT ANALYSIS)
+		map.put("bankRelatedData" , getBankRelatedData(applicationId, userId));
+		
+		return map;
+	}
+	
+	public List<Data> getBankRelatedData(Long applicationId ,Long userId){
 		ReportRequest reportRequest = new ReportRequest();
 		reportRequest.setApplicationId(applicationId);
 		reportRequest.setUserId(userId);
@@ -1949,8 +1901,6 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 		List<Object> bouncedChequeList = new ArrayList<Object>();
 		List<Object> customerInfo = new ArrayList<Object>();
 		List<Object> summaryInfo = new ArrayList<Object>();*/
-
-
 		try {
 			AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
 			List<HashMap<String, Object>> listhashMap = (List<HashMap<String, Object>>) analyzerResponse.getData();
@@ -1960,40 +1910,14 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				for (HashMap<String, Object> rec : listhashMap) {
 					Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
 					datas.add(data);
-							
-					//bankStatement.add(!CommonUtils.isObjectNullOrEmpty(data.getXns()) ? CommonUtils.printFields(data.getXns().getXn(),null) : " ");
-					/**monthlyDetails.add(!CommonUtils.isObjectNullOrEmpty(data.getMonthlyDetailList()) ? CommonUtils.printFields(data.getMonthlyDetailList(),null) : "");
-					top5FundReceived.add(!CommonUtils.isObjectNullOrEmpty(data.getTop5FundReceivedList()) ? CommonUtils.printFields(data.getTop5FundReceivedList().getItem(),null) : "");
-					top5FundTransfered.add(!CommonUtils.isObjectNullOrEmpty(data.getTop5FundTransferedList()) ? CommonUtils.printFields(data.getTop5FundTransferedList().getItem(),null) : "");
-					bouncedChequeList.add(!CommonUtils.isObjectNullOrEmpty(data.getBouncedOrPenalXnList()) ? CommonUtils.printFields(data.getBouncedOrPenalXnList().getBouncedOrPenalXns(),null) : " ");
-					customerInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getCustomerInfo()) ? CommonUtils.printFields(data.getCustomerInfo(),null) : " ");
-					summaryInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getSummaryInfo()) ?CommonUtils.printFields(data.getSummaryInfo(),null) : " ");*/
-						
-				/**HashMap<String, Object>  bankData = new HashMap<>();
-					bankData.put("monthlyDetails", monthlyDetails);
-					bankData.put("top5FundReceived", top5FundReceived);
-					bankData.put("top5FundTransfered", top5FundTransfered);
-					bankData.put("bouncedChequeList", bouncedChequeList);
-					bankData.put("customerInfo", customerInfo);
-					bankData.put("summaryInfo", summaryInfo);
-					bankData.put("bankStatementAnalysis", CommonUtils.printFields(datas, null));
-					bankDataDetails.add(bankData);*/
 				}
-						
-				map.put("bankRelatedData" , CommonUtils.printFields(datas, null));
-				//map.put("bankStatement", bankStatement);
-				/**map.put("monthlyDetails", monthlyDetails);
-				map.put("top5FundReceived", top5FundReceived);
-				map.put("top5FundTransfered", top5FundTransfered);
-				map.put("bouncedChequeList", bouncedChequeList);
-				map.put("customerInfo", customerInfo);
-				map.put("summaryInfo", summaryInfo);
-				map.put("bankStatementAnalysis", CommonUtils.printFields(datas, null));*/
+				return datas != null &&  !datas.isEmpty() ? datas : null;
 			}
+			
 		} catch (Exception e) {
 			logger.error("Error while getting perfios data : ",e);
 		}
-		return map;
+		return null;
 	}
 	
 	@Override
@@ -2006,7 +1930,7 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 		} catch (Exception e) {
 			logger.error("Error while getting profile Details of Applicant in ApplicationForm: ",e);
 		}
-		
+		map.put("bankRelatedData", getBankRelatedData(applicationId, userId));
 		//INCOME DETAILS - NET INCOME
 		try {
 			List<RetailApplicantIncomeRequest> retailApplicantIncomeDetail = retailApplicantIncomeService.getAllByProposalId(applicationId, proposalId);
