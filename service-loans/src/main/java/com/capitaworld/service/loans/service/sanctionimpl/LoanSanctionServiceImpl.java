@@ -282,7 +282,10 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 						logger.error("Exception",e);
 					}
 					
-					String[] cc = ccList != null && !ccList.isEmpty() ? ccList.toArray(new String[ccList.size()]) : null; 
+					String[] cc = {};
+					if(!ccList.isEmpty()) {
+						cc= ccList != null && !ccList.isEmpty() ? ccList.toArray(new String[ccList.size()]) : null;
+					}
 					
 					result = sendEmail(to ,toUserId != null ? toUserId : "123",parameters, NotificationAlias.EMAIL_SANCTION_CHECKER_MULTIPLE_BANK,subject ,cc);
 					if(result) {
