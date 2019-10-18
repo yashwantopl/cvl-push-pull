@@ -301,7 +301,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 
 
 	private Boolean sendEmail(String[] toNo,String userId,Map<String, Object> parameters,Long templateId,String subject , String[] cc) {
-		logger.info("inside email for {}" ,Arrays.asList(toNo));
+		logger.info("inside email for {}" ,toNo != null?Arrays.asList(toNo):null);
 		Boolean isSent = false;
 		NotificationRequest notificationRequest=new NotificationRequest();
 		try {
