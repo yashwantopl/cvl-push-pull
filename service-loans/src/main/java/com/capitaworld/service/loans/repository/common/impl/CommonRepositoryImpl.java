@@ -145,7 +145,7 @@ public class CommonRepositoryImpl  implements CommonRepository {
 				"from connect.connect_log c \r\n" + 
 				"left join loan_application.proposal_details pd on pd.application_id=c.application_id\r\n" + 
 				"left join users.users u on u.user_id=c.user_id\r\n" + 
-				"where c.application_id=:applicationId").setParameter("applicationId", applicationId).getSingleResult();
+				"where c.application_id=:applicationId limit 1").setParameter("applicationId", applicationId).getSingleResult();
 	}
 	
 	@Override
