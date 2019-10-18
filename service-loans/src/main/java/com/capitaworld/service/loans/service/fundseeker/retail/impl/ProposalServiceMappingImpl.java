@@ -1521,7 +1521,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			Boolean isButtonDisplay=true;
 			String messageOfButton=null;
 
-			if((!CommonUtils.isObjectNullOrEmpty(proposalDetails)) && proposalDetails.getNbfcFlow() == 2) {
+			if((!CommonUtils.isObjectNullOrEmpty(proposalDetails)) && (!CommonUtils.isObjectNullOrEmpty(proposalDetails.getNbfcFlow())) && proposalDetails.getNbfcFlow() == 2) {
 				ProposalDetails proposalSanctionDisbusedByNbfc = null;
 				String msg = "";
 
@@ -1547,7 +1547,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 			if(!CommonUtils.isObjectNullOrEmpty(proposalDetails))
 			{
-				if((!proposalDetails.getUserOrgId().toString().equals(request.getUserOrgId().toString())) && proposalDetails.getNbfcFlow() == null)
+				if((!proposalDetails.getUserOrgId().toString().equals(request.getUserOrgId().toString())) && CommonUtils.isObjectNullOrEmpty(proposalDetails.getNbfcFlow()))
 				{
 					if(ProposalStatus.APPROVED ==  proposalDetails.getProposalStatusId().getId())
 						messageOfButton="This proposal has been Sanctioned by Other Bank.";
