@@ -105,12 +105,22 @@ public class RetailApplicantIncomeServiceImpl implements RetailApplicantIncomeSe
 			appIncomeReq.setCapitalGainString(CommonUtils.convertValue(appIncomeDetail.getCapitalGain()));
 			appIncomeReq.setPgbpString(CommonUtils.convertValue(appIncomeDetail.getPgbp()));
 			appIncomeReq.setOtherSourceString(CommonUtils.convertValue(appIncomeDetail.getOtherSource()));
+			appIncomeReq.setNetTotal(CommonUtils.convertValueWithoutDecimal((!CommonUtils.isObjectNullOrEmpty(appIncomeDetail.getSalaryIncome()) ? appIncomeDetail.getSalaryIncome() : 0) + 
+					(!CommonUtils.isObjectNullOrEmpty(appIncomeDetail.getHouseProperty()) ? appIncomeDetail.getHouseProperty() : 0) + 
+					(!CommonUtils.isObjectNullOrEmpty(appIncomeDetail.getCapitalGain()) ? appIncomeDetail.getCapitalGain() : 0) +
+					(!CommonUtils.isObjectNullOrEmpty(appIncomeDetail.getPgbp()) ? appIncomeDetail.getPgbp() : 0) + 
+					(!CommonUtils.isObjectNullOrEmpty(appIncomeDetail.getOtherSource()) ? appIncomeDetail.getOtherSource() : 0)));
 			
 			appIncomeReq.setSalaryIncomeGrossString(CommonUtils.convertValue(appIncomeDetail.getSalaryIncomeGross()));
 			appIncomeReq.setCapitalGainGrossString(CommonUtils.convertValue(appIncomeDetail.getCapitalGainGross()));
 			appIncomeReq.setHousePropertyGrossString(CommonUtils.convertValue(appIncomeDetail.getHousePropertyGross()));
 			appIncomeReq.setOtherSourceGrossString(CommonUtils.convertValue(appIncomeDetail.getOtherSourceGross()));
 			appIncomeReq.setPgbpGrossString(CommonUtils.convertValue(appIncomeDetail.getPgbpGross()));
+			appIncomeReq.setGrossTotal(CommonUtils.convertValueWithoutDecimal((!CommonUtils.isObjectNullOrEmpty(appIncomeDetail.getSalaryIncomeGross()) ? appIncomeDetail.getSalaryIncomeGross() : 0) + 
+					(!CommonUtils.isObjectNullOrEmpty(appIncomeDetail.getHousePropertyGross()) ? appIncomeDetail.getHousePropertyGross() : 0) + 
+					(!CommonUtils.isObjectNullOrEmpty(appIncomeDetail.getCapitalGainGross()) ? appIncomeDetail.getCapitalGainGross() : 0) +
+					(!CommonUtils.isObjectNullOrEmpty(appIncomeDetail.getPgbpGross()) ? appIncomeDetail.getPgbpGross() : 0) + 
+					(!CommonUtils.isObjectNullOrEmpty(appIncomeDetail.getOtherSourceGross()) ? appIncomeDetail.getOtherSourceGross() : 0)));
 			BeanUtils.copyProperties(appIncomeDetail, appIncomeReq);
 			appIncomeReqList.add(appIncomeReq);
 		}
