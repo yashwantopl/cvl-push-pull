@@ -2788,18 +2788,18 @@ public class LoansClient {
 	/**
 	 * Client for Application Form report data uses in gateway
 	 * */
-	public LoansResponse getApplicationFormReport(Long applicationId,Long fpProductId, Long proposalId , Long loanTypeId) throws LoansException {
+	public byte[] getApplicationFormReport(Long applicationId,Long fpProductId, Long proposalId , Long loanTypeId) {
 		String url = loansBaseUrl.concat(GET_APPLICATION_FORM_REPORT + "/" + applicationId + "/" +fpProductId + "/" +proposalId + "/" +loanTypeId);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<?> entity = new HttpEntity<>(null, headers);
-			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+			return restTemplate.exchange(url, HttpMethod.GET, entity, byte[].class).getBody();
 		} catch (Exception e) {
 			logger.error("Exception in getApplicationForm : {}",e);
-			throw new LoansException(e.getCause().getMessage());
 		}
+		return null;
 	}
 	
 	public LoansResponse getCorporateApplicantByProposalId(Long proposalId) throws LoansException {
