@@ -582,15 +582,14 @@ public class CoLendingServiceImpl implements CoLendingService {
 				proposalIdList = proposalDetailsRepository.getFPProposalsByStatusIdAndUserOrgIdForBankPageable(proposalStatusId,request.getUserOrgId(),2, branchId,1,(request.getPageIndex()*10), request.getSize());
 			} else if(request.getDdrStatusId()== MatchConstant.ProposalStatus.APPROVED_BY_NBFC){
 				proposalStatusId.add(MatchConstant.ProposalStatus.APPROVED);
-				proposalIdList = proposalDetailsRepository.getFPProposalListByStatusIdAndUserOrgIdNBFCForBankPageable(proposalStatusId,request.getUserOrgId(),2, branchId,1,(request.getPageIndex()*10), request.getSize());
+				proposalIdList = proposalDetailsRepository.getFPProposalListByStatusIdAndUserOrgIdNBFCForBankPageable(MatchConstant.ProposalStatus.APPROVED,request.getUserOrgId(),2, branchId,1,(request.getPageIndex()*10), request.getSize());
 			} else if(request.getDdrStatusId()== MatchConstant.ProposalStatus.DISBURSED){
 				proposalStatusId.add(MatchConstant.ProposalStatus.DISBURSED);
 				proposalStatusId.add(MatchConstant.ProposalStatus.PARTIALLY_DISBURSED);
 				proposalIdList = proposalDetailsRepository.getFPProposalsByStatusIdAndUserOrgIdForBankPageable(proposalStatusId,request.getUserOrgId(),2, branchId,1,(request.getPageIndex()*10), request.getSize());
 			} else if(request.getDdrStatusId()== MatchConstant.ProposalStatus.DISBURSED_BY_NBFC){
-				proposalStatusId.add(MatchConstant.ProposalStatus.DISBURSED);
-				proposalStatusId.add(MatchConstant.ProposalStatus.PARTIALLY_DISBURSED);
-				proposalIdList = proposalDetailsRepository.getFPProposalListByStatusIdAndUserOrgIdNBFCForBankPageable(proposalStatusId,request.getUserOrgId(),2, branchId,1,(request.getPageIndex()*10), request.getSize());
+				proposalIdList.addAll(proposalDetailsRepository.getFPProposalListByStatusIdAndUserOrgIdNBFCForBankPageable(MatchConstant.ProposalStatus.DISBURSED,request.getUserOrgId(),2, branchId,1,(request.getPageIndex()*10), request.getSize()));
+				proposalIdList.addAll(proposalDetailsRepository.getFPProposalListByStatusIdAndUserOrgIdNBFCForBankPageable(MatchConstant.ProposalStatus.PARTIALLY_DISBURSED,request.getUserOrgId(),2, branchId,1,(request.getPageIndex()*10), request.getSize()));
 			}else if(request.getDdrStatusId()== MatchConstant.ProposalStatus.HOLD){
 				proposalStatusId.add(MatchConstant.ProposalStatus.HOLD);
 				proposalIdList = proposalDetailsRepository.getFPProposalPageableByStatusIdAndNBFCFlowType(proposalStatusId,request.getUserOrgId(), branchId,2,1,(request.getPageIndex()*10), request.getSize());
