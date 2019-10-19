@@ -1535,17 +1535,16 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						if (proposalSanctionDisbusedByNbfc.getProposalStatusId().getId() == CommonUtils.ApplicationStatus.ASSIGNED) {
 							msg = "Sanction pending from NBFC";
 							isButtonDisplay = false;
+							messageOfButton = msg;
+							proposalMappingRequest.setMessageOfButton(messageOfButton);
+							proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
 						} else if (proposalSanctionDisbusedByNbfc.getProposalStatusId().getId() == CommonUtils.ApplicationStatus.APPROVED) {
 							msg = "Disbursement pending from NBFC";
 							isButtonDisplay = false;
+							messageOfButton = msg;
+							proposalMappingRequest.setMessageOfButton(messageOfButton);
+							proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
 						}
-					}
-
-					if (!CommonUtils.isObjectNullOrEmpty(proposalSanctionDisbusedByNbfc)) {
-						isButtonDisplay = false;
-						messageOfButton = msg;
-						proposalMappingRequest.setMessageOfButton(messageOfButton);
-						proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
 					}
 				}
 			}
