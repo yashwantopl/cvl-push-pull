@@ -23,6 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
+import com.capitaworld.cibil.api.model.CibilRequest;
+import com.capitaworld.cibil.api.model.CibilScoreLogRequest;
+import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.ekyc.EPFClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.connect.api.ConnectStage;
@@ -198,6 +201,9 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 	
 	@Autowired
 	private AnalyzerClient analyzerClient;
+	
+	@Autowired
+	private CIBILClient cibilClient;
 	
 	@Autowired
 	private EligibilityClient eligibilityClient;
@@ -1212,6 +1218,22 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 				}
 			}
 			
+			
+			
+			//cibil score
+			try {
+				CibilRequest cibilReq=new CibilRequest();
+				cibilReq.setPan(plRetailApplicantRequest.getPan());
+				cibilReq.setApplicationId(applicationId);
+				CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
+				if (cibilScoreByPanCard != null) {
+					map.put("applicantV2Score", CommonUtils.getCibilV2ScoreRange(cibilScoreByPanCard.getActualScore()));
+				}
+				map.put("applicantCIBILScore", cibilScoreByPanCard);
+			} catch (Exception e) {
+				logger.error("Error While calling Cibil Score By PanCard : ",e);
+			}
+			
 			if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getOfficeAddress())) {
 				map.put("officeAddPremise", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getOfficeAddress().getPremiseNumber()) ? CommonUtils.printFields(plRetailApplicantRequest.getOfficeAddress().getPremiseNumber(),null) + "," : "");
 				map.put("officeAddStreetName", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getOfficeAddress().getStreetName()) ? CommonUtils.printFields(plRetailApplicantRequest.getOfficeAddress().getStreetName(),null) + "," : "");
@@ -1508,6 +1530,19 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 						logger.error(CommonUtils.EXCEPTION,e);
 					}
 				}
+				
+				 try {
+	                    CibilRequest cibilReq=new CibilRequest();
+	                    cibilReq.setPan(coApplicantDetail.getPan());
+	                    cibilReq.setApplicationId(applicationId);
+	                    CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
+	                    if(cibilScoreByPanCard != null) {
+	                    	coApp.put("coAppV2Score", CommonUtils.getCibilV2ScoreRange(cibilScoreByPanCard.getActualScore()));
+	                    }
+	                    coApp.put("coAppCibilScore", cibilScoreByPanCard);
+	                } catch (Exception e) {
+	                    logger.error("Error While calling Cibil Score By PanCard : ",e);
+	                }
 				
 				try {
 					List<BankRelationshipRequest> bankRelationshipRequests = new ArrayList<>();
@@ -1975,68 +2010,152 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 			logger.error("Error/Exception while fetching Data For Primary Detail for AL Ineligible Cam with ApplicationId==>{} and UserId==>{}",applicationId, userId);
 		}
 		
-		//CHANGES FOR DATE OF PROPOSAL IN CAM REPORTS (NEW CODE)
+		//INCOME DETAILS - NET INCOME
 		try {
-			Date inPrincipleDate = loanApplicationRepository.getModifiedDate(applicationId, ConnectStage.RETAIL_COMPLETE.getId());
-			if(!CommonUtils.isObjectNullOrEmpty(inPrincipleDate)) {
-				map.put("dateOfInPrincipalApproval",!CommonUtils.isObjectNullOrEmpty(inPrincipleDate)? simpleDateFormat.format(inPrincipleDate):"-");
+			List<RetailApplicantIncomeRequest> retailApplicantIncomeDetail = retailApplicantIncomeService.getAll(applicationId);
+			
+			if(!CommonUtils.isObjectNullOrEmpty(retailApplicantIncomeDetail)) {
+				map.put("incomeDetails", retailApplicantIncomeDetail);
 			}
-		} catch (Exception e2) {
-			logger.error(CommonUtils.EXCEPTION,e2);
+		} catch (Exception e) {
+			logger.error("Error while getting income details : ",e);
 		}
+		
+		//CHANGES FOR DATE OF PROPOSAL IN CAM REPORTS (NEW CODE)
+		/*
+		 * try { Date inPrincipleDate =
+		 * loanApplicationRepository.getModifiedDate(applicationId,
+		 * ConnectStage.RETAIL_COMPLETE.getId());
+		 * if(!CommonUtils.isObjectNullOrEmpty(inPrincipleDate)) {
+		 * map.put("dateOfInPrincipalApproval",!CommonUtils.isObjectNullOrEmpty(
+		 * inPrincipleDate)? simpleDateFormat.format(inPrincipleDate):"-"); } } catch
+		 * (Exception e2) { logger.error(CommonUtils.EXCEPTION,e2); }
+		 */
 		// ENDS HERE===================>
 		
-		//Fetch All CoApplicant Related Data of Each CoApplicant
-		try {
-			map.put("retailCoApplicantDetails", bindDataOfRetailCoApplicant(applicationId, null, false));
-		} catch (Exception e) {
-			logger.error("Error while getting profile Details for CoApplicants in ApplicationForm : ",e);
-		}
-		
-		//Fetch Bank Details
-		try {
-			map.put("bankDetails", fetchBankDetails(applicationId, userId, null));
-		}catch (Exception e) {
-			logger.error("Error/Exception while getting Bank Details Of ApplicationId==>{}  ..Error==>{}",applicationId ,e);
-		}
-		
-		//PROPOSAL RESPONSE
-		try {
-			ObjectMapper mapper = new ObjectMapper();
-			ProposalMappingResponse proposalMappingResponse= proposalDetailsClient.getActiveProposalByApplicationID(applicationId);
-			
-			ProposalMappingRequestString proposalMappingRequestString = mapper.convertValue(proposalMappingResponse.getData(), ProposalMappingRequestString.class);
-			if(proposalMappingRequestString != null) {
-				map.put("proposalDate", simpleDateFormat.format(proposalMappingRequestString.getModifiedDate()));
-				map.put("proposalResponseEmi", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? CommonUtils.convertValueWithoutDecimal((Double)((LinkedHashMap<String, Object>)proposalMappingResponse.getData()).get("emi")) : "");
-				map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? proposalMappingResponse.getData() : " ");
-			}
-		}
-		catch (Exception e) {
-			logger.error(CommonUtils.EXCEPTION,e);
-		}
-		
-		//PRIMARY DATA (LOAN DETAILS)
-		try {
-			PLRetailApplicantRequest plRetailApplicantRequest = plRetailApplicantService.getPrimary(userId, applicationId);
-			map.put("loanPurpose", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getLoanPurpose()) ? StringEscapeUtils.escapeXml(HomeLoanPurpose.getById(plRetailApplicantRequest.getLoanPurpose()).getValue()): "");
-			map.put("retailApplicantPrimaryDetails", plRetailApplicantRequest);
-		} catch (Exception e) {
-			logger.error("Error while getting primary Details : ",e);
-		}
-		
-		//Fetch FinancialArrangementData For All CoApplicant
-		try {
-			map.put("financialArrangmentsofCoApplicant" ,bindDataOfFinancialArrangementOfCoApplicant(applicationId));
-		}catch (Exception e) {
-			logger.error("Error while getting Financial Arrangement Data for CoApplicants in ApplicationForm : ",e);
-		}
-		
-		//PERFIOS API DATA (BANK STATEMENT ANALYSIS)
-		ReportRequest reportRequest = new ReportRequest();
-		reportRequest.setApplicationId(applicationId);
-		reportRequest.setUserId(userId);
-		List<Data> datas = new ArrayList<>();
+		//CHANGES FOR DATE OF PROPOSAL IN CAM REPORTS (NEW CODE)
+        try {
+              Date inPrincipleDate = loanApplicationRepository.getInPrincipleDate(applicationId);
+              if(!CommonUtils.isObjectNullOrEmpty(inPrincipleDate)) {
+                    map.put("dateOfInPrincipalApproval",!CommonUtils.isObjectNullOrEmpty(inPrincipleDate)? simpleDateFormat.format(inPrincipleDate):"-");
+                    map.put("dateOfInEligible", 
+    						!CommonUtils.isObjectNullOrEmpty(inPrincipleDate)
+    								? CommonUtils.DATE_FORMAT.format(inPrincipleDate)
+    								: "-");
+              }
+        } catch (Exception e2) {
+              logger.error(CommonUtils.EXCEPTION,e2);
+        }
+        
+		/*
+		 * try {
+		 * 
+		 * Date InPrincipleDate =
+		 * loanApplicationRepository.getInEligibleModifiedDate(applicationId,
+		 * ConnectStage.RETAIL_ONE_FORM_LOAN_DETAILS.getId(), 6); if
+		 * (!CommonUtils.isObjectNullOrEmpty(InPrincipleDate)) {
+		 * map.put("dateOfInEligible", !CommonUtils.isObjectNullOrEmpty(InPrincipleDate)
+		 * ? CommonUtils.DATE_FORMAT.format(InPrincipleDate) : "-"); } } catch
+		 * (Exception e2) { logger.error(CommonUtils.EXCEPTION, e2); }
+		 */
+        
+        
+        
+        
+        
+        
+        // ENDS HERE===================>
+        
+        //Fetch All CoApplicant Related Data of Each CoApplicant
+        try {
+              
+              map.put("retailCoApplicantDetails", bindDataOfRetailCoApplicant(applicationId, null, false));
+        } catch (Exception e) {
+              logger.error("Error while getting profile Details for CoApplicants in ApplicationForm : ",e);
+        }
+        
+        //Fetch Bank Details
+        try {
+              map.put("bankDetails", fetchBankDetails(applicationId, userId, null));
+        }catch (Exception e) {
+              logger.error("Error/Exception while getting Bank Details Of ApplicationId==>{}  ..Error==>{}",applicationId ,e);
+        }
+        
+        
+        
+        //PROPOSAL RESPONSE
+        try {
+              ObjectMapper mapper = new ObjectMapper();
+              ProposalMappingResponse proposalMappingResponse= proposalDetailsClient.getActiveProposalByApplicationID(applicationId);
+              
+              ProposalMappingRequestString proposalMappingRequestString = mapper.convertValue(proposalMappingResponse.getData(), ProposalMappingRequestString.class);
+              if(proposalMappingRequestString != null) {
+                    map.put("proposalDate", simpleDateFormat.format(proposalMappingRequestString.getModifiedDate()));
+                    map.put("proposalResponseEmi", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? CommonUtils.convertValueWithoutDecimal((Double)((LinkedHashMap<String, Object>)proposalMappingResponse.getData()).get("emi")) : "");
+                    map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? proposalMappingResponse.getData() : " ");
+              }
+        }
+        catch (Exception e) {
+              logger.error(CommonUtils.EXCEPTION,e);
+        }
+        
+        /* co-APP SECTION */
+        try {
+              map.put("retailCoApplicantDetails", bindDataOfRetailCoApplicant(applicationId, null, false));
+        } catch (Exception e) {
+              logger.error("Error while getting profile Details of CoApplicants: ",e);
+        }
+        /* co-APP SECTION */
+        
+        
+        //Fetching Loan Details
+        try {
+              if(userId != null) {
+                    Map<String ,Object> loanDetails = new HashMap<String, Object>();
+                            ALOneformPrimaryRes autoDetails = primaryAutoloanService.getOneformPrimaryDetails(applicationId);
+                    PrimaryAutoLoanDetail primaryAutoLoanDetail = primaryAutoLoanDetailRepository.getByApplicationAndUserId(applicationId, userId);
+                    if(!CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetail)) {
+                                
+                          PrimaryAutoLoanDetailRequest primaryAutoLoanDetailRequest = new PrimaryAutoLoanDetailRequest();
+                          BeanUtils.copyProperties(primaryAutoLoanDetail, primaryAutoLoanDetailRequest);
+                          loanDetails.put("primaryLoanDetails", primaryAutoLoanDetailRequest);
+                                    loanDetails.put("borrowersConstribution", !CommonUtils.isObjectNullOrEmpty(autoDetails.getBorrowerContribution()) ? autoDetails.getBorrowerContribution() : "-" );
+                          loanDetails.put("vehicleSegment", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getVehicleSegment()) ? VehicleSegment.getById(primaryAutoLoanDetailRequest.getVehicleSegment()).getValue() : "-");
+                          loanDetails.put("vehicleEngineVolume", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getVehicleEngineVolume()) ? VehicleEngineVolume.getById(primaryAutoLoanDetailRequest.getVehicleEngineVolume()).getValue() : "-");
+                          loanDetails.put("vehicleUse", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getVehicleUse()) ? VehicleUse.getById(primaryAutoLoanDetailRequest.getVehicleUse()).getValue() : "-");
+                          loanDetails.put("vehicleShowroomPrice", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getVehicleExShowRoomPrice()) ? CommonUtils.convertValueWithoutDecimal(Double.valueOf(primaryAutoLoanDetailRequest.getVehicleExShowRoomPrice())) : "-");
+                          loanDetails.put("vehicleOnRoadPrice", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getVehicleOnRoadPrice()) ? CommonUtils.convertValueWithoutDecimal(Double.valueOf(primaryAutoLoanDetailRequest.getVehicleOnRoadPrice())) : "-");
+                          loanDetails.put("isVehicleHypothecation", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getIsVehicleHypothecation()) && primaryAutoLoanDetailRequest.getIsVehicleHypothecation() ? "Yes" : "No");
+                    }
+                    map.put("loanDetails", loanDetails);
+              }
+        }catch (Exception e) {
+              logger.error("Error/Exception while fetching loan Details for Auto Loan By applicationId==>{} with error==>{}",applicationId ,e);
+        }
+        
+        
+        //PRIMARY DATA (LOAN DETAILS)
+        try {
+              PLRetailApplicantRequest plRetailApplicantRequest = plRetailApplicantService.getPrimary(userId, applicationId);
+              map.put("loanPurpose", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getLoanPurpose()) ? StringEscapeUtils.escapeXml(AutoLoanPurposeType.getById(plRetailApplicantRequest.getLoanPurpose()).getValue()): "");
+              map.put("retailApplicantPrimaryDetails", plRetailApplicantRequest);
+              
+        } catch (Exception e) {
+              logger.error("Error while getting primary Details : ",e);
+        }
+        
+        //Fetch FinancialArrangementData For All CoApplicant
+        try {
+              map.put("financialArrangmentsofCoApplicant" ,bindDataOfFinancialArrangementOfCoApplicant(applicationId));
+        }catch (Exception e) {
+              logger.error("Error while getting Financial Arrangement Data for CoApplicants in ApplicationForm : ",e);
+        }
+                           
+        //PERFIOS API DATA (BANK STATEMENT ANALYSIS)
+        ReportRequest reportRequest = new ReportRequest();
+        reportRequest.setApplicationId(applicationId);
+        reportRequest.setUserId(userId);
+        List<Data> datas = new ArrayList<>();
 
 		try {
 			AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
