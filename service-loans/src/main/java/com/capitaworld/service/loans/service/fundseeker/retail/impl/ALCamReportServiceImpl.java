@@ -26,9 +26,7 @@ import com.capitaworld.api.eligibility.model.EligibilityResponse;
 import com.capitaworld.cibil.api.model.CibilRequest;
 import com.capitaworld.cibil.api.model.CibilScoreLogRequest;
 import com.capitaworld.cibil.client.CIBILClient;
-import com.capitaworld.client.ekyc.EPFClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
-import com.capitaworld.connect.api.ConnectStage;
 import com.capitaworld.itr.api.model.ITRBasicDetailsResponse;
 import com.capitaworld.itr.api.model.ITRConnectionResponse;
 import com.capitaworld.itr.client.ITRClient;
@@ -40,8 +38,9 @@ import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMappin
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.retail.BankingRelation;
 import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
-import com.capitaworld.service.loans.domain.fundseeker.retail.FinalHomeLoanCoApplicantDetail;
-import com.capitaworld.service.loans.domain.fundseeker.retail.FinalHomeLoanDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.FinalAutoLoanCoApplicantDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.FinalAutoLoanDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.PreSanctionVisit;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryAutoLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.ReferencesRetailDetail;
 import com.capitaworld.service.loans.model.Address;
@@ -68,8 +67,9 @@ import com.capitaworld.service.loans.repository.fundseeker.IneligibleProposalDet
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.BankingRelationlRepository;
-import com.capitaworld.service.loans.repository.fundseeker.retail.FinalHomeLoanCoAppDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.retail.FinalHomeLoanDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.FinalAutoLoanCoAppDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.FinalAutoLoanDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.PreSanctionVisitRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryAutoLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.ReferenceRetailDetailsRepository;
 import com.capitaworld.service.loans.service.common.PincodeDateService;
@@ -108,7 +108,6 @@ import com.capitaworld.service.oneform.enums.EmploymentWithPL;
 import com.capitaworld.service.oneform.enums.EmploymentWithRetail;
 import com.capitaworld.service.oneform.enums.Gender;
 import com.capitaworld.service.oneform.enums.GetStringFromIdForMasterData;
-import com.capitaworld.service.oneform.enums.HomeLoanPurpose;
 import com.capitaworld.service.oneform.enums.MaritalStatusMst;
 import com.capitaworld.service.oneform.enums.OccupationHL;
 import com.capitaworld.service.oneform.enums.OccupationNature;
@@ -149,7 +148,7 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 	private PlRetailApplicantService plRetailApplicantService;
 	
 	@Autowired
-	private FinalHomeLoanDetailRepository finalHomeLoanDetailRepository;
+	private FinalAutoLoanDetailRepository finalAutoLoanDetailRepository;
 	
 	@Autowired
 	private BankAccountHeldDetailService bankAccountHeldDetailService;
@@ -164,7 +163,7 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 	private OtherIncomeDetailService otherIncomeDetailService;
 	
 	@Autowired
-	private FinalHomeLoanCoAppDetailRepository finalHomeLoanCoAppDetailRepository;
+	private FinalAutoLoanCoAppDetailRepository finalAutoLoanCoAppDetailRepository;
 	
 	@Autowired
 	private EmpFinancialDetailsService empFinancialDetailsService;
@@ -214,7 +213,7 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 	@Autowired
 	private ITRClient itrClient;
         
-        @Autowired
+    @Autowired
 	PrimaryAutoLoanService primaryAutoloanService;
 	
 	@Autowired
@@ -236,7 +235,7 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 	private ProposalDetailsRepository proposalDetailsRepository;
 	
 	@Autowired
-	private EPFClient epfClient;
+	private PreSanctionVisitRepository preSanctionVisitRepository;
 	
 	@Autowired
 	private UsersClient usersClient;
@@ -995,57 +994,88 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 					logger.error("Error/Excpetion while getting maker Date from workFlow of ApplicationId==>{} Error:{}" ,applicationId ,e);
 				}
 				
-				
 				//RETAIL FINAL DETAILS
 				try {
-					FinalHomeLoanDetail finalHomeLoanDetail = finalHomeLoanDetailRepository.getByApplicationAndProposalId(applicationId, proposalId);
-					if(!CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail)) {
-						retailMap.put("motherMaidenName", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getMatherMaidenName()) ? StringEscapeUtils.escapeXml(finalHomeLoanDetail.getMatherMaidenName()) : "-");
-						retailMap.put("nameOfSpouse", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getNameOfSpouse()) ? StringEscapeUtils.escapeXml(finalHomeLoanDetail.getNameOfSpouse()) : "-");
-						retailMap.put("noOfChildren", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getNoOfChildren()) ? finalHomeLoanDetail.getNoOfChildren() : "-");
-						retailMap.put("birthPlace", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getPlaceOfBirth()) ? StringEscapeUtils.escapeXml(finalHomeLoanDetail.getPlaceOfBirth()) : "-");
-						retailMap.put("educationalQualificationYear", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getYear()) ? finalHomeLoanDetail.getYear() : "-");
-						retailMap.put("religion", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getReligion()) ? ReligionRetailMst.getById(finalHomeLoanDetail.getReligion()).getValue() : "-");
-						retailMap.put("caste", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getCast()) ? CastCategory.getById(finalHomeLoanDetail.getCast()).getValue() : "-");
+					FinalAutoLoanDetail finalAutoLoanDetail = finalAutoLoanDetailRepository.getByApplicationAndProposalId(applicationId, proposalId);
+					if(!CommonUtils.isObjectNullOrEmpty(finalAutoLoanDetail)) {
+						retailMap.put("fathersName", !CommonUtils.isObjectNullOrEmpty(finalAutoLoanDetail.getFatherFullName()) ? finalAutoLoanDetail.getFatherFullName() : !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getFatherName()) ? plRetailApplicantRequest.getFatherName() : "-");
+						retailMap.put("motherMaidenName", !CommonUtils.isObjectNullOrEmpty(finalAutoLoanDetail.getMatherMaidenName()) ? StringEscapeUtils.escapeXml(finalAutoLoanDetail.getMatherMaidenName()) : "-");
+						retailMap.put("nameOfSpouse", !CommonUtils.isObjectNullOrEmpty(finalAutoLoanDetail.getNameOfSpouse()) ? StringEscapeUtils.escapeXml(finalAutoLoanDetail.getNameOfSpouse()) : "-");
+						retailMap.put("noOfChildren", !CommonUtils.isObjectNullOrEmpty(finalAutoLoanDetail.getNoOfChildren()) ? finalAutoLoanDetail.getNoOfChildren() : "-");
+						retailMap.put("birthPlace", !CommonUtils.isObjectNullOrEmpty(finalAutoLoanDetail.getPlaceOfBirth()) ? StringEscapeUtils.escapeXml(finalAutoLoanDetail.getPlaceOfBirth()) : "-");
+						retailMap.put("educationalQualificationYear", !CommonUtils.isObjectNullOrEmpty(finalAutoLoanDetail.getYear()) ? finalAutoLoanDetail.getYear() : "-");
+						retailMap.put("religion", !CommonUtils.isObjectNullOrEmpty(finalAutoLoanDetail.getReligion()) ? ReligionRetailMst.getById(finalAutoLoanDetail.getReligion()).getValue() : "-");
+						retailMap.put("caste", !CommonUtils.isObjectNullOrEmpty(finalAutoLoanDetail.getCast()) ? CastCategory.getById(finalAutoLoanDetail.getCast()).getValue() : "-");
 									
 						try {
-							retailMap.put("permanantAddPremise", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getPermanentPremiseNo()) ? CommonUtils.printFields(finalHomeLoanDetail.getPermanentPremiseNo(),null) + "," : "");
-							retailMap.put("permanantAddStreetName", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getPermanentStreetName()) ? CommonUtils.printFields(finalHomeLoanDetail.getPermanentStreetName(),null) + "," : "");
-							retailMap.put("permanantAddLandmark", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getPermanentLandmark()) ? CommonUtils.printFields(finalHomeLoanDetail.getPermanentLandmark(),null) + "," : "");
-							retailMap.put("permanantAddCountry", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getPermanentCountry()) ? StringEscapeUtils.escapeXml(getCountryName(finalHomeLoanDetail.getPermanentCountry())) + "," : "");
-							retailMap.put("permanantAddState", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getPermanentState()) ? StringEscapeUtils.escapeXml(getStateName(finalHomeLoanDetail.getPermanentState()))  + ",": "");
-							retailMap.put("permanantAddCity", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getPermanentCity()) ? StringEscapeUtils.escapeXml(getCityName(finalHomeLoanDetail.getPermanentCity().longValue())) + ",": "");
-							retailMap.put("permanantAddPincode", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getPermanentPinCode()) ? finalHomeLoanDetail.getPermanentPinCode() : "");
-				
+							retailMap.put("permanantAddPremise", !CommonUtils.isObjectNullOrEmpty(finalAutoLoanDetail.getPermanentPremiseNo()) ? CommonUtils.printFields(finalAutoLoanDetail.getPermanentPremiseNo(),null) + "," : "");
+							retailMap.put("permanantAddStreetName", !CommonUtils.isObjectNullOrEmpty(finalAutoLoanDetail.getPermanentStreetName()) ? CommonUtils.printFields(finalAutoLoanDetail.getPermanentStreetName(),null) + "," : "");
+							retailMap.put("permanantAddLandmark", !CommonUtils.isObjectNullOrEmpty(finalAutoLoanDetail.getPermanentLandmark()) ? CommonUtils.printFields(finalAutoLoanDetail.getPermanentLandmark(),null) + "," : "");
+							retailMap.put("permanantAddCountry", !CommonUtils.isObjectNullOrEmpty(finalAutoLoanDetail.getPermanentCountry()) ? StringEscapeUtils.escapeXml(getCountryName(finalAutoLoanDetail.getPermanentCountry())) + "," : "");
+							retailMap.put("permanantAddState", !CommonUtils.isObjectNullOrEmpty(finalAutoLoanDetail.getPermanentState()) ? StringEscapeUtils.escapeXml(getStateName(finalAutoLoanDetail.getPermanentState()))  + ",": "");
+							retailMap.put("permanantAddCity", !CommonUtils.isObjectNullOrEmpty(finalAutoLoanDetail.getPermanentCity()) ? StringEscapeUtils.escapeXml(getCityName(finalAutoLoanDetail.getPermanentCity().longValue())) + ",": "");
+							retailMap.put("permanantAddPincode", !CommonUtils.isObjectNullOrEmpty(finalAutoLoanDetail.getPermanentPinCode()) ? finalAutoLoanDetail.getPermanentPinCode() : "");
 						} catch (Exception e) {
 							logger.error(CommonUtils.EXCEPTION,e);
 						}
 	
 						try {	
-							retailMap.put("correspondencePremise", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getCorrespondencePremiseNo()) ? CommonUtils.printFields(finalHomeLoanDetail.getCorrespondencePremiseNo(),null) + "," : "");
-							retailMap.put("correspondenceStreetName", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getCorrespondenceStreetName()) ? CommonUtils.printFields(finalHomeLoanDetail.getCorrespondenceStreetName(),null) + "," : "");
-							retailMap.put("correspondenceLandmark", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getCorrespondenceLandmark()) ? CommonUtils.printFields(finalHomeLoanDetail.getCorrespondenceLandmark(),null) + "," : "");
-							retailMap.put("correspondenceCountry", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getCorrespondenceCountry()) ? StringEscapeUtils.escapeXml(getCountryName(finalHomeLoanDetail.getCorrespondenceCountry())) + ",": "");
-							retailMap.put("correspondenceState",  !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getCorrespondenceState()) ? StringEscapeUtils.escapeXml(getStateName(finalHomeLoanDetail.getCorrespondenceState())) + "," : "");
-							retailMap.put("correspondenceCity",  !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getCorrespondenceCity()) ? StringEscapeUtils.escapeXml(getCityName(finalHomeLoanDetail.getCorrespondenceCity().longValue())) + "," : "");
-							retailMap.put("correspondencePincode", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getCorrespondencePinCode()) ? finalHomeLoanDetail.getCorrespondencePinCode() : "");
+							retailMap.put("correspondencePremise", !CommonUtils.isObjectNullOrEmpty(finalAutoLoanDetail.getCorrespondencePremiseNo()) ? CommonUtils.printFields(finalAutoLoanDetail.getCorrespondencePremiseNo(),null) + "," : "");
+							retailMap.put("correspondenceStreetName", !CommonUtils.isObjectNullOrEmpty(finalAutoLoanDetail.getCorrespondenceStreetName()) ? CommonUtils.printFields(finalAutoLoanDetail.getCorrespondenceStreetName(),null) + "," : "");
+							retailMap.put("correspondenceLandmark", !CommonUtils.isObjectNullOrEmpty(finalAutoLoanDetail.getCorrespondenceLandmark()) ? CommonUtils.printFields(finalAutoLoanDetail.getCorrespondenceLandmark(),null) + "," : "");
+							retailMap.put("correspondenceCountry", !CommonUtils.isObjectNullOrEmpty(finalAutoLoanDetail.getCorrespondenceCountry()) ? StringEscapeUtils.escapeXml(getCountryName(finalAutoLoanDetail.getCorrespondenceCountry())) + ",": "");
+							retailMap.put("correspondenceState",  !CommonUtils.isObjectNullOrEmpty(finalAutoLoanDetail.getCorrespondenceState()) ? StringEscapeUtils.escapeXml(getStateName(finalAutoLoanDetail.getCorrespondenceState())) + "," : "");
+							retailMap.put("correspondenceCity",  !CommonUtils.isObjectNullOrEmpty(finalAutoLoanDetail.getCorrespondenceCity()) ? StringEscapeUtils.escapeXml(getCityName(finalAutoLoanDetail.getCorrespondenceCity().longValue())) + "," : "");
+							retailMap.put("correspondencePincode", !CommonUtils.isObjectNullOrEmpty(finalAutoLoanDetail.getCorrespondencePinCode()) ? finalAutoLoanDetail.getCorrespondencePinCode() : "");
 							
 						} catch (Exception e) {
 							logger.error(CommonUtils.EXCEPTION,e);
 						}
 						
-						retailMap.put("nameOfSeller", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getSellerName()) ? finalHomeLoanDetail.getSellerName() : "-");
-						retailMap.put("sellerAddress", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getSellerAddress()) ? finalHomeLoanDetail.getSellerAddress() : "-");
-						retailMap.put("sellerPincode", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getSellerPincode()) ? finalHomeLoanDetail.getSellerPincode() : "-");
-						retailMap.put("sellerCity", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getSellerCity()) ? StringEscapeUtils.escapeXml(getCityName(finalHomeLoanDetail.getSellerCity().longValue())) : "-");
-						retailMap.put("sellerState", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getSellerState()) ? StringEscapeUtils.escapeXml(getStateName(finalHomeLoanDetail.getSellerState())) : "-");
+						//Guaranter Details
+						retailMap.put("guaranterName", !CommonUtils.isObjectNullOrEmpty(finalAutoLoanDetail.getGuarantorName()) ? finalAutoLoanDetail.getGuarantorName() : "-");
+						retailMap.put("guaranterEmployment", !CommonUtils.isObjectNullOrEmpty(finalAutoLoanDetail.getEmploymentOfGuarantor()) ? finalAutoLoanDetail.getEmploymentOfGuarantor() : "-");
+						retailMap.put("guaranterAddress", !CommonUtils.isObjectNullOrEmpty(finalAutoLoanDetail.getGuarantorAddress()) ? finalAutoLoanDetail.getGuarantorAddress() : "-");
+						retailMap.put("guaranterDefaulter", !CommonUtils.isObjectNullOrEmpty(finalAutoLoanDetail.getIsGuarantorDefaulter()) ? finalAutoLoanDetail.getIsGuarantorDefaulter() ? "Yes" : "No" : "-");
+						retailMap.put("guaranterRemarks", !CommonUtils.isObjectNullOrEmpty(finalAutoLoanDetail.getGuarantorRemark()) ? finalAutoLoanDetail.getGuarantorRemark() : "-");
 						
-						retailMap.put("dateOfExisLoanTaken", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getDateOfExistingLoanTaken()) ? simpleDateFormat.format(finalHomeLoanDetail.getDateOfExistingLoanTaken()) : "-");
-						retailMap.put("originalValueOfProperty", !CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetail.getOriginalValueOfProperty()) ? CommonUtils.convertValueWithoutDecimal(finalHomeLoanDetail.getOriginalValueOfProperty().doubleValue()) : null);
+						//dealer Details
+						retailMap.put("dealerName", !CommonUtils.isObjectNullOrEmpty(finalAutoLoanDetail.getDealerName()) ? finalAutoLoanDetail.getDealerName() : "-");
+						retailMap.put("dealerAddress", !CommonUtils.isObjectNullOrEmpty(finalAutoLoanDetail.getDealerAddress()) ? finalAutoLoanDetail.getDealerAddress() : "-");
+						retailMap.put("dealerMarketReputation", !CommonUtils.isObjectNullOrEmpty(finalAutoLoanDetail.getDealerMarketReputation()) ? finalAutoLoanDetail.getDealerMarketReputation() : "-");
+						
+						retailMap.put("dateOfExisLoanTaken", !CommonUtils.isObjectNullOrEmpty(finalAutoLoanDetail.getDateOfExistingLoanTaken()) ? simpleDateFormat.format(finalAutoLoanDetail.getDateOfExistingLoanTaken()) : "-");
 					}
 					
 				} catch (Exception e) {
 					logger.error("Error while getting Final Information : ",e);
+				}
+				
+				//Pre-Sanction Visit Details
+				try {
+					Map<String , Object> preSanctionVisitDetails = new HashMap<String, Object>();
+					PreSanctionVisit preSanctionVisit = preSanctionVisitRepository.getByApplicationIdAndApplicationProposalMapping(applicationId, proposalId);
+					if(preSanctionVisit != null) {
+						preSanctionVisitDetails.put("visitDate", !CommonUtils.isObjectNullOrEmpty(preSanctionVisit.getVisitDate()) ? simpleDateFormat.format(preSanctionVisit.getVisitDate()) : "-");
+						preSanctionVisitDetails.put("visitingName", !CommonUtils.isObjectNullOrEmpty(preSanctionVisit.getVisitName()) ? StringEscapeUtils.escapeXml(preSanctionVisit.getVisitName()) : "-");
+						preSanctionVisitDetails.put("visitingDesignation", !CommonUtils.isObjectNullOrEmpty(preSanctionVisit.getVisitDesignation()) ? StringEscapeUtils.escapeXml(preSanctionVisit.getVisitDesignation()) : "-");
+						preSanctionVisitDetails.put("isVisited", !CommonUtils.isObjectNullOrEmpty(preSanctionVisit.getIsVisited()) ? preSanctionVisit.getIsVisited() ? "Yes" : "No" : "-");
+						preSanctionVisitDetails.put("premiseNo", !CommonUtils.isObjectNullOrEmpty(preSanctionVisit.getPremiseNo()) ? StringEscapeUtils.escapeXml(preSanctionVisit.getPremiseNo()) : "-");
+						preSanctionVisitDetails.put("streetName", !CommonUtils.isObjectNullOrEmpty(preSanctionVisit.getStreetName()) ? StringEscapeUtils.escapeXml(preSanctionVisit.getStreetName()) : "-");
+						preSanctionVisitDetails.put("landmark", !CommonUtils.isObjectNullOrEmpty(preSanctionVisit.getLandmark()) ? StringEscapeUtils.escapeXml(preSanctionVisit.getLandmark()) : "-");
+						preSanctionVisitDetails.put("city", !CommonUtils.isObjectNullOrEmpty(preSanctionVisit.getCityId()) ? StringEscapeUtils.escapeXml(getCityName(preSanctionVisit.getCityId())) : "");
+						preSanctionVisitDetails.put("state", !CommonUtils.isObjectNullOrEmpty(preSanctionVisit.getStateId()) ? StringEscapeUtils.escapeXml(getStateName(preSanctionVisit.getStateId().intValue())) : "");
+						preSanctionVisitDetails.put("country", !CommonUtils.isObjectNullOrEmpty(preSanctionVisit.getCountryId()) ? StringEscapeUtils.escapeXml(getCountryName(preSanctionVisit.getCountryId().intValue())) : "");
+						preSanctionVisitDetails.put("pinCode", !CommonUtils.isObjectNullOrEmpty(preSanctionVisit.getPincode()) ? preSanctionVisit.getPincode() : "-");
+						preSanctionVisitDetails.put("mobileNo", !CommonUtils.isObjectNullOrEmpty(preSanctionVisit.getMobileNumber()) ? preSanctionVisit.getMobileNumber() : "-");
+						preSanctionVisitDetails.put("contactedPerson", !CommonUtils.isObjectNullOrEmpty(preSanctionVisit.getContactedPersonName()) ? StringEscapeUtils.escapeXml(preSanctionVisit.getContactedPersonName()) : "-");
+						preSanctionVisitDetails.put("applicantImpression", !CommonUtils.isObjectNullOrEmpty(preSanctionVisit.getApplicantImpression()) ? StringEscapeUtils.escapeXml(preSanctionVisit.getApplicantImpression()) : "-");
+						preSanctionVisitDetails.put("isApplicantOfficial", !CommonUtils.isObjectNullOrEmpty(preSanctionVisit.getIsApplicantOfficial()) ? preSanctionVisit.getIsApplicantOfficial() ? "Yes" : "No" : "-");
+						preSanctionVisitDetails.put("OfficerObservations", !CommonUtils.isObjectNullOrEmpty(preSanctionVisit.getOfficerObservations()) ? StringEscapeUtils.escapeXml(preSanctionVisit.getOfficerObservations()) : "-");
+					}
+					retailMap.put("preSanctionVisitDetails", !preSanctionVisitDetails.isEmpty() ? preSanctionVisitDetails : null);
+				}catch (Exception e) {
+					logger.error("Error/Exception while fetching Pre Sanction Visit Details in Auto Loan : {}",e);
 				}
 				
 				//Current Bank Account Detail
@@ -1056,7 +1086,7 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 						retailMap.put("bankAccountHeldDetails", !CommonUtils.isObjectListNull(bankAccountHeldDetails) ? bankAccountHeldDetails : null);
 					}
 				}catch (Exception e) {
-					logger.error("Error/Exception while fetching data of Current Bank Account in home loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
+					logger.error("Error/Exception while fetching data of Current Bank Account in Auto loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
 				}
 				
 				//Fixed Deposit Detail
@@ -1067,7 +1097,7 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 						retailMap.put("fixedDepositDetails", !CommonUtils.isObjectListNull(fixedDepositsDetails) ? fixedDepositsDetails : null);
 					}
 				}catch (Exception e) {
-					logger.error("Error/Exception while fetching data of fixed deposit details in home loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
+					logger.error("Error/Exception while fetching data of fixed deposit details in Auto loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
 				}
 				
 				//Investment Detail
@@ -1078,7 +1108,7 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 						retailMap.put("investmentDetails", !CommonUtils.isObjectListNull(investmentDetails) ? investmentDetails : null);
 					}
 				}catch (Exception e) {
-					logger.error("Error/Exception while fetching data of investment details in home loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
+					logger.error("Error/Exception while fetching data of investment details in Auto loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
 				}
 				
 				//Other Income Detail
@@ -1089,7 +1119,7 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 						retailMap.put("otherIncomeDetails", !CommonUtils.isObjectListNull(otherIncomeDetails) ? otherIncomeDetails : null);
 					}
 				}catch (Exception e) {
-					logger.error("Error/Exception while fetching data of other income details in home loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
+					logger.error("Error/Exception while fetching data of other income details in Auto loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
 				}
 				
 				if(plRetailApplicantRequest != null) {
@@ -1103,7 +1133,7 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 								retailMap.put("empSalariedDetails", !CommonUtils.isObjectListNull(empSalariedDetail) ? empSalariedDetail : null);
 							}
 						}catch (Exception e) {
-							logger.error("Error/Exception while fetching data of Emp Salaried Type in home loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
+							logger.error("Error/Exception while fetching data of Emp Salaried Type in Auto loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
 						}
 					}
 					
@@ -1116,7 +1146,7 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 								retailMap.put("empSelfEmployedTypeDetails", !CommonUtils.isObjectListNull(empSelfEmployedTypeDetail) ? empSelfEmployedTypeDetail : null);
 							}
 						}catch (Exception e) {
-							logger.error("Error/Exception while fetching data of Emp Self Employed Type in home loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
+							logger.error("Error/Exception while fetching data of Emp Self Employed Type in Auto loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
 						}
 					}
 					
@@ -1129,7 +1159,7 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 								retailMap.put("agriculturistDetails", !CommonUtils.isObjectListNull(empAgriculturistTypeDetail) ? empAgriculturistTypeDetail : null);
 							}
 						}catch (Exception e) {
-							logger.error("Error/Exception while fetching data of Agriculturist in home loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
+							logger.error("Error/Exception while fetching data of Agriculturist in Auto loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
 						}
 					}
 				}
@@ -1187,7 +1217,6 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 	     		map.put("loanType", !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getProductId()) ? CommonUtils.LoanType.getType(loanApplicationMaster.getProductId()).getName() : " ");
 	     		map.put("eligibleLoanAmount", loanApplicationMaster.getAmount() != null ? CommonUtils.convertValue(loanApplicationMaster.getAmount()) : "-");
 				map.put("eligibleTenure", loanApplicationMaster.getTenure() != null ? CommonUtils.convertValueWithoutDecimal(loanApplicationMaster.getTenure()) :"-");
-				
 	     	}
 		}
      	
@@ -1333,7 +1362,7 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 			if(plRetailApplicantRequest.getEmploymentType()!= null && plRetailApplicantRequest.getEmploymentType() == 2) {
 				map.put("totalExperience", (!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getTotalExperienceYear()) ? plRetailApplicantRequest.getTotalExperienceYear() + " years" :"")+" "+(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getTotalExperienceMonth()) ? plRetailApplicantRequest.getTotalExperienceMonth() +" months" : ""));
 			}else if(plRetailApplicantRequest.getEmploymentType()!= null && plRetailApplicantRequest.getEmploymentType() == 7) {
-				map.put("totalExperience", null);
+				map.put("totalExperience", "-");
 			}else {
 				map.put("totalExperience",!CommonUtils.isObjectNullOrEmpty(operatingBusinessSince) ? operatingBusinessSince :"-");
 			}
@@ -1614,7 +1643,7 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 				if(coApplicantDetail.getEmploymentType()!= null && coApplicantDetail.getEmploymentType() == 2) {
 					coApp.put("totalExperience", (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getTotalExperienceYear()) ? coApplicantDetail.getTotalExperienceYear() + " years" :"")+" "+(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getTotalExperienceMonth()) ? coApplicantDetail.getTotalExperienceMonth() +" months" : ""));
 				}else if(coApplicantDetail.getEmploymentType()!= null && coApplicantDetail.getEmploymentType() == 7) {
-					coApp.put("totalExperience", null);
+					coApp.put("totalExperience", "-");
 				}else {
 					coApp.put("totalExperience",!CommonUtils.isObjectNullOrEmpty(operatingBusinessSince) ? operatingBusinessSince :"-");
 				}
@@ -1720,7 +1749,7 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 					try {
 						//final CoApp Data
 						coAppData.put("isIncomeConsider", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getIsIncomeConsider()) ? coApplicantDetail.getIsIncomeConsider() : true);
-						FinalHomeLoanCoApplicantDetail finalCoApplicantDetail = finalHomeLoanCoAppDetailRepository.getByApplicationAndProposalIdAndCoAppId(applicationId, proposalId, coApplicantDetail.getId());
+						FinalAutoLoanCoApplicantDetail finalCoApplicantDetail = finalAutoLoanCoAppDetailRepository.getByApplicationAndProposalIdAndCoAppId(applicationId, proposalId, coApplicantDetail.getId());
 						
 						if(!CommonUtils.isObjectNullOrEmpty(finalCoApplicantDetail)) {
 							coAppData.put("permanentPremise", !CommonUtils.isObjectNullOrEmpty(finalCoApplicantDetail.getPermanentPremiseNo()) ? CommonUtils.printFields(finalCoApplicantDetail.getPermanentPremiseNo(),null) + "," : "");
@@ -1739,6 +1768,7 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 							coAppData.put("correspondenceCity", !CommonUtils.isObjectNullOrEmpty(finalCoApplicantDetail.getCorrespondenceCity()) ? StringEscapeUtils.escapeXml(getCityName(finalCoApplicantDetail.getCorrespondenceCity().longValue())) : "");
 							coAppData.put("correspondencePincode", !CommonUtils.isObjectNullOrEmpty(finalCoApplicantDetail.getCorrespondencePinCode()) ? finalCoApplicantDetail.getCorrespondencePinCode() : "");
 							
+							coAppData.put("fathersName", !CommonUtils.isObjectNullOrEmpty(finalCoApplicantDetail.getFatherFullName()) ? finalCoApplicantDetail.getFatherFullName() : !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getFatherName()) ? coApplicantDetail.getFatherName() : "-");
 							coAppData.put("mothersMaidenName", !CommonUtils.isObjectNullOrEmpty(finalCoApplicantDetail.getMatherMaidenName()) ? finalCoApplicantDetail.getMatherMaidenName() : "-");
 							coAppData.put("qualificationYear", !CommonUtils.isObjectNullOrEmpty(finalCoApplicantDetail.getYear()) ? finalCoApplicantDetail.getYear() : "-");
 							coAppData.put("nameOfSpouse", !CommonUtils.isObjectNullOrEmpty(finalCoApplicantDetail.getNameOfSpouse()) ? finalCoApplicantDetail.getNameOfSpouse() : "-");
@@ -1749,7 +1779,7 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 						}
 					}
 					catch (Exception e) {
-						logger.error("Error/Exception while fetching final home loan detail Of Co-Applicant ..Error==>{}",e);
+						logger.error("Error/Exception while fetching final Auto loan detail Of Co-Applicant ..Error==>{}",e);
 					}
 					
 					//Current Bank Account Detail
@@ -1760,7 +1790,7 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 							coAppData.put("bankAccountHeldDetails", !CommonUtils.isObjectListNull(bankAccountHeldDetails) ? bankAccountHeldDetails : null);
 						}
 					}catch (Exception e) {
-						logger.error("Error/Exception while fetching data of Co-Applicant Current Bank Account in home loan final CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
+						logger.error("Error/Exception while fetching data of Co-Applicant Current Bank Account in Auto loan final CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
 					}
 					
 					//Fixed Deposit Detail
@@ -1771,7 +1801,7 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 							coAppData.put("fixedDepositDetails", !CommonUtils.isObjectListNull(fixedDepositsDetails) ? fixedDepositsDetails : null);
 						}
 					}catch (Exception e) {
-						logger.error("Error/Exception while fetching data of Co-Applicant fixed deposit details in home loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
+						logger.error("Error/Exception while fetching data of Co-Applicant fixed deposit details in Auto loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
 					}
 					
 					//Investment Detail
@@ -1782,7 +1812,7 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 							coAppData.put("investmentDetails", !CommonUtils.isObjectListNull(investmentDetails) ? investmentDetails : null);
 						}
 					}catch (Exception e) {
-						logger.error("Error/Exception while fetching data of Co-Applicant investment details in home loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
+						logger.error("Error/Exception while fetching data of Co-Applicant investment details in Auto loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
 					}
 					
 					//Other Income Detail
@@ -1793,7 +1823,7 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 							coAppData.put("otherIncomeDetails", !CommonUtils.isObjectListNull(otherIncomeDetails) ? otherIncomeDetails : null);
 						}
 					}catch (Exception e) {
-						logger.error("Error/Exception while fetching data of Co-Applicant other income details in home loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
+						logger.error("Error/Exception while fetching data of Co-Applicant other income details in Auto loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
 					}
 					
 					if(coApplicantDetail.getEmploymentType() != null) {
@@ -1807,7 +1837,7 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 									coAppData.put("empSalariedDetails", !CommonUtils.isObjectListNull(empSalariedDetail) ? empSalariedDetail : null);
 								}
 							}catch (Exception e) {
-								logger.error("Error/Exception while fetching data of Co-Applicant Emp Salaried Type in home loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
+								logger.error("Error/Exception while fetching data of Co-Applicant Emp Salaried Type in Auto loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
 							}
 						}
 						
@@ -1820,7 +1850,7 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 									coAppData.put("empSelfEmployedTypeDetails", !CommonUtils.isObjectListNull(empSelfEmployedTypeDetail) ? empSelfEmployedTypeDetail : null);
 								}
 							}catch (Exception e) {
-								logger.error("Error/Exception while fetching data of Co-Applicant Emp Self Employed Type in home loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
+								logger.error("Error/Exception while fetching data of Co-Applicant Emp Self Employed Type in Auto loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
 							}
 						}
 						
@@ -1833,7 +1863,7 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 									coAppData.put("agriculturistDetails", !CommonUtils.isObjectListNull(empAgriculturistTypeDetail) ? empAgriculturistTypeDetail : null);
 								}
 							}catch (Exception e) {
-								logger.error("Error/Exception while fetching data of Co-Applicant Agriculturist in home loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
+								logger.error("Error/Exception while fetching data of Co-Applicant Agriculturist in Auto loan CAM of ApplicationId==>{} and ProposalId==>{} with Error==>{}" , applicationId ,proposalId ,e);
 							}
 						}
 					}
