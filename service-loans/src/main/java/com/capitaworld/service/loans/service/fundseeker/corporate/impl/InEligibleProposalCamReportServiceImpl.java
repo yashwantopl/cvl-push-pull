@@ -82,6 +82,9 @@ import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
 import com.capitaworld.service.matchengine.model.MatchRequest;
+import com.capitaworld.service.mca.client.McaClient;
+import com.capitaworld.service.mca.model.McaResponse;
+import com.capitaworld.service.mca.model.verifyApi.VerifyAPIRequest;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.AssessedForITMst;
 import com.capitaworld.service.oneform.enums.AssessmentOptionForFS;
@@ -174,6 +177,9 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 
 	@Autowired
 	private ITRClient itrClient;
+	
+	@Autowired
+	private McaClient mcaClient;
 
 	@Autowired
 	private ScoringService scoringService;
@@ -849,6 +855,16 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 			map.put("nameAsPerItr", CommonUtils.printFields(itrResponse.getData(), null));
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION, e);
+		}
+		
+		try {
+			VerifyAPIRequest verifyAPIRequest = new VerifyAPIRequest();
+			verifyAPIRequest.setApplicationId(applicationId);
+			McaResponse mcaResponse = mcaClient.getVerifyApiData(verifyAPIRequest);
+			
+			map.put("verifyApiData", !CommonUtils.isObjectNullOrEmpty(mcaResponse) && !CommonUtils.isObjectNullOrEmpty(mcaResponse.getData()) ? CommonUtils.printFields(mcaResponse.getData() ,null) : null);
+		}catch (Exception e) {
+			logger.error("Error/Exception while getting Verify API Data of ApplicationId==>{}",applicationId);
 		}
 
 		// PERFIOS API DATA (BANK STATEMENT ANALYSIS)

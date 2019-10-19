@@ -71,6 +71,8 @@ public class PrimaryAutoLoanServiceImpl implements PrimaryAutoLoanService {
 				retailApplicantDetail.setBorrowerContribution(alLoanDetailRequest.getBorrowerContribution());
 				retailApplicantDetail.setLoanPurpose(alLoanDetailRequest.getLoanPurpose());
 				retailApplicantDetail.setLoanPurposeQueType(alLoanDetailRequest.getLoanPurposeQueType());
+				retailApplicantDetail.setLoanPurposeQueType(alLoanDetailRequest.getLoanPurposeQueType());
+				retailApplicantDetail.setIsUserHaveAadhar(alLoanDetailRequest.getIsUserHaveAadhar());
 				retailApplicantDetailRepository.save(retailApplicantDetail);
 		
 				//************************ SAVE VEHICLE DETAILS *****************************
@@ -99,7 +101,16 @@ public class PrimaryAutoLoanServiceImpl implements PrimaryAutoLoanService {
 					primaryAutoLoanDetail.setIsCheckOffNotChangeSalAcc(alLoanDetailRequest.getIsCheckOffNotChangeSalAcc());
 					primaryAutoLoanDetail.setIsCheckOffPayOutstndAmount(alLoanDetailRequest.getIsCheckOffPayOutstndAmount());
 					primaryAutoLoanDetail.setIsCheckOffShiftSalAcc(alLoanDetailRequest.getIsCheckOffShiftSalAcc());
-					autoLoanDetailRepository.save(primaryAutoLoanDetail); 
+					primaryAutoLoanDetail.setManufacturerId(alLoanDetailRequest.getManufacturerId());
+					primaryAutoLoanDetail.setAssetModelId(alLoanDetailRequest.getAssetModelId());
+					primaryAutoLoanDetail.setAssetMake(alLoanDetailRequest.getAssetMake());
+					primaryAutoLoanDetail.setSupplierStateId(alLoanDetailRequest.getSupplierStateId());
+					primaryAutoLoanDetail.setSupplierCityId(alLoanDetailRequest.getSupplierCityId());
+					primaryAutoLoanDetail.setSupplierId(alLoanDetailRequest.getSupplierId());
+					primaryAutoLoanDetail.setOtherSuplierName(alLoanDetailRequest.getOtherSuplierName());
+					primaryAutoLoanDetail.setOtherAssetModelName(alLoanDetailRequest.getOtherAssetModelName());
+					primaryAutoLoanDetail.setOtherManufacturerName(alLoanDetailRequest.getOtherManufacturerName());
+					autoLoanDetailRepository.save(primaryAutoLoanDetail);
 			
 			}
 			return true; 
@@ -136,6 +147,7 @@ public class PrimaryAutoLoanServiceImpl implements PrimaryAutoLoanService {
 			res.setGrossMonthlyIncome(retailApplicantDetail.getGrossMonthlyIncome());
 			res.setLoanPurpose(retailApplicantDetail.getLoanPurpose());
 			res.setLoanPurposeQueType(retailApplicantDetail.getLoanPurposeQueType());
+			res.setIsUserHaveAadhar(retailApplicantDetail.getIsUserHaveAadhar());
 		}
 		PrimaryAutoLoanDetail primaryAutoLoanDetail = autoLoanDetailRepository.findById(applicationId);
 		if(!CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetail)) {
@@ -152,6 +164,15 @@ public class PrimaryAutoLoanServiceImpl implements PrimaryAutoLoanService {
 			res.setIsCheckOffNotChangeSalAcc(primaryAutoLoanDetail.getIsCheckOffNotChangeSalAcc());
 			res.setIsCheckOffPayOutstndAmount(primaryAutoLoanDetail.getIsCheckOffPayOutstndAmount());
 			res.setIsCheckOffShiftSalAcc(primaryAutoLoanDetail.getIsCheckOffShiftSalAcc());
+			res.setManufacturerId(primaryAutoLoanDetail.getManufacturerId());
+			res.setSupplierId(primaryAutoLoanDetail.getSupplierId());
+			res.setAssetMake(primaryAutoLoanDetail.getAssetMake());
+			res.setAssetModelId(primaryAutoLoanDetail.getAssetModelId());
+			res.setSupplierStateId(primaryAutoLoanDetail.getSupplierStateId());
+			res.setSupplierCityId(primaryAutoLoanDetail.getSupplierCityId());
+			res.setOtherSuplierName(primaryAutoLoanDetail.getOtherSuplierName());
+			res.setOtherAssetModelName(primaryAutoLoanDetail.getOtherAssetModelName());
+			res.setOtherManufacturerName(primaryAutoLoanDetail.getOtherManufacturerName());
 		}
 		return res;
 	}
@@ -223,6 +244,15 @@ public class PrimaryAutoLoanServiceImpl implements PrimaryAutoLoanService {
 				res.setIsCheckOffNotChangeSalAcc(primaryAutoLoanDetail.getIsCheckOffNotChangeSalAcc());
 				res.setIsCheckOffPayOutstndAmount(primaryAutoLoanDetail.getIsCheckOffPayOutstndAmount());
 				res.setIsCheckOffShiftSalAcc(primaryAutoLoanDetail.getIsCheckOffShiftSalAcc());
+				res.setManufacturerId(primaryAutoLoanDetail.getManufacturerId());
+				res.setSupplierId(primaryAutoLoanDetail.getSupplierId());
+				res.setAssetMake(primaryAutoLoanDetail.getAssetMake());
+				res.setAssetModelId(primaryAutoLoanDetail.getAssetModelId());
+				res.setSupplierStateId(primaryAutoLoanDetail.getSupplierStateId());
+				res.setSupplierCityId(primaryAutoLoanDetail.getSupplierCityId());
+				res.setOtherSuplierName(primaryAutoLoanDetail.getOtherSuplierName());
+				res.setOtherAssetModelName(primaryAutoLoanDetail.getOtherAssetModelName());
+				res.setOtherManufacturerName(primaryAutoLoanDetail.getOtherManufacturerName());
 			}
 			
 			Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationId);

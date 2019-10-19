@@ -85,7 +85,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 	private static final String ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_TEMP_MSG = "error while getTermLoanParameterRequestTemp : ";
 	private static final String ERROR_WHILE_GET_NTB_TERM_LOAN_PARAMETER_REQUEST_TEMP_MSG = "error while getNtbTermLoanParameterRequestTemp : ";
 	private static final String ERROR_WHILE_GET_NTB_TERM_LOAN_PARAMETER_REQUEST_MSG = "error while getNtbTermLoanParameterRequest : ";
-	private static final String UPDATED_MSG = "updated = {}";
+	private static final String UPDATED_MSG = "updated = {}"; 
 	private static final String GET_TERM_LOAN_PARAMETER_REQUEST = "getTermLoanParameterRequest";
 
 	@Autowired
@@ -389,6 +389,8 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			dataRequest.setTenure(coLendingRatio.getTenure());
 			String label="Bank:"+coLendingRatio.getBankRatio().toString()+" Nbfc:"+coLendingRatio.getNbfcRatio()+" tenure:"+coLendingRatio.getTenure();
 			dataRequest.setLabel(label);
+			dataRequest.setUserOrgId(coLendingRatio.getUserOrgId());
+			dataRequest.setBankId(coLendingRatio.getBankId());
 			ratioMasterList.add(dataRequest);
 			//create text for ratio
 			
@@ -693,6 +695,8 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			dataRequest.setTenure(coLendingRatio.getTenure());
 			String label="Bank:"+coLendingRatio.getBankRatio().toString()+" Nbfc:"+coLendingRatio.getNbfcRatio()+" tenure:"+coLendingRatio.getTenure();
 			dataRequest.setLabel(label);
+			dataRequest.setUserOrgId(coLendingRatio.getUserOrgId());
+			dataRequest.setBankId(coLendingRatio.getBankId());
 			ratioMasterList.add(dataRequest);
 		}
 		
@@ -1088,6 +1092,8 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			dataRequest.setTenure(coLendingRatio.getTenure());
 			String label="Bank:"+coLendingRatio.getBankRatio().toString()+" Nbfc:"+coLendingRatio.getNbfcRatio()+" tenure:"+coLendingRatio.getTenure();
 			dataRequest.setLabel(label);
+			dataRequest.setUserOrgId(coLendingRatio.getUserOrgId());
+			dataRequest.setBankId(coLendingRatio.getBankId());
 			ratioMasterList.add(dataRequest);
 		}
 		
@@ -1489,8 +1495,10 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			dataRequest.setId(coLendingRatio.getId());
 			dataRequest.setValue(coLendingRatio.getName());
 			dataRequest.setTenure(coLendingRatio.getTenure());
-			String label="Bank:"+coLendingRatio.getBankRatio().toString()+" Nbfc:"+coLendingRatio.getNbfcRatio()+" tenure:"+coLendingRatio.getTenure();
+			String label="Bank:"+coLendingRatio.getBankRatio().toString()+" NBFC:"+coLendingRatio.getNbfcRatio()+" Tenure:"+coLendingRatio.getTenure();
 			dataRequest.setLabel(label);
+			dataRequest.setUserOrgId(coLendingRatio.getUserOrgId());
+			dataRequest.setBankId(coLendingRatio.getBankId());
 			ratioMasterList.add(dataRequest);
 		}
 		

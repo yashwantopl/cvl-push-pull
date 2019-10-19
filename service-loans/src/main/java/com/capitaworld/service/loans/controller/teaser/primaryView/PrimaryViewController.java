@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.AlTeaserViewResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.CarLoanPrimaryViewResponse;
+import com.capitaworld.service.loans.model.teaser.primaryview.CommonRequest;
 import com.capitaworld.service.loans.model.teaser.primaryview.CorporatePrimaryViewResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.HlTeaserViewResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.HomeLoanPrimaryViewResponse;
@@ -1075,11 +1076,12 @@ public class PrimaryViewController {
 			HttpServletRequest httpRequest, @RequestParam(value = "clientId", required = false) Long clientId,
 			@RequestParam(value = "clientUserType", required = false) Long clientUserType) throws Exception {
 
-		// request must not be null
-
 		Long fromUserId = null;
 		Long fromUserTypeId = null;
-		Long loginUserType = Long.valueOf(httpRequest.getAttribute(CommonUtils.USER_TYPE).toString());
+		Long loginUserType = null;
+		if(httpRequest.getAttribute(CommonUtils.USER_TYPE) != null) {
+			loginUserType = Long.valueOf(httpRequest.getAttribute(CommonUtils.USER_TYPE).toString());
+		}
 
 		if (CommonDocumentUtils.isThisClientApplication(httpRequest) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 			fromUserId = clientId;
@@ -1088,37 +1090,35 @@ public class PrimaryViewController {
 			fromUserId = (Long) httpRequest.getAttribute(CommonUtils.USER_ID);
 			fromUserTypeId = loginUserType;
 		}
+		if(request.getUserId() != null) {
+			fromUserId = request.getUserId();
+		}
+		
 		Long applicationId = request.getApplicationId();
-		Long fpProductId = request.getFpProductId();
-		Long proposalId  = request.getProposalId();
-
-		String toUserId = null;
 		Long notificationId;
 
-		if (CommonUtils.UserType.FUND_SEEKER == fromUserTypeId) {
-			notificationId = NotificationAlias.SYS_FS_VIEW;
-			Object[] o = productMasterService.getUserDetailsByPrductId(fpProductId);
-			toUserId = o[0].toString();
-		} else {
-			//Object[] o = loanApplicationService.getApplicationDetailsById(4479l); // PREVIOUS
-			logger.info("THIS IS THE APPLICATION iD =====>"+applicationId);
-			Object[] o = loanApplicationService.getApplicationDetailsByProposalId(applicationId,proposalId); // NEW BASED ON PROPOSAL MAPPING ID =={} PENDING
-			toUserId = o[0].toString();
-			logger.info("=============>"+toUserId);
-			notificationId = NotificationAlias.SYS_FP_VIEW;
-		}
-		try {
-			String email = commonRepository.getEmailIdFromUsers(Long.valueOf(toUserId));
-	        if (!CommonUtils.isObjectNullOrEmpty(email)) {
-	        	Integer viewedTeaser = commonRepository.getViewedTeaser(email);
-				if(viewedTeaser != null && viewedTeaser > 0) {
-					notificationService.sendViewNotification(toUserId, fromUserId, fromUserTypeId, notificationId,
-							applicationId, fpProductId, NotificationTemplate.PRIMARY_VIEW, loginUserType);
+		notificationId = NotificationAlias.SYS_FP_VIEW;
+		if(applicationId != null) {
+		
+			try {
+				Object[] userDetails = commonRepository.getUserDetailsByApplicationId(applicationId);
+				CommonRequest req = notificationService.extractArrayToCommonRequest(userDetails);
+				logger.info(""+userDetails.toString());
+				Long loanType = null;
+				if(req.getLoanTypeId() != null) {
+					loanType = Long.valueOf(req.getLoanTypeId());
 				}
-			}	
-			
-		}catch (Exception e) {
-			logger.error(CommonUtils.EXCEPTION,e);
+		        if (!CommonUtils.isObjectNullOrEmpty(req.getEmailId())) {
+		        	Integer viewedTeaser = commonRepository.getViewedTeaser(req.getEmailId());
+					if(viewedTeaser != null && viewedTeaser > 0 && req.getUserId() != null) {
+						notificationService.sendViewNotification(String.valueOf(req.getUserId()), fromUserId, fromUserTypeId, notificationId,
+								applicationId, req.getFpProductId(), NotificationTemplate.PRIMARY_VIEW, loanType);
+					}
+				}	
+				
+			}catch (Exception e) {
+				logger.error(CommonUtils.EXCEPTION,e);
+			}
 		}
 	}
 

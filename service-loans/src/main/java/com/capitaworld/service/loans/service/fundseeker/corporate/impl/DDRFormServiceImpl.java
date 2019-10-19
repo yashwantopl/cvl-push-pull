@@ -26,6 +26,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import com.capitaworld.itr.api.model.ITRBasicDetailsResponse;
+import com.capitaworld.itr.client.ITRClient;
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.loans.domain.PincodeData;
@@ -149,10 +151,10 @@ public class DDRFormServiceImpl implements DDRFormService {
 	private static final Logger logger = LoggerFactory.getLogger(DDRFormServiceImpl.class);
 	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
-	private static final String YEAR_2018 = "2018.0";
-	private static final String YEAR_2017 = "2017.0";
-	private static final String YEAR_2016 = "2016.0";
-	private static final String YEAR_2015 = "2015.0";
+//	private static final String YEAR_2018 = "2018.0";
+//	private static final String YEAR_2017 = "2017.0";
+//	private static final String YEAR_2016 = "2016.0";
+//	private static final String YEAR_2015 = "2015.0";
 	private static final String DDR_FORM_ID = "ddrFormId";
 	private static final String MODIFY_BY = "modifyBy";
 	private static final String MODIFY_DATE = "modifyDate";
@@ -275,6 +277,22 @@ public class DDRFormServiceImpl implements DDRFormService {
 	@Value("${com.capitaworld.bob.api.header.auth.key}")
 	private String headerAuthKey;
 	
+	@Autowired
+	private ITRClient itrClient;
+	
+	public Integer getLatestYear(Long applicationId) {
+		try {
+			ITRBasicDetailsResponse res = new ITRBasicDetailsResponse();
+			res.setApplicationId(applicationId);
+			ITRBasicDetailsResponse basicDetails = itrClient.getAppOrCoAppBasicDetails(res);
+			if(basicDetails != null && basicDetails.getYear() != null) {
+				return Integer.valueOf(basicDetails.getYear()); 
+			}
+		} catch (Exception e) {
+			logger.error("Exception while GET ITR LATEST YEAR IN DDR SERVICE IMPL  ",e);
+		}
+		return 2019;
+	}
 
 	@Override
 	public DDRRequest getMergeDDR(Long appId, Long userId) {
@@ -287,6 +305,11 @@ public class DDRFormServiceImpl implements DDRFormService {
 		}
 
 		DDRFormDetails dDRFormDetails = ddrFormDetailsRepository.getByAppIdAndIsActive(appId);
+		
+		Integer latestYear = getLatestYear(appId);
+		dDRRequest.setLatestYear(String.valueOf((latestYear) + "-" + ((latestYear - 1) % 100)));
+		dDRRequest.setPreYear(String.valueOf((latestYear - 1) + "-" + ((latestYear - 2) % 100)));
+		dDRRequest.setPreToPreYear(String.valueOf((latestYear - 2) + "-" + ((latestYear - 3) % 100)));
 		if (!CommonUtils.isObjectNullOrEmpty(dDRFormDetails)) {
 			Long ddrFormId = dDRFormDetails.getId();
 			BeanUtils.copyProperties(dDRFormDetails, dDRRequest);
@@ -305,10 +328,10 @@ public class DDRFormServiceImpl implements DDRFormService {
 			dDRRequest.setdDRFinancialSummaryList(getFinancialSummary(ddrFormId));
 			dDRRequest.setdDRFamilyDirectorsList(getFamilyDirectorsDetails(ddrFormId, appId, userId, true));
 			dDRRequest.setExistingBankerDetailList(getExistingBankerDetails(ddrFormId, appId, userId, true));
-
-			dDRRequest.setProvisionalTotalSales(getCMATotalSalesByAppIdAndYear(appId, "2018"));
-			dDRRequest.setLastYearTotalSales(getCMATotalSalesByAppIdAndYear(appId, "2017"));
-			dDRRequest.setLastToLastYearTotalSales(getCMATotalSalesByAppIdAndYear(appId, "2016"));
+			
+			dDRRequest.setProvisionalTotalSales(getCMATotalSalesByAppIdAndYear(appId, latestYear.toString()));
+			dDRRequest.setLastYearTotalSales(getCMATotalSalesByAppIdAndYear(appId, String.valueOf(latestYear - 1)));
+			dDRRequest.setLastToLastYearTotalSales(getCMATotalSalesByAppIdAndYear(appId, String.valueOf(latestYear - 2)));
 			dDRRequest.setCurrency(getCurrency(appId, userId));
 		} else {
 			dDRRequest.setdDRFamilyDirectorsList(getFamilyDirectorsDetails(null, appId, userId, true));
@@ -328,6 +351,11 @@ public class DDRFormServiceImpl implements DDRFormService {
 			return dDRRequest;
 		}
 
+		Integer latestYear = getLatestYear(appId);
+		dDRRequest.setLatestYear(String.valueOf((latestYear) + "-" + ((latestYear - 1) % 100)));
+		dDRRequest.setPreYear(String.valueOf((latestYear - 1) + "-" + ((latestYear - 2) % 100)));
+		dDRRequest.setPreToPreYear(String.valueOf((latestYear - 2) + "-" + ((latestYear - 3) % 100)));
+		
 		DDRFormDetails dDRFormDetails = ddrFormDetailsRepository.getByProposaMappingIdAndApplicationId(appId,proposalId);
 		if (!CommonUtils.isObjectNullOrEmpty(dDRFormDetails)) {
 			Long ddrFormId = dDRFormDetails.getId();
@@ -348,9 +376,9 @@ public class DDRFormServiceImpl implements DDRFormService {
 			dDRRequest.setdDRFamilyDirectorsList(getFamilyDirectorsDetailsByProposalId(ddrFormId, appId,proposalId, userId, true));
 			dDRRequest.setExistingBankerDetailList(getExistingBankerDetailsByProposalId(ddrFormId, appId, proposalId,userId, true));
 
-			dDRRequest.setProvisionalTotalSales(getCMATotalSalesByAppIdAndProposalIdAndYear(appId, proposalId,"2018"));
-			dDRRequest.setLastYearTotalSales(getCMATotalSalesByAppIdAndProposalIdAndYear(appId, proposalId,"2017"));
-			dDRRequest.setLastToLastYearTotalSales(getCMATotalSalesByAppIdAndProposalIdAndYear(appId,proposalId, "2016"));
+			dDRRequest.setProvisionalTotalSales(getCMATotalSalesByAppIdAndProposalIdAndYear(appId, proposalId,String.valueOf(latestYear)));
+			dDRRequest.setLastYearTotalSales(getCMATotalSalesByAppIdAndProposalIdAndYear(appId, proposalId,String.valueOf(latestYear - 1)));
+			dDRRequest.setLastToLastYearTotalSales(getCMATotalSalesByAppIdAndProposalIdAndYear(appId,proposalId, String.valueOf(latestYear - 2)));
 			dDRRequest.setCurrency(getCurrency(appId, userId));
 		} else {
 			dDRRequest.setdDRFamilyDirectorsList(getFamilyDirectorsDetailsByProposalId(null, appId,proposalId, userId, true));
@@ -1197,9 +1225,10 @@ public class DDRFormServiceImpl implements DDRFormService {
 
 			dDRFormDetailsRequest.setdDRFamilyDirectorsList(getFamilyDirectorsDetails(ddrFormId, appId, userId, false));
 			dDRFormDetailsRequest.setExistingBankerDetailList(getExistingBankerDetails(ddrFormId, appId, userId, false));
-			dDRFormDetailsRequest.setProvisionalTotalSales(getCMATotalSalesByAppIdAndYear(appId, "2018"));
-			dDRFormDetailsRequest.setLastYearTotalSales(getCMATotalSalesByAppIdAndYear(appId, "2017"));
-			dDRFormDetailsRequest.setLastToLastYearTotalSales(getCMATotalSalesByAppIdAndYear(appId, "2016"));
+			Integer latestYear = getLatestYear(appId);
+			dDRFormDetailsRequest.setProvisionalTotalSales(getCMATotalSalesByAppIdAndYear(appId, String.valueOf(latestYear)));
+			dDRFormDetailsRequest.setLastYearTotalSales(getCMATotalSalesByAppIdAndYear(appId, String.valueOf(latestYear - 1)));
+			dDRFormDetailsRequest.setLastToLastYearTotalSales(getCMATotalSalesByAppIdAndYear(appId, String.valueOf(latestYear - 2)));
 			dDRFormDetailsRequest.setCurrency(getCurrency(appId, userId));
 		} else {
 			dDRFormDetailsRequest = new DDRFormDetailsRequest();
@@ -1236,9 +1265,10 @@ public class DDRFormServiceImpl implements DDRFormService {
 
 			dDRFormDetailsRequest.setdDRFamilyDirectorsList(getFamilyDirectorsDetails(ddrFormId, appId, userId, false));
 			dDRFormDetailsRequest.setExistingBankerDetailList(getExistingBankerDetails(ddrFormId, appId, userId, false));
-			dDRFormDetailsRequest.setProvisionalTotalSales(getCMATotalSalesByAppIdAndYear(appId, "2018"));
-			dDRFormDetailsRequest.setLastYearTotalSales(getCMATotalSalesByAppIdAndYear(appId, "2017"));
-			dDRFormDetailsRequest.setLastToLastYearTotalSales(getCMATotalSalesByAppIdAndYear(appId, "2016"));
+			Integer latestYear = getLatestYear(appId);
+			dDRFormDetailsRequest.setProvisionalTotalSales(getCMATotalSalesByAppIdAndYear(appId, String.valueOf(latestYear)));
+			dDRFormDetailsRequest.setLastYearTotalSales(getCMATotalSalesByAppIdAndYear(appId, String.valueOf(latestYear - 1)));
+			dDRFormDetailsRequest.setLastToLastYearTotalSales(getCMATotalSalesByAppIdAndYear(appId, String.valueOf(latestYear - 2)));
 			dDRFormDetailsRequest.setCurrency(getCurrency(appId, userId));
 		} else {
 			dDRFormDetailsRequest = new DDRFormDetailsRequest();
@@ -2732,6 +2762,21 @@ public class DDRFormServiceImpl implements DDRFormService {
 			ProfitibilityStatementDetail coAct2018OSDetails = null;
 			ProfitibilityStatementDetail coAct2017OSDetails = null;
 			ProfitibilityStatementDetail coAct2016OSDetails = null;
+			
+			Integer latestYear = getLatestYear(applicationId);
+			
+			String latestYearStr = String.valueOf(latestYear);
+			String preYearStr = String.valueOf(latestYear - 1);
+			String lastPreYearStr = String.valueOf(latestYear - 2);
+			String lastToLastPreYearStr = String.valueOf(latestYear - 3);
+			
+			
+			String latestYearFloat = latestYearStr.concat(".0");
+			String preYearFloat = preYearStr.concat(".0");
+			String lastPreYearFloat = lastPreYearStr.concat(".0");
+			String lastToLastPreYearFloat = lastToLastPreYearStr.concat(".0");
+			
+			
 
 			if (CommonUtils.isObjectListNull(operatingStatementDetails)) {
 				profitibilityStatementList = profitibilityStatementDetailRepository.getByApplicationIdAndProposalId(applicationId,proposalId);
@@ -2740,19 +2785,19 @@ public class DDRFormServiceImpl implements DDRFormService {
 					return responseList;
 				}
 				coAct2018OSDetails = profitibilityStatementList.stream()
-						.filter(a -> "2018".equals(a.getYear()) || YEAR_2018.equals(a.getYear())).findFirst()
+						.filter(a -> latestYearStr.equals(a.getYear()) || latestYearFloat.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(coAct2018OSDetails)) {
 					coAct2018OSDetails = new ProfitibilityStatementDetail();
 				}
 				coAct2017OSDetails = profitibilityStatementList.stream()
-						.filter(a -> "2017".equals(a.getYear()) || YEAR_2017.equals(a.getYear())).findFirst()
+						.filter(a -> preYearStr.equals(a.getYear()) || preYearFloat.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(coAct2017OSDetails)) {
 					coAct2017OSDetails = new ProfitibilityStatementDetail();
 				}
 				coAct2016OSDetails = profitibilityStatementList.stream()
-						.filter(a -> "2016".equals(a.getYear()) || YEAR_2016.equals(a.getYear())).findFirst()
+						.filter(a -> lastPreYearStr.equals(a.getYear()) || lastPreYearFloat.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(coAct2016OSDetails)) {
 					coAct2016OSDetails = new ProfitibilityStatementDetail();
@@ -2760,19 +2805,19 @@ public class DDRFormServiceImpl implements DDRFormService {
 			} else {
 				isCMAUpload = true;
 				cma2018OSDetails = operatingStatementDetails.stream()
-						.filter(a -> "2018".equals(a.getYear()) || YEAR_2018.equals(a.getYear())).findFirst()
+						.filter(a -> latestYearStr.equals(a.getYear()) || latestYearFloat.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(cma2018OSDetails)) {
 					cma2018OSDetails = new OperatingStatementDetails();
 				}
 				cma2017OSDetails = operatingStatementDetails.stream()
-						.filter(a -> "2017".equals(a.getYear()) || YEAR_2017.equals(a.getYear())).findFirst()
+						.filter(a -> preYearStr.equals(a.getYear()) || preYearFloat.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(cma2017OSDetails)) {
 					cma2017OSDetails = new OperatingStatementDetails();
 				}
 				cma2016OSDetails = operatingStatementDetails.stream()
-						.filter(a -> "2016".equals(a.getYear()) || YEAR_2016.equals(a.getYear())).findFirst()
+						.filter(a -> lastPreYearStr.equals(a.getYear()) || lastPreYearFloat.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(cma2016OSDetails)) {
 					cma2016OSDetails = new OperatingStatementDetails();
@@ -2787,25 +2832,25 @@ public class DDRFormServiceImpl implements DDRFormService {
 			if (isCMAUpload) {
 				cmaAssetsDetails = assetsDetailsRepository.getByApplicationIdAndProposalId(applicationId,proposalId);
 				cma2018AssetDetails = cmaAssetsDetails.stream()
-						.filter(a -> "2018".equals(a.getYear()) || YEAR_2018.equals(a.getYear())).findFirst()
+						.filter(a -> latestYearStr.equals(a.getYear()) || latestYearFloat.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(cma2018AssetDetails)) {
 					cma2018AssetDetails = new AssetsDetails();
 				}
 				cma2017AssetDetails = cmaAssetsDetails.stream()
-						.filter(a -> "2017".equals(a.getYear()) || YEAR_2017.equals(a.getYear())).findFirst()
+						.filter(a -> preYearStr.equals(a.getYear()) || preYearFloat.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(cma2017AssetDetails)) {
 					cma2017AssetDetails = new AssetsDetails();
 				}
 				cma2016AssetDetails = cmaAssetsDetails.stream()
-						.filter(a -> "2016".equals(a.getYear()) || YEAR_2016.equals(a.getYear())).findFirst()
+						.filter(a -> lastPreYearStr.equals(a.getYear()) || lastPreYearFloat.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(cma2016AssetDetails)) {
 					cma2016AssetDetails = new AssetsDetails();
 				}
 				cma2015AssetDetails = cmaAssetsDetails.stream()
-						.filter(a -> "2015".equals(a.getYear()) || YEAR_2015.equals(a.getYear())).findFirst()
+						.filter(a -> lastToLastPreYearStr.equals(a.getYear()) || lastToLastPreYearFloat.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(cma2015AssetDetails)) {
 					cma2015AssetDetails = new AssetsDetails();
@@ -2820,25 +2865,25 @@ public class DDRFormServiceImpl implements DDRFormService {
 			if (isCMAUpload) {
 				liabilitiesDetailsList = liabilitiesDetailsRepository.getByApplicationIdAndProposalId(applicationId,proposalId);
 				cma2018Liabilities = liabilitiesDetailsList.stream()
-						.filter(a -> "2018".equals(a.getYear()) || YEAR_2018.equals(a.getYear())).findFirst()
+						.filter(a -> latestYearStr.equals(a.getYear()) || latestYearFloat.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(cma2018Liabilities)) {
 					cma2018Liabilities = new LiabilitiesDetails();
 				}
 				cma2017Liabilities = liabilitiesDetailsList.stream()
-						.filter(a -> "2017".equals(a.getYear()) || YEAR_2017.equals(a.getYear())).findFirst()
+						.filter(a -> preYearStr.equals(a.getYear()) || preYearFloat.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(cma2017Liabilities)) {
 					cma2017Liabilities = new LiabilitiesDetails();
 				}
 				cma2016Liabilities = liabilitiesDetailsList.stream()
-						.filter(a -> "2016".equals(a.getYear()) || YEAR_2016.equals(a.getYear())).findFirst()
+						.filter(a -> lastPreYearStr.equals(a.getYear()) || lastPreYearFloat.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(cma2016Liabilities)) {
 					cma2016Liabilities = new LiabilitiesDetails();
 				}
 				cma2015Liabilities = liabilitiesDetailsList.stream()
-						.filter(a -> "2015".equals(a.getYear()) || YEAR_2015.equals(a.getYear())).findFirst()
+						.filter(a -> lastToLastPreYearStr.equals(a.getYear()) || lastToLastPreYearFloat.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(cma2015Liabilities)) {
 					cma2015Liabilities = new LiabilitiesDetails();
@@ -2853,25 +2898,25 @@ public class DDRFormServiceImpl implements DDRFormService {
 			if (!isCMAUpload) {
 				balanceSheetDetailList = balanceSheetDetailRepository.getByApplicationIdAndProposalId(applicationId,proposalId);
 				coAct2018BalanceSheet = balanceSheetDetailList.stream()
-						.filter(a -> "2018".equals(a.getYear()) || YEAR_2018.equals(a.getYear())).findFirst()
+						.filter(a -> latestYearStr.equals(a.getYear()) || latestYearFloat.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(coAct2018BalanceSheet)) {
 					coAct2018BalanceSheet = new BalanceSheetDetail();
 				}
 				coAct2017BalanceSheet = balanceSheetDetailList.stream()
-						.filter(a -> "2017".equals(a.getYear()) || YEAR_2017.equals(a.getYear())).findFirst()
+						.filter(a -> preYearStr.equals(a.getYear()) || preYearFloat.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(coAct2017BalanceSheet)) {
 					coAct2017BalanceSheet = new BalanceSheetDetail();
 				}
 				coAct2016BalanceSheet = balanceSheetDetailList.stream()
-						.filter(a -> "2016".equals(a.getYear()) || YEAR_2016.equals(a.getYear())).findFirst()
+						.filter(a -> lastPreYearStr.equals(a.getYear()) || lastPreYearFloat.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(coAct2016BalanceSheet)) {
 					coAct2016BalanceSheet = new BalanceSheetDetail();
 				}
 				coAct2015BalanceSheet = balanceSheetDetailList.stream()
-						.filter(a -> "2015".equals(a.getYear()) || YEAR_2015.equals(a.getYear())).findFirst()
+						.filter(a -> lastToLastPreYearStr.equals(a.getYear()) || lastToLastPreYearFloat.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(coAct2015BalanceSheet)) {
 					coAct2015BalanceSheet = new BalanceSheetDetail();
@@ -3740,6 +3785,19 @@ public class DDRFormServiceImpl implements DDRFormService {
 			ProfitibilityStatementDetail coAct2018OSDetails = null;
 			ProfitibilityStatementDetail coAct2017OSDetails = null;
 			ProfitibilityStatementDetail coAct2016OSDetails = null;
+			
+			Integer latestYear = getLatestYear(applicationId);
+			
+			String latestYearStr = String.valueOf(latestYear);
+			String preYearStr = String.valueOf(latestYear - 1);
+			String lastPreYearStr = String.valueOf(latestYear - 2);
+			String lastToLastPreYearStr = String.valueOf(latestYear - 3);
+			
+			
+			String latestYearFloat = latestYearStr.concat(".0");
+			String preYearFloat = preYearStr.concat(".0");
+			String lastPreYearFloat = lastPreYearStr.concat(".0");
+			String lastToLastPreYearFloat = lastToLastPreYearStr.concat(".0");
 
 			if (CommonUtils.isObjectListNull(operatingStatementDetails)) {
 				profitibilityStatementList = profitibilityStatementDetailRepository.getByApplicationId(applicationId);
@@ -3748,19 +3806,19 @@ public class DDRFormServiceImpl implements DDRFormService {
 					return responseList;
 				}
 				coAct2018OSDetails = profitibilityStatementList.stream()
-						.filter(a -> "2018".equals(a.getYear()) || YEAR_2018.equals(a.getYear())).findFirst()
+						.filter(a -> latestYearStr.equals(a.getYear()) || latestYearFloat.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(coAct2018OSDetails)) {
 					coAct2018OSDetails = new ProfitibilityStatementDetail();
 				}
 				coAct2017OSDetails = profitibilityStatementList.stream()
-						.filter(a -> "2017".equals(a.getYear()) || YEAR_2017.equals(a.getYear())).findFirst()
+						.filter(a -> preYearStr.equals(a.getYear()) || preYearFloat.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(coAct2017OSDetails)) {
 					coAct2017OSDetails = new ProfitibilityStatementDetail();
 				}
 				coAct2016OSDetails = profitibilityStatementList.stream()
-						.filter(a -> "2016".equals(a.getYear()) || YEAR_2016.equals(a.getYear())).findFirst()
+						.filter(a -> lastPreYearStr.equals(a.getYear()) || lastPreYearFloat.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(coAct2016OSDetails)) {
 					coAct2016OSDetails = new ProfitibilityStatementDetail();
@@ -3768,19 +3826,19 @@ public class DDRFormServiceImpl implements DDRFormService {
 			} else {
 				isCMAUpload = true;
 				cma2018OSDetails = operatingStatementDetails.stream()
-						.filter(a -> "2018".equals(a.getYear()) || YEAR_2018.equals(a.getYear())).findFirst()
+						.filter(a -> latestYearStr.equals(a.getYear()) || latestYearFloat.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(cma2018OSDetails)) {
 					cma2018OSDetails = new OperatingStatementDetails();
 				}
 				cma2017OSDetails = operatingStatementDetails.stream()
-						.filter(a -> "2017".equals(a.getYear()) || YEAR_2017.equals(a.getYear())).findFirst()
+						.filter(a -> preYearStr.equals(a.getYear()) || preYearFloat.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(cma2017OSDetails)) {
 					cma2017OSDetails = new OperatingStatementDetails();
 				}
 				cma2016OSDetails = operatingStatementDetails.stream()
-						.filter(a -> "2016".equals(a.getYear()) || YEAR_2016.equals(a.getYear())).findFirst()
+						.filter(a -> lastPreYearStr.equals(a.getYear()) || lastPreYearFloat.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(cma2016OSDetails)) {
 					cma2016OSDetails = new OperatingStatementDetails();
@@ -3795,25 +3853,25 @@ public class DDRFormServiceImpl implements DDRFormService {
 			if (isCMAUpload) {
 				cmaAssetsDetails = assetsDetailsRepository.getByApplicationId(applicationId);
 				cma2018AssetDetails = cmaAssetsDetails.stream()
-						.filter(a -> "2018".equals(a.getYear()) || YEAR_2018.equals(a.getYear())).findFirst()
+						.filter(a -> latestYearStr.equals(a.getYear()) || latestYearFloat.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(cma2018AssetDetails)) {
 					cma2018AssetDetails = new AssetsDetails();
 				}
 				cma2017AssetDetails = cmaAssetsDetails.stream()
-						.filter(a -> "2017".equals(a.getYear()) || YEAR_2017.equals(a.getYear())).findFirst()
+						.filter(a -> preYearStr.equals(a.getYear()) || preYearFloat.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(cma2017AssetDetails)) {
 					cma2017AssetDetails = new AssetsDetails();
 				}
 				cma2016AssetDetails = cmaAssetsDetails.stream()
-						.filter(a -> "2016".equals(a.getYear()) || YEAR_2016.equals(a.getYear())).findFirst()
+						.filter(a -> lastPreYearStr.equals(a.getYear()) || lastPreYearFloat.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(cma2016AssetDetails)) {
 					cma2016AssetDetails = new AssetsDetails();
 				}
 				cma2015AssetDetails = cmaAssetsDetails.stream()
-						.filter(a -> "2015".equals(a.getYear()) || YEAR_2015.equals(a.getYear())).findFirst()
+						.filter(a -> lastToLastPreYearStr.equals(a.getYear()) || lastToLastPreYearFloat.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(cma2015AssetDetails)) {
 					cma2015AssetDetails = new AssetsDetails();
@@ -3828,25 +3886,25 @@ public class DDRFormServiceImpl implements DDRFormService {
 			if (isCMAUpload) {
 				liabilitiesDetailsList = liabilitiesDetailsRepository.getByApplicationId(applicationId);
 				cma2018Liabilities = liabilitiesDetailsList.stream()
-						.filter(a -> "2018".equals(a.getYear()) || YEAR_2018.equals(a.getYear())).findFirst()
+						.filter(a -> latestYearStr.equals(a.getYear()) || latestYearFloat.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(cma2018Liabilities)) {
 					cma2018Liabilities = new LiabilitiesDetails();
 				}
 				cma2017Liabilities = liabilitiesDetailsList.stream()
-						.filter(a -> "2017".equals(a.getYear()) || YEAR_2017.equals(a.getYear())).findFirst()
+						.filter(a -> preYearStr.equals(a.getYear()) || preYearFloat.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(cma2017Liabilities)) {
 					cma2017Liabilities = new LiabilitiesDetails();
 				}
 				cma2016Liabilities = liabilitiesDetailsList.stream()
-						.filter(a -> "2016".equals(a.getYear()) || YEAR_2016.equals(a.getYear())).findFirst()
+						.filter(a -> lastPreYearStr.equals(a.getYear()) || lastPreYearFloat.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(cma2016Liabilities)) {
 					cma2016Liabilities = new LiabilitiesDetails();
 				}
 				cma2015Liabilities = liabilitiesDetailsList.stream()
-						.filter(a -> "2015".equals(a.getYear()) || YEAR_2015.equals(a.getYear())).findFirst()
+						.filter(a -> lastToLastPreYearStr.equals(a.getYear()) || lastToLastPreYearFloat.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(cma2015Liabilities)) {
 					cma2015Liabilities = new LiabilitiesDetails();
@@ -3861,25 +3919,25 @@ public class DDRFormServiceImpl implements DDRFormService {
 			if (!isCMAUpload) {
 				balanceSheetDetailList = balanceSheetDetailRepository.getByApplicationId(applicationId);
 				coAct2018BalanceSheet = balanceSheetDetailList.stream()
-						.filter(a -> "2018".equals(a.getYear()) || YEAR_2018.equals(a.getYear())).findFirst()
+						.filter(a -> latestYearStr.equals(a.getYear()) || latestYearFloat.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(coAct2018BalanceSheet)) {
 					coAct2018BalanceSheet = new BalanceSheetDetail();
 				}
 				coAct2017BalanceSheet = balanceSheetDetailList.stream()
-						.filter(a -> "2017".equals(a.getYear()) || YEAR_2017.equals(a.getYear())).findFirst()
+						.filter(a -> preYearStr.equals(a.getYear()) || preYearFloat.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(coAct2017BalanceSheet)) {
 					coAct2017BalanceSheet = new BalanceSheetDetail();
 				}
 				coAct2016BalanceSheet = balanceSheetDetailList.stream()
-						.filter(a -> "2016".equals(a.getYear()) || YEAR_2016.equals(a.getYear())).findFirst()
+						.filter(a -> lastPreYearStr.equals(a.getYear()) || lastPreYearFloat.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(coAct2016BalanceSheet)) {
 					coAct2016BalanceSheet = new BalanceSheetDetail();
 				}
 				coAct2015BalanceSheet = balanceSheetDetailList.stream()
-						.filter(a -> "2015".equals(a.getYear()) || YEAR_2015.equals(a.getYear())).findFirst()
+						.filter(a -> lastToLastPreYearStr.equals(a.getYear()) || lastToLastPreYearFloat.equals(a.getYear())).findFirst()
 						.orElse(null);
 				if (CommonUtils.isObjectNullOrEmpty(coAct2015BalanceSheet)) {
 					coAct2015BalanceSheet = new BalanceSheetDetail();

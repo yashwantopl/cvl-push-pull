@@ -75,6 +75,7 @@ import com.capitaworld.service.loans.service.common.CommonService;
 import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.retail.BankAccountHeldDetailService;
+import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantIncomeService;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.retail.EmpFinancialDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.retail.FixedDepositsDetailService;
@@ -115,6 +116,7 @@ import com.capitaworld.service.oneform.enums.LoanType;
 import com.capitaworld.service.oneform.enums.MaritalStatusMst;
 import com.capitaworld.service.oneform.enums.OccupationHL;
 import com.capitaworld.service.oneform.enums.OccupationNature;
+import com.capitaworld.service.oneform.enums.OccupationNatureNTB;
 import com.capitaworld.service.oneform.enums.RelationshipTypeHL;
 import com.capitaworld.service.oneform.enums.Religion;
 import com.capitaworld.service.oneform.enums.ReligionRetailMst;
@@ -261,6 +263,9 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 	
 	@Autowired
 	private UsersClient usersClient;
+	
+	@Autowired
+	private CoApplicantIncomeService coApplicantIncomeService;
 
 
 	@Override
@@ -279,7 +284,6 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
-		System.out.println("proposalId--------------::" + proposalId);
 		// ENDS HERE===================>
 		ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalId);
 		logger.info("applicationProposalMapping  ==>{}",applicationProposalMapping);
@@ -312,7 +316,7 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 					matchRequest.setProposalId(proposalId);
 					matchRequest.setBusinessTypeId(applicationProposalMapping.getBusinessTypeId());
 					MatchDisplayResponse matchResponse = matchEngineClient.displayMatchesOfRetail(matchRequest);
-					alTeaserViewResponse.setMatchesList(matchResponse.getMatchDisplayObjectList());
+					alTeaserViewResponse.setMatchDisplayObjectMap(matchResponse.getMatchDisplayObjectMap());
 				} catch (Exception e) {
 					logger.error("Error while getting matches data : " + e);
 				}
@@ -341,6 +345,7 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 				plRetailApplicantResponse.setPan(plRetailApplicantRequest.getPan());
 				plRetailApplicantResponse.setAadharNumber(plRetailApplicantRequest.getAadharNumber());
 				plRetailApplicantResponse.setMobile(plRetailApplicantRequest.getMobile());
+				alTeaserViewResponse.setIsUserHaveAadhar(plRetailApplicantRequest.getIsUserHaveAadhar());
 				
 				//Emp Salaried Type of Applicant
 				if(plRetailApplicantRequest.getEmploymentType() != null && plRetailApplicantRequest.getEmploymentType() == OccupationNature.SALARIED.getId()) {
@@ -491,7 +496,6 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 					logger.info("error while fetching address");
 				}
 				
-				System.out.println("plRetailApplicantRequest.getAddressCountry().longValue()----------::" + plRetailApplicantRequest.getAddressCountry());
 				
 				//citetailApplicantResponse.setry,State,country
 				alTeaserViewResponse.setCity(CommonDocumentUtils.getCity(plRetailApplicantRequest.getAddressCity(), oneFormClient));
@@ -647,6 +651,9 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 			cibilReq.setPan(plRetailApplicantResponse.getPan());
 			cibilReq.setApplicationId(toApplicationId);
 			CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
+			if (cibilScoreByPanCard != null) {
+				alTeaserViewResponse.setCibilScoreRange(CommonUtils.getCibilV2ScoreRange(cibilScoreByPanCard.getActualScore()));
+			}
 			alTeaserViewResponse.setCibilScore(cibilScoreByPanCard);
 		} catch (Exception e) {
 			logger.error("Error While calling Cibil Score By PanCard : ",e);
@@ -703,10 +710,8 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 
 		try {
 			ScoringResponse scoringResponse = scoringClient.getScore(scoringRequest);
-			System.out.println("scoringResponse.getDataObject() ------::" + scoringResponse.getDataObject());
 			ProposalScoreResponse proposalScoreResponse = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) scoringResponse.getDataObject(), ProposalScoreResponse.class);
 			if (proposalScoreResponse != null){
-				System.out.println("inside proposalScoreResponse------::" + scoringResponse);
 				alTeaserViewResponse.setScoringModelName(proposalScoreResponse.getScoringModelName()!=null?proposalScoreResponse.getScoringModelName():" - ");
 				alTeaserViewResponse.setDataList(scoringResponse.getDataList()!=null?scoringResponse.getDataList():" - ");
 				alTeaserViewResponse.setDataObject(scoringResponse.getDataObject()!=null?scoringResponse.getDataObject():" - ");
@@ -1053,7 +1058,7 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 				plRetailApplicantResponse.setAadharNumber(coApplicantDetail.getAadharNumber());
 				plRetailApplicantResponse.setMobile(coApplicantDetail.getMobile());
 				plRetailApplicantResponse.setCompanyName(coApplicantDetail.getCompanyName());
-				plRetailApplicantResponse.setEmploymentType(coApplicantDetail.getEmploymentType() != null ? OccupationNature.getById(coApplicantDetail.getEmploymentType()).getValue().toString() : "-");
+				plRetailApplicantResponse.setEmploymentType(coApplicantDetail.getEmploymentType() != null ? OccupationNatureNTB.getById(coApplicantDetail.getEmploymentType()).getValue().toString() : "-");
 				plRetailApplicantResponse.setEmploymentStatus(coApplicantDetail.getEmploymentStatus() != null ? EmploymentStatusRetailMst.getById(coApplicantDetail.getEmploymentStatus()).getValue() : "-");
 				plRetailApplicantResponse.setCurrentJobYear((coApplicantDetail.getCurrentJobYear() !=null ? (coApplicantDetail.getCurrentJobYear() +" year") : "") + "" +(coApplicantDetail.getCurrentJobMonth() != null ? (coApplicantDetail.getCurrentJobMonth() +" months") :  "" )); 
 				plRetailApplicantResponse.setTotalExperienceYear((coApplicantDetail.getTotalExperienceYear() !=null ? (coApplicantDetail.getTotalExperienceYear() +" year") : "") + "" + (coApplicantDetail.getTotalExperienceMonth() != null ? (coApplicantDetail.getTotalExperienceMonth() +" months") :  "" ));
@@ -1074,7 +1079,7 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 				plRetailApplicantResponse.setResidenceSinceMonthYear(coApplicantDetail.getResidenceSinceMonth()!=null?coApplicantDetail.getResidenceSinceYear()!=null?coApplicantDetail.getResidenceSinceMonth()+"-"+coApplicantDetail.getResidenceSinceYear():"":"");
 				plRetailApplicantResponse.setResidenceSinceYear(coApplicantDetail.getResidenceSinceYear());
 				plRetailApplicantResponse.setNameOfEmployer(coApplicantDetail.getNameOfEntity());
-				plRetailApplicantResponse.setEmploymentWith(coApplicantDetail.getEmploymentStatus()!= null ? EmploymentCategory.getById(coApplicantDetail.getEmploymentStatus()).getValue() : "-");
+//				plRetailApplicantResponse.setEmploymentWith(coApplicantDetail.getEmploymentWith()!= null ? EmploymentCategory.getById(coApplicantDetail.getEmploymentWith()).getValue() : "-");
 				plRetailApplicantResponse.setBusinessStartDate(coApplicantDetail.getBusinessStartDate());
 				plRetailApplicantResponse.setNetworth(coApplicantDetail.getNetworth());
 				plRetailApplicantResponse.setGrossMonthlyIncome(coApplicantDetail.getGrossMonthlyIncome());
@@ -1098,7 +1103,7 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 				}
 				
 				/*employment type*/
-				plRetailApplicantResponse.setEmploymentType(coApplicantDetail.getEmploymentType() != null ? OccupationNature.getById(coApplicantDetail.getEmploymentType()).getValue().toString() : "-");
+				plRetailApplicantResponse.setEmploymentType(coApplicantDetail.getEmploymentType() != null ? OccupationNatureNTB.getById(coApplicantDetail.getEmploymentType()).getValue().toString() : "-");
 				
 				//as per OccupationNature enum id
 				switch (coApplicantDetail.getEmploymentType() != null ? coApplicantDetail.getEmploymentType() : 0) {
@@ -1142,11 +1147,13 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 					
 				case 4://Self Employed
 					plRetailApplicantResponse.setEmploymentWith(coApplicantDetail.getEmploymentWith() != null ? EmploymentWithRetail.getById(coApplicantDetail.getEmploymentWith()).getValue().toString() : "-");
+					plRetailApplicantResponse.setNameOfEmployer(coApplicantDetail.getNameOfEmployer());
 					break;
 				
 				case 5://Self Employed Professional
 					
 					plRetailApplicantResponse.setEmploymentWith(coApplicantDetail.getEmploymentWith() != null ? OccupationHL.getById(coApplicantDetail.getEmploymentWith()).getValue().toString() : "-");
+					plRetailApplicantResponse.setNameOfEmployer(coApplicantDetail.getNameOfEmployer());
 					break;
 				
 				default:
@@ -1207,6 +1214,20 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 					logger.error(":::::::::::---------Error while fetching name as per itr----------:::::::::::",e);
 				}*/
 				
+			    try {
+	                    CibilRequest cibilReq=new CibilRequest();
+	                    cibilReq.setPan(coApplicantDetail.getPan());
+	                    cibilReq.setApplicationId(applicationId);
+	                    CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
+	                    if(cibilScoreByPanCard != null) {
+	                        plRetailApplicantResponse.setCibilScoreRange(CommonUtils.getCibilV2ScoreRange(cibilScoreByPanCard.getActualScore()));
+	                    }
+	                    plRetailApplicantResponse.setCibilScore(cibilScoreByPanCard);
+	                } catch (Exception e) {
+	                    logger.error("Error While calling Cibil Score By PanCard : ",e);
+	                }
+
+				
 				/* FOR COAPP */
 				ITRBasicDetailsResponse itrReq = new ITRBasicDetailsResponse();
 				itrReq.setApplicationId(applicationId);
@@ -1225,6 +1246,13 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 					logger.error("error while fetching itr data from itrClient",e);
 				}
 				
+				
+				try {
+					List<RetailApplicantIncomeRequest> retailApplicantIncomeDetail = coApplicantIncomeService.getAllByCoAppId(coApplicantDetail.getId());
+					plRetailApplicantResponse.setRetailApplicantIncomeRequestList(!CommonUtils.isListNullOrEmpty(retailApplicantIncomeDetail) ? retailApplicantIncomeDetail : null);
+				} catch (Exception e) {
+					logger.error("Error while getting income details : ",e);
+				}
 				
 				String coAppFullName = plRetailApplicantResponse.getFullName();
 				if(!CommonUtils.isObjectNullOrEmpty(coAppFullName) && coAppFullName.equalsIgnoreCase(coAppnameAsPerItr)) {

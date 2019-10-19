@@ -364,7 +364,23 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
     private Boolean isCommercialCibilFor3MonthDisplay = false;
 
     private Boolean isCommercialCibilFor3MonthMandatory = false;
+    
+	private BigDecimal manufacturing;
+	private BigDecimal service;
+	private BigDecimal trading;
+	
+	private BigDecimal promotorContri;
 
+	
+	
+
+	public BigDecimal getPromotorContri() {
+		return promotorContri;
+	}
+
+	public void setPromotorContri(BigDecimal promotorContri) {
+		this.promotorContri = promotorContri;
+	}
 
 	public Object getWorkflowData() {
 		return workflowData;
@@ -1846,6 +1862,30 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 
 	public void setNbfcRatioIds(List<Long> nbfcRatioIds) {
 		this.nbfcRatioIds = nbfcRatioIds;
+	}
+
+	public BigDecimal getManufacturing() {
+		return manufacturing;
+	}
+
+	public void setManufacturing(BigDecimal manufacturing) {
+		this.manufacturing = manufacturing;
+	}
+
+	public BigDecimal getService() {
+		return service;
+	}
+
+	public void setService(BigDecimal service) {
+		this.service = service;
+	}
+
+	public BigDecimal getTrading() {
+		return trading;
+	}
+
+	public void setTrading(BigDecimal trading) {
+		this.trading = trading;
 	}
 
 	

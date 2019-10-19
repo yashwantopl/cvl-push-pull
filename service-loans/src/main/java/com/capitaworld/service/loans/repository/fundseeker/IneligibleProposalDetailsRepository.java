@@ -29,6 +29,9 @@ public interface IneligibleProposalDetailsRepository extends JpaRepository<Ineli
     public List<Object[]> getOfflineProposalDetailsByOrgId(@Param("userOrgId")Long userOrgId,@Param("fromDate") Date fromDate,@Param("toDate") Date toDate);
 
     public IneligibleProposalDetails findByApplicationIdAndIsActive(Long applicationId,Boolean isActive);
+    
+    @Query(value = "SELECT inl.user_org_id FROM loan_application.`ineligible_proposal_details` inl WHERE inl.application_id =:applicationId", nativeQuery = true)
+    public Long getOrgId(@Param("applicationId") Long applicationId);
 
     public IneligibleProposalDetails findByApplicationIdAndUserOrgIdAndIsActive(Long applicationId,Long userOrgId,Boolean isActive);
 

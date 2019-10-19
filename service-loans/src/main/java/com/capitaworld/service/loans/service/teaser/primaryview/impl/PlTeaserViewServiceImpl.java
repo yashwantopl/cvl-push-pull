@@ -231,6 +231,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(toApplicationId);
 		Long userid=loanApplicationMaster.getUserId();	
 		plTeaserViewResponse.setLoanType(loanApplicationMaster.getProductId() != null ? LoanType.getById(loanApplicationMaster.getProductId()).getValue().toString() : "");
+		plTeaserViewResponse.setProductId(loanApplicationMaster.getProductId());
 		plTeaserViewResponse.setLoanAmount(loanApplicationMaster.getAmount().longValue());
 		plTeaserViewResponse.setTenure(((loanApplicationMaster.getTenure()).toString()) + " Years");
 		plTeaserViewResponse.setAppId(toApplicationId);
@@ -469,7 +470,10 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 					cibilReq.setPan(plRetailApplicantResponse.getPan());
 					cibilReq.setApplicationId(toApplicationId);
 					CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
-					plTeaserViewResponse.setCibilScore(cibilScoreByPanCard);
+					if(cibilScoreByPanCard != null) {
+						plTeaserViewResponse.setCibilScoreRange(CommonUtils.getCibilV2ScoreRange(cibilScoreByPanCard.getActualScore()));
+					}
+					plTeaserViewResponse.setCibilScore(cibilScoreByPanCard);																
 				} catch (Exception e) {
 					logger.error("Error While calling Cibil Score By PanCard : ",e);
 				}
@@ -775,6 +779,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		
 		Long userid=applicationProposalMapping.getUserId();
 		plTeaserViewResponse.setLoanType(applicationProposalMapping.getProductId() != null ? LoanType.getById(applicationProposalMapping.getProductId()).getValue().toString() : "");
+		plTeaserViewResponse.setProductId(applicationProposalMapping.getProductId());
 		plTeaserViewResponse.setLoanAmount(applicationProposalMapping.getLoanAmount().longValue());
 		plTeaserViewResponse.setTenure(((applicationProposalMapping.getTenure()).intValue()) + " Years");
 		plTeaserViewResponse.setCurrencyDenomination(applicationProposalMapping.getCurrencyId() != null ? Currency.getById(applicationProposalMapping.getCurrencyId()).getValue().toString() : "-");
@@ -1039,15 +1044,17 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				if (!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getKeyVerticalSector()))
 					keyVerticalSectorId.add(plRetailApplicantRequest.getKeyVerticalSector());
 				try {
-					OneFormResponse formResponse = oneFormClient.getIndustrySecByMappingId(plRetailApplicantRequest.getKeyVerticalSector());
-					SectorIndustryModel sectorIndustryModel = MultipleJSONObjectHelper.getObjectFromMap((Map) formResponse.getData(), SectorIndustryModel.class);
-					OneFormResponse oneFormResponse = oneFormClient.getSectorById(Arrays.asList(sectorIndustryModel.getSectorId()));
-					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
-					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-						MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-						plTeaserViewResponse.setKeyVericalSector(masterResponse.getValue());
-					} else {
-						logger.warn("key vertical sector is null");
+					if(keyVerticalSectorId!= null && !keyVerticalSectorId.isEmpty()) {
+						OneFormResponse formResponse = oneFormClient.getIndustrySecByMappingId(plRetailApplicantRequest.getKeyVerticalSector());
+						SectorIndustryModel sectorIndustryModel = MultipleJSONObjectHelper.getObjectFromMap((Map) formResponse.getData(), SectorIndustryModel.class);
+						OneFormResponse oneFormResponse = oneFormClient.getSectorById(Arrays.asList(sectorIndustryModel.getSectorId()));
+						List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
+						if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+							MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+							plTeaserViewResponse.setKeyVericalSector(masterResponse.getValue());
+						} else {
+							logger.warn("key vertical sector is null");
+						}
 					}
 				} catch (Exception e) {
 					logger.error(CommonUtils.EXCEPTION,e);
@@ -1101,7 +1108,8 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				plTeaserViewResponse.setScoringBasedOn(proposalMappingRequestString.getScoringModelBasedOn() != null && proposalMappingRequestString.getScoringModelBasedOn() == 2 ? "REPO" : "MCLR");
 				plTeaserViewResponse.setMclrRoi(proposalMappingRequestString.getMclrRoi() != null ? proposalMappingRequestString.getMclrRoi().toString() : "-");
 				plTeaserViewResponse.setSpreadRoi(proposalMappingRequestString.getSpreadRoi() != null ? proposalMappingRequestString.getSpreadRoi().toString() : "-");
-				 if (!CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getMclrRoi()) && !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getSpreadRoi())) {
+				plTeaserViewResponse.setOrgId(proposalMappingRequestString.getUserOrgId());
+				if (!CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getMclrRoi()) && !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getSpreadRoi())) {
 					 plTeaserViewResponse.setEffectiveRoi(String.valueOf(Double.valueOf(proposalMappingRequestString.getMclrRoi()) + Double.valueOf(proposalMappingRequestString.getSpreadRoi())));		    	
 					} else {
 						plTeaserViewResponse.setEffectiveRoi(proposalMappingRequestString.getMclrRoi() == null && proposalMappingRequestString.getSpreadRoi() == null ? "-" : proposalMappingRequestString.getMclrRoi() != null ? proposalMappingRequestString.getMclrRoi().toString() : proposalMappingRequestString.getSpreadRoi().toString());				
@@ -1137,6 +1145,9 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 			cibilReq.setPan(plRetailApplicantResponse.getPan());
 			cibilReq.setApplicationId(toApplicationId);
 			CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
+			if (cibilScoreByPanCard != null) {
+				plTeaserViewResponse.setCibilScoreRange(CommonUtils.getCibilV2ScoreRange(cibilScoreByPanCard.getActualScore()));
+			}
 			plTeaserViewResponse.setCibilScore(cibilScoreByPanCard);
 		} catch (Exception e) {
 			logger.error("Error While calling Cibil Score By PanCard : ",e);

@@ -14,18 +14,6 @@ import java.util.regex.Pattern;
 
 import javax.transaction.Transactional;
 
-import com.capitaworld.service.loans.domain.fundseeker.mfi.MFIApplicantDetail;
-import com.capitaworld.service.loans.domain.fundseeker.mfi.MfiExpenseExpectedIncomeDetails;
-import com.capitaworld.service.loans.domain.fundseeker.mfi.MfiIncomeDetails;
-import com.capitaworld.service.loans.domain.fundseeker.retail.*;
-import com.capitaworld.service.loans.model.micro_finance.MfiIncomeDetailsReq;
-import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiApplicationDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiExpenseExpectedIncomeDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiIncomeDetailsRepository;
-import com.capitaworld.service.oneform.enums.*;
-import com.capitaworld.service.scoring.MCLRReqRes;
-import com.capitaworld.service.scoring.REPOReqRes;
-import com.capitaworld.service.scoring.model.*;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -85,6 +73,7 @@ import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.score.ScoreParameterRequestLoans;
 import com.capitaworld.service.loans.model.score.ScoringRequestLoans;
+import com.capitaworld.service.loans.repository.CspCodeRepository;
 import com.capitaworld.service.loans.repository.common.LoanRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.ScoringRequestDetailRepository;
@@ -101,6 +90,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingSt
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.BankingRelationlRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.CoApplicantDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.CreditCardsDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryAutoLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryHomeLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
@@ -115,7 +105,7 @@ import com.capitaworld.service.loans.utils.scoreexcel.ScoreExcelFileGenerator;
 import com.capitaworld.service.loans.utils.scoreexcel.ScoreExcelReader;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.AnnualIncomeRural;
-import com.capitaworld.service.oneform.enums.AutoDetailPurposeofLoan;
+import com.capitaworld.service.oneform.enums.AutoLoanPurposeType;
 import com.capitaworld.service.oneform.enums.BankList;
 import com.capitaworld.service.oneform.enums.EmploymentWithPL;
 import com.capitaworld.service.oneform.enums.EmploymentWithPLScoring;
@@ -123,12 +113,15 @@ import com.capitaworld.service.oneform.enums.Gender;
 import com.capitaworld.service.oneform.enums.OccupationHL;
 import com.capitaworld.service.oneform.enums.OccupationNatureNTB;
 import com.capitaworld.service.oneform.enums.ResidenceStatusRetailMst;
+import com.capitaworld.service.oneform.enums.VehicleType;
+import com.capitaworld.service.oneform.enums.YesNo;
 import com.capitaworld.service.oneform.enums.scoring.EnvironmentCategory;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.rating.RatingClient;
 import com.capitaworld.service.rating.model.IndustryResponse;
 import com.capitaworld.service.rating.model.IrrRequest;
 import com.capitaworld.service.scoring.MCLRReqRes;
+import com.capitaworld.service.scoring.REPOReqRes;
 import com.capitaworld.service.scoring.ScoringClient;
 import com.capitaworld.service.scoring.exception.ScoringException;
 import com.capitaworld.service.scoring.model.FundSeekerInputRequest;
@@ -203,6 +196,10 @@ public class ScoringServiceImpl implements ScoringService {
     @Autowired
     private FinancialArrangementDetailsRepository financialArrangementDetailsRepository;
 
+    
+    @Autowired
+    private CreditCardsDetailRepository creditCardsDetailRepository;
+    
     @Autowired
     private FinancialArrangementDetailsService financialArrangementDetailsService;
 
@@ -255,6 +252,9 @@ public class ScoringServiceImpl implements ScoringService {
 
     @Autowired
     private MfiIncomeDetailsRepository mfiIncomeDetailsRepository;
+    
+    @Autowired
+    private CspCodeRepository cspCodeRepository;
 
     private static final String ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING = "Error while getting retail applicant detail for personal loan scoring : ";
     private static final String ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_HOME_LOAN_SCORING = "Error while getting retail applicant detail for Home loan scoring : ";
@@ -1719,7 +1719,7 @@ public class ScoringServiceImpl implements ScoringService {
                  		 	isCreaditHisotryGreaterSixMonths = true;
                  	 	}
 
-                 	 if(cibilActualScore>= 1 && cibilActualScore <= 5){
+                 	 if(cibilActualScore>= 0 && cibilActualScore <= 5){
                   			isCreaditHisotryLessThenSixMonths = true;
                   	}
 
@@ -2562,7 +2562,7 @@ public class ScoringServiceImpl implements ScoringService {
             			case ScoreParameter.Retail.HomeLoan.AVG_EOD_BALANCE:
             				Double totalEODBalAvg = 0.0d;
             				Double totalCredit = 0.0d;
-
+            				scoreParameterRetailRequest.setAvgEodBalToToalDep(0.0d);
             				for(Data bankStatementData : bankStatementDatas) {
             					if(bankStatementData.getSummaryInfo() != null) {
                 					if(!CommonUtils.isObjectNullOrEmpty(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getBalAvg()) && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getSummaryInfo().getSummaryInfoAverageDetails().getTotalCredit())) {
@@ -2571,7 +2571,9 @@ public class ScoringServiceImpl implements ScoringService {
                 					}
                 				}
             				}
-            				scoreParameterRetailRequest.setAvgEodBalToToalDep((totalEODBalAvg / totalCredit));
+            				if(totalEODBalAvg > 0 && totalCredit > 0) {
+            					scoreParameterRetailRequest.setAvgEodBalToToalDep((totalEODBalAvg / totalCredit));            					
+            				}
     						scoreParameterRetailRequest.setIsAvgEodBalToToalDep_p(true);
             				break;
             			case ScoreParameter.Retail.HomeLoan.LOAN_TO_INCOME_RATIO:
@@ -3362,6 +3364,7 @@ public class ScoringServiceImpl implements ScoringService {
             logger.info("Scoring model Id For CoApp===>{}",scoreModelId);
             Long fpProductId = scoringRequestLoans.getFpProductId();
             logger.info("Fp Product Id For CoApp===>{}",fpProductId);
+            Integer personalBankingId = null;
             ScoringRequest scoringRequest = new ScoringRequest();
             scoringRequest.setScoringModelId(scoreModelId);
             scoringRequest.setFpProductId(fpProductId);
@@ -3379,11 +3382,71 @@ public class ScoringServiceImpl implements ScoringService {
             orgId = scoringRequestLoans.getOrgId();
             if(orgId != null) {
             	BankList bankEnum = BankList.fromOrgId(orgId.toString());
-            	if(bankEnum != null) {
-            		logger.info("Bank Name====>{}==>Application Id===>{}===> Fp Product Id===>{}",bankEnum.getName(),applicationId,fpProductId);
-            		minBankRelationshipInMonths = bankingRelationlRepository.getMinRelationshipInMonthByApplicationAndOrgNameAndCoApplicantId(applicationId, bankEnum.getName(),coApplicantId);
+            	try {
+	            	if(bankEnum != null) {
+	            		logger.info("Bank Name====>{}==>Application Id===>{}===> Fp Product Id===>{}",bankEnum.getName(),applicationId,fpProductId);
+	            		minBankRelationshipInMonths = bankingRelationlRepository.getMinRelationshipInMonthByApplicationAndOrgNameAndCoApplicantId(applicationId, bankEnum.getName(),coApplicantId);
+	            	}
+            	}catch(Exception e) {
+            		logger.error("Error while Getting banking Relationship = >{}",e);
             	}
             	logger.info("Min Banking Relationship in Month CoApplicant === >{}",minBankRelationshipInMonths);
+            	
+            	// Step 1 :- (First scenario CHECK Borrower has any outstanding Loan with DPDs with SBI===============>)
+            	try {
+            		if(bankEnum != null) {
+        				List<Long> ids = financialArrangementDetailsRepository.checkExistingLoanWithBankForCoApp(applicationId,(bankEnum.getName() != null ? bankEnum.getName().toLowerCase() : null),coApplicantId);
+        				if(!CommonUtils.isListNullOrEmpty(ids)) {
+        					Long cnt = financialArrangementDetailsRepository.checkDpdsWithBankByIds(ids);
+        					if(cnt <= 0) {
+        						personalBankingId = 2; //Credit Relation With satisfactory Performance(Standard In Our Books For the 12 Months) 
+        					}
+        				}
+                	}       		
+            	}catch(Exception e) {
+            		logger.error("Error while Getting Personal Banking Relationship = >{}",e);
+            	}
+            	
+            	
+            	// Step 2 :- Corporate Salary Package(CSP Customer)
+            	if(personalBankingId == null) {
+            		for(Data bankStatementData : coApplicantBankStatementDatas) {
+            			if(bankStatementData != null && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getSummaryInfo()) && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getSummaryInfo().getAccType())) {
+            				String code = bankStatementData.getSummaryInfo().getAccType().replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+            				logger.info("After Replaced CoApp= >{}",code);
+            					Long codeExists = cspCodeRepository.isCodeExists(code, orgId);
+            					if(codeExists > 0) {
+            						logger.info("CSP Code Found For OrgId==>{}==>{}",orgId,code);
+            						personalBankingId = 3; //Corporate Salary Package(CSP Customer)
+            						break;
+            					}else {
+            						logger.info("CSP Code not Found For OrgId==>{}",orgId);
+            					}
+            					
+            			 }
+            		}                		
+            	}
+            	
+            	
+            	// Step :3 (Deposit (SB/CA/TDR) relationship for at least 6 months) 				
+            	if(personalBankingId == null) {
+            		Double depositeSBCATDRAmount = 0.0d;
+                	if(bankEnum != null) {
+                		for(Data bankStatementData : coApplicantBankStatementDatas) {
+                			if(bankStatementData != null && bankStatementData.getSummaryInfo() != null && bankStatementData.getSummaryInfo().getSummaryInfoTotalDetails() != null && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCredit()) && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getCustomerInfo()) && bankEnum.getName().equalsIgnoreCase(bankStatementData.getEnumBank())) {
+                				depositeSBCATDRAmount = depositeSBCATDRAmount + Double.valueOf(bankStatementData.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCredit()); 
+                						logger.info("Total Deposite Amount here CoApp====={}====={}==>",depositeSBCATDRAmount,applicationId);
+                			 	}
+                		}                		
+                	}
+                	if(depositeSBCATDRAmount > 0.0d) {
+                		personalBankingId = 4; //Deposite(SB/CA/TDR) Relationship For at Least 6 months
+                	}
+            	}
+            	
+            	if(personalBankingId == null) {
+            		personalBankingId = 5; //New Customer
+            	}
             }
 
             ///////// End  Getting Old Request ///////
@@ -3397,6 +3460,7 @@ public class ScoringServiceImpl implements ScoringService {
 				scoreParameterRetailRequest.setEmi(scoringRequestLoans.getEmi());
 				scoreParameterRetailRequest.setElAmountOnAverageScoring(scoringRequestLoans.getElAmountOnAverageScoring());
 				scoreParameterRetailRequest.setIsConsiderCoAppIncome(scoringRequestLoans.getIsConsiderCoAppIncome());
+				scoreParameterRetailRequest.setPersonalBankingRelationShip(personalBankingId);
 				logger.info("Is Income Consider For CoApplicant============>{}=======>{}",scoringRequestLoans.getIsConsiderCoAppIncome(), coApplicantId);
 				logger.info("Result of Average Eligibility Call For CoApplicant===============>{}======>{}========>{}========================{}",scoringRequestLoans.getElAmountOnAverageScoring(),applicationId,fpProductId,coApplicantId);
 				logger.info("FOIR For CoApplicant===============>{}======>{}========>{}========================{}",scoringRequestLoans.getFoir(),applicationId,fpProductId,applicationId,fpProductId,coApplicantId);
@@ -3805,6 +3869,18 @@ public class ScoringServiceImpl implements ScoringService {
         				scoreParameterRetailRequest.setEmiAmountFromCIBIL(totalEMI);
         				//Already Set NMI and GMI Above Before Switch Starts
         				break;
+        			case ScoreParameter.Retail.AutoLoan.PERSONAL_RELATIONSHIP_WITH_BANK: //
+        				scoreParameterRetailRequest.setIsPersonalRelationShipWithBank_p(true);
+        				 break;
+//        			case ScoreParameter.Retail.AutoLoan.IS_ADHAAR_CARD:
+//        				scoreParameterRetailRequest.setIsAdhaarCard_p(true);
+//        				scoreParameterRetailRequest.setAdhaarCardValue(YesNo.NO.getId()); // Default No
+//        				if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getIsUserHaveAadhar())) {
+//        					if(coApplicantDetail.getIsUserHaveAadhar()) {
+//        						scoreParameterRetailRequest.setAdhaarCardValue(YesNo.YES.getId()); // Default Yes	
+//        					}
+//        				}
+//        				break;
                         default:
                          break;
 
@@ -8120,23 +8196,112 @@ public class ScoringServiceImpl implements ScoringService {
         	if(!CommonUtils.isListNullOrEmpty(coAppIds)) {
         		coAppITRUploadedIds = coApplicantDetailRepository.getCoAppIdsOfCoApplicantUploadedITR(applicationId,true);
         	}
-        }
+        }        	
+        	
+         // IF LOAN IS ALREADY EXIST WITH SBI THEN CHECK DPDs ALL OUTSTANDING LOAN            
+        /*if(count > 0) {
+        	List<CreditCardsDetail> dpdDetailsList = creditCardsDetailRepository.listCreditCardsFromAppId(applicationId);
+        	List<CreditCardsDetail> dpdList = new ArrayList<>(dpdDetailsList.size());
+        	
+        	// for(CreditCardsDetail response : dpdDetailsList) {
+        	for (int i = 0; i < dpdDetailsList.size(); i++) {
+        			String dpdResponse =dpdDetailsList.get(i).getDpdDetails() ;	
+        				logger.info("dpdResponse Here ======{}====={}===>>>"+dpdResponse);
+        				if(dpdResponse.contains("|")){
+     						String[] DpdValResp = dpdResponse.split("\\|");
+     						if(!CommonUtils.isObjectNullOrEmpty(DpdValResp[1])) {
+     								dpds.add(Integer.parseInt(DpdValResp[1]));
+     				}
+        		}
+        	}
+        	
+        } 	*/
+        // Step 2 :--- Check whether Borrower is uploading SBI Bank Statement With Discuss Balu Bhai
+        			//	(PENDING)
+        	
+        				
+        
         List<ScoringRequest> scoringRequestList=new ArrayList<>(scoringRequestLoansList.size());
         ScoreParameterRetailRequest scoreParameterRetailRequest = null;
         for(ScoringRequestLoans scoringRequestLoans : scoringRequestLoansList)
         {
             Long scoreModelId = scoringRequestLoans.getScoringModelId();
             Long fpProductId = scoringRequestLoans.getFpProductId();
+            Integer personalBankingId = null;
 //            homeLoanModelRequest = homeLoanModelService.get(scoringRequestLoans.getLoanPurposeModelId(), null, null);
             Integer minBankRelationshipInMonths = null;
             orgId = scoringRequestLoans.getOrgId();
             if(orgId != null) {
             	BankList bankEnum = BankList.fromOrgId(orgId.toString());
-            	if(bankEnum != null) {
-            		logger.info("Bank Name====>{}==>Application Id===>{}===> Fp Product Id===>{}",bankEnum.getName(),applicationId,fpProductId);
-            		minBankRelationshipInMonths = bankingRelationlRepository.getMinRelationshipInMonthByApplicationAndOrgName(applicationId, bankEnum.getName());
+            	try {
+            		if(bankEnum != null) {
+                		logger.info("Bank Name====>{}==>Application Id===>{}===> Fp Product Id===>{}",bankEnum.getName(),applicationId,fpProductId);
+                		minBankRelationshipInMonths = bankingRelationlRepository.getMinRelationshipInMonthByApplicationAndOrgName(applicationId, bankEnum.getName());
+                	}            		
+            	}catch(Exception e) {
+            		logger.error("Error while Getting Minimum Banking Relationship = >{}",e);
             	}
+            	// Step 1 :- (First scenario CHECK Borrower has any outstanding Loan with DPDs with SBI===============>)
+            	try {
+            		if(bankEnum != null) {
+        				List<Long> ids = financialArrangementDetailsRepository.checkExistingLoanWithBank(applicationId,(bankEnum.getName() != null ? bankEnum.getName().toLowerCase() : null));
+        				if(!CommonUtils.isListNullOrEmpty(ids)) {
+        					Long cnt = financialArrangementDetailsRepository.checkDpdsWithBankByIds(ids);
+        					if(cnt <= 0) {
+        						personalBankingId = 2; //Credit Relation With satisfactory Performance(Standard In Our Books For the 12 Months) 
+        					}
+        				}
+                	}       		
+            	}catch(Exception e) {
+            		logger.error("Error while Getting Personal Banking Relationship = >{}",e);
+            	}
+            	
+            	
+            	// Step 2 :- Corporate Salary Package(CSP Customer)
+            	if(personalBankingId == null) {
+            		for(Data bankStatementData : bankStatementDatas) {
+            			if(bankStatementData != null && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getSummaryInfo()) && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getSummaryInfo().getAccType())) {
+            				String code = bankStatementData.getSummaryInfo().getAccType().replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+            				logger.info("After Replaced = >{}",code);
+            				Long codeExists = cspCodeRepository.isCodeExists(code, orgId);
+            					if(codeExists > 0) {
+            						logger.info("CSP Code Found For OrgId==>{}==>{}",orgId,code);
+            						personalBankingId = 3; //Corporate Salary Package(CSP Customer)
+            						break;
+            					}else {
+            						logger.info("CSP Code not Found For OrgId==>{}",orgId);
+            					}
+            					
+            			 }
+            		}                		
+            	}
+            	
+            	
+            	
+              // Step :3 (Deposit (SB/CA/TDR) relationship for at least 6 months)
+            	if(personalBankingId == null) {
+            		Double depositeSBCATDRAmount = 0.0d;
+                	if(bankEnum != null) {
+                		for(Data bankStatementData : bankStatementDatas) {
+                			if(bankStatementData != null && bankStatementData.getSummaryInfo() != null && bankStatementData.getSummaryInfo().getSummaryInfoTotalDetails() != null && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCredit()) && !CommonUtils.isObjectNullOrEmpty(bankStatementData.getCustomerInfo()) && bankEnum.getName().equalsIgnoreCase(bankStatementData.getEnumBank())) {
+                				depositeSBCATDRAmount = depositeSBCATDRAmount + Double.valueOf(bankStatementData.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCredit()); 
+                						logger.info("Total Deposite Amount here ====={}====={}==>",depositeSBCATDRAmount,applicationId);
+                			 	}
+                		}                		
+                	}
+                	if(depositeSBCATDRAmount > 0.0d) {
+                		personalBankingId = 4; //Deposite(SB/CA/TDR) Relationship For at Least 6 months
+                	}
+            	}
+            	
+            	if(personalBankingId == null) {
+            		personalBankingId = 5; //New Customer
+            	}
+            	
             	logger.info("Min Banking Relationship in Month === >{}",minBankRelationshipInMonths);
+            	
+            	// CHECK CUSTOMER IS ALREADY OUTSTANDING LOAN WITH SBI BANK
+            //	bankingRelationlRepository. CHECK CUSTOMER IS (UPLOADED STATEMENT WITH SBI BANK) 
             }
             ScoringRequest scoringRequest = new ScoringRequest();
             scoringRequest.setScoringModelId(scoreModelId);
@@ -8204,6 +8369,7 @@ public class ScoringServiceImpl implements ScoringService {
           // ENDS HERE CONCESSION BASED ON RATE OF INTEREST:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
             ///////// End  Getting Old Request ///////
                 scoreParameterRetailRequest =  new ScoreParameterRetailRequest();
+                scoreParameterRetailRequest.setPersonalBankingRelationShip(personalBankingId);
                 scoreParameterRetailRequest.setExShowRoomPrice(primaryAutoLoanDetail.getVehicleExShowRoomPrice() != null ? primaryAutoLoanDetail.getVehicleExShowRoomPrice().doubleValue() : 0.0d);
                 scoreParameterRetailRequest.setOnRoadPrice(primaryAutoLoanDetail.getVehicleOnRoadPrice() != null ? primaryAutoLoanDetail.getVehicleOnRoadPrice().doubleValue() : 0.0d);
                 scoreParameterRetailRequest.setAgreedIDV(primaryAutoLoanDetail.getVehicleAgreedPurchasePrice() != null ? primaryAutoLoanDetail.getVehicleAgreedPurchasePrice().doubleValue() : 0.0d);
@@ -8682,10 +8848,20 @@ public class ScoringServiceImpl implements ScoringService {
             				}
             				break;
             			case ScoreParameter.Retail.AutoLoan.LOAN_PURPOSE:
-            					scoreParameterRetailRequest.setLoanPurpose(retailApplicantDetail.getLoanPurposeQueType());
+            				scoreParameterRetailRequest.setLoanPurpose(retailApplicantDetail.getLoanPurpose());
+            				if(AutoLoanPurposeType.SECOND_HAND_FOUR_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose()) || AutoLoanPurposeType.SECOND_HAND_TWO_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose())) {
+            					if(AutoLoanPurposeType.SECOND_HAND_FOUR_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose())) {
+                					scoreParameterRetailRequest.setLoanPurposeQueType(8);// Static as we do not asking to borrower for Detailed Purpose
+            					}else {
+                					scoreParameterRetailRequest.setLoanPurposeQueType(9);
+            					}
+            					scoreParameterRetailRequest.setIsLoanPurpose_p(true);
+            					scoreParameterRetailRequest.setLoanPurposeQueValue(retailApplicantDetail.getLoanPurposeQueValue());
+            				}else {
             					scoreParameterRetailRequest.setIsLoanPurpose_p(retailApplicantDetail.getLoanPurposeQueType() != null);
             					scoreParameterRetailRequest.setLoanPurposeQueType(retailApplicantDetail.getLoanPurposeQueType());
-            					scoreParameterRetailRequest.setLoanPurposeQueValue(retailApplicantDetail.getLoanPurposeQueValue());
+            					scoreParameterRetailRequest.setLoanPurposeQueValue(retailApplicantDetail.getLoanPurposeQueValue());            					
+            				}
             				break;
             			case ScoreParameter.Retail.AutoLoan.INCOME_PROOF:
 	            				if(isItrMannualFilled == null || !isItrMannualFilled) {
@@ -8741,13 +8917,32 @@ public class ScoringServiceImpl implements ScoringService {
                             }
             				break;
             			case ScoreParameter.Retail.AutoLoan.CAR_SEGMENT:
-            				scoreParameterRetailRequest.setCarSegment(primaryAutoLoanDetail.getVehicleSegment());
-            				scoreParameterRetailRequest.setIsCarSegment_p(primaryAutoLoanDetail.getVehicleSegment() != null);
+            				if(AutoLoanPurposeType.NEW_FOUR_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose()) || AutoLoanPurposeType.NEW_TWO_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose())) {
+            					scoreParameterRetailRequest.setCarSegment(retailApplicantDetail.getLoanPurposeQueType());
+                				scoreParameterRetailRequest.setIsCarSegment_p(retailApplicantDetail.getLoanPurposeQueType() != null);            					
+            				}else {
+            					if(AutoLoanPurposeType.SECOND_HAND_FOUR_WHEELER_LOAN.getId().equals(retailApplicantDetail.getLoanPurpose())) {
+            						scoreParameterRetailRequest.setCarSegment(9); //Static Because No Enum is Avaiable
+            					}else {
+            						scoreParameterRetailRequest.setCarSegment(8); //Static Because No Enum is Avaiable           						
+            					}
+                				scoreParameterRetailRequest.setIsCarSegment_p(true);
+            				}
             				break;
             			case ScoreParameter.Retail.AutoLoan.TAKE_HOME_PAY:
             				scoreParameterRetailRequest.setTakeHomePay(scoringRequestLoans.getNetTakeHomepay());
             				scoreParameterRetailRequest.setIsTakeHomePay_p(scoringRequestLoans.getNetTakeHomepay() != null);
             				break;
+            			case ScoreParameter.Retail.AutoLoan.PERSONAL_RELATIONSHIP_WITH_BANK: //
+            				scoreParameterRetailRequest.setIsPersonalRelationShipWithBank_p(true);
+            				break;	
+            			case ScoreParameter.Retail.AutoLoan.IS_ADHAAR_CARD:
+            				scoreParameterRetailRequest.setIsAdhaarCard_p(true);
+            				scoreParameterRetailRequest.setAdhaarCardValue(YesNo.NO.getId()); // Default No
+            				if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getIsUserHaveAadhar()) && retailApplicantDetail.getIsUserHaveAadhar()) {
+            					scoreParameterRetailRequest.setAdhaarCardValue(YesNo.YES.getId()); // Default Yes	
+            				}
+            				break;	
                             default:
                                 break;
 

@@ -11,6 +11,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.service.loans.model.teaser.primaryview.CommonRequest;
 import com.capitaworld.service.loans.service.common.NotificationService;
 import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
@@ -197,6 +198,19 @@ public class NotificationServiceImpl implements NotificationService{
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		CommonDocumentUtils.endHook(logger, SEND_VIEW_NOTIFICATION);
+	}
+
+	@Override
+	public CommonRequest extractArrayToCommonRequest(Object[] obj) throws Exception {
+		CommonRequest request=new CommonRequest();
+		request.setApplicationId(obj[0] != null ?Long.valueOf(String.valueOf(obj[0])):null);
+		request.setUserId(obj[1] != null ? Long.valueOf(String.valueOf(obj[1])):null);
+		request.setProposalId(obj[2] != null?Long.valueOf(String.valueOf(obj[2])):null);
+		request.setFpProductId(obj[3] != null ? Long.valueOf(String.valueOf(obj[3])):null);
+		request.setLoanTypeId(obj[4]!= null?Integer.valueOf(String.valueOf(obj[4])):null);
+		request.setEmailId(obj[5] != null ? String.valueOf(obj[5]):null);
+		request.setMobile(obj[6] != null ? String.valueOf(obj[6]):null);
+		return request;
 	} 
 
 }

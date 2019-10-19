@@ -273,6 +273,7 @@ public class LoansClient {
     private static final String GET_PL_PRIMARY_DETAILS_CAM = "/cam/pl/getPlPrimaryDataInByteArray";
     private static final String GET_HL_PRIMARY_DETAILS_CAM = "/cam/getHlPrimaryDataInByteArray";
     private static final String GET_AL_PRIMARY_DETAILS_CAM = "/cam/getALPrimaryDataInByteArray";
+    private static final String GET_APPLICATION_FORM_REPORT = "/cam/getApplicationForm";
 
     private static final String REQ_AUTH = "req_auth";
     private static final String GET_LOAN_APPLICATION_BY_PROPOSAL_ID="/loan_application/getLoanApplicationById";
@@ -2784,6 +2785,23 @@ public class LoansClient {
 		}
 	}
 	
+	/**
+	 * Client for Application Form report data uses in gateway
+	 * */
+	public byte[] getApplicationFormReport(Long applicationId,Long fpProductId, Long proposalId , Long loanTypeId) {
+		String url = loansBaseUrl.concat(GET_APPLICATION_FORM_REPORT + "/" + applicationId + "/" +fpProductId + "/" +proposalId + "/" +loanTypeId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set(REQ_AUTH, "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, byte[].class).getBody();
+		} catch (Exception e) {
+			logger.error("Exception in getApplicationForm : {}",e);
+		}
+		return null;
+	}
+	
 	public LoansResponse getCorporateApplicantByProposalId(Long proposalId) throws LoansException {
 		String url = loansBaseUrl.concat(GET_CORPORATE_BY_PROPOSAL_ID).concat("/" + proposalId);
 		try {
@@ -2811,8 +2829,8 @@ public class LoansClient {
 			throw new LoansException(e.getCause().getMessage());
 		}
 	}
-	public LoansResponse getMultipleBankDayDiffrenceForInprinciple() throws LoansException {
-		String url = loansBaseUrl.concat(GET_DAY_DIFFRENCE_FOR_MULTIPLEBANNK);
+	public LoansResponse getMultipleBankDayDiffrenceForInprinciple(Integer loanType) throws LoansException {
+		String url = loansBaseUrl.concat(GET_DAY_DIFFRENCE_FOR_MULTIPLEBANNK).concat("/")+loanType;
 		try {
 			logger.info("Enter in GET_DAY_DIFFRENCE_FOR_MULTIPLEBANNK ---------->{}" , url);
 			HttpHeaders headers = new HttpHeaders();
@@ -2989,5 +3007,4 @@ public class LoansClient {
 		}
 	}
 }
-
 

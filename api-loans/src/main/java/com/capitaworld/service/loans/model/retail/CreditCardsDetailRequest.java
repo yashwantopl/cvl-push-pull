@@ -43,6 +43,7 @@ public class CreditCardsDetailRequest implements Serializable {
 	private Boolean isManuallyAdded;
 	
 	private Long coApplicantId;
+	private String dpdDetails;
 
 	public Long getId() {
 		return id;
@@ -155,4 +156,13 @@ public class CreditCardsDetailRequest implements Serializable {
 	public void setCoApplicantId(Long coApplicantId) {
 		this.coApplicantId = coApplicantId;
 	}
+
+	public String getDpdDetails() {
+		return dpdDetails;
+	}
+
+	public void setDpdDetails(String dpdDetails) {
+		this.dpdDetails = dpdDetails;
+	}
+
 }

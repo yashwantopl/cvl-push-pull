@@ -65,6 +65,31 @@ public class PrimaryAutoLoanDetail extends LoanApplicationMaster implements Seri
 	
 	@Column(name="is_check_off_not_change_sal_acc")
 	private Boolean isCheckOffNotChangeSalAcc;
+
+	@Column(name="manufacturer_id")
+	private Long manufacturerId;
+
+	@Column(name="asset_model_id")
+	private Long assetModelId;
+
+	@Column(name="asset_make")
+	private Integer assetMake;
+
+	@Column(name="supplier_state_id")
+	private Long supplierStateId;
+
+	@Column(name="supplier_city_id")
+	private Long supplierCityId;
+
+	@Column(name="supplier_id")
+	private Long supplierId;
+
+	@Column(name="other_suplier_name")
+	private String otherSuplierName;
+	@Column(name="other_asset_model_name")
+	private String otherAssetModelName;
+	@Column(name="other_manufacturer_name")
+	private String otherManufacturerName;
 	
 	
 	public PrimaryAutoLoanDetail() {
@@ -207,5 +232,76 @@ public class PrimaryAutoLoanDetail extends LoanApplicationMaster implements Seri
 	public void setApplicationId(LoanApplicationMaster applicationId) {
 		this.applicationId = applicationId;
 	}
-	
+
+	public Long getManufacturerId() {
+		return manufacturerId;
+	}
+
+	public void setManufacturerId(Long manufacturerId) {
+		this.manufacturerId = manufacturerId;
+	}
+
+	public Long getAssetModelId() {
+		return assetModelId;
+	}
+
+	public void setAssetModelId(Long assetModelId) {
+		this.assetModelId = assetModelId;
+	}
+
+	public Integer getAssetMake() {
+		return assetMake;
+	}
+
+	public void setAssetMake(Integer assetMake) {
+		this.assetMake = assetMake;
+	}
+
+	public Long getSupplierStateId() {
+		return supplierStateId;
+	}
+
+	public void setSupplierStateId(Long supplierStateId) {
+		this.supplierStateId = supplierStateId;
+	}
+
+	public Long getSupplierCityId() {
+		return supplierCityId;
+	}
+
+	public void setSupplierCityId(Long supplierCityId) {
+		this.supplierCityId = supplierCityId;
+	}
+
+	public Long getSupplierId() {
+		return supplierId;
+	}
+
+	public void setSupplierId(Long supplierId) {
+		this.supplierId = supplierId;
+	}
+
+	public String getOtherSuplierName() {
+		return otherSuplierName;
+	}
+
+	public void setOtherSuplierName(String otherSuplierName) {
+		this.otherSuplierName = otherSuplierName;
+	}
+
+	public String getOtherAssetModelName() {
+		return otherAssetModelName;
+	}
+
+	public void setOtherAssetModelName(String otherAssetModelName) {
+		this.otherAssetModelName = otherAssetModelName;
+	}
+
+	public String getOtherManufacturerName() {
+		return otherManufacturerName;
+	}
+
+	public void setOtherManufacturerName(String otherManufacturerName) {
+		this.otherManufacturerName = otherManufacturerName;
+	}
 }

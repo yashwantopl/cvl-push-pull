@@ -136,6 +136,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                     applicantDetail.setAnnualIncomeOfSpouse(plRetailApplicantRequest.getAnnualIncomeOfSpouse());
                     applicantDetail.setNationality(plRetailApplicantRequest.getNationality());
                     applicantDetail.setNetworth(plRetailApplicantRequest.getNetworth());
+                    applicantDetail.setIsUserHaveAadhar(plRetailApplicantRequest.getIsUserHaveAadhar());
                     applicantDetail.setIsBasicInfoFilled(plRetailApplicantRequest.getIsBasicInfoFilled());
                 } else if(plRetailApplicantRequest.getType() != null && plRetailApplicantRequest.getType() == CommonUtils.RetailOneformType.CONTACT_INFO) {
                 	applicantDetail.setIsContactInfoFilled(plRetailApplicantRequest.getIsContactInfoFilled());
@@ -757,28 +758,28 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             }
 
             BeanUtils.copyProperties(plRetailApplicantRequest, applicantDetail, CommonUtils.IgnorableCopy.getPlRetailProfile());
+//
+//            List<BankingRelation> bankingRelations = new ArrayList<>();
+//            BankingRelation bankingRelation = null;
 
-            List<BankingRelation> bankingRelations = new ArrayList<>();
-            BankingRelation bankingRelation = null;
-
-            if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest) && !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBankingRelationshipList()))
-            {
-                for(BankRelationshipRequest bankRelationshipRequest : plRetailApplicantRequest.getBankingRelationshipList()) {
-                    bankingRelation = new BankingRelation();
-                    BeanUtils.copyProperties(bankRelationshipRequest, bankingRelation);
-                    bankingRelation.setApplicationId(plRetailApplicantRequest.getApplicationId());
-                    if(bankRelationshipRequest.getId() == null) {
-                        bankingRelation.setCreatedBy(userId);
-                        bankingRelation.setCreatedDate(new Date());
-                        bankingRelation.setIsActive(true);
-                    }
-                    bankingRelation.setModifiedBy(userId);
-                    bankingRelation.setModifiedDate(new Date());
-                    bankingRelations.add(bankingRelation);
-                }
-            }
-
-            bankingRelationlRepository.save(bankingRelations);
+//            if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest) && !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBankingRelationshipList()))
+//            {
+//                for(BankRelationshipRequest bankRelationshipRequest : plRetailApplicantRequest.getBankingRelationshipList()) {
+//                    bankingRelation = new BankingRelation();
+//                    BeanUtils.copyProperties(bankRelationshipRequest, bankingRelation);
+//                    bankingRelation.setApplicationId(plRetailApplicantRequest.getApplicationId());
+//                    if(bankRelationshipRequest.getId() == null) {
+//                        bankingRelation.setCreatedBy(userId);
+//                        bankingRelation.setCreatedDate(new Date());
+//                        bankingRelation.setIsActive(true);
+//                    }
+//                    bankingRelation.setModifiedBy(userId);
+//                    bankingRelation.setModifiedDate(new Date());
+//                    bankingRelations.add(bankingRelation);
+//                }
+//            }
+//
+//            bankingRelationlRepository.save(bankingRelations);
 
             applicantRepository.save(applicantDetail);
 

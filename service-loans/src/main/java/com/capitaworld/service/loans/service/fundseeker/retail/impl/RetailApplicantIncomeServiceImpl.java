@@ -105,12 +105,22 @@ public class RetailApplicantIncomeServiceImpl implements RetailApplicantIncomeSe
 			appIncomeReq.setCapitalGainString(CommonUtils.convertValue(appIncomeDetail.getCapitalGain()));
 			appIncomeReq.setPgbpString(CommonUtils.convertValue(appIncomeDetail.getPgbp()));
 			appIncomeReq.setOtherSourceString(CommonUtils.convertValue(appIncomeDetail.getOtherSource()));
+			appIncomeReq.setNetTotal(CommonUtils.convertValueWithoutDecimal((!CommonUtils.isObjectNullOrEmpty(appIncomeDetail.getSalaryIncome()) ? appIncomeDetail.getSalaryIncome() : 0) + 
+					(!CommonUtils.isObjectNullOrEmpty(appIncomeDetail.getHouseProperty()) ? appIncomeDetail.getHouseProperty() : 0) + 
+					(!CommonUtils.isObjectNullOrEmpty(appIncomeDetail.getCapitalGain()) ? appIncomeDetail.getCapitalGain() : 0) +
+					(!CommonUtils.isObjectNullOrEmpty(appIncomeDetail.getPgbp()) ? appIncomeDetail.getPgbp() : 0) + 
+					(!CommonUtils.isObjectNullOrEmpty(appIncomeDetail.getOtherSource()) ? appIncomeDetail.getOtherSource() : 0)));
 			
 			appIncomeReq.setSalaryIncomeGrossString(CommonUtils.convertValue(appIncomeDetail.getSalaryIncomeGross()));
 			appIncomeReq.setCapitalGainGrossString(CommonUtils.convertValue(appIncomeDetail.getCapitalGainGross()));
 			appIncomeReq.setHousePropertyGrossString(CommonUtils.convertValue(appIncomeDetail.getHousePropertyGross()));
 			appIncomeReq.setOtherSourceGrossString(CommonUtils.convertValue(appIncomeDetail.getOtherSourceGross()));
 			appIncomeReq.setPgbpGrossString(CommonUtils.convertValue(appIncomeDetail.getPgbpGross()));
+			appIncomeReq.setGrossTotal(CommonUtils.convertValueWithoutDecimal((!CommonUtils.isObjectNullOrEmpty(appIncomeDetail.getSalaryIncomeGross()) ? appIncomeDetail.getSalaryIncomeGross() : 0) + 
+					(!CommonUtils.isObjectNullOrEmpty(appIncomeDetail.getHousePropertyGross()) ? appIncomeDetail.getHousePropertyGross() : 0) + 
+					(!CommonUtils.isObjectNullOrEmpty(appIncomeDetail.getCapitalGainGross()) ? appIncomeDetail.getCapitalGainGross() : 0) +
+					(!CommonUtils.isObjectNullOrEmpty(appIncomeDetail.getPgbpGross()) ? appIncomeDetail.getPgbpGross() : 0) + 
+					(!CommonUtils.isObjectNullOrEmpty(appIncomeDetail.getOtherSourceGross()) ? appIncomeDetail.getOtherSourceGross() : 0)));
 			BeanUtils.copyProperties(appIncomeDetail, appIncomeReq);
 			appIncomeReqList.add(appIncomeReq);
 		}
@@ -149,42 +159,51 @@ public class RetailApplicantIncomeServiceImpl implements RetailApplicantIncomeSe
 
 	@Override
 	public List<RetailApplicantIncomeRequest> getAllByProposalId(Long applicationId, Long proposalId) {
-		
-		List<RetailApplicantIncomeDetail> appIncomeDetailList = appIncomeRepository.findByProposalIdAndIsActive(proposalId, true);
-		if(appIncomeDetailList == null || appIncomeDetailList.size() < 1) {
+		List<RetailApplicantIncomeDetail> appIncomeDetailList = null;
+		if(proposalId != null) {
+			appIncomeDetailList = appIncomeRepository.findByProposalIdAndIsActive(proposalId, true);
+		}else {
 			appIncomeDetailList = appIncomeRepository.findByApplicationIdAndIsActive(applicationId, true);
 		}
-		List<RetailApplicantIncomeRequest> appIncomeReqList = new ArrayList<>(appIncomeDetailList.size());
-		RetailApplicantIncomeRequest appIncomeReq = null;
-		for(RetailApplicantIncomeDetail appIncomeDetail : appIncomeDetailList) {
-			appIncomeReq = new RetailApplicantIncomeRequest();
-			//FOR PL CAM
-			appIncomeReq.setSalaryIncomeString(CommonUtils.convertValueWithoutDecimal(appIncomeDetail.getSalaryIncome()));
-			appIncomeReq.setIncomeRatioString(CommonUtils.convertValueWithoutDecimal(appIncomeDetail.getIncomeRatio()));
-			appIncomeReq.setHousePropertyString(CommonUtils.convertValueWithoutDecimal(appIncomeDetail.getHouseProperty()));
-			appIncomeReq.setCapitalGainString(CommonUtils.convertValueWithoutDecimal(appIncomeDetail.getCapitalGain()));
-			appIncomeReq.setPgbpString(CommonUtils.convertValueWithoutDecimal(appIncomeDetail.getPgbp()));
-			appIncomeReq.setOtherSourceString(CommonUtils.convertValueWithoutDecimal(appIncomeDetail.getOtherSource()));
-			appIncomeReq.setNetTotal(CommonUtils.convertValueWithoutDecimal((!CommonUtils.isObjectNullOrEmpty(appIncomeDetail.getSalaryIncome()) ? appIncomeDetail.getSalaryIncome() : 0) + 
-					(!CommonUtils.isObjectNullOrEmpty(appIncomeDetail.getHouseProperty()) ? appIncomeDetail.getHouseProperty() : 0) + 
-					(!CommonUtils.isObjectNullOrEmpty(appIncomeDetail.getCapitalGain()) ? appIncomeDetail.getCapitalGain() : 0) +
-					(!CommonUtils.isObjectNullOrEmpty(appIncomeDetail.getPgbp()) ? appIncomeDetail.getPgbp() : 0) + 
-					(!CommonUtils.isObjectNullOrEmpty(appIncomeDetail.getOtherSource()) ? appIncomeDetail.getOtherSource() : 0)));
-			
-			appIncomeReq.setSalaryIncomeGrossString(CommonUtils.convertValueWithoutDecimal(appIncomeDetail.getSalaryIncomeGross()));
-			appIncomeReq.setCapitalGainGrossString(CommonUtils.convertValueWithoutDecimal(appIncomeDetail.getCapitalGainGross()));
-			appIncomeReq.setHousePropertyGrossString(CommonUtils.convertValueWithoutDecimal(appIncomeDetail.getHousePropertyGross()));
-			appIncomeReq.setOtherSourceGrossString(CommonUtils.convertValueWithoutDecimal(appIncomeDetail.getOtherSourceGross()));
-			appIncomeReq.setPgbpGrossString(CommonUtils.convertValueWithoutDecimal(appIncomeDetail.getPgbpGross()));
-			appIncomeReq.setGrossTotal(CommonUtils.convertValueWithoutDecimal((!CommonUtils.isObjectNullOrEmpty(appIncomeDetail.getSalaryIncomeGross()) ? appIncomeDetail.getSalaryIncomeGross() : 0) + 
-					(!CommonUtils.isObjectNullOrEmpty(appIncomeDetail.getHousePropertyGross()) ? appIncomeDetail.getHousePropertyGross() : 0) + 
-					(!CommonUtils.isObjectNullOrEmpty(appIncomeDetail.getCapitalGainGross()) ? appIncomeDetail.getCapitalGainGross() : 0) +
-					(!CommonUtils.isObjectNullOrEmpty(appIncomeDetail.getPgbpGross()) ? appIncomeDetail.getPgbpGross() : 0) + 
-					(!CommonUtils.isObjectNullOrEmpty(appIncomeDetail.getOtherSourceGross()) ? appIncomeDetail.getOtherSourceGross() : 0)));
-			
-			BeanUtils.copyProperties(appIncomeDetail, appIncomeReq);
-			appIncomeReqList.add(appIncomeReq);
+		
+		/*if(appIncomeDetailList == null || appIncomeDetailList.size() < 1) {
+			appIncomeDetailList = appIncomeRepository.findByApplicationIdAndIsActive(applicationId, true);
+		}*/
+		if(appIncomeDetailList != null && !appIncomeDetailList.isEmpty()) {
+			List<RetailApplicantIncomeRequest> appIncomeReqList = new ArrayList<>(appIncomeDetailList.size());
+			RetailApplicantIncomeRequest appIncomeReq = null;
+			for(RetailApplicantIncomeDetail appIncomeDetail : appIncomeDetailList) {
+				appIncomeReq = new RetailApplicantIncomeRequest();
+				//FOR PL CAM
+				appIncomeReq.setSalaryIncomeString(CommonUtils.convertValueWithoutDecimal(appIncomeDetail.getSalaryIncome()));
+				appIncomeReq.setIncomeRatioString(CommonUtils.convertValueWithoutDecimal(appIncomeDetail.getIncomeRatio()));
+				appIncomeReq.setHousePropertyString(CommonUtils.convertValueWithoutDecimal(appIncomeDetail.getHouseProperty()));
+				appIncomeReq.setCapitalGainString(CommonUtils.convertValueWithoutDecimal(appIncomeDetail.getCapitalGain()));
+				appIncomeReq.setPgbpString(CommonUtils.convertValueWithoutDecimal(appIncomeDetail.getPgbp()));
+				appIncomeReq.setOtherSourceString(CommonUtils.convertValueWithoutDecimal(appIncomeDetail.getOtherSource()));
+				appIncomeReq.setNetTotal(CommonUtils.convertValueWithoutDecimal((!CommonUtils.isObjectNullOrEmpty(appIncomeDetail.getSalaryIncome()) ? appIncomeDetail.getSalaryIncome() : 0) + 
+						(!CommonUtils.isObjectNullOrEmpty(appIncomeDetail.getHouseProperty()) ? appIncomeDetail.getHouseProperty() : 0) + 
+						(!CommonUtils.isObjectNullOrEmpty(appIncomeDetail.getCapitalGain()) ? appIncomeDetail.getCapitalGain() : 0) +
+						(!CommonUtils.isObjectNullOrEmpty(appIncomeDetail.getPgbp()) ? appIncomeDetail.getPgbp() : 0) + 
+						(!CommonUtils.isObjectNullOrEmpty(appIncomeDetail.getOtherSource()) ? appIncomeDetail.getOtherSource() : 0)));
+				
+				appIncomeReq.setSalaryIncomeGrossString(CommonUtils.convertValueWithoutDecimal(appIncomeDetail.getSalaryIncomeGross()));
+				appIncomeReq.setCapitalGainGrossString(CommonUtils.convertValueWithoutDecimal(appIncomeDetail.getCapitalGainGross()));
+				appIncomeReq.setHousePropertyGrossString(CommonUtils.convertValueWithoutDecimal(appIncomeDetail.getHousePropertyGross()));
+				appIncomeReq.setOtherSourceGrossString(CommonUtils.convertValueWithoutDecimal(appIncomeDetail.getOtherSourceGross()));
+				appIncomeReq.setPgbpGrossString(CommonUtils.convertValueWithoutDecimal(appIncomeDetail.getPgbpGross()));
+				appIncomeReq.setGrossTotal(CommonUtils.convertValueWithoutDecimal((!CommonUtils.isObjectNullOrEmpty(appIncomeDetail.getSalaryIncomeGross()) ? appIncomeDetail.getSalaryIncomeGross() : 0) + 
+						(!CommonUtils.isObjectNullOrEmpty(appIncomeDetail.getHousePropertyGross()) ? appIncomeDetail.getHousePropertyGross() : 0) + 
+						(!CommonUtils.isObjectNullOrEmpty(appIncomeDetail.getCapitalGainGross()) ? appIncomeDetail.getCapitalGainGross() : 0) +
+						(!CommonUtils.isObjectNullOrEmpty(appIncomeDetail.getPgbpGross()) ? appIncomeDetail.getPgbpGross() : 0) + 
+						(!CommonUtils.isObjectNullOrEmpty(appIncomeDetail.getOtherSourceGross()) ? appIncomeDetail.getOtherSourceGross() : 0)));
+				
+				BeanUtils.copyProperties(appIncomeDetail, appIncomeReq);
+				appIncomeReqList.add(appIncomeReq);
+			}
+			return appIncomeReqList != null && !appIncomeReqList.isEmpty() ? appIncomeReqList : null;
 		}
-		return appIncomeReqList;
+		return null;
 	}
+	
 }

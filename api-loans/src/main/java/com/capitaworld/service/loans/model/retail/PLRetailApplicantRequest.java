@@ -61,7 +61,8 @@ public class PLRetailApplicantRequest implements Serializable {
     private String contactNo;
     private String email;
     private String companyName;
-    private String kid; 
+    private String kid;
+    private Boolean isUserHaveAadhar; 
 
     private List<RetailApplicantIncomeRequest> retailApplicantIncomeRequestList;
     /*
@@ -1042,4 +1043,13 @@ public class PLRetailApplicantRequest implements Serializable {
     public void setIsCibilTermsAgree(Boolean isCibilTermsAgree) {
         this.isCibilTermsAgree = isCibilTermsAgree;
     }
+
+	public Boolean getIsUserHaveAadhar() {
+		return isUserHaveAadhar;
+	}
+
+	public void setIsUserHaveAadhar(Boolean isUserHaveAadhar) {
+		this.isUserHaveAadhar = isUserHaveAadhar;
+	}
+    
 }

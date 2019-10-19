@@ -62,6 +62,8 @@ public class FinancialArrangementsDetailRequest implements Serializable {
 	private Double bureauOrCalculatedEmi;
 	private String entryNo;
 	private Boolean isBureauEmi;
+	
+	private String dpdDetails;
 
 	public Long getId() {
 		return id;
@@ -254,4 +256,16 @@ public class FinancialArrangementsDetailRequest implements Serializable {
 	public void setEntryNo(String entryNo) {
 		this.entryNo = entryNo;
 	}
+
+	public String getDpdDetails() {
+		return dpdDetails;
+	}
+
+	public void setDpdDetails(String dpdDetails) {
+		this.dpdDetails = dpdDetails;
+	}
+
+
+	
+	
 }

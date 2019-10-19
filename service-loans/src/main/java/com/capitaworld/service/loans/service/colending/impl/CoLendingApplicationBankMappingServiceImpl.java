@@ -42,4 +42,15 @@ public class CoLendingApplicationBankMappingServiceImpl implements CoLendingAppl
             return false;
         }
     }
+
+    @Override
+    public CoLendingApplicationBankMappingRequest get(CoLendingApplicationBankMappingRequest coLendingApplicationBankMappingRequest){
+        try {
+            coLendingApplicationBankMappingRequest.setBankOrgIdList(coLendingApplicationBankMappingRepository.findListByApplicationIdAndIsActive(coLendingApplicationBankMappingRequest.getApplicationId(),true));
+            return coLendingApplicationBankMappingRequest;
+        }catch (Exception e){
+            logger.error("Error While getting Bank mapping object {}",e);
+        }
+        return null;
+    }
 }

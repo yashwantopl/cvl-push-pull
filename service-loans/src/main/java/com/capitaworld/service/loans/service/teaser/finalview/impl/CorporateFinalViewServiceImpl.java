@@ -5,6 +5,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -14,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,6 +40,7 @@ import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.MomSales;
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.gst.model.CAMGSTData;
+import com.capitaworld.service.gst.util.DateComparator2;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WcTlParameter;
@@ -87,6 +90,7 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.ExistingProduc
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinanceMeansDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.GuarantorsCorporateDetailService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.MonthlyTurnoverDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.OwnershipDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.PromotorBackgroundDetailsService;
@@ -95,6 +99,7 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.SecurityCorpor
 import com.capitaworld.service.loans.service.fundseeker.corporate.TotalCostOfProjectService;
 import com.capitaworld.service.loans.service.irr.IrrService;
 import com.capitaworld.service.loans.service.teaser.finalview.CorporateFinalViewService;
+import com.capitaworld.service.loans.service.teaser.primaryview.CorporatePrimaryViewService;
 import com.capitaworld.service.loans.service.teaser.primaryview.impl.CorporatePrimaryViewServiceImpl;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
@@ -103,6 +108,7 @@ import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
 import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.mca.client.McaClient;
 import com.capitaworld.service.mca.model.McaResponse;
+import com.capitaworld.service.mca.model.verifyApi.VerifyAPIRequest;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.AbilityRaiseFunds;
 import com.capitaworld.service.oneform.enums.AccountingQuality;
@@ -315,6 +321,15 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 	
 	@Autowired
 	private CIBILClient cibilClient;
+	
+	@Autowired
+	private LoanApplicationService loanApplicationService;
+	
+	@Autowired
+	private CorporatePrimaryViewService primaryCorpService;
+	
+	@Value("${capitaworld.gstdata.enable}")
+	private Boolean gstCompRelFlag;
 
 	DecimalFormat decim = new DecimalFormat("#,###.00");
 
@@ -1724,7 +1739,12 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			String companyId = loanApplicationMaster.getMcaCompanyId();
 			corporateFinalViewResponse.setCompanyId(companyId);
 			logger.info("mca comp id==>>{}" , companyId);
-
+			VerifyAPIRequest verifyReq=new VerifyAPIRequest();
+			verifyReq.setApplicationId(toApplicationId);
+			McaResponse directorData = mcaClient.getVerifyApiData(verifyReq);
+			if(directorData!= null) {
+				corporateFinalViewResponse.setVerifyApiData(directorData.getData());
+			}
 			if (companyId != null) {
 				corporateFinalViewResponse.setMcaNotApplicable(Boolean.FALSE);
 				McaResponse mcaResponse = mcaClient.getCompanyDetailedData(companyId);
@@ -2380,6 +2400,15 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 				logger.error(CommonUtils.EXCEPTION,e);
 			}
 		}
+		
+		if(gstCompRelFlag) {
+			LinkedHashMap<String, Object> gstVsItrVsBsComparision =primaryCorpService.gstVsItrVsBsComparision(toapplicationId, (FinancialInputRequest) corporateFinalViewResponse.getFinancialInputRequest());
+			corporateFinalViewResponse.setBankComparisionData(gstVsItrVsBsComparision);
+				
+			Map<String, Object> gstRelatedPartyDetails = loanApplicationService.getGstRelatedPartyDetails(toapplicationId);
+			corporateFinalViewResponse.setGstRelatedParty(gstRelatedPartyDetails);
+		}
+		
 
 		return corporateFinalViewResponse;
 	}

@@ -131,6 +131,8 @@ public class LoanApplicationRequest implements Serializable {
 
     private Boolean isMcqSkipped;
 
+    private Boolean isNbfcFlow;
+
 
 	public Long getProposalId() {
 		return proposalId;
@@ -666,6 +668,14 @@ public class LoanApplicationRequest implements Serializable {
 		this.proposalMappingId = proposalMappingId;
 	}
 
+	public Boolean getIsNbfcFlow() {
+		return isNbfcFlow;
+	}
+
+	public void setIsNbfcFlow(Boolean isNbfcFlow) {
+		this.isNbfcFlow = isNbfcFlow;
+	}
+
 	@Override
 	public String toString() {
 		return "LoanApplicationRequest [id=" + id + ", proposalMappingId=" + proposalMappingId + ", clientId="
@@ -691,6 +701,7 @@ public class LoanApplicationRequest implements Serializable {
 				+ ", emiForPaymentayment=" + emiForPaymentayment + ", feesForPayment=" + feesForPayment
 				+ ", fpNameForPayment=" + fpNameForPayment + ", proposalId=" + proposalId + ", businessTypeId="
 				+ businessTypeId + ", applicationStatus=" + applicationStatus + ", wcRenewalStatus=" + wcRenewalStatus
+				+ ", isNbfcFlow=" + isNbfcFlow
 				+ "]";
 	}
 	

@@ -18,6 +18,10 @@ public interface NbfcRatioMappingTempRepository extends JpaRepository<NbfcRatioM
     @Query("UPDATE NbfcRatioMappingTemp nb SET nb.isActive=FALSE WHERE nb.fpProductId=:fpProductId")
     public int inActiveTempByFpProductId(@Param("fpProductId")Long fpProductId);
     
+    @Modifying
+    @Query("UPDATE NbfcRatioMappingTemp nb SET nb.isActive=FALSE WHERE nb.ratioId=:ratioId")
+    public int inActiveTempByRatioId(@Param("ratioId")Long ratioId);
+    
     @Query("select nb.ratioId from NbfcRatioMappingTemp nb where nb.fpProductId=:fpProductId and isActive=true")
     public List<Long> getTempIdsByFpProductId(@Param("fpProductId") Long fpProductId);
 }

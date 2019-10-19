@@ -78,6 +78,9 @@ public class CreditCardsDetail implements Serializable {
 	@Column(name = "co_applicant_id")
 	private Long coApplicantId;
 
+	@Column(name = "dpd_details")
+	private String dpdDetails;
+
 	public CreditCardsDetail() {
 		// Do nothing because of X and Y.
 	}
@@ -225,6 +228,12 @@ public class CreditCardsDetail implements Serializable {
 	public void setCoApplicantId(Long coApplicantId) {
 		this.coApplicantId = coApplicantId;
 	}
-	
 
+	public String getDpdDetails() {
+		return dpdDetails;
+	}
+
+	public void setDpdDetails(String dpdDetails) {
+		this.dpdDetails = dpdDetails;
+	}
 }
