@@ -18,6 +18,7 @@ public class CoLendingProposalResponse {
     private String branchState;
     private String amount;
     private String inPrincipleDate;
+    private String msg;
 
     //getter setter
     public String getApplicationCode() {
@@ -122,5 +123,13 @@ public class CoLendingProposalResponse {
 
     public void setFpProductId(Long fpProductId) {
         this.fpProductId = fpProductId;
+    }
+
+    public String getMsg() {
+        return msg;
+    }
+
+    public void setMsg(String msg) {
+        this.msg = msg;
     }
 }
