@@ -475,6 +475,22 @@ public class CommonController {
 			return new ResponseEntity<>(new LoansResponse("Something went wrong !!",HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
+	@RequestMapping(value = "/getTutorialsAuditList", method = RequestMethod.POST,consumes=MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getTutorialsAuditList(@RequestBody TutorialsViewAudits tutorialsViewAudits, HttpServletRequest request) {
+		logger.info("Enter in getTutorialsAuditList");
+		
+		if (CommonUtils.isObjectNullOrEmpty(tutorialsViewAudits.getTutorialId())) {
+			logger.warn("TutorialId is null");
+			return new ResponseEntity<>(new LoansResponse("Bad request",HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		try {
+			return new ResponseEntity<>(new LoansResponse("Successfully get data !!",HttpStatus.OK.value(),applicationService.getTutorialsAuditList(tutorialsViewAudits)), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.warn("Error while getTutorialsAuditList",e);
+			return new ResponseEntity<>(new LoansResponse("Something went wrong !!",HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 
 	@PostMapping(value = "/saveTutorialsAudit")
 	public ResponseEntity<LoansResponse> saveTutorialsAudit(@RequestBody TutorialsViewAudits longLatrequest, HttpServletRequest request) {
