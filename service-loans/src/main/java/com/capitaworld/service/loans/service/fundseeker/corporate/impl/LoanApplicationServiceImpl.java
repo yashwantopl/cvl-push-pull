@@ -8614,4 +8614,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	public String convertValue(Double value) {
 		return !CommonUtils.isObjectNullOrEmpty(value) ? decim.format(value) : "0";
 	}
+
+	@Override
+	public String getTutorialsAuditList(TutorialsViewAudits request) {
+		return  mfiTutorialsViewAuditsRepository.getTutorialAuditList(request.getTutorialId());
+	}
 }
