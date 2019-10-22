@@ -858,6 +858,13 @@ public class CamReportPdfDetailsController {
 				reportRequest.setParams(response);
 				reportRequest.setTemplate("HLAPPLICATIONFORM");
 				reportRequest.setType("HLAPPLICATIONFORM");
+			}else if(loanTypeId == LoanType.AUTO_LOAN.getValue()){
+				logger.info("Fetching Data of Auto Loan by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}" ,applicationId ,productId, proposalId);
+				response = alCamReportService.getDataForApplicationForm(applicationId, productId, proposalId);
+				reportRequest = new ReportRequest();
+				reportRequest.setParams(response);
+				reportRequest.setTemplate("ALAPPLICATIONFORM");
+				reportRequest.setType("ALAPPLICATIONFORM");
 			}
 			
 			if(reportRequest != null && !response.isEmpty()) {

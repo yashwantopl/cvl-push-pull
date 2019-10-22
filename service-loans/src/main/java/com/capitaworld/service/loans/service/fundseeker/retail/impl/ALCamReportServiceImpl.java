@@ -87,6 +87,7 @@ import com.capitaworld.service.loans.service.fundseeker.retail.OtherIncomeDetail
 import com.capitaworld.service.loans.service.fundseeker.retail.PlRetailApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryAutoLoanService;
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantIncomeService;
+import com.capitaworld.service.loans.utils.BanksEnumForReports;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.MatchEngineClient;
@@ -881,7 +882,7 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 		}
 		
 		//PERFIOS API DATA (BANK STATEMENT ANALYSIS)
-		map.put("bankRelatedData" , getBankDetails(applicationId, userId));
+		map.put("bankRelatedData" , getBankRelatedData(applicationId, userId));
 
 		//ELIGIBILITY DATA (ASSESSMENT TO LIMITS)
 		try{
@@ -1860,7 +1861,7 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 		return null;
 	}
 	
-	public Object getBankDetails(Long applicationId , Long userId){
+	public Object getBankRelatedData(Long applicationId , Long userId){
 		ReportRequest reportRequest = new ReportRequest();
 		reportRequest.setApplicationId(applicationId);
 		reportRequest.setUserId(userId);
@@ -1940,7 +1941,7 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 		}
 		
 		//PERFIOS API DATA (BANK STATEMENT ANALYSIS)
-		map.put("bankRelatedData" , getBankDetails(applicationId, userId));
+		map.put("bankRelatedData" , getBankRelatedData(applicationId, userId));
 		
 		return map;
 	}
@@ -2080,23 +2081,83 @@ public class ALCamReportServiceImpl implements ALCamReportService {
         }
                            
         //PERFIOS API DATA (BANK STATEMENT ANALYSIS)
-        ReportRequest reportRequest = new ReportRequest();
-        reportRequest.setApplicationId(applicationId);
-        reportRequest.setUserId(userId);
-        List<Data> datas = new ArrayList<>();
-
+        map.put("bankRelatedData" , getBankRelatedData(applicationId, userId));
+		
+		return map;
+	}
+	
+	@Override
+	public Map<String ,Object> getDataForApplicationForm(Long applicationId, Long productId, Long proposalId){
+		Map<String , Object> map = new HashMap<String, Object>();
+		
+		Long userId = loanApplicationRepository.getUserIdByApplicationId(applicationId);
+		
 		try {
-			AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
-			List<HashMap<String, Object>> listhashMap = (List<HashMap<String, Object>>) analyzerResponse.getData();
-			if (!CommonUtils.isListNullOrEmpty(listhashMap)) {	
-				for (HashMap<String, Object> rec : listhashMap) {
-					Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
-					datas.add(data);
-				}
-				map.put("bankRelatedData" , CommonUtils.printFields(datas, null));
-			}
+			map.putAll(bindDataOfRetailApplicant(applicationId, userId, proposalId));
+		}catch (Exception e) {
+			logger.error("Error/Exception while fetching Data For PL Applicant Request Primary Detail with ApplicationId==>{} ,UserId==>{} and ProposalId==>{}",applicationId, userId, proposalId);
+		}
+		
+		//INCOME DETAILS - NET INCOME
+		try {
+			List<RetailApplicantIncomeRequest> retailApplicantIncomeDetail = retailApplicantIncomeService.getAllByProposalId(applicationId, proposalId);
+			map.put("incomeDetails", !CommonUtils.isListNullOrEmpty(retailApplicantIncomeDetail) ? retailApplicantIncomeDetail : null);
 		} catch (Exception e) {
-			logger.error("Error while getting perfios data : ",e);
+			logger.error("Error while getting income details : ",e);
+		}
+		
+		try {
+			//Fetch All CoApplicant Related Data of Each CoApplicant
+			map.put("retailCoApplicantDetails", bindDataOfRetailCoApplicant(applicationId, proposalId, false));
+		} catch (Exception e) {
+			logger.error("Error while getting profile Details for CoApplicants in ApplicationForm : ",e);
+		}
+		
+		//Fetch FinancialArrangementData For All CoApplicant
+		try {
+			map.put("financialArrangmentsofCoApplicant" ,bindDataOfFinancialArrangementOfCoApplicant(applicationId));
+		}catch (Exception e) {
+			logger.error("Error while getting Financial Arrangement Data for CoApplicants in ApplicationForm : ",e);
+		}
+		
+		//Fetch Perfios Data Of Bank
+		try {
+			map.put("bankRelatedData", getBankRelatedData(applicationId, userId));
+		}catch (Exception e) {
+			logger.error("Error/Exception while getting Bank Related Data of Perfios");
+		}
+		
+		map.put("bankDetails", fetchBankDetails(applicationId, userId, proposalId));
+		Long orgId = null;
+		if(proposalId != null) {
+			orgId = proposalDetailsRepository.getOrgIdByProposalId(proposalId);
+		}else {
+			orgId = ineligibleProposalDetailsRepository.getOrgId(applicationId);
+		}
+		
+		if(orgId != null) {
+			String[] str = BanksEnumForReports.getBankNameAndUrl(orgId);
+			
+			map.put("bankName", str != null && str.length > 0 && str[0] != null ? str[0] : "" );
+			map.put("bankUrl", str != null && str.length > 1 && str[1] != null ? str[1] : null);
+			map.put("bankFullName", str != null && str.length > 2 && str[2] != null ? str[2] : "");
+		}
+		
+		//MATCHES RESPONSE
+		if(proposalId != null) {
+			try {
+				ApplicationProposalMapping applicationProposalMapping = applicationMappingRepository.getByApplicationIdAndProposalId(applicationId, proposalId);
+				MatchRequest matchRequest = new MatchRequest();
+				matchRequest.setApplicationId(applicationId);
+				matchRequest.setProductId(productId);
+				matchRequest.setBusinessTypeId(applicationProposalMapping.getBusinessTypeId());
+				MatchDisplayResponse matchResponse= matchEngineClient.displayMatchesOfRetail(matchRequest);
+				logger.info("matchesResponse ==>{} " , matchResponse);
+				map.put("matchesResponse", !CommonUtils.isListNullOrEmpty(matchResponse.getMatchDisplayObjectList()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectList(),null) : " ");
+			}
+			catch (Exception e) {
+				logger.error("Error while getting matches data in ApplicationForm: ",e);
+			}
 		}
 		
 		return map;
