@@ -119,7 +119,13 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 		try {
 		logger.info("Enter in saveLoanSanctionDetail() ----------------------->  LoanSanctionRequest==> "+ loanSanctionRequest);
 		
-		LoanSanctionDomain loanSanctionDomainOld =loanSanctionRepository.findByAppliationId(loanSanctionRequest.getApplicationId());
+		LoanSanctionDomain loanSanctionDomainOld = null;
+		if(CommonUtils.isObjectNullOrEmpty(loanSanctionRequest.getNbfcFlow())){
+			loanSanctionDomainOld = loanSanctionRepository.findByAppliationId(loanSanctionRequest.getApplicationId());
+		}else{
+			logger.info("NBFC flow....");
+			loanSanctionDomainOld = loanSanctionRepository.findByAppliationIdAndNBFCFlow(loanSanctionRequest.getApplicationId(),loanSanctionRequest.getNbfcFlow());
+		}
 		if(CommonUtils.isObjectNullOrEmpty(loanSanctionDomainOld) ) {
 			loanSanctionDomainOld = new LoanSanctionDomain();
 			BeanUtils.copyProperties(loanSanctionRequest, loanSanctionDomainOld,"id");
@@ -162,6 +168,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			loanSanctionDomainOld.setRoi(loanSanctionRequest.getRoi());
 			loanSanctionDomainOld.setProcessingFee(loanSanctionRequest.getProcessingFee());
 			loanSanctionDomainOld.setRemark(loanSanctionRequest.getRemark());
+			loanSanctionDomainOld.setNbfcFlow(loanSanctionRequest.getNbfcFlow());
 			loanSanctionDomainOld.setModifiedBy(loanSanctionRequest.getActionBy());
 			loanSanctionDomainOld.setModifiedDate(new Date());
 			/*loanSanctionDomainOld.setIsSanctionedFrom(1l);*/
