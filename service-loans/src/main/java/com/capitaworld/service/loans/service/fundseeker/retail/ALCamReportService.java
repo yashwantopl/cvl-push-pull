@@ -10,4 +10,6 @@ public interface ALCamReportService {
 
 	public Map<String ,Object> getIneligibleDataForCam(Long applicationId);
 	
+	public Map<String ,Object> getDataForApplicationForm(Long applicationId, Long productId, Long proposalId);
+	
 }

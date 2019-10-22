@@ -826,7 +826,7 @@ public class CamReportPdfDetailsController {
 		}
 	}
 	
-	@GetMapping(value = {"/getApplicationForm/{applicationId}","/getApplicationForm/{applicationId}/{productMappingId}/{proposalId}","/getApplicationForm/{applicationId}/{productMappingId}/{proposalId}/{loanTypeId}"} , produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = {"/getApplicationForm/{applicationId}/{loanTypeId}","/getApplicationForm/{applicationId}/{productMappingId}/{proposalId}","/getApplicationForm/{applicationId}/{productMappingId}/{proposalId}/{loanTypeId}"} , produces = MediaType.APPLICATION_JSON_VALUE)
 	public byte[] getApplicationFormReport(@PathVariable(value = "applicationId") Long applicationId ,@PathVariable(name = "productMappingId" , required = false) Long productId, 
 			@PathVariable(name = "proposalId" , required = false) Long proposalId ,@PathVariable(name = "loanTypeId" , required = false) Long loanTypeId, HttpServletResponse  httpServletResponse,HttpServletRequest httpReq) {
 		
@@ -858,6 +858,13 @@ public class CamReportPdfDetailsController {
 				reportRequest.setParams(response);
 				reportRequest.setTemplate("HLAPPLICATIONFORM");
 				reportRequest.setType("HLAPPLICATIONFORM");
+			}else if(loanTypeId == LoanType.AUTO_LOAN.getValue()){
+				logger.info("Fetching Data of Auto Loan by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}" ,applicationId ,productId, proposalId);
+				response = alCamReportService.getDataForApplicationForm(applicationId, productId, proposalId);
+				reportRequest = new ReportRequest();
+				reportRequest.setParams(response);
+				reportRequest.setTemplate("ALAPPLICATIONFORM");
+				reportRequest.setType("ALAPPLICATIONFORM");
 			}
 			
 			if(reportRequest != null && !response.isEmpty()) {

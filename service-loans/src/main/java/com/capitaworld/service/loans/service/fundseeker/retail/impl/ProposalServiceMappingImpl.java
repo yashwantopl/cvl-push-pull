@@ -1521,27 +1521,31 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			Boolean isButtonDisplay=true;
 			String messageOfButton=null;
 
-			if((!CommonUtils.isObjectNullOrEmpty(proposalDetails)) && (!CommonUtils.isObjectNullOrEmpty(proposalDetails.getNbfcFlow())) && proposalDetails.getNbfcFlow() == 2) {
-				ProposalDetails proposalSanctionDisbusedByNbfc = null;
-				String msg = "";
+			if((!CommonUtils.isObjectNullOrEmpty(proposalDetails)) && (!CommonUtils.isObjectNullOrEmpty(proposalDetails.getNbfcFlow()))) {
 
-				proposalSanctionDisbusedByNbfc = proposalDetailRepository.getSanctionProposalByApplicationNBFCFlow(proposalMappingRequest.getApplicationId());
+				ProposalDetails proposalDetail = proposalDetailRepository.getProposalByProposalId(proposalMappingRequest.getId());
+				if (proposalDetail.getNbfcFlow() == 2) {
 
-				if(!CommonUtils.isObjectNullOrEmpty(proposalSanctionDisbusedByNbfc)){
-					if(proposalSanctionDisbusedByNbfc.getProposalStatusId().getId() == CommonUtils.ApplicationStatus.ASSIGNED){
-						msg = "Sanction pending from NBFC";
-						isButtonDisplay=false;
-					}else if(proposalSanctionDisbusedByNbfc.getProposalStatusId().getId() == CommonUtils.ApplicationStatus.APPROVED){
-						msg = "Disbursement pending from NBFC";
-						isButtonDisplay=false;
+					ProposalDetails proposalSanctionDisbusedByNbfc = null;
+					String msg = "";
+
+					proposalSanctionDisbusedByNbfc = proposalDetailRepository.getSanctionProposalByApplicationNBFCFlow(proposalMappingRequest.getApplicationId());
+
+					if (!CommonUtils.isObjectNullOrEmpty(proposalSanctionDisbusedByNbfc)) {
+						if (proposalSanctionDisbusedByNbfc.getProposalStatusId().getId() == CommonUtils.ApplicationStatus.ASSIGNED) {
+							msg = "Sanction pending from NBFC";
+							isButtonDisplay = false;
+							messageOfButton = msg;
+							proposalMappingRequest.setMessageOfButton(messageOfButton);
+							proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+						} else if (proposalSanctionDisbusedByNbfc.getProposalStatusId().getId() == CommonUtils.ApplicationStatus.APPROVED) {
+							msg = "Disbursement pending from NBFC";
+							isButtonDisplay = false;
+							messageOfButton = msg;
+							proposalMappingRequest.setMessageOfButton(messageOfButton);
+							proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+						}
 					}
-				}
-
-				if(!CommonUtils.isObjectNullOrEmpty(proposalSanctionDisbusedByNbfc)){
-					isButtonDisplay=false;
-					messageOfButton=msg;
-					proposalMappingRequest.setMessageOfButton(messageOfButton);
-					proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
 				}
 			}
 

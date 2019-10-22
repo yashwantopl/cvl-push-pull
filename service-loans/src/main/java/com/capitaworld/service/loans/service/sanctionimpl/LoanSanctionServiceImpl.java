@@ -119,7 +119,13 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 		try {
 		logger.info("Enter in saveLoanSanctionDetail() ----------------------->  LoanSanctionRequest==> "+ loanSanctionRequest);
 		
-		LoanSanctionDomain loanSanctionDomainOld =loanSanctionRepository.findByAppliationId(loanSanctionRequest.getApplicationId());
+		LoanSanctionDomain loanSanctionDomainOld = null;
+		if(CommonUtils.isObjectNullOrEmpty(loanSanctionRequest.getNbfcFlow())){
+			loanSanctionDomainOld = loanSanctionRepository.findByAppliationId(loanSanctionRequest.getApplicationId());
+		}else{
+			logger.info("NBFC flow....");
+			loanSanctionDomainOld = loanSanctionRepository.findByAppliationIdAndNBFCFlow(loanSanctionRequest.getApplicationId(),loanSanctionRequest.getNbfcFlow());
+		}
 		if(CommonUtils.isObjectNullOrEmpty(loanSanctionDomainOld) ) {
 			loanSanctionDomainOld = new LoanSanctionDomain();
 			BeanUtils.copyProperties(loanSanctionRequest, loanSanctionDomainOld,"id");
@@ -162,6 +168,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			loanSanctionDomainOld.setRoi(loanSanctionRequest.getRoi());
 			loanSanctionDomainOld.setProcessingFee(loanSanctionRequest.getProcessingFee());
 			loanSanctionDomainOld.setRemark(loanSanctionRequest.getRemark());
+			loanSanctionDomainOld.setNbfcFlow(loanSanctionRequest.getNbfcFlow());
 			loanSanctionDomainOld.setModifiedBy(loanSanctionRequest.getActionBy());
 			loanSanctionDomainOld.setModifiedDate(new Date());
 			/*loanSanctionDomainOld.setIsSanctionedFrom(1l);*/
@@ -230,7 +237,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 		//check multibank condition if list is greater than 1
 		if(proposalDetailByApplicationId != null && proposalDetailByApplicationId.size() > 1){
 			
-			String[] to = null;
+			String[] to = new String[] {};
 			String toUserId = null;
 			List<String> ccList = new ArrayList<String>();
 			String subject = "Intimation - Another Bank has Sanctioned the Proposal";
@@ -290,9 +297,9 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 					result = sendEmail(to ,toUserId != null ? toUserId : "123",parameters, NotificationAlias.EMAIL_SANCTION_CHECKER_MULTIPLE_BANK,subject ,cc);
 					if(result) {
 						isSent = true;
-						logger.info("Email send when When Sanction In MultiBank-----With To==>{} And CC==>{} and ApplicationId==>{}" , Arrays.asList(to) ,Arrays.asList(cc) ,applicationId);
+						logger.info("Email send when When Sanction In MultiBank-----With To==>{} And CC==>{} and ApplicationId==>{}" , to != null?Arrays.asList(to):null,cc != null?Arrays.asList(cc):null ,applicationId);
 					}else{
-						logger.error("Error/Exception while sending Mail When Sanction In MultiBank to==>{}  with applicationId==>{}",Arrays.asList(to) ,applicationId);
+						logger.error("Error/Exception while sending Mail When Sanction In MultiBank to==>{}  with applicationId==>{}",to != null?Arrays.asList(to):null,applicationId);
 					}
 				}
 			}
@@ -340,7 +347,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			logger.error("Exception",e);
 			isSent = false;
 		}
-		logger.info("outside email for {}",Arrays.asList(toNo));
+		logger.info("outside email for {}",toNo != null?Arrays.asList(toNo):null);
 		return isSent;
 	}
 

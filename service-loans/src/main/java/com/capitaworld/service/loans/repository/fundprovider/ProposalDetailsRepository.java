@@ -128,6 +128,9 @@ public interface ProposalDetailsRepository extends JpaRepository<ProposalDetails
     @Query(value = "SELECT * FROM proposal_details as  pd WHERE pd.application_id =:applicationId and pd.proposal_status_id In(5,11,13) ORDER BY pd.modified_date desc LIMIT 1",nativeQuery = true)
     public ProposalDetails getProposalId(@Param("applicationId") Long applicationId);
 
+    @Query(value = "SELECT * FROM proposal_details as  pd WHERE pd.id =:proposalId ORDER BY pd.modified_date desc LIMIT 1",nativeQuery = true)
+    public ProposalDetails getProposalByProposalId(@Param("proposalId") Long proposalId);
+
     @Query("SELECT COUNT(p.applicationId) FROM ProposalDetails p WHERE p.applicationId=:applicationId")
     public Integer getCountOfProposalDetailsByApplicationId(@Param("applicationId") Long applicationId);
 
@@ -193,7 +196,7 @@ public interface ProposalDetailsRepository extends JpaRepository<ProposalDetails
 
     // Proposal List for BANK (sanction, disbursed by NBFC)
     @Query(value = "SELECT p.id FROM proposal_details p WHERE p.proposal_status_id <:proposalStatus AND p.user_org_id=:userOrgId AND p.nbfc_flow=:nbfcFlow_1 AND p.is_active=TRUE AND p.branch_id=:branchId AND p.application_id IN (SELECT pd.application_id FROM proposal_details pd WHERE pd.proposal_status_id IN (:proposalStatus) AND pd.is_active=TRUE AND pd.nbfc_flow=:nbfcFlow_2) limit :pageIndex,:pageSize",nativeQuery = true)
-    public List<BigInteger> getFPProposalListByStatusIdAndUserOrgIdNBFCForBankPageable(@Param("proposalStatus") List<Long> proposalStatus, @Param("userOrgId") Long userOrgId, @Param("nbfcFlow_1") Integer nbfcFlow_1, @Param("branchId") Long branchId, @Param("nbfcFlow_2") Integer nbfcFlow_2,@Param("pageIndex") int pageIndex, @Param("pageSize") int pageSize);
+    public List<BigInteger> getFPProposalListByStatusIdAndUserOrgIdNBFCForBankPageable(@Param("proposalStatus") Long proposalStatus, @Param("userOrgId") Long userOrgId, @Param("nbfcFlow_1") Integer nbfcFlow_1, @Param("branchId") Long branchId, @Param("nbfcFlow_2") Integer nbfcFlow_2,@Param("pageIndex") int pageIndex, @Param("pageSize") int pageSize);
 
     // Proposal List for BANK (sanction, disbursed by Both)
     @Query(value = "SELECT p.id FROM proposal_details p WHERE p.proposal_status_id IN (:proposalStatus) AND p.user_org_id=:userOrgId AND p.nbfc_flow=:nbfcFlow_1 AND p.is_active=TRUE AND p.branch_id=:branchId AND p.application_id IN (SELECT pd.application_id FROM proposal_details pd WHERE pd.proposal_status_id IN (:proposalStatus) AND pd.is_active=TRUE AND pd.nbfc_flow=:nbfcFlow_2) LIMIT :pageIndex,:pageSize",nativeQuery = true)
@@ -241,6 +244,23 @@ public interface ProposalDetailsRepository extends JpaRepository<ProposalDetails
 
     @Query(value = "SELECT * FROM proposal_details pd WHERE application_id =:applicationId and pd.nbfc_flow = 1 ORDER BY pd.modified_date desc LIMIT 1",nativeQuery = true)
     public ProposalDetails getSanctionProposalByApplicationNBFCFlow(@Param("applicationId") Long applicationId);
+
+    // Count for checker maker (HOLD REJECT proposal)
+    @Query(value = "SELECT p.id FROM proposal_details p WHERE p.is_active=TRUE and p.user_org_id=:userOrgId and p.branch_id=:branchId and nbfc_flow=:nbfcFlow_1 and p.application_id in (SELECT pd.application_id FROM proposal_details pd WHERE pd.proposal_status_id IN (:proposalStatus) and pd.is_active=TRUE and (pd.nbfc_flow=:nbfcFlow_2 OR pd.nbfc_flow=:nbfcFlow_1))",nativeQuery = true)
+    public List<BigInteger> getFPProposalCountByStatusIdAndNBFCFlowType(@Param("proposalStatus") List<Long> proposalStatus,@Param("userOrgId") Long userOrgId, @Param("branchId") Long branchId,@Param("nbfcFlow_1") Integer nbfcFlow_1,  @Param("nbfcFlow_2") Integer nbfcFlow_2);
+
+    // Proposal List for checker maker (HOLD REJECTED)
+    @Query(value = "SELECT p.id FROM proposal_details p WHERE p.is_active=TRUE and p.user_org_id=:userOrgId and p.branch_id=:branchId and nbfc_flow=:nbfcFlow_1 and p.application_id in (SELECT pd.application_id FROM proposal_details pd WHERE pd.proposal_status_id IN (:proposalStatus) and pd.is_active=TRUE and (pd.nbfc_flow=:nbfcFlow_2 OR pd.nbfc_flow=:nbfcFlow_1)) LIMIT :pageIndex,:pageSize",nativeQuery = true)
+    public List<BigInteger> getFPProposalPageableByStatusIdAndNBFCFlowType(@Param("proposalStatus") List<Long> proposalStatus,@Param("userOrgId") Long userOrgId, @Param("branchId") Long branchId, @Param("nbfcFlow_1") Integer nbfcFlow_1,  @Param("nbfcFlow_2") Integer nbfcFlow_2,@Param("pageIndex") int pageIndex, @Param("pageSize") int pageSize);
+
+    // Count for ho (HOLD REJECT proposal)
+    @Query(value = "SELECT p.id FROM proposal_details p WHERE p.is_active=TRUE and p.user_org_id=:userOrgId and nbfc_flow=:nbfcFlow_1 and p.application_id in (SELECT pd.application_id FROM proposal_details pd WHERE pd.proposal_status_id IN (:proposalStatus) and pd.is_active=TRUE and (pd.nbfc_flow=:nbfcFlow_2 OR pd.nbfc_flow=:nbfcFlow_1))",nativeQuery = true)
+    public List<BigInteger> getFPProposalCountByStatusIdAndNBFCFlowType(@Param("proposalStatus") List<Long> proposalStatus,@Param("userOrgId") Long userOrgId, @Param("nbfcFlow_1") Integer nbfcFlow_1,  @Param("nbfcFlow_2") Integer nbfcFlow_2);
+
+    // Proposal List ho (HOLD REJECTED)
+    @Query(value = "SELECT p.id FROM proposal_details p WHERE p.is_active=TRUE and p.user_org_id=:userOrgId and nbfc_flow=:nbfcFlow_1 and p.application_id in (SELECT pd.application_id FROM proposal_details pd WHERE pd.proposal_status_id IN (:proposalStatus) and pd.is_active=TRUE and (pd.nbfc_flow=:nbfcFlow_2 OR pd.nbfc_flow=:nbfcFlow_1)) LIMIT :pageIndex,:pageSize",nativeQuery = true)
+    public List<BigInteger> getFPProposalPageableByStatusIdAndNBFCFlowType(@Param("proposalStatus") List<Long> proposalStatus,@Param("userOrgId") Long userOrgId,@Param("nbfcFlow_1") Integer nbfcFlow_1,  @Param("nbfcFlow_2") Integer nbfcFlow_2,@Param("pageIndex") int pageIndex, @Param("pageSize") int pageSize);
+
 }
 
 
