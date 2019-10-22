@@ -884,7 +884,7 @@ public class CamReportPdfDetailsController {
 	//only to view cam data of All types
 	@GetMapping(value = {"/getCamData/{applicationId}/{productMappingId}/{proposalId}","/getCamData/{applicationId}/{productMappingId}/{proposalId}/{loanType}","/getCamData/{applicationId}/{productMappingId}/{proposalId}/{loanType}/{camType}"}, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getCamDataByProposalId(@PathVariable(value = "proposalId") Long proposalId, @PathVariable(value = "applicationId") Long applicationId, @PathVariable(value = "productMappingId") Long productId,
-			@PathVariable(name= "loanType" , required = false) Integer loanType, @PathVariable(name= "camType" , required = false) Boolean camType, HttpServletRequest request) {
+			@PathVariable(name= "loanType" , required = false) Integer loanType, @PathVariable(name= "camType" , required = false) String camType, HttpServletRequest request) {
 		
 		if (CommonUtils.isObjectNullOrEmpty(applicationId) || CommonUtils.isObjectNullOrEmpty(productId) || CommonUtils.isObjectNullOrEmpty(proposalId)) {
 			logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, applicationId + productId + proposalId);
@@ -894,8 +894,10 @@ public class CamReportPdfDetailsController {
 			logger.info("In getCamData Method With ApplicationId==>{} ProductMappingId==>{} ProposalId==>{} LoanType==>{} camType==>{}" , 
 					applicationId ,productId ,proposalId ,loanType ,camType);
 			
-			if(camType == null) {
-				camType = false;
+			Boolean isFinalView = false;
+			
+			if("true".equals(camType)) {
+				isFinalView = true;
 			}
 			
 			if(loanType == null) {
@@ -903,21 +905,33 @@ public class CamReportPdfDetailsController {
 			}
 			
 			Map<String, Object> response = new HashMap<String, Object>();
-				
-			if(loanType == LoanType.PERSONAL_LOAN.getValue()) {
-				logger.info("Fetching Data of Personal Loan by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}" ,applicationId ,productId, proposalId);
-				response = plCamService.getCamReportDetailsByProposalId(applicationId, productId,proposalId, camType);
-			}else if(loanType == LoanType.HOME_LOAN.getValue()) {
-				logger.info("Fetching Data of Home Loan by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}" ,applicationId ,productId, proposalId);
-				response = hlCamReportService.getCamReportDetailsByProposalId(applicationId, productId,proposalId, camType);
-			}else if(loanType == LoanType.AUTO_LOAN.getValue()) {
-				logger.info("Fetching Data of Auto Loan by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}" ,applicationId ,productId, proposalId);
-				response = alCamReportService.getCamReportDetailsByProposalId(applicationId, productId,proposalId, camType);
-			}else {
-				logger.info("Fetching Data of MSME by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}" ,applicationId ,productId, proposalId);
-				response = camReportPdfDetailsService.getCamReportPrimaryDetails(applicationId,productId,proposalId, camType);
-			}
 			
+			if("AF".equals(camType)) {
+				if(loanType == LoanType.PERSONAL_LOAN.getValue()) {
+					logger.info("Fetching Application Form Data of Personal Loan by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}" ,applicationId ,productId, proposalId);
+					response = plCamService.getDataForApplicationForm(applicationId, productId, proposalId);
+				}else if(loanType == LoanType.HOME_LOAN.getValue()) {
+					logger.info("Fetching Application Form Data of Home Loan by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}" ,applicationId ,productId, proposalId);
+					response = hlCamReportService.getDataForApplicationForm(applicationId, productId, proposalId);
+				}else if(loanType == LoanType.AUTO_LOAN.getValue()){
+					logger.info("Fetching Application Form Data of Auto Loan by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}" ,applicationId ,productId, proposalId);
+					response = alCamReportService.getDataForApplicationForm(applicationId, productId, proposalId);
+				}
+			}else {
+				if(loanType == LoanType.PERSONAL_LOAN.getValue()) {
+					logger.info("Fetching Data of Personal Loan by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{} with finalView==>{}" ,applicationId ,productId, proposalId, isFinalView);
+					response = plCamService.getCamReportDetailsByProposalId(applicationId, productId,proposalId, isFinalView);
+				}else if(loanType == LoanType.HOME_LOAN.getValue()) {
+					logger.info("Fetching Data of Home Loan by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{} with finalView==>{}" ,applicationId ,productId, proposalId, isFinalView);
+					response = hlCamReportService.getCamReportDetailsByProposalId(applicationId, productId,proposalId, isFinalView);
+				}else if(loanType == LoanType.AUTO_LOAN.getValue()) {
+					logger.info("Fetching Data of Auto Loan by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{} with finalView==>{}" ,applicationId ,productId, proposalId, isFinalView);
+					response = alCamReportService.getCamReportDetailsByProposalId(applicationId, productId,proposalId, isFinalView);
+				}else {
+					logger.info("Fetching Data of MSME by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{} with finalView==>{}" ,applicationId ,productId, proposalId, isFinalView);
+					response = camReportPdfDetailsService.getCamReportPrimaryDetails(applicationId,productId,proposalId, isFinalView);
+				}
+			}
 			if(response != null && !response.isEmpty()) {
 				logger.info("DocumentResponse Data==>{}",response);
 				return new ResponseEntity<LoansResponse>(new LoansResponse(HttpStatus.OK.value(), "success", response),HttpStatus.OK);
