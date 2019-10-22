@@ -86,6 +86,9 @@ public class LoanSanctionDomain implements Serializable {
 	@Column(name = "is_partially_disbursed_offline")
 	private Boolean isPartiallyDisbursedOffline;
 
+	@Column(name = "nbfc_flow")
+	private Integer nbfcFlow;
+
 	public Long getId() {
 		return id;
 	}
@@ -259,6 +262,14 @@ public class LoanSanctionDomain implements Serializable {
 
 	public void setIsPartiallyDisbursedOffline(Boolean isPartiallyDisbursedOffline) {
 		this.isPartiallyDisbursedOffline = isPartiallyDisbursedOffline;
+	}
+
+	public Integer getNbfcFlow() {
+		return nbfcFlow;
+	}
+
+	public void setNbfcFlow(Integer nbfcFlow) {
+		this.nbfcFlow = nbfcFlow;
 	}
 
 	@Override
