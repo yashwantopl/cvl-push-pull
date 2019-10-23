@@ -92,16 +92,15 @@ public class CamReportPdfDetailsController {
 	private static final String ALINELIGIBLE_CAM_REPORT = "INELIGIBLEALCAM";
 	private static final String UNIFORM_CAM_REPORT = "UNIFORMCAMREPORT";
 
-	@GetMapping(value = "/getPrimaryDataMap/{applicationId}/{productMappingId}/{proposalId}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getPrimaryDataMap(@PathVariable(value = "applicationId") Long applicationId,@PathVariable(value = "productMappingId") Long productId,
-			@PathVariable(value ="proposalId") Long proposalId,	HttpServletRequest request)  {
+	@GetMapping(value = {"/getPrimaryDataMap/{applicationId}/{productMappingId}/{proposalId}" ,"/getPrimaryDataMap/{applicationId}"}, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getPrimaryDataMap(@PathVariable(value = "applicationId") Long applicationId,@PathVariable(name = "productMappingId" ,required = false) Long productId,
+			@PathVariable(name ="proposalId" ,required = false) Long proposalId ,HttpServletRequest request)  {
 		
-		if (CommonUtils.isObjectNullOrEmpty(productId)||CommonUtils.isObjectNullOrEmpty(proposalId)) {
-				logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, + productId + proposalId);
+		if (CommonUtils.isObjectNullOrEmpty(applicationId)) {
+				logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, + applicationId);
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		try {
-
 			Map<String,Object> response = camReportPdfDetailsService.getCamReportPrimaryDetails(applicationId,productId,proposalId,false);
 			ReportRequest reportRequest = new ReportRequest();
 			reportRequest.setParams(response);
@@ -110,12 +109,10 @@ public class CamReportPdfDetailsController {
 			byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
 			MultipartFile multipartFile = new DDRMultipart(byteArr);			  
 			  JSONObject jsonObj = new JSONObject();
-			  
-
 				jsonObj.put(CommonUtils.APPLICATION_ID, applicationId);
 				jsonObj.put(PRODUCT_DOCUMENT_MAPPING_ID, 355L);
 				jsonObj.put(USER_TYPE, CommonUtils.UploadUserType.UERT_TYPE_APPLICANT);
-				jsonObj.put(ORIGINAL_FILE_NAME, "CAMREPORTSIDBIPRIMARY"+proposalId+".pdf");
+				jsonObj.put(ORIGINAL_FILE_NAME, "CAMREPORTSIDBIPRIMARY"+proposalId != null ? proposalId : "NBFCFlow"+".pdf");
 				
 				DocumentResponse  documentResponse  =  dmsClient.uploadFile(jsonObj.toString(), multipartFile);
 				if(documentResponse.getStatus() == 200){
