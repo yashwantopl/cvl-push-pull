@@ -919,16 +919,16 @@ public class CamReportPdfDetailsController {
 				}
 			}else if("Offline".equals(camType)){
 				if(loanType == LoanType.PERSONAL_LOAN.getValue()) {
-					logger.info("Fetching Data of Personal Loan For Offline by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}" ,applicationId ,productId, proposalId);
+					logger.info("Fetching Data of Personal Loan For Offline by ApplicationId==>{}" ,applicationId);
 					response = plCamService.getPLInEligibleCamReport(applicationId);
 				}else if(loanType == LoanType.HOME_LOAN.getValue()) {
-					logger.info("Fetching Data of Home Loan For Offline by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}" ,applicationId ,productId, proposalId);
+					logger.info("Fetching Data of Home Loan For Offline by ApplicationId==>{}" ,applicationId);
 					response = hlIneligibleCamReportService.getHLInEligibleCamReport(applicationId);
 				}else if(loanType == LoanType.AUTO_LOAN.getValue()){
-					logger.info("Fetching Data of Auto Loan For Offline by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}" ,applicationId ,productId, proposalId);
+					logger.info("Fetching Data of Auto Loan For Offline by ApplicationId==>{}" ,applicationId);
 					response = alCamReportService.getIneligibleDataForCam(applicationId);
 				}else {
-					logger.info("Fetching Data of MSME For Offline by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{} with finalView==>{}" ,applicationId ,productId, proposalId, isFinalView);
+					logger.info("Fetching Data of MSME For Offline by ApplicationId==>{}" ,applicationId);
 					response = inEligibleProposalCamReportService.getInEligibleCamReport(applicationId);
 				}
 			}else {
