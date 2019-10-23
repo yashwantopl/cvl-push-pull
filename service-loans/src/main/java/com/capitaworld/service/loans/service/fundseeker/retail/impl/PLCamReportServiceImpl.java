@@ -22,6 +22,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
+import com.capitaworld.cibil.api.model.CibilRequest;
+import com.capitaworld.cibil.api.model.CibilScoreLogRequest;
+import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.ekyc.EPFClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.client.reports.ReportsClient;
@@ -188,6 +191,9 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 	
 	@Autowired
 	private ReportsClient reportsClient;
+	
+	@Autowired
+	private CIBILClient cibilClient;
 	
 	@Autowired
 	private UsersClient usersClient;
@@ -1023,6 +1029,21 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			}else {
 				map.put("residenceSinceYearMonths", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getResidenceSinceMonth()) ? plRetailApplicantRequest.getResidenceSinceMonth()+" months":"");
 			}
+			
+			//cibil score
+			try {
+				CibilRequest cibilReq=new CibilRequest();
+				cibilReq.setPan(plRetailApplicantRequest.getPan());
+				cibilReq.setApplicationId(applicationId);
+				CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
+				if (cibilScoreByPanCard != null) {
+					map.put("applicantV2Score", CommonUtils.getCibilV2ScoreRange(cibilScoreByPanCard.getActualScore()));
+				}
+				map.put("applicantCIBILScore", cibilScoreByPanCard);
+			} catch (Exception e) {
+				logger.error("Error While calling Cibil Score By PanCard : ",e);
+			}
+			
 	
 			/*	For name comparison:*/
 			/* Addition */
