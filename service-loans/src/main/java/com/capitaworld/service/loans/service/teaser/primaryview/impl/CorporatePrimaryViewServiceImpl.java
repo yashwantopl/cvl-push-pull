@@ -1526,7 +1526,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 					if(yearWiseSales != null) {
 				
 					for (Map<String, Object> itrSales:  financialInputRequest.getYearSalesPurchasList()) {
-						if(itrSales != null &&  !String.valueOf(itrSales.get("year")).equals("2017") && !yearWiseSales.getKey().contains("2020") && yearWiseSales.getKey().split("-")[0].contains(String.valueOf(itrSales.get("year")))) {
+						if(itrSales != null &&  !String.valueOf(Integer.valueOf(itrSales.get("year").toString())-1).equals("2017") && String.valueOf(Integer.valueOf(itrSales.get("year").toString())-1).equals(yearWiseSales.getKey().split("-")[0])) {
 						
 							LinkedHashMap<String,Object>gstPurchaseVsBankStatementMonthly = new LinkedHashMap<>(); 
 							gstPurchaseVsBankStatementMonthly.put("year", yearWiseSales.getKey() != null ? yearWiseSales.getKey() : " - ");
@@ -1576,7 +1576,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 					if(financialInputRequest.getYearSalesPurchasList() !=null  && !financialInputRequest.getYearSalesPurchasList().isEmpty()) {
 						financialInputRequest.getYearSalesPurchasList().stream().sorted(new DateComparator2());		
 						for(Map<String, Object> fi: financialInputRequest.getYearSalesPurchasList()) {
-							if(fi != null && !String.valueOf(fi.get("year")).equals("2017") &&  !y.getKey().contains("2020") && y.getKey().split("-")[0].contains(String.valueOf(fi.get("year")))) {
+							if(fi != null && !String.valueOf(Integer.valueOf(fi.get("year").toString())-1).equals("2017") && String.valueOf(Integer.valueOf(fi.get("year").toString())-1).split("-")[0].contains(String.valueOf(fi.get("year")))) {
 								LinkedHashMap<String,Object>gstPurchaseVsBankStatementMonthly = new LinkedHashMap<>();
 								gstPurchaseVsBankStatementMonthly.put("year", y.getKey() != null ?y.getKey().toString() : " - ");
 								gstPurchaseVsBankStatementMonthly.put("gstPurchase", y.getValue()!= null && y.getValue().toString() != "0" ?CommonUtils.convertStringFormate(y.getValue()).toString() : " - ");
