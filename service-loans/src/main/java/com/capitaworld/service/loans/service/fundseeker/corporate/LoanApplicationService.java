@@ -274,6 +274,8 @@ public interface LoanApplicationService {
 	public boolean saveTutorialsAudit(TutorialsViewAudits longLatrequest);
 
 	public JSONObject getTutorialsAudit(TutorialsViewAudits request);
+	
+	public String getTutorialsAuditList(TutorialsViewAudits request);
 
 	public String getPrefillProfileStatus(Long fromLoanId, Long toLoanId);
 	

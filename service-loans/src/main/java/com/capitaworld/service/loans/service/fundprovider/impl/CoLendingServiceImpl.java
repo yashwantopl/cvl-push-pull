@@ -384,12 +384,12 @@ public class CoLendingServiceImpl implements CoLendingService {
 			countObj.put("disbursedProposalCount", disbursedProposalCountList.size());
 
 			proposalStatusId.add(MatchConstant.ProposalStatus.HOLD);
-			List<BigInteger> holdProposalCountList = proposalDetailsRepository.getFPProposalCountByStatusIdAndUserOrgId(proposalStatusId,npOrgId,1,2,branchId);
+			List<BigInteger> holdProposalCountList = proposalDetailsRepository.getFPProposalCountByStatusIdAndNBFCFlowType(proposalStatusId,npOrgId,branchId,1,2);
 			proposalStatusId.clear();
 			countObj.put("holdProposalCount", holdProposalCountList.size());
 
 			proposalStatusId.add(MatchConstant.ProposalStatus.DECLINE);
-			List<BigInteger> rejectedProposalCountList = proposalDetailsRepository.getFPProposalCountByStatusIdAndUserOrgId(proposalStatusId,npOrgId,1,2,branchId);
+			List<BigInteger> rejectedProposalCountList = proposalDetailsRepository.getFPProposalCountByStatusIdAndNBFCFlowType(proposalStatusId,npOrgId,branchId,1,2);
 			proposalStatusId.clear();
 			countObj.put("rejectedProposalCount", rejectedProposalCountList.size());
 
@@ -414,7 +414,9 @@ public class CoLendingServiceImpl implements CoLendingService {
 
 			proposalStatusId.add(MatchConstant.ProposalStatus.DISBURSED);
 			proposalStatusId.add(MatchConstant.ProposalStatus.PARTIALLY_DISBURSED);
-			List<BigInteger> disbursedByNBFCProposalCountList = proposalDetailsRepository.getFPProposalCountByStatusIdAndUserOrgIdFNBFCorBank(proposalStatusId.get(0),npOrgId,2,1,branchId);
+			List<BigInteger> disbursedByNBFCProposalCountList = new ArrayList<>();
+			disbursedByNBFCProposalCountList.addAll(proposalDetailsRepository.getFPProposalCountByStatusIdAndUserOrgIdFNBFCorBank(proposalStatusId.get(0),npOrgId,2,1,branchId));
+			disbursedByNBFCProposalCountList.addAll(proposalDetailsRepository.getFPProposalCountByStatusIdAndUserOrgIdFNBFCorBank(proposalStatusId.get(1),npOrgId,2,1,branchId));
 			proposalStatusId.clear();
 			countObj.put("disbursedByNBFCProposalCount", disbursedByNBFCProposalCountList.size());
 
@@ -425,12 +427,12 @@ public class CoLendingServiceImpl implements CoLendingService {
 			countObj.put("disbursedProposalCount", disbursedProposalCountList.size());
 
 			proposalStatusId.add(MatchConstant.ProposalStatus.HOLD);
-			List<BigInteger> holdProposalCountList = proposalDetailsRepository.getFPProposalCountByStatusIdAndUserOrgIdForBank(proposalStatusId,npOrgId,2,1,branchId);
+			List<BigInteger> holdProposalCountList = proposalDetailsRepository.getFPProposalCountByStatusIdAndNBFCFlowType(proposalStatusId,npOrgId,branchId,2,1);
 			proposalStatusId.clear();
 			countObj.put("holdProposalCount", holdProposalCountList.size());
 
 			proposalStatusId.add(MatchConstant.ProposalStatus.DECLINE);
-			List<BigInteger> rejectedProposalCountList = proposalDetailsRepository.getFPProposalCountByStatusIdAndUserOrgIdForBank(proposalStatusId,npOrgId,2,1,branchId);
+			List<BigInteger> rejectedProposalCountList = proposalDetailsRepository.getFPProposalCountByStatusIdAndNBFCFlowType(proposalStatusId,npOrgId,branchId,2,1);
 			proposalStatusId.clear();
 			countObj.put("rejectedProposalCount", rejectedProposalCountList.size());
 
@@ -465,12 +467,12 @@ public class CoLendingServiceImpl implements CoLendingService {
 			countObj.put("disbursedProposalCount", disbursedProposalCountList.size());
 
 			proposalStatusId.add(MatchConstant.ProposalStatus.HOLD);
-			List<BigInteger> holdProposalCountList = proposalDetailsRepository.getFPProposalCountByStatusIdAndUserOrgIdForHO(proposalStatusId,npOrgId,2);
+			List<BigInteger> holdProposalCountList = proposalDetailsRepository.getFPProposalCountByStatusIdAndNBFCFlowType(proposalStatusId,nhbsApplicationRequest.getUserOrgId(),2,1);
 			proposalStatusId.clear();
 			countObj.put("holdProposalCount", holdProposalCountList.size());
 
 			proposalStatusId.add(MatchConstant.ProposalStatus.DECLINE);
-			List<BigInteger> rejectedProposalCountList = proposalDetailsRepository.getFPProposalCountByStatusIdAndUserOrgIdForHO(proposalStatusId,npOrgId,2);
+			List<BigInteger> rejectedProposalCountList = proposalDetailsRepository.getFPProposalCountByStatusIdAndNBFCFlowType(proposalStatusId,nhbsApplicationRequest.getUserOrgId(),2,1);
 			proposalStatusId.clear();
 			countObj.put("rejectedProposalCount", rejectedProposalCountList.size());
 
@@ -505,12 +507,12 @@ public class CoLendingServiceImpl implements CoLendingService {
 			countObj.put("disbursedProposalCount", disbursedProposalCountList.size());
 
 			proposalStatusId.add(MatchConstant.ProposalStatus.HOLD);
-			List<BigInteger> holdProposalCountList = proposalDetailsRepository.getFPProposalCountByStatusIdAndUserOrgIdFoHO(proposalStatusId,npOrgId,1,2);
+			List<BigInteger> holdProposalCountList = proposalDetailsRepository.getFPProposalCountByStatusIdAndNBFCFlowType(proposalStatusId,nhbsApplicationRequest.getUserOrgId(),1,2);
 			proposalStatusId.clear();
 			countObj.put("holdProposalCount", holdProposalCountList.size());
 
 			proposalStatusId.add(MatchConstant.ProposalStatus.DECLINE);
-			List<BigInteger> rejectedProposalCountList = proposalDetailsRepository.getFPProposalCountByStatusIdAndUserOrgIdFoHO(proposalStatusId,npOrgId,1,2);
+			List<BigInteger> rejectedProposalCountList = proposalDetailsRepository.getFPProposalCountByStatusIdAndNBFCFlowType(proposalStatusId,nhbsApplicationRequest.getUserOrgId(),1,2);
 			proposalStatusId.clear();
 			countObj.put("rejectedProposalCount", rejectedProposalCountList.size());
 		}
@@ -552,17 +554,19 @@ public class CoLendingServiceImpl implements CoLendingService {
 				proposalIdList = proposalDetailsRepository.getFPProposalListByStatusIdAndUserOrgIdPageable(proposalStatusId,request.getUserOrgId(),1, branchId,2,(request.getPageIndex()*10), request.getSize());
 			} else if(request.getDdrStatusId()== MatchConstant.ProposalStatus.DISBURSED){
 				proposalStatusId.add(MatchConstant.ProposalStatus.DISBURSED);
+				proposalStatusId.add(MatchConstant.ProposalStatus.PARTIALLY_DISBURSED);
 				proposalIdList = proposalDetailsRepository.getFPProposalsByStatusIdAndUserOrgIdPageable(proposalStatusId,request.getUserOrgId(),1, branchId,2,(request.getPageIndex()*10), request.getSize());
 			} else if(request.getDdrStatusId()== MatchConstant.ProposalStatus.DISBURSED_BY_NBFC){
 				proposalStatusId.add(MatchConstant.ProposalStatus.DISBURSED);
+				proposalStatusId.add(MatchConstant.ProposalStatus.PARTIALLY_DISBURSED);
 				proposalIdList = proposalDetailsRepository.getFPProposalListByStatusIdAndUserOrgIdPageable(proposalStatusId,request.getUserOrgId(),1, branchId,2,(request.getPageIndex()*10), request.getSize());
 
 			}else if(request.getDdrStatusId()== MatchConstant.ProposalStatus.HOLD){
 				proposalStatusId.add(MatchConstant.ProposalStatus.HOLD);
-				proposalIdList = proposalDetailsRepository.getFPProposalsByStatusIdAndUserOrgIdPageable(proposalStatusId,request.getUserOrgId(),1, branchId,2,(request.getPageIndex()*10), request.getSize());
+				proposalIdList = proposalDetailsRepository.getFPProposalPageableByStatusIdAndNBFCFlowType(proposalStatusId,request.getUserOrgId(),branchId,1,2,(request.getPageIndex()*10), request.getSize());
 			}else if(request.getDdrStatusId()== MatchConstant.ProposalStatus.DECLINE){
 				proposalStatusId.add(MatchConstant.ProposalStatus.DECLINE);
-				proposalIdList = proposalDetailsRepository.getFPProposalsByStatusIdAndUserOrgIdPageable(proposalStatusId,request.getUserOrgId(),1, branchId,2,(request.getPageIndex()*10), request.getSize());
+				proposalIdList = proposalDetailsRepository.getFPProposalPageableByStatusIdAndNBFCFlowType(proposalStatusId,request.getUserOrgId(),branchId,1,2,(request.getPageIndex()*10), request.getSize());
 			} else {
 				proposalIdList = null;
 			}
@@ -578,19 +582,20 @@ public class CoLendingServiceImpl implements CoLendingService {
 				proposalIdList = proposalDetailsRepository.getFPProposalsByStatusIdAndUserOrgIdForBankPageable(proposalStatusId,request.getUserOrgId(),2, branchId,1,(request.getPageIndex()*10), request.getSize());
 			} else if(request.getDdrStatusId()== MatchConstant.ProposalStatus.APPROVED_BY_NBFC){
 				proposalStatusId.add(MatchConstant.ProposalStatus.APPROVED);
-				proposalIdList = proposalDetailsRepository.getFPProposalListByStatusIdAndUserOrgIdNBFCForBankPageable(proposalStatusId,request.getUserOrgId(),2, branchId,1,(request.getPageIndex()*10), request.getSize());
+				proposalIdList = proposalDetailsRepository.getFPProposalListByStatusIdAndUserOrgIdNBFCForBankPageable(MatchConstant.ProposalStatus.APPROVED,request.getUserOrgId(),2, branchId,1,(request.getPageIndex()*10), request.getSize());
 			} else if(request.getDdrStatusId()== MatchConstant.ProposalStatus.DISBURSED){
 				proposalStatusId.add(MatchConstant.ProposalStatus.DISBURSED);
+				proposalStatusId.add(MatchConstant.ProposalStatus.PARTIALLY_DISBURSED);
 				proposalIdList = proposalDetailsRepository.getFPProposalsByStatusIdAndUserOrgIdForBankPageable(proposalStatusId,request.getUserOrgId(),2, branchId,1,(request.getPageIndex()*10), request.getSize());
 			} else if(request.getDdrStatusId()== MatchConstant.ProposalStatus.DISBURSED_BY_NBFC){
-				proposalStatusId.add(MatchConstant.ProposalStatus.DISBURSED);
-				proposalIdList = proposalDetailsRepository.getFPProposalListByStatusIdAndUserOrgIdNBFCForBankPageable(proposalStatusId,request.getUserOrgId(),2, branchId,1,(request.getPageIndex()*10), request.getSize());
+				proposalIdList.addAll(proposalDetailsRepository.getFPProposalListByStatusIdAndUserOrgIdNBFCForBankPageable(MatchConstant.ProposalStatus.DISBURSED,request.getUserOrgId(),2, branchId,1,(request.getPageIndex()*10), request.getSize()));
+				proposalIdList.addAll(proposalDetailsRepository.getFPProposalListByStatusIdAndUserOrgIdNBFCForBankPageable(MatchConstant.ProposalStatus.PARTIALLY_DISBURSED,request.getUserOrgId(),2, branchId,1,(request.getPageIndex()*10), request.getSize()));
 			}else if(request.getDdrStatusId()== MatchConstant.ProposalStatus.HOLD){
 				proposalStatusId.add(MatchConstant.ProposalStatus.HOLD);
-				proposalIdList = proposalDetailsRepository.getFPProposalsByStatusIdAndUserOrgIdForBankPageable(proposalStatusId,request.getUserOrgId(),2, branchId,1,(request.getPageIndex()*10), request.getSize());
+				proposalIdList = proposalDetailsRepository.getFPProposalPageableByStatusIdAndNBFCFlowType(proposalStatusId,request.getUserOrgId(), branchId,2,1,(request.getPageIndex()*10), request.getSize());
 			}else if(request.getDdrStatusId()== MatchConstant.ProposalStatus.DECLINE){
 				proposalStatusId.add(MatchConstant.ProposalStatus.DECLINE);
-				proposalIdList = proposalDetailsRepository.getFPProposalsByStatusIdAndUserOrgIdForBankPageable(proposalStatusId,request.getUserOrgId(),2, branchId,1,(request.getPageIndex()*10), request.getSize());
+				proposalIdList = proposalDetailsRepository.getFPProposalPageableByStatusIdAndNBFCFlowType(proposalStatusId,request.getUserOrgId(), branchId,2,1,(request.getPageIndex()*10), request.getSize());
 			} else {
 				proposalIdList = null;
 			}
@@ -607,16 +612,18 @@ public class CoLendingServiceImpl implements CoLendingService {
 				proposalIdList = proposalDetailsRepository.getFPProposalListByStatusIdAndUserOrgIdForHOPageable(proposalStatusId,request.getUserOrgId(),1, 2,(request.getPageIndex()*10), request.getSize());
 			} else if(request.getDdrStatusId()== MatchConstant.ProposalStatus.DISBURSED){
 				proposalStatusId.add(MatchConstant.ProposalStatus.DISBURSED);
+				proposalStatusId.add(MatchConstant.ProposalStatus.PARTIALLY_DISBURSED);
 				proposalIdList = proposalDetailsRepository.getFPProposalsByStatusIdAndUserOrgIdForHOPageable(proposalStatusId,request.getUserOrgId(),1, 2,(request.getPageIndex()*10), request.getSize());
 			} else if(request.getDdrStatusId()== MatchConstant.ProposalStatus.DISBURSED_BY_NBFC){
 				proposalStatusId.add(MatchConstant.ProposalStatus.DISBURSED);
+				proposalStatusId.add(MatchConstant.ProposalStatus.PARTIALLY_DISBURSED);
 				proposalIdList = proposalDetailsRepository.getFPProposalListByStatusIdAndUserOrgIdForHOPageable(proposalStatusId,request.getUserOrgId(),1, 2,(request.getPageIndex()*10), request.getSize());
 			}else if(request.getDdrStatusId()== MatchConstant.ProposalStatus.HOLD){
 				proposalStatusId.add(MatchConstant.ProposalStatus.HOLD);
-				proposalIdList = proposalDetailsRepository.getFPProposalsByStatusIdAndUserOrgIdForHOPageable(proposalStatusId,request.getUserOrgId(),1, 2,(request.getPageIndex()*10), request.getSize());
+				proposalIdList = proposalDetailsRepository.getFPProposalPageableByStatusIdAndNBFCFlowType(proposalStatusId,request.getUserOrgId(),1, 2,(request.getPageIndex()*10), request.getSize());
 			}else if(request.getDdrStatusId()== MatchConstant.ProposalStatus.DECLINE){
 				proposalStatusId.add(MatchConstant.ProposalStatus.DECLINE);
-				proposalIdList = proposalDetailsRepository.getFPProposalsByStatusIdAndUserOrgIdForHOPageable(proposalStatusId,request.getUserOrgId(),1, 2,(request.getPageIndex()*10), request.getSize());
+				proposalIdList = proposalDetailsRepository.getFPProposalPageableByStatusIdAndNBFCFlowType(proposalStatusId,request.getUserOrgId(),1, 2,(request.getPageIndex()*10), request.getSize());
 			} else {
 				proposalIdList = null;
 			}
@@ -633,16 +640,18 @@ public class CoLendingServiceImpl implements CoLendingService {
 				proposalIdList = proposalDetailsRepository.getFPProposalListByStatusIdAndUserOrgIdNBFCForBankHOPageable(proposalStatusId,request.getUserOrgId(),2, 1,(request.getPageIndex()*10), request.getSize());
 			} else if(request.getDdrStatusId()== MatchConstant.ProposalStatus.DISBURSED){
 				proposalStatusId.add(MatchConstant.ProposalStatus.DISBURSED);
+				proposalStatusId.add(MatchConstant.ProposalStatus.PARTIALLY_DISBURSED);
 				proposalIdList = proposalDetailsRepository.getFPProposalsByStatusIdAndUserOrgIdForBankHOPageable(proposalStatusId,request.getUserOrgId(),2, 1,(request.getPageIndex()*10), request.getSize());
 			} else if(request.getDdrStatusId()== MatchConstant.ProposalStatus.DISBURSED_BY_NBFC){
 				proposalStatusId.add(MatchConstant.ProposalStatus.DISBURSED);
+				proposalStatusId.add(MatchConstant.ProposalStatus.PARTIALLY_DISBURSED);
 				proposalIdList = proposalDetailsRepository.getFPProposalListByStatusIdAndUserOrgIdNBFCForBankHOPageable(proposalStatusId,request.getUserOrgId(),2, 1,(request.getPageIndex()*10), request.getSize());
 			}else if(request.getDdrStatusId()== MatchConstant.ProposalStatus.HOLD){
 				proposalStatusId.add(MatchConstant.ProposalStatus.HOLD);
-				proposalIdList = proposalDetailsRepository.getFPProposalsByStatusIdAndUserOrgIdForBankHOPageable(proposalStatusId,request.getUserOrgId(),2, 1,(request.getPageIndex()*10), request.getSize());
+				proposalIdList = proposalDetailsRepository.getFPProposalPageableByStatusIdAndNBFCFlowType(proposalStatusId,request.getUserOrgId(),2, 1,(request.getPageIndex()*10), request.getSize());
 			}else if(request.getDdrStatusId()== MatchConstant.ProposalStatus.DECLINE){
 				proposalStatusId.add(MatchConstant.ProposalStatus.DECLINE);
-				proposalIdList = proposalDetailsRepository.getFPProposalsByStatusIdAndUserOrgIdForBankHOPageable(proposalStatusId,request.getUserOrgId(),2, 1,(request.getPageIndex()*10), request.getSize());
+				proposalIdList = proposalDetailsRepository.getFPProposalPageableByStatusIdAndNBFCFlowType(proposalStatusId,request.getUserOrgId(),2, 1,(request.getPageIndex()*10), request.getSize());
 			} else {
 				proposalIdList = null;
 			}
@@ -659,6 +668,52 @@ public class CoLendingServiceImpl implements CoLendingService {
 						ProposalDetails proposalDetail = proposalDetailsRepository.getBranchId(proposalMapping.getApplicationId(), proposalMapping.getProposalId());
 
 						if (!CommonUtils.isObjectNullOrEmpty(proposalMapping)) {
+
+
+							if(request.getDdrStatusId() == MatchConstant.ProposalStatus.HOLD){
+								if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.NBFC_FP_MAKER == request.getUserRoleId().intValue() ||
+										com.capitaworld.service.users.utils.CommonUtils.UserRoles.NBFC_FP_CHECKER == request.getUserRoleId().intValue() ||
+										com.capitaworld.service.users.utils.CommonUtils.UserRoles.NBFC_ASSISTED_USER == request.getUserRoleId().intValue() ||
+										com.capitaworld.service.users.utils.CommonUtils.UserRoles.NBFC_HO == request.getUserRoleId().intValue()){
+									// NBFC USER
+									if(proposalDetail.getProposalStatusId().getId() != MatchConstant.ProposalStatus.HOLD){
+										response.setMsg("Hold by bank");
+									}else{
+										response.setMsg("Hold by yours");
+									}
+								}else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_MAKER == request.getUserRoleId().intValue() ||
+										com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_CHECKER== request.getUserRoleId().intValue() ||
+										com.capitaworld.service.users.utils.CommonUtils.UserRoles.HEAD_OFFICER== request.getUserRoleId().intValue()){
+									// BANK USER
+									if(proposalDetail.getProposalStatusId().getId() != MatchConstant.ProposalStatus.HOLD){
+										response.setMsg("Hold by NBFC");
+									}else{
+										response.setMsg("Hold by yours");
+									}
+								}
+							}else if(request.getDdrStatusId() == MatchConstant.ProposalStatus.DECLINE){
+								if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.NBFC_FP_MAKER == request.getUserRoleId().intValue() ||
+										com.capitaworld.service.users.utils.CommonUtils.UserRoles.NBFC_FP_CHECKER == request.getUserRoleId().intValue() ||
+										com.capitaworld.service.users.utils.CommonUtils.UserRoles.NBFC_ASSISTED_USER == request.getUserRoleId().intValue() ||
+										com.capitaworld.service.users.utils.CommonUtils.UserRoles.NBFC_HO == request.getUserRoleId().intValue()){
+									// NBFC USER
+									if(proposalDetail.getProposalStatusId().getId() != MatchConstant.ProposalStatus.DECLINE){
+										response.setMsg("Rejected by bank");
+									}else{
+										response.setMsg("Rejected by yours");
+									}
+								}else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_MAKER == request.getUserRoleId().intValue() ||
+										com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_CHECKER== request.getUserRoleId().intValue() ||
+										com.capitaworld.service.users.utils.CommonUtils.UserRoles.HEAD_OFFICER== request.getUserRoleId().intValue()){
+									// BANK USER
+									if(proposalDetail.getProposalStatusId().getId() != MatchConstant.ProposalStatus.DECLINE){
+										response.setMsg("Hold by NBFC");
+									}else{
+										response.setMsg("Hold by yours");
+									}
+								}
+							}
+
 							// set application code into response
 							response.setApplicationCode(proposalMapping.getApplicationCode());
 							// set application Id into response

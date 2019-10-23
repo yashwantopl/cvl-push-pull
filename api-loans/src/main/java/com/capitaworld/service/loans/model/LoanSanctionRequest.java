@@ -48,6 +48,8 @@ public class LoanSanctionRequest extends AuditActivityRequest implements Seriali
 	private String message;
 	private String sanctionAmtinWords;
 
+	private Integer nbfcFlow;
+
 	public Boolean getFlag() {
 		return flag;
 	}
@@ -280,6 +282,14 @@ public class LoanSanctionRequest extends AuditActivityRequest implements Seriali
 
 	public void setSanctionAmtinWords(String sanctionAmtinWords) {
 		this.sanctionAmtinWords = sanctionAmtinWords;
+	}
+
+	public Integer getNbfcFlow() {
+		return nbfcFlow;
+	}
+
+	public void setNbfcFlow(Integer nbfcFlow) {
+		this.nbfcFlow = nbfcFlow;
 	}
 
 	@Override
