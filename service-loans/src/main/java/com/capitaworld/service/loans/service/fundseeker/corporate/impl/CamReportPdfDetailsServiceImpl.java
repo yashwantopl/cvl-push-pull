@@ -358,6 +358,19 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 
 		ProposalMappingRequestString proposalMappingRequestString = null;
 		Map<String, Object> map = new HashMap<String, Object>();
+		
+		//fetch NBFC Details
+		try {
+			Integer isNbfcUser = ((BigInteger)commonRepository.getIsNBFCUser(applicationId)).intValue();
+			if(isNbfcUser != null && isNbfcUser > 0) {
+				ProposalDetails proposalDetailsForBank = proposalDetailsRepository.findFirstByApplicationIdAndIsActiveAndNbfcFlowOrderByIdDesc(applicationId, true, 2);
+				productId = !CommonUtils.isObjectNullOrEmpty(proposalDetailsForBank) ? proposalDetailsForBank.getFpProductId() : null;
+				proposalId = !CommonUtils.isObjectNullOrEmpty(proposalDetailsForBank) ? proposalDetailsForBank.getId() : null;
+				map.put("nbfcData", getNBFCData(applicationId));
+			}
+		}catch (Exception e) {
+			logger.error("Error/Exception while fetching Details For NBFC by ApplicationId==>{}" , applicationId);
+		}
 
 		Long userOrgId = proposalDetailsRepository.getOrgIdByProposalId(proposalId);
 		ProposalDetails proposalDetails = proposalDetailsRepository.getSanctionProposalByApplicationIdAndUserOrgId(applicationId, userOrgId);
@@ -498,16 +511,6 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			}
 		} catch (Exception e2) {
 			logger.error(CommonUtils.EXCEPTION,e2);
-		}
-		
-		//fetch NBFC Details
-		try {
-			Integer isNbfcUser = ((BigInteger)commonRepository.getIsNBFCUser(applicationId)).intValue();
-			if(isNbfcUser != null && isNbfcUser > 0) {
-				map.put("nbfcData", getNBFCData(applicationId));
-			}
-		}catch (Exception e) {
-			logger.error("Error/Exception while fetching Details For NBFC by ApplicationId==>{}" , applicationId);
 		}
 			
 		// Currently Commented  dateOfInPrincipalApproval from
