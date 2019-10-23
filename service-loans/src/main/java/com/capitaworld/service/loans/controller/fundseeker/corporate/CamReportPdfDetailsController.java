@@ -882,12 +882,12 @@ public class CamReportPdfDetailsController {
 	}
 		
 	//only to view cam data of All types
-	@GetMapping(value = {"/getCamData/{applicationId}/{productMappingId}/{proposalId}","/getCamData/{applicationId}/{productMappingId}/{proposalId}/{loanType}","/getCamData/{applicationId}/{productMappingId}/{proposalId}/{loanType}/{camType}"}, produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = {"/getCamData/{applicationId}/{productMappingId}/{proposalId}","/getCamData/{applicationId}/{productMappingId}/{proposalId}/{loanType}","/getCamData/{applicationId}/{productMappingId}/{proposalId}/{loanType}/{camType}","/getCamData/{applicationId}/{loanType}/{camType}"}, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getCamDataByProposalId(@PathVariable(value = "proposalId") Long proposalId, @PathVariable(value = "applicationId") Long applicationId, @PathVariable(value = "productMappingId") Long productId,
 			@PathVariable(name= "loanType" , required = false) Integer loanType, @PathVariable(name= "camType" , required = false) String camType, HttpServletRequest request) {
 		
-		if (CommonUtils.isObjectNullOrEmpty(applicationId) || CommonUtils.isObjectNullOrEmpty(productId) || CommonUtils.isObjectNullOrEmpty(proposalId)) {
-			logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, applicationId + productId + proposalId);
+		if (CommonUtils.isObjectNullOrEmpty(applicationId)) {
+			logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, applicationId);
 			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
 		}
 		try {
@@ -916,6 +916,20 @@ public class CamReportPdfDetailsController {
 				}else if(loanType == LoanType.AUTO_LOAN.getValue()){
 					logger.info("Fetching Application Form Data of Auto Loan by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}" ,applicationId ,productId, proposalId);
 					response = alCamReportService.getDataForApplicationForm(applicationId, productId, proposalId);
+				}
+			}else if("Offline".equals(camType)){
+				if(loanType == LoanType.PERSONAL_LOAN.getValue()) {
+					logger.info("Fetching Data of Personal Loan For Offline by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}" ,applicationId ,productId, proposalId);
+					response = plCamService.getPLInEligibleCamReport(applicationId);
+				}else if(loanType == LoanType.HOME_LOAN.getValue()) {
+					logger.info("Fetching Data of Home Loan For Offline by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}" ,applicationId ,productId, proposalId);
+					response = hlIneligibleCamReportService.getHLInEligibleCamReport(applicationId);
+				}else if(loanType == LoanType.AUTO_LOAN.getValue()){
+					logger.info("Fetching Data of Auto Loan For Offline by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}" ,applicationId ,productId, proposalId);
+					response = alCamReportService.getIneligibleDataForCam(applicationId);
+				}else {
+					logger.info("Fetching Data of MSME For Offline by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{} with finalView==>{}" ,applicationId ,productId, proposalId, isFinalView);
+					response = inEligibleProposalCamReportService.getInEligibleCamReport(applicationId);
 				}
 			}else {
 				if(loanType == LoanType.PERSONAL_LOAN.getValue()) {
