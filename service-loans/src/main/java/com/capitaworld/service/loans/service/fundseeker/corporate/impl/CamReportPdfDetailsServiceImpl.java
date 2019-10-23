@@ -504,7 +504,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		try {
 			Integer isNbfcUser = ((BigInteger)commonRepository.getIsNBFCUser(applicationId)).intValue();
 			if(isNbfcUser != null && isNbfcUser > 0) {
-				map.put("nbfcData", getNBFCData(toApplicationId));
+				map.put("nbfcData", getNBFCData(applicationId));
 			}
 		}catch (Exception e) {
 			logger.error("Error/Exception while fetching Details For NBFC by ApplicationId==>{}" , applicationId);
