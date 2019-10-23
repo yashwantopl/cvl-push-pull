@@ -154,4 +154,13 @@ public class CommonRepositoryImpl  implements CommonRepository {
 				.setParameter("orgId", orgId).setParameter("roleId", roleId).setParameter("branchId", branchId).getResultList();
 	}
 	
+	@Override
+	public Object getIsNBFCUser(Long applicationId) {
+		try {
+			return manager.createNativeQuery("SELECT COUNT(*) FROM connect.connect_log c WHERE c.application_id="+applicationId+" AND c.stage_id>=5 AND c.stage_id!=8 AND c.is_nbfc_user = true").getSingleResult();
+		}catch (Exception e) {
+			return 0;  
+		}
+	}
+	
 }

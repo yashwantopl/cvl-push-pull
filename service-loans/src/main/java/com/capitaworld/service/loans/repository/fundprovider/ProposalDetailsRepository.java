@@ -1,20 +1,17 @@
 
 package com.capitaworld.service.loans.repository.fundprovider;
-
-        import com.capitaworld.service.loans.domain.fundprovider.LoanArrangementMapping;
-        import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
-
-        import org.springframework.data.domain.Pageable;
-        import org.springframework.data.jpa.repository.JpaRepository;
-        import org.springframework.data.jpa.repository.Modifying;
-        import org.springframework.data.jpa.repository.Query;
-        import org.springframework.data.repository.query.Param;
-
-        import java.math.BigInteger;
-        import java.util.Date;
-        import java.util.List;
+import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import java.math.BigInteger;
+import java.util.Date;
+import java.util.List;
 
 public interface ProposalDetailsRepository extends JpaRepository<ProposalDetails,Long>{
+	
+	public ProposalDetails findFirstByApplicationIdAndIsActiveAndNbfcFlowOrderByIdDesc(Long applicationId, Boolean isActive ,Integer nbfcFlow);
 
     @Query("SELECT pd.applicationId FROM ProposalDetails pd WHERE branchId =:branchId and fpProductId=:fpProductId and isActive = 1")
     public List<Long> getApplicationsBasedOnBranchIdAndFpProductId(@Param("branchId") Long branchId,@Param("fpProductId") Long fpProductId);
