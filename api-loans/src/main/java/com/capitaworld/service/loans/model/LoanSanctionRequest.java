@@ -50,6 +50,9 @@ public class LoanSanctionRequest extends AuditActivityRequest implements Seriali
 
 	private Integer nbfcFlow;
 
+	private String cifNumber;
+	private Boolean kycVerified;
+
 	public Boolean getFlag() {
 		return flag;
 	}
@@ -290,6 +293,22 @@ public class LoanSanctionRequest extends AuditActivityRequest implements Seriali
 
 	public void setNbfcFlow(Integer nbfcFlow) {
 		this.nbfcFlow = nbfcFlow;
+	}
+
+	public String getCifNumber() {
+		return cifNumber;
+	}
+
+	public void setCifNumber(String cifNumber) {
+		this.cifNumber = cifNumber;
+	}
+
+	public Boolean getKycVerified() {
+		return kycVerified;
+	}
+
+	public void setKycVerified(Boolean kycVerified) {
+		this.kycVerified = kycVerified;
 	}
 
 	@Override
