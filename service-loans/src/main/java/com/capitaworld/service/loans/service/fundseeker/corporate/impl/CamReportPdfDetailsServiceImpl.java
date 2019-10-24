@@ -363,9 +363,12 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		try {
 			Integer isNbfcUser = ((BigInteger)commonRepository.getIsNBFCUser(applicationId)).intValue();
 			if(isNbfcUser != null && isNbfcUser > 0) {
-				ProposalDetails proposalDetailsForBank = proposalDetailsRepository.findFirstByApplicationIdAndIsActiveAndNbfcFlowOrderByIdDesc(applicationId, true, 2);
-				productId = !CommonUtils.isObjectNullOrEmpty(proposalDetailsForBank) ? proposalDetailsForBank.getFpProductId() : null;
-				proposalId = !CommonUtils.isObjectNullOrEmpty(proposalDetailsForBank) ? proposalDetailsForBank.getId() : null;
+				/**ProposalDetails proposalDetailsForBank = proposalDetailsRepository.findFirstByApplicationIdAndIsActiveAndNbfcFlowOrderByIdDesc(applicationId, true, 2);
+				if(!CommonUtils.isObjectNullOrEmpty(proposalDetailsForBank)) {
+					productId = proposalDetailsForBank.getFpProductId();
+					proposalId = proposalDetailsForBank.getId();
+				}*/
+				logger.info("Start Fetching Cam Data For ApplicationId==>{}  with  ProductId==>{}  and  ProposalId==>{}" , applicationId , productId , proposalId);
 				map.put("nbfcData", getNBFCData(applicationId));
 			}
 		}catch (Exception e) {
@@ -2389,7 +2392,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				nbfcData.put("nbfcRateOfInterest", proposalDetailsForNbfc.getElRoi() != null? proposalDetailsForNbfc.getElRoi() + " %":"NA");
 				nbfcData.put("nbfcTenure", proposalDetailsForNbfc.getElTenure() != null? proposalDetailsForNbfc.getElTenure() : "-");
 				nbfcData.put("nbfcEmiAmount", proposalDetailsForNbfc.getEmi() != null ? CommonUtils.convertValueWithoutDecimal(proposalDetailsForNbfc.getEmi()) : "-");
-				nbfcData.put("nbfc_processing_fees", proposalDetailsForNbfc.getProcessingFee() != null  ? proposalDetailsForNbfc.getProcessingFee() : "NA");
+				nbfcData.put("nbfcProcessingFees", proposalDetailsForNbfc.getProcessingFee() != null  ? proposalDetailsForNbfc.getProcessingFee() : "NA");
 			}
 		}catch (Exception e) {
 			logger.error("Error/Exception while fetching NBFC Details by ApplicationId==>{}" , applicationId);
