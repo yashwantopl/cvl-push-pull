@@ -59,6 +59,8 @@ public interface LoanRepository{
 
 	public String getTutorialsByRoleId(Long userRoleId, Integer loanType);
 
+	public String getTutorialsById(Long id);
+
 	public boolean saveTutorialsAudits(TutorialsViewAudits longLatrequest);
 
 	public String getTutorialsAudit(TutorialsViewAudits request);
