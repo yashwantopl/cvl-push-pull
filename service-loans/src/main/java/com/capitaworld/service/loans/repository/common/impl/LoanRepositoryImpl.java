@@ -539,5 +539,12 @@ public class LoanRepositoryImpl implements LoanRepository {
 			return CommonUtils.isListNullOrEmpty(tutorialViewAudit) ? null : CommonUtils.isObjectNullOrEmpty(tutorialViewAudit.get(0)) ? null : tutorialViewAudit.get(0);
 	}
 
-
+	public List<Object[]> getCoLendingRatio(Long fpProductId){
+		List<Object[]> ratioList = (List<Object[]>)entityManager.createNativeQuery("SELECT m.ratio_id,fc.nbfc_ratio,fc.bank_ratio,fc.tenure " +
+								"FROM nbfc_ratio_mapping m " +
+								"INNER JOIN fp_co_lending_ratio fc ON fc.id=m.ratio_id AND fc.is_proposal_active=TRUE AND fc.is_active=TRUE " +
+								"WHERE m.fp_product_id=:fpProductId AND m.is_active=TRUE")
+								.setParameter("fpProductId",fpProductId).getResultList();
+		return ratioList;
+	}
 }

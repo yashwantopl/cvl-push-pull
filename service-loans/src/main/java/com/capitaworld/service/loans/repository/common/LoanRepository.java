@@ -76,4 +76,6 @@ public interface LoanRepository{
 	public String getCampaignUser(Long userId,Long campaignType);
 	
 	public String getAgriLoanApplicationsByOrgIdAndStatus(Integer orgId,Integer status,Integer fromLimit,Integer toLimit);
+
+	public List<Object[]> getCoLendingRatio(Long fpProductId);
 }
