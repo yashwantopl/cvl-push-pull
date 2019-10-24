@@ -47,14 +47,20 @@ public class DisbursementHandOffDetailsServiceImpl implements DisbursementHandOf
 			return res;
 		}
 
-		Object[] sanctionDetails = loanSanctionRepository.getTenureAndRoiByAppIdAndNbfcFlow(applicationId,2);
-		if(sanctionDetails == null) {
+		Object[] sanctionDetails = loanSanctionRepository.getTenureAndRoiByAppIdAndNbfcFlow(applicationId,1);
+		if(sanctionDetails == null || sanctionDetails.length == 0) {
 			logger.info("Throw Exception while not data dound from sanctioned details");
 			throw new Exception("Sanctioned Details not found while get Co-Origination Disbursment HandOfff Details By ApplicationId " + applicationId);
 		}
 		
-		res.setTenure(sanctionDetails[0] != null ? Integer.valueOf(sanctionDetails[0].toString()) : null);
-		res.setInterestRate(sanctionDetails[1] != null ? Double.valueOf(sanctionDetails[1].toString()) : null);
+		if (sanctionDetails[0] != null) {
+			Object[] obj = (Object[])sanctionDetails[0];
+			if(obj != null) {
+				Double tn = (Double) obj[0];
+				res.setTenure(tn.intValue());
+				res.setInterestRate((Double) obj[1]);	
+			}
+		}
 		res.setApplicationCode(applicationProposalMappingRepository.getAppCodeByProposalIdAndApplicationId(proposalId, applicationId));
 		return res;
 
