@@ -342,9 +342,6 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	
 	@Autowired
 	private NbfcProposalBlendedRateRepository nbfcProposalBlendedRateRepository;
-	
-	@Value("${capitaworld.gstdata.enable}")
-	private Boolean gstDataEnable;
 
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -1399,15 +1396,12 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 		
 		//gstRelatedParty Data Fetch
-		if(gstDataEnable != null && gstDataEnable) {
-			try {
-				Map<String , Object> gstRelatedPartyRequests = loanApplicationService.getGstRelatedPartyDetails(applicationId);
-				map.put("gstPartyRelatedData", gstRelatedPartyRequests != null && !gstRelatedPartyRequests.isEmpty() ? gstRelatedPartyRequests : null);
-			}catch (Exception e) {
-				logger.error("Error/Exception while fetching list of gst Related Party List Data of APplicationId==>{}  ... Error==>{}",applicationId ,e);
-			}
+		try {
+			Map<String , Object> gstRelatedPartyRequests = loanApplicationService.getGstRelatedPartyDetails(applicationId);
+			map.put("gstPartyRelatedData", gstRelatedPartyRequests != null && !gstRelatedPartyRequests.isEmpty() ? gstRelatedPartyRequests : null);
+		}catch (Exception e) {
+			logger.error("Error/Exception while fetching list of gst Related Party List Data of APplicationId==>{}  ... Error==>{}",applicationId ,e);
 		}
-
 
 		//PERFIOS API DATA (BANK STATEMENT ANALYSIS)
 		ReportRequest reportRequest = new ReportRequest();
@@ -1457,15 +1451,14 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		} catch (Exception e) {
 			logger.error("Error while getting perfios data : ",e);
 		}
-		map.put("gstEnable", gstDataEnable != null && gstDataEnable ? "true" : null);
+		map.put("gstEnable", "true");
+		
 		//GST Comparision by Maaz
-		if(gstDataEnable != null && gstDataEnable) {
-			try{
-				FinancialInputRequest finaForCam = finaForCam(applicationId,proposalId);
-				map.put("gstComparision", corporatePrimaryViewService.gstVsItrVsBsComparision(applicationId, finaForCam));
-			}catch (Exception e) {
-				logger.error("error in getting gst comparision data : {}",e);
-			}
+		try{
+			FinancialInputRequest finaForCam = finaForCam(applicationId,proposalId);
+			map.put("gstComparision", corporatePrimaryViewService.gstVsItrVsBsComparision(applicationId, finaForCam));
+		}catch (Exception e) {
+			logger.error("error in getting gst comparision data : {}",e);
 		}
 
 		/**ReportRequest reportRequest = new ReportRequest();
@@ -2470,6 +2463,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		return null;
 	}
 
+	@Override
 	public FinancialInputRequest finaForCam(Long aplicationId,Long proposalId) {
 		FinancialInputRequest financialInputRequest = new FinancialInputRequest();
 		OperatingStatementDetails operatingStatementDetails;
