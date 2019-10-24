@@ -2477,7 +2477,11 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		int currentYear = scoringService.getFinYear(aplicationId);
 		List<Map<String, Object>> financialYearAndSalesAndPurchase = new ArrayList<>();
 		try {
+			if(proposalId != null) {
 				operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetailsByProposal(proposalId, currentYear-1+"");
+			}else {
+				operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetailsByAppIdAndFinYear(aplicationId, currentYear-1+"");
+			}
 				if(operatingStatementDetails != null) {
 					yearSalesPurchase.put("year",currentYear-1);
 					yearSalesPurchase.put("itrSales",(operatingStatementDetails.getDomesticSales()+operatingStatementDetails.getExportSales()));
@@ -2489,7 +2493,11 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 		try {
 			yearSalesPurchase = new HashMap<>();
-			operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetailsByProposal(proposalId, currentYear-2+"");
+			if(proposalId != null) {
+				operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetailsByProposal(proposalId, currentYear-2+"");
+			}else {
+				operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetailsByAppIdAndFinYear(aplicationId, currentYear-2+"");
+			}
 			if(operatingStatementDetails != null) {
 				yearSalesPurchase.put("year",currentYear-2);
 				yearSalesPurchase.put("itrSales",(operatingStatementDetails.getDomesticSales()+operatingStatementDetails.getExportSales()));
@@ -2502,7 +2510,11 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		try {
 			yearSalesPurchase = new HashMap<>();
-			operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetailsByProposal(proposalId, currentYear-3+"");
+			if(proposalId != null) {
+				operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetailsByProposal(proposalId, currentYear-3+"");
+			}else {
+				operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetailsByAppIdAndFinYear(aplicationId, currentYear-3+"");
+			}
 			if(operatingStatementDetails != null) {
 				yearSalesPurchase.put("year",currentYear-3);
 				yearSalesPurchase.put("itrSales",(operatingStatementDetails.getDomesticSales()+operatingStatementDetails.getExportSales()));
