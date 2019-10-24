@@ -8548,8 +8548,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		try {
 			String tutorials = loanRepository.getTutorialsById(id);
 			if(!CommonUtils.isObjectNullOrEmpty(tutorials)) {
-                org.codehaus.jackson.map.ObjectMapper mapper = new org.codehaus.jackson.map.ObjectMapper();
-                return mapper.readValue(tutorials, new org.codehaus.jackson.type.TypeReference<TutorialUploadManageRes>() {});
+
+                return MultipleJSONObjectHelper.getObjectFromString(tutorials,TutorialUploadManageRes.class);
             }
 		} catch (IOException e) {
 			logger.info("error while string to list convert in getTutorialsByRoleId");

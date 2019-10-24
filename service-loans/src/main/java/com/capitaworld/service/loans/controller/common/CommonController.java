@@ -6,6 +6,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import com.capitaworld.service.loans.domain.common.MinMaxProductDetail;
+import com.capitaworld.service.loans.model.TutorialUploadManageRes;
 import com.capitaworld.service.loans.model.TutorialsViewAudits;
 import com.capitaworld.service.loans.model.api_model.LoantypeSelectionResponse;
 import com.capitaworld.service.loans.model.common.*;
@@ -467,7 +468,8 @@ public class CommonController {
 	public ResponseEntity<LoansResponse> getTutorialsById(@PathVariable("id") Long id) {
 		logger.info("Enter in getTutorialsById");
 		try {
-			return new ResponseEntity<>(new LoansResponse("Successfully get data !!",HttpStatus.OK.value(),applicationService.getTutorialsById(id)), HttpStatus.OK);
+			TutorialUploadManageRes tutorialsById = applicationService.getTutorialsById(id);
+			return new ResponseEntity<>(new LoansResponse("Successfully get data !!",HttpStatus.OK.value(),tutorialsById), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.warn("Error while getTutorialsByRoleId",e);
 			return new ResponseEntity<>(new LoansResponse("Something went wrong !!",HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
