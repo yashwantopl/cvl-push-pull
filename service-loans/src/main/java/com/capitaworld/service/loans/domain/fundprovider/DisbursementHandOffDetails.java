@@ -27,6 +27,9 @@ public class DisbursementHandOffDetails implements Serializable {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 	
+	@Column(name = "application_id")
+	private Long applicationId;
+	
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "disbursement_date")
 	private Date disbursementDate;
@@ -222,6 +225,14 @@ public class DisbursementHandOffDetails implements Serializable {
 
 	public void setModifiedDate(Date modifiedDate) {
 		this.modifiedDate = modifiedDate;
+	}
+
+	public Long getApplicationId() {
+		return applicationId;
+	}
+
+	public void setApplicationId(Long applicationId) {
+		this.applicationId = applicationId;
 	}
 	
 
