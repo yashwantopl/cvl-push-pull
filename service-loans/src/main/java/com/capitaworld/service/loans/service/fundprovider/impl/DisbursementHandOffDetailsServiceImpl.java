@@ -61,6 +61,7 @@ public class DisbursementHandOffDetailsServiceImpl implements DisbursementHandOf
 				res.setInterestRate((Double) obj[1]);	
 			}
 		}
+		res.setApplicationId(applicationId);
 		res.setApplicationCode(applicationProposalMappingRepository.getAppCodeByProposalIdAndApplicationId(proposalId, applicationId));
 		return res;
 
