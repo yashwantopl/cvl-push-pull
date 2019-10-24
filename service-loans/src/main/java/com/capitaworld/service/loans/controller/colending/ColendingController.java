@@ -202,5 +202,32 @@ public class ColendingController {
 
     }
 
+    @PostMapping(value = "/get/ratio", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> getCoOriginationRatio(@RequestBody NhbsApplicationRequest nhbsApplicationRequest, HttpServletRequest request){
+        try {
+            Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+            if(CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest)){
+                logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND);
+                return new ResponseEntity<LoansResponse>(
+                        new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+            }
+            nhbsApplicationRequest.setUserId(userId);
+            List<CoLendingRequest> coLendingRequestList = coLendingService.getCoOriginationRatio(nhbsApplicationRequest);
+            LoansResponse loansResponse = new LoansResponse();
+            if(!CommonUtils.isListNullOrEmpty(coLendingRequestList)){
+                loansResponse.setMessage(CommonUtils.DATA_FOUND);
+            }else{
+                loansResponse.setMessage(CommonUtils.DATA_NOT_FOUND);
+            }
+            loansResponse.setStatus(HttpStatus.OK.value());
+            loansResponse.setData(coLendingRequestList);
+            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error in getCoOriginationRatio() : ", e);
+            return new ResponseEntity<LoansResponse>(
+                    new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 
+    }
 }
