@@ -26,4 +26,6 @@ public interface LoanSanctionRepository extends JpaRepository<LoanSanctionDomain
 	@Query(value="SELECT sanction_date FROM sanction_detail WHERE application_id =:applicationId AND is_active = TRUE ORDER BY id DESC", nativeQuery = true)
 	public List<Date[]> findSanctionDateByApplicationId(@Param("applicationId") Long applicationId);
 	
+	@Query("SELECT lsd.tenure,lsd.roi FROM LoanSanctionDomain lsd where lsd.applicationId =:applicationId AND lsd.nbfcFlow=:nbfcFlow AND lsd.isActive = true")
+	public Object[] getTenureAndRoiByAppIdAndNbfcFlow(@Param("applicationId") Long applicationId,@Param("nbfcFlow") Integer nbfcFlow);
 }
