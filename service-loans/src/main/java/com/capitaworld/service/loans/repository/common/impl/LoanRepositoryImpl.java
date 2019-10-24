@@ -404,6 +404,14 @@ public class LoanRepositoryImpl implements LoanRepository {
 		List<String> tutorials = storedProcedureQuery.getResultList();
 		return !CommonUtils.isListNullOrEmpty(tutorials) ? !CommonUtils.isObjectNullOrEmpty(tutorials.get(0)) ? tutorials.get(0) : null :null;
 	}
+
+	public String getTutorialsById(Long id){
+		List<String> tutorials = entityManager.createNativeQuery("select CAST(JSON_ARRAYAGG(JSON_OBJECT('id',tu.id,'nameTutorial',tu.name_tutorial,'title',tu.title,'description',tu.description,'urlTutorial',tu.url_tutorial,'type',tu.type,\n" +
+				"\t'createdDate',tu.created_date,'viewCount',(SELECT COUNT(va.id) FROM loan_application.`tutorial_view_audit` va WHERE va.tutorial_id = tu.id) from loan_application.tutorial_upload_manage a where a.is_active = TRUE a.id =:tutorialId")
+				.setParameter("tutorialId", id)
+				.getResultList();
+		return !CommonUtils.isListNullOrEmpty(tutorials) ? !CommonUtils.isObjectNullOrEmpty(tutorials.get(0)) ? tutorials.get(0) : null :null;
+	}
 	
 	@Override
 	public String getPrefillProfileStatus(Long fromLoanId,Long toLoanId) {

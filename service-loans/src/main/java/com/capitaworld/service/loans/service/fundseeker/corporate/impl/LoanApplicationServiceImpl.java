@@ -8544,6 +8544,19 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		return Collections.emptyList();
 	}
 	@Override
+	public List<TutorialUploadManageRes> getTutorialsById(Long id) {
+		try {
+			String tutorials = loanRepository.getTutorialsById(id);
+			if(!CommonUtils.isObjectNullOrEmpty(tutorials)) {
+                org.codehaus.jackson.map.ObjectMapper mapper = new org.codehaus.jackson.map.ObjectMapper();
+                return mapper.readValue(tutorials, new org.codehaus.jackson.type.TypeReference<List<TutorialUploadManageRes>>() {});
+            }
+		} catch (IOException e) {
+			logger.info("error while string to list convert in getTutorialsByRoleId");
+		}
+		return Collections.emptyList();
+	}
+	@Override
 	public boolean saveTutorialsAudit(TutorialsViewAudits longLatrequest) {
 		return loanRepository.saveTutorialsAudits(longLatrequest);
 	}
