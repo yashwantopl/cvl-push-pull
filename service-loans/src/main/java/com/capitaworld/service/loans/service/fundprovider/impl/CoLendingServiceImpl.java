@@ -21,6 +21,7 @@ import com.capitaworld.service.loans.model.WorkflowData;
 import com.capitaworld.service.loans.model.colending.CoLendingProposalResponse;
 import com.capitaworld.service.loans.model.corporate.CoLendingRequest;
 import com.capitaworld.service.loans.repository.colending.CoLendingFlowRepository;
+import com.capitaworld.service.loans.repository.common.LoanRepository;
 import com.capitaworld.service.loans.repository.fundprovider.CoLendingRatioRepository;
 import com.capitaworld.service.loans.repository.fundprovider.FpCoLendingBanksRepository;
 import com.capitaworld.service.loans.repository.fundprovider.NbfcRatioMappingTempRepository;
@@ -89,6 +90,9 @@ public class CoLendingServiceImpl implements CoLendingService {
 	
 	@Autowired
 	private NbfcRatioMappingTempRepository nbfcRatioMappingTempRepository;
+
+	@Autowired
+	private LoanRepository loanRepository;
 
 	DecimalFormat df = new DecimalFormat("#");
 
@@ -809,4 +813,32 @@ public class CoLendingServiceImpl implements CoLendingService {
 		return responseList;
 	}
 
+	@Override
+	public List<CoLendingRequest> getCoOriginationRatio(NhbsApplicationRequest nhbsApplicationRequest){
+		try {
+			if(!CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest.getFpProductId())){
+				List<Object[]> coLendingRatioLis = loanRepository.getCoLendingRatio(nhbsApplicationRequest.getFpProductId());
+				if(!CommonUtils.isListNullOrEmpty(coLendingRatioLis)){
+					List<CoLendingRequest> coLendingRequestList = new ArrayList<CoLendingRequest>();
+					for (Object[] objects:coLendingRatioLis) {
+						CoLendingRequest coLendingRequest = new CoLendingRequest();
+						if(!CommonUtils.isObjectNullOrEmpty(objects[0])
+								|| !CommonUtils.isObjectNullOrEmpty(objects[1])
+								|| !CommonUtils.isObjectNullOrEmpty(objects[2])
+								|| !CommonUtils.isObjectNullOrEmpty(objects[3])){
+							coLendingRequest.setId(Long.valueOf(objects[0].toString()));
+							coLendingRequest.setNbfcRatio(Double.valueOf(objects[1].toString()));
+							coLendingRequest.setBankRatio(Double.valueOf(objects[2].toString()));
+							coLendingRequest.setTenure(Double.valueOf(objects[3].toString()));
+							coLendingRequestList.add(coLendingRequest);
+						}
+					}
+					return coLendingRequestList;
+				}
+			}
+		}catch (Exception e){
+			logger.error("something went wrong in getCoOriginationRatio() : ",e.getMessage());
+		}
+		return null;
+	}
 }
