@@ -271,7 +271,7 @@ public interface LoanApplicationService {
 
 	public List<TutorialUploadManageRes> getTutorialsByRoleId(Long userRoleId,Integer loanType);
 
-	public List<TutorialUploadManageRes> getTutorialsById(Long id);
+	public TutorialUploadManageRes getTutorialsById(Long id);
 
 	public boolean saveTutorialsAudit(TutorialsViewAudits longLatrequest);
 

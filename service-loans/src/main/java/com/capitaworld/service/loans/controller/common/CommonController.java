@@ -467,7 +467,7 @@ public class CommonController {
 	public ResponseEntity<LoansResponse> getTutorialsById(@PathVariable("id") Long id) {
 		logger.info("Enter in getTutorialsById");
 		try {
-			return new ResponseEntity<>(new LoansResponse(HttpStatus.OK.value(),"Successfully get data !!",applicationService.getTutorialsById(id)), HttpStatus.OK);
+			return new ResponseEntity<>(new LoansResponse("Successfully get data !!",HttpStatus.OK.value(),applicationService.getTutorialsById(id)), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.warn("Error while getTutorialsByRoleId",e);
 			return new ResponseEntity<>(new LoansResponse("Something went wrong !!",HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
