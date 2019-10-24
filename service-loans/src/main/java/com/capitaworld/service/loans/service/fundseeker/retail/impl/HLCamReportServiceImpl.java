@@ -26,6 +26,9 @@ import com.capitaworld.api.ekyc.model.EkycResponse;
 import com.capitaworld.api.ekyc.model.epf.request.EmployerRequest;
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
+import com.capitaworld.cibil.api.model.CibilRequest;
+import com.capitaworld.cibil.api.model.CibilScoreLogRequest;
+import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.ekyc.EPFClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.connect.api.ConnectStage;
@@ -211,6 +214,9 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 	
 	@Autowired
 	private EPFClient epfClient;
+	
+	@Autowired
+	private CIBILClient cibilClient;
 	
 	@Autowired
 	private UsersClient usersClient;
@@ -1263,6 +1269,21 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				}
 				
 				
+				//cibil score
+				try {
+					CibilRequest cibilReq=new CibilRequest();
+					cibilReq.setPan(plRetailApplicantRequest.getPan());
+					cibilReq.setApplicationId(applicationId);
+					CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
+					if (cibilScoreByPanCard != null) {
+						map.put("applicantV2Score", CommonUtils.getCibilV2ScoreRange(cibilScoreByPanCard.getActualScore()));
+					}
+					map.put("applicantCIBILScore", cibilScoreByPanCard);
+				} catch (Exception e) {
+					logger.error("Error While calling Cibil Score By PanCard : ",e);
+				}
+				
+				
 				ITRBasicDetailsResponse itrBasicDetailsResponse = null;
 				String nameAsPerItr = null;
 				try {
@@ -1636,6 +1657,20 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				} catch (Exception e) {
 					logger.error("Error while getting income details : ",e);
 				}
+				
+				 try {
+	                    CibilRequest cibilReq=new CibilRequest();
+	                    cibilReq.setPan(coApplicantDetail.getPan());
+	                    cibilReq.setApplicationId(applicationId);
+	                    CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
+	                    if(cibilScoreByPanCard != null) {
+	                    	coApp.put("coAppV2Score", CommonUtils.getCibilV2ScoreRange(cibilScoreByPanCard.getActualScore()));
+	                    }
+	                    coApp.put("coAppCibilScore", cibilScoreByPanCard);
+	                } catch (Exception e) {
+	                    logger.error("Error While calling Cibil Score By PanCard : ",e);
+	                }
+				
 				
 				ITRBasicDetailsResponse itrBasicDetailsResponse = new ITRBasicDetailsResponse();
 				itrBasicDetailsResponse.setApplicationId(applicationId);

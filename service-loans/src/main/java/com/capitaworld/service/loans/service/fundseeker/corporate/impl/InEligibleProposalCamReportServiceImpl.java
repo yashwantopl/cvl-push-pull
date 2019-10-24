@@ -70,13 +70,16 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplica
 import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.service.common.PincodeDateService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.CamReportPdfDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateFinalInfoService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.InEligibleProposalCamReportService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.PrimaryCorporateService;
 import com.capitaworld.service.loans.service.scoring.ScoringService;
+import com.capitaworld.service.loans.service.teaser.primaryview.CorporatePrimaryViewService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.MatchEngineClient;
@@ -109,6 +112,7 @@ import com.capitaworld.service.oneform.enums.Title;
 import com.capitaworld.service.oneform.enums.VisuallyImpairedMst;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
+import com.capitaworld.service.rating.model.FinancialInputRequest;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
@@ -123,6 +127,9 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
+	
+	@Autowired
+	private LoanApplicationService loanApplicationService;
 
 	@Autowired
 	private MatchEngineClient matchEngineClient;
@@ -189,6 +196,12 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 
 	@Autowired
 	private PrimaryCorporateDetailRepository primaryCorporateRepository;
+	
+	@Autowired
+	private CorporatePrimaryViewService corporatePrimaryViewService;
+	
+	@Autowired
+	private CamReportPdfDetailsService camReportPdfDetailsService;
 
 	private static final Logger logger = LoggerFactory.getLogger(InEligibleProposalCamReportServiceImpl.class);
 	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -380,6 +393,22 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 			}
 		} catch (Exception e2) {
 			logger.error(CommonUtils.EXCEPTION, e2);
+		}
+		
+		//GST Comparision by Maaz
+		try{
+			FinancialInputRequest finaForCam = camReportPdfDetailsService.finaForCam(applicationId,null);
+			map.put("gstComparision", corporatePrimaryViewService.gstVsItrVsBsComparision(applicationId, finaForCam));
+		}catch (Exception e) {
+			logger.error("error in getting gst comparision data in Ineligible Cam : {}",e);
+		}
+		
+		//gstRelatedParty Data Fetch
+		try {
+			Map<String , Object> gstRelatedPartyRequests = loanApplicationService.getGstRelatedPartyDetails(applicationId);
+			map.put("gstPartyRelatedData", gstRelatedPartyRequests != null && !gstRelatedPartyRequests.isEmpty() ? gstRelatedPartyRequests : null);
+		}catch (Exception e) {
+			logger.error("Error/Exception while fetching list of gst Related Party List Data in Ineligible Cam of APplicationId==>{}  ... Error==>{}",applicationId ,e);
 		}
 
 		// GST DATA

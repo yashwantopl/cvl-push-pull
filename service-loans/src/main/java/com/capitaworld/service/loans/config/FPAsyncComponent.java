@@ -1088,7 +1088,7 @@ public class FPAsyncComponent {
 			parameters.put("url", URL_WWW_PSBLOANS_COM);
 
 			// ====================Sending Mail to Maker who accepts Proposal=====================
-			String subject = "Intimation: Proposal #Accepted=" + assignedMakerName + "#ApplicationId="+ applicationRequest.getApplicationCode();
+			String subject = "Intimation: Proposal Accepted" + assignedMakerName + "ApplicationId"+ applicationRequest.getApplicationCode();
 			
 			UserResponse allBranchUsers = userClient.getAllBranchUsers(branchId);
 			List<String> ccList=new ArrayList<>();
@@ -2350,7 +2350,8 @@ public class FPAsyncComponent {
 			Map<String, Object> mailParameters = new HashMap<String, Object>();
 			mailParameters.put(PARAMETERS_PRODUCT_NAME,productMasterTemp.getName() != null ? productMasterTemp.getName() : "NA");
 			mailParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "NA");
-			String subject = "Intimation " + "New Product: "+ productMasterTemp.getName() + " Approved - "+"Product ID: "+productMasterTemp.getProductCode();
+			mailParameters.put("product_code", productMasterTemp.getProductCode() != null ? productMasterTemp.getProductCode() : "");
+			String subject = "Intimation  New Product: "+ productMasterTemp.getName() + " Approved - "+"Product ID: "+productMasterTemp.getProductCode();
 			UsersRequest adminForChecker = new UsersRequest();
 			adminForChecker.setId(userId);
 			String adminCheckerName = null;
@@ -2403,7 +2404,15 @@ public class FPAsyncComponent {
 					productMasterTemp.getProductId() == LoanType.HOME_LOAN.getValue())) {
 				domainId = DomainValue.RETAIL.getId();
 			}
-			
+			ArrayList<String>ccList=new ArrayList<>();
+			UserResponse userResponse = userClient.getUserDetailByOrgRoleId(productMasterTemp.getUserOrgId(),
+					com.capitaworld.service.users.utils.CommonUtils.UserRoles.ADMIN_MAKER);
+			List<Map<String, Object>> usersRespList = (List<Map<String, Object>>) userResponse.getListData();
+			for (Object obj: userResponse.getListData()) {
+				UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap((Map) obj,Object.class);
+				ccList.add(userObj.getEmail());
+			}
+			String[] cc= (String[]) ccList.toArray();
 			String to = null;
 			if (!CommonUtils.isObjectNullOrEmpty(assignedMaker.getEmail())) {
 				to = assignedMaker.getEmail();
@@ -2412,7 +2421,7 @@ public class FPAsyncComponent {
 				} else {
 					mailParameters.put(PARAMETERS_ADMIN_MAKER, makerName != null ? makerName : PARAMETERS_SIR_MADAM);
 				}
-				createNotificationForEmail(to, userId.toString(), mailParameters,NotificationAlias.EMAIL_ADMIN_MAKER_PRODUCT_APPROVED_BY_CHECKER, subject,domainId,null);
+				createNotificationForEmail(to, userId.toString(), mailParameters,NotificationAlias.EMAIL_ADMIN_MAKER_PRODUCT_APPROVED_BY_CHECKER, subject,domainId,cc);
 			}
 
 			if (!CommonUtils.isObjectNullOrEmpty(assignedMaker.getMobile())) {

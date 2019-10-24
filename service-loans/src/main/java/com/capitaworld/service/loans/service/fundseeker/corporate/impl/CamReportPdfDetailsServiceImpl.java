@@ -342,9 +342,6 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	
 	@Autowired
 	private NbfcProposalBlendedRateRepository nbfcProposalBlendedRateRepository;
-	
-	@Value("${capitaworld.gstdata.enable}")
-	private Boolean gstDataEnable;
 
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -358,6 +355,22 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 
 		ProposalMappingRequestString proposalMappingRequestString = null;
 		Map<String, Object> map = new HashMap<String, Object>();
+		
+		//fetch NBFC Details
+		try {
+			Integer isNbfcUser = ((BigInteger)commonRepository.getIsNBFCUser(applicationId)).intValue();
+			if(isNbfcUser != null && isNbfcUser > 0) {
+				/**ProposalDetails proposalDetailsForBank = proposalDetailsRepository.findFirstByApplicationIdAndIsActiveAndNbfcFlowOrderByIdDesc(applicationId, true, 2);
+				if(!CommonUtils.isObjectNullOrEmpty(proposalDetailsForBank)) {
+					productId = proposalDetailsForBank.getFpProductId();
+					proposalId = proposalDetailsForBank.getId();
+				}*/
+				logger.info("Start Fetching Cam Data For ApplicationId==>{}  with  ProductId==>{}  and  ProposalId==>{}" , applicationId , productId , proposalId);
+				map.put("nbfcData", getNBFCData(applicationId));
+			}
+		}catch (Exception e) {
+			logger.error("Error/Exception while fetching Details For NBFC by ApplicationId==>{}" , applicationId);
+		}
 
 		Long userOrgId = proposalDetailsRepository.getOrgIdByProposalId(proposalId);
 		ProposalDetails proposalDetails = proposalDetailsRepository.getSanctionProposalByApplicationIdAndUserOrgId(applicationId, userOrgId);
@@ -498,16 +511,6 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			}
 		} catch (Exception e2) {
 			logger.error(CommonUtils.EXCEPTION,e2);
-		}
-		
-		//fetch NBFC Details
-		try {
-			Integer isNbfcUser = ((BigInteger)commonRepository.getIsNBFCUser(applicationId)).intValue();
-			if(isNbfcUser != null && isNbfcUser > 0) {
-				map.put("nbfcData", getNBFCData(applicationId));
-			}
-		}catch (Exception e) {
-			logger.error("Error/Exception while fetching Details For NBFC by ApplicationId==>{}" , applicationId);
 		}
 			
 		// Currently Commented  dateOfInPrincipalApproval from
@@ -1393,15 +1396,12 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 		
 		//gstRelatedParty Data Fetch
-		if(gstDataEnable != null && gstDataEnable) {
-			try {
-				Map<String , Object> gstRelatedPartyRequests = loanApplicationService.getGstRelatedPartyDetails(applicationId);
-				map.put("gstPartyRelatedData", gstRelatedPartyRequests != null && !gstRelatedPartyRequests.isEmpty() ? gstRelatedPartyRequests : null);
-			}catch (Exception e) {
-				logger.error("Error/Exception while fetching list of gst Related Party List Data of APplicationId==>{}  ... Error==>{}",applicationId ,e);
-			}
+		try {
+			Map<String , Object> gstRelatedPartyRequests = loanApplicationService.getGstRelatedPartyDetails(applicationId);
+			map.put("gstPartyRelatedData", gstRelatedPartyRequests != null && !gstRelatedPartyRequests.isEmpty() ? gstRelatedPartyRequests : null);
+		}catch (Exception e) {
+			logger.error("Error/Exception while fetching list of gst Related Party List Data of APplicationId==>{}  ... Error==>{}",applicationId ,e);
 		}
-
 
 		//PERFIOS API DATA (BANK STATEMENT ANALYSIS)
 		ReportRequest reportRequest = new ReportRequest();
@@ -1451,15 +1451,14 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		} catch (Exception e) {
 			logger.error("Error while getting perfios data : ",e);
 		}
-		map.put("gstEnable", gstDataEnable != null && gstDataEnable ? "true" : null);
+		map.put("gstEnable", "true");
+		
 		//GST Comparision by Maaz
-		if(gstDataEnable != null && gstDataEnable) {
-			try{
-				FinancialInputRequest finaForCam = finaForCam(applicationId,proposalId);
-				map.put("gstComparision", corporatePrimaryViewService.gstVsItrVsBsComparision(applicationId, finaForCam));
-			}catch (Exception e) {
-				logger.error("error in getting gst comparision data : {}",e);
-			}
+		try{
+			FinancialInputRequest finaForCam = finaForCam(applicationId,proposalId);
+			map.put("gstComparision", corporatePrimaryViewService.gstVsItrVsBsComparision(applicationId, finaForCam));
+		}catch (Exception e) {
+			logger.error("error in getting gst comparision data : {}",e);
 		}
 
 		/**ReportRequest reportRequest = new ReportRequest();
@@ -2386,7 +2385,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				nbfcData.put("nbfcRateOfInterest", proposalDetailsForNbfc.getElRoi() != null? proposalDetailsForNbfc.getElRoi() + " %":"NA");
 				nbfcData.put("nbfcTenure", proposalDetailsForNbfc.getElTenure() != null? proposalDetailsForNbfc.getElTenure() : "-");
 				nbfcData.put("nbfcEmiAmount", proposalDetailsForNbfc.getEmi() != null ? CommonUtils.convertValueWithoutDecimal(proposalDetailsForNbfc.getEmi()) : "-");
-				nbfcData.put("nbfc_processing_fees", proposalDetailsForNbfc.getProcessingFee() != null  ? proposalDetailsForNbfc.getProcessingFee() : "NA");
+				nbfcData.put("nbfcProcessingFees", proposalDetailsForNbfc.getProcessingFee() != null  ? proposalDetailsForNbfc.getProcessingFee() : "NA");
 			}
 		}catch (Exception e) {
 			logger.error("Error/Exception while fetching NBFC Details by ApplicationId==>{}" , applicationId);
@@ -2464,6 +2463,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		return null;
 	}
 
+	@Override
 	public FinancialInputRequest finaForCam(Long aplicationId,Long proposalId) {
 		FinancialInputRequest financialInputRequest = new FinancialInputRequest();
 		OperatingStatementDetails operatingStatementDetails;
@@ -2471,7 +2471,11 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		int currentYear = scoringService.getFinYear(aplicationId);
 		List<Map<String, Object>> financialYearAndSalesAndPurchase = new ArrayList<>();
 		try {
+			if(proposalId != null) {
 				operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetailsByProposal(proposalId, currentYear-1+"");
+			}else {
+				operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetailsByAppIdAndFinYear(aplicationId, currentYear-1+"");
+			}
 				if(operatingStatementDetails != null) {
 					yearSalesPurchase.put("year",currentYear-1);
 					yearSalesPurchase.put("itrSales",(operatingStatementDetails.getDomesticSales()+operatingStatementDetails.getExportSales()));
@@ -2483,7 +2487,11 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 		try {
 			yearSalesPurchase = new HashMap<>();
-			operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetailsByProposal(proposalId, currentYear-2+"");
+			if(proposalId != null) {
+				operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetailsByProposal(proposalId, currentYear-2+"");
+			}else {
+				operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetailsByAppIdAndFinYear(aplicationId, currentYear-2+"");
+			}
 			if(operatingStatementDetails != null) {
 				yearSalesPurchase.put("year",currentYear-2);
 				yearSalesPurchase.put("itrSales",(operatingStatementDetails.getDomesticSales()+operatingStatementDetails.getExportSales()));
@@ -2496,7 +2504,11 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		try {
 			yearSalesPurchase = new HashMap<>();
-			operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetailsByProposal(proposalId, currentYear-3+"");
+			if(proposalId != null) {
+				operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetailsByProposal(proposalId, currentYear-3+"");
+			}else {
+				operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetailsByAppIdAndFinYear(aplicationId, currentYear-3+"");
+			}
 			if(operatingStatementDetails != null) {
 				yearSalesPurchase.put("year",currentYear-3);
 				yearSalesPurchase.put("itrSales",(operatingStatementDetails.getDomesticSales()+operatingStatementDetails.getExportSales()));
