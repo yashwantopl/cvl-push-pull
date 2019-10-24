@@ -48,7 +48,7 @@ public class DisbursementController {
 		}
 	}
 	
-	@RequestMapping(value = "/getHandOff/{applicationId}/{proposalId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/getHandOff/{applicationId}/{proposalId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getHandOff(@PathVariable("applicationId") Long applicationId,@PathVariable("proposalId") Long proposalId,HttpServletRequest request) {
 		try {
 			logger.info("Enter in get co-origination disbursment hand off details ");
