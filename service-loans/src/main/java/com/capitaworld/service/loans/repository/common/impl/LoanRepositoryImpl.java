@@ -406,7 +406,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	}
 
 	public String getTutorialsById(Long id){
-		List<String> tutorials = entityManager.createNativeQuery("select CAST(JSON_ARRAYAGG(JSON_OBJECT('id',tu.id,'nameTutorial',tu.name_tutorial,'title',tu.title,'description',tu.description,'urlTutorial',tu.url_tutorial,'type',tu.type,'createdDate',tu.created_date,'viewCount',(SELECT COUNT(va.id) FROM loan_application.`tutorial_view_audit` va WHERE va.tutorial_id = tu.id)\t)) AS CHAR) from loan_application.tutorial_upload_manage a where a.is_active = TRUE and a.id =:tutorialId")
+		List<String> tutorials = entityManager.createNativeQuery("select CAST(JSON_ARRAYAGG(JSON_OBJECT('id',tu.id,'nameTutorial',tu.name_tutorial,'title',tu.title,'description',tu.description,'urlTutorial',tu.url_tutorial,'type',tu.type,'createdDate',tu.created_date,'viewCount',(SELECT COUNT(va.id) FROM loan_application.`tutorial_view_audit` va WHERE va.tutorial_id = tu.id)\t)) AS CHAR) from loan_application.tutorial_upload_manage tu where tu.is_active = TRUE and tu.id =:tutorialId")
 				.setParameter("tutorialId", id)
 				.getResultList();
 		return !CommonUtils.isListNullOrEmpty(tutorials) ? !CommonUtils.isObjectNullOrEmpty(tutorials.get(0)) ? tutorials.get(0) : null :null;
