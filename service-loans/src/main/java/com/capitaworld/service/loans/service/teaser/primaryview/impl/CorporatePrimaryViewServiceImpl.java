@@ -23,6 +23,7 @@ import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
 import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
+import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.itr.api.model.ITRConnectionResponse;
 import com.capitaworld.itr.client.ITRClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
@@ -42,6 +43,8 @@ import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.gst.model.CAMGSTData;
 import com.capitaworld.service.gst.util.DateComparator2;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
+import com.capitaworld.service.loans.domain.fundprovider.NbfcProposalBlendedRate;
+import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WcTlParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameter;
@@ -58,7 +61,10 @@ import com.capitaworld.service.loans.model.PincodeDataResponse;
 import com.capitaworld.service.loans.model.corporate.CollateralSecurityDetailRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
 import com.capitaworld.service.loans.model.teaser.primaryview.CorporatePrimaryViewResponse;
+import com.capitaworld.service.loans.model.teaser.primaryview.CorporatePrimaryViewResponseNbfc;
+import com.capitaworld.service.loans.repository.fundprovider.NbfcProposalBlendedRateRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.WcTlLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterRepository;
@@ -218,6 +224,16 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 	@Value("${capitaworld.gstdata.enable}")
 	private Boolean gstCompRelFlag;
 	
+	@Autowired
+	private ConnectClient connectClient;
+	
+    @Autowired
+    ProposalDetailsRepository proposalDetailsRepository;
+    
+	@Autowired
+	private NbfcProposalBlendedRateRepository nbfcProposalBlendedRateRepository;
+    
+	
 	DecimalFormat decim = new DecimalFormat("#,###.00");
 
 	@SuppressWarnings("unchecked")
@@ -225,8 +241,17 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 	public CorporatePrimaryViewResponse getCorporatePrimaryViewDetails(Long applicationId,Long proposalId, Integer userType,
 			Long fundProviderUserId) {
 
-		CorporatePrimaryViewResponse corporatePrimaryViewResponse = new CorporatePrimaryViewResponse();
-
+	CorporatePrimaryViewResponse corporatePrimaryViewResponse = new CorporatePrimaryViewResponse();
+	//for NBFC and Code
+	   Boolean isNBFCFlow = applicationProposalMappingRepository.getNbfcUserValue(applicationId);
+		if(isNBFCFlow) {
+			CorporatePrimaryViewResponseNbfc nbfcData = getNbfcData(applicationId);
+			corporatePrimaryViewResponse.setNbfcData(nbfcData);
+			ProposalDetails proposalDetailsForBank = proposalDetailsRepository.findFirstByApplicationIdAndIsActiveAndNbfcFlowOrderByIdDesc(applicationId, true, 2);
+			proposalId = proposalDetailsForBank.getId();
+		}
+	// END
+		
 		ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalId); // NEW BASED ON PROPOSAL MAPPING ID
 		logger.info("AppId===========>{}",applicationProposalMapping.getApplicationId());
 		Long toApplicationId = applicationProposalMapping.getApplicationId(); // new
@@ -1393,6 +1418,70 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		}
 		return corporatePrimaryViewResponse;
 	}
+
+//	STARTS HERE CO-ORIGIN CODE 
+	private CorporatePrimaryViewResponseNbfc getNbfcData(Long applicationId)
+	{
+		CorporatePrimaryViewResponseNbfc corporatePrimaryView = new CorporatePrimaryViewResponseNbfc();
+		    Boolean isNBFCFlow = applicationProposalMappingRepository.getNbfcUserValue(applicationId);
+		    corporatePrimaryView.setCheckFlag(isNBFCFlow);
+		    
+		    NbfcProposalBlendedRate nbfcProposalBlendedRate = nbfcProposalBlendedRateRepository.getByApplicationIdOrderByIdDescLimit1(applicationId);
+			if(!CommonUtils.isObjectNullOrEmpty(nbfcProposalBlendedRate)) {
+				//Existing and Additional Loan Amount
+				Long loanAmount = nbfcProposalBlendedRate.getElAmount() != null ? nbfcProposalBlendedRate.getElAmount().longValue() : null;
+				Long existingLoanAmount = nbfcProposalBlendedRate.getExistingLoanAmount() != null ? nbfcProposalBlendedRate.getExistingLoanAmount().longValue() : 0l;
+				Long additionalLoanAmount = nbfcProposalBlendedRate.getAdditionalLoanAmount() != null ? nbfcProposalBlendedRate.getAdditionalLoanAmount().longValue() : 0l;
+				if(existingLoanAmount != 0 && additionalLoanAmount != 0) {
+					loanAmount = existingLoanAmount + additionalLoanAmount;
+				}
+				corporatePrimaryView.setNbfcBlendedExistingLoanAmount(existingLoanAmount != 0 ? CommonUtils.convertValueWithoutDecimal(existingLoanAmount.doubleValue()) : "0");
+				corporatePrimaryView.setNbfcBlendedAdditionalLoanAmount(additionalLoanAmount != 0 ? CommonUtils.convertValueWithoutDecimal(additionalLoanAmount.doubleValue()) : "0");
+				corporatePrimaryView.setNbfcBlendedAmount(loanAmount != 0 ? CommonUtils.convertValueWithoutDecimal(loanAmount.doubleValue()) : "0");
+				corporatePrimaryView.setNbfcBlendedRateOfInterest(nbfcProposalBlendedRate.getElRoi());
+				corporatePrimaryView.setNbfcBlendedTenure(nbfcProposalBlendedRate.getElTenure());
+				corporatePrimaryView.setNbfcBlendedEmiAmount(nbfcProposalBlendedRate.getEmi() != 0 ? CommonUtils.convertValueWithoutDecimal(nbfcProposalBlendedRate.getEmi().doubleValue()) : "0");
+				corporatePrimaryView.setNbfcBlendedProcessingFees(nbfcProposalBlendedRate.getProcessingFee());
+			}
+			
+			ProposalDetails proposalDetailsForNbfc = proposalDetailsRepository.findFirstByApplicationIdAndIsActiveAndNbfcFlowOrderByIdDesc(applicationId, true, 1);
+			if(!CommonUtils.isObjectNullOrEmpty(proposalDetailsForNbfc)) {
+ 				Long loanAmount = proposalDetailsForNbfc.getElAmount() != null ? proposalDetailsForNbfc.getElAmount().longValue() : null;
+				Long existingLoanAmount = proposalDetailsForNbfc.getExistingLoanAmount() != null ? proposalDetailsForNbfc.getExistingLoanAmount().longValue() : 0l;
+				Long additionalLoanAmount = proposalDetailsForNbfc.getAdditionalLoanAmount() != null ? proposalDetailsForNbfc.getAdditionalLoanAmount().longValue() : 0l;
+				if(existingLoanAmount != 0 && additionalLoanAmount != 0) {
+					loanAmount = existingLoanAmount + additionalLoanAmount;
+				}
+				corporatePrimaryView.setNbfcExistingLoanAmount(existingLoanAmount != 0 ? CommonUtils.convertValueWithoutDecimal(existingLoanAmount.doubleValue()) : "0");
+				corporatePrimaryView.setNbfcAdditionalLoanAmount(additionalLoanAmount != 0 ? CommonUtils.convertValueWithoutDecimal(additionalLoanAmount.doubleValue()) : "0");
+				corporatePrimaryView.setNbfcAmount(loanAmount != 0 ? CommonUtils.convertValueWithoutDecimal(loanAmount.doubleValue()) : "0");
+				corporatePrimaryView.setNbfcRateOfInterest(proposalDetailsForNbfc.getElRoi());
+				corporatePrimaryView.setNbfcTenure(proposalDetailsForNbfc.getElTenure());
+				corporatePrimaryView.setNbfcEmiAmount(proposalDetailsForNbfc.getEmi() != 0 ? CommonUtils.convertValueWithoutDecimal(proposalDetailsForNbfc.getEmi().doubleValue()) : "0");
+				corporatePrimaryView.setNbfcProcessingFees(proposalDetailsForNbfc.getProcessingFee());
+			}
+			
+			ProposalDetails proposalDetailsForBank = proposalDetailsRepository.findFirstByApplicationIdAndIsActiveAndNbfcFlowOrderByIdDesc(applicationId, true, 2);
+			if(!CommonUtils.isObjectNullOrEmpty(proposalDetailsForBank)) {
+				//Existing and Additional Loan Amount
+				Long loanAmount = proposalDetailsForBank.getElAmount() != null ? proposalDetailsForBank.getElAmount().longValue() : null;
+				Long existingLoanAmount = proposalDetailsForBank.getExistingLoanAmount() != null ? proposalDetailsForBank.getExistingLoanAmount().longValue() : 0l;
+				Long additionalLoanAmount = proposalDetailsForBank.getAdditionalLoanAmount() != null ? proposalDetailsForBank.getAdditionalLoanAmount().longValue() : 0l;
+				if(existingLoanAmount != 0 && additionalLoanAmount != 0) {
+					loanAmount = existingLoanAmount + additionalLoanAmount;
+				}
+				corporatePrimaryView.setBankExistingLoanAmount(existingLoanAmount != 0 ? CommonUtils.convertValueWithoutDecimal(existingLoanAmount.doubleValue()) : "0");
+				corporatePrimaryView.setBankAdditionalLoanAmount(additionalLoanAmount != 0 ? CommonUtils.convertValueWithoutDecimal(additionalLoanAmount.doubleValue()) : "0");
+				corporatePrimaryView.setBankAmount(loanAmount != 0 ? CommonUtils.convertValueWithoutDecimal(loanAmount.doubleValue()) : "0");
+				corporatePrimaryView.setBankRateOfInterest(proposalDetailsForBank.getElRoi());
+				corporatePrimaryView.setBankTenure(proposalDetailsForBank.getElTenure());
+				corporatePrimaryView.setBankEmiAmount(proposalDetailsForBank.getEmi() != 0 ? CommonUtils.convertValueWithoutDecimal(proposalDetailsForBank.getEmi().doubleValue()) : "0");
+				corporatePrimaryView.setBankProcessingFees(proposalDetailsForBank.getProcessingFee() );
+			}
+			return corporatePrimaryView;
+	}
+//	ENDS HERE CO-ORIGIN CODE 
+
 
 	@SuppressWarnings("unchecked")
 	@Override
