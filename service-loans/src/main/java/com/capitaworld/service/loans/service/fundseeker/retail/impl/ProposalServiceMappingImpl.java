@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.capitaworld.service.matchengine.exception.MatchException;
+import com.capitaworld.service.matchengine.model.*;
 import org.joda.time.DateTimeComparator;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
@@ -82,14 +84,6 @@ import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
-import com.capitaworld.service.matchengine.model.ConnectionResponse;
-import com.capitaworld.service.matchengine.model.DisbursementDetailsModel;
-import com.capitaworld.service.matchengine.model.MatchDisplayObject;
-import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
-import com.capitaworld.service.matchengine.model.MatchRequest;
-import com.capitaworld.service.matchengine.model.ProposalCountResponse;
-import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
-import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.matchengine.utils.MatchConstant;
 import com.capitaworld.service.matchengine.utils.MatchConstant.ProposalStatus;
 import com.capitaworld.service.notification.model.SchedulerDataMultipleBankRequest;
@@ -108,6 +102,7 @@ import com.capitaworld.service.users.model.FundProviderDetailsRequest;
 import com.capitaworld.service.users.model.LocationMasterResponse;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Transactional
@@ -3318,5 +3313,36 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		}
 		return null;
 	}
+
+	@Override
+	public ProposalMappingResponse getDisbursementRequestDetails(DisbursementRequestModel request) {
+		logger.info("DISBURSEMENT request DETAILS IS ---------------------------------------------------> " + request.toString());
+		if (CommonUtils.isObjectNullOrEmpty(request)) {
+			return new ProposalMappingResponse("Invalid request",
+					HttpStatus.INTERNAL_SERVER_ERROR.value());
+		}
+		try {
+			return proposalDetailsClient.getDisbursementRequestDetails(request);
+		} catch (MatchException e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+		return null;
+	}
+
+	@Override
+	public ProposalMappingResponse saveDisbursementRequestDetails(MultipartFile[] multipartFiles, String userRequestString) {
+		logger.info("saving DISBURSEMENT request DETAILS IS ---------------------------------------------------> " + userRequestString.toString());
+		if (CommonUtils.isObjectNullOrEmpty(userRequestString)) {
+			return new ProposalMappingResponse("Invalid request",
+					HttpStatus.INTERNAL_SERVER_ERROR.value());
+		}
+		try {
+			return proposalDetailsClient.saveRequestDisbursementDetails(multipartFiles,userRequestString);
+		} catch (MatchException e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+		return null;
+	}
+
 }
 

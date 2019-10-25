@@ -13,12 +13,10 @@ import com.capitaworld.service.loans.model.ProposalDetailsAdminRequest;
 import com.capitaworld.service.loans.model.ProposalResponse;
 import com.capitaworld.service.loans.model.common.ProposalSearchResponse;
 import com.capitaworld.service.loans.model.common.ReportRequest;
-import com.capitaworld.service.matchengine.model.DisbursementDetailsModel;
-import com.capitaworld.service.matchengine.model.ProposalCountResponse;
-import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
-import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
+import com.capitaworld.service.matchengine.model.*;
 import com.capitaworld.service.notification.model.SchedulerDataMultipleBankRequest;
 import com.capitaworld.service.users.model.UsersRequest;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface ProposalService {
 
@@ -79,4 +77,8 @@ public interface ProposalService {
 	public List<SchedulerDataMultipleBankRequest> getApplicationListForMultipleBank();
 	
 	public String getDayDiffrenceForInprinciple(Integer loanType);
+
+	public ProposalMappingResponse getDisbursementRequestDetails(DisbursementRequestModel request);
+
+	public ProposalMappingResponse saveDisbursementRequestDetails(MultipartFile[] multipartFiles, String request);
 }
