@@ -149,6 +149,8 @@ public class CorporateFinalViewResponse implements Serializable {
 	private List<Object> bankStatement;
 	private List<Object> cmaList;
 	private List<Object> irtPdfReport;
+	private List<Object> nbfcPANReport;
+	private List<Object> nbfcAddressProofReport;
 	private List<OwnershipDetailResponse> ownershipDetailResponseList;
 	private List<TotalCostOfProjectResponse> totalCostOfProjectResponseList;
 	private List<FinanceMeansDetailResponse> financeMeansDetailResponseList;
@@ -2298,10 +2300,20 @@ public class CorporateFinalViewResponse implements Serializable {
 	public void setBankComparisionData(Object bankComparisionData) {
 		this.bankComparisionData = bankComparisionData;
 	}
-	
-	
 
+	public List<Object> getNbfcPANReport() {
+		return nbfcPANReport;
+	}
 
+	public void setNbfcPANReport(List<Object> nbfcPANReport) {
+		this.nbfcPANReport = nbfcPANReport;
+	}
 
+	public List<Object> getNbfcAddressProofReport() {
+		return nbfcAddressProofReport;
+	}
 
+	public void setNbfcAddressProofReport(List<Object> nbfcAddressProofReport) {
+		this.nbfcAddressProofReport = nbfcAddressProofReport;
+	}
 }

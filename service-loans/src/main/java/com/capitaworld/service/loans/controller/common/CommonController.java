@@ -6,6 +6,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import com.capitaworld.service.loans.domain.common.MinMaxProductDetail;
+import com.capitaworld.service.loans.model.TutorialUploadManageRes;
 import com.capitaworld.service.loans.model.TutorialsViewAudits;
 import com.capitaworld.service.loans.model.api_model.LoantypeSelectionResponse;
 import com.capitaworld.service.loans.model.common.*;
@@ -458,6 +459,17 @@ public class CommonController {
 		logger.info("Enter in getTutorialsByRoleId");
 		try {
 			return new ResponseEntity<>(new LoansResponse(HttpStatus.OK.value(),"Successfully get data !!",applicationService.getTutorialsByRoleId(roleId, loanType)), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.warn("Error while getTutorialsByRoleId",e);
+			return new ResponseEntity<>(new LoansResponse("Something went wrong !!",HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	@GetMapping(value = "/getTutorialsById/{id}")
+	public ResponseEntity<LoansResponse> getTutorialsById(@PathVariable("id") Long id) {
+		logger.info("Enter in getTutorialsById");
+		try {
+			TutorialUploadManageRes tutorialsById = applicationService.getTutorialsById(id);
+			return new ResponseEntity<>(new LoansResponse("Successfully get data !!",HttpStatus.OK.value(),tutorialsById), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.warn("Error while getTutorialsByRoleId",e);
 			return new ResponseEntity<>(new LoansResponse("Something went wrong !!",HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);

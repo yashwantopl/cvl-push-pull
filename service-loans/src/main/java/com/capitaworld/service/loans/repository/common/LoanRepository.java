@@ -59,6 +59,8 @@ public interface LoanRepository{
 
 	public String getTutorialsByRoleId(Long userRoleId, Integer loanType);
 
+	public String getTutorialsById(Long id);
+
 	public boolean saveTutorialsAudits(TutorialsViewAudits longLatrequest);
 
 	public String getTutorialsAudit(TutorialsViewAudits request);
@@ -76,4 +78,6 @@ public interface LoanRepository{
 	public String getCampaignUser(Long userId,Long campaignType);
 	
 	public String getAgriLoanApplicationsByOrgIdAndStatus(Integer orgId,Integer status,Integer fromLimit,Integer toLimit);
+
+	public List<Object[]> getCoLendingRatio(Long fpProductId);
 }

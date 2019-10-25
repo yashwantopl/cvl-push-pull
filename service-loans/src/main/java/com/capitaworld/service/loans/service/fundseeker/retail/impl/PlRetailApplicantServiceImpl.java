@@ -573,6 +573,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 
 			        bankRelationshipRequest.setSinceYear(years);
 			        bankRelationshipRequest.setSinceMonth(months);
+			        bankRelationshipRequest.setSinceWhen((bankRelationshipRequest.getSinceYear() != null ? bankRelationshipRequest.getSinceYear() +" year" : "") + " " +(bankRelationshipRequest.getSinceMonth() != null ? bankRelationshipRequest.getSinceMonth()+" months" :  "" ));
 				}
             	bankRelationshipRequests.add(bankRelationshipRequest);
             }
@@ -721,6 +722,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 
 			        bankRelationshipRequest.setSinceYear(years);
 			        bankRelationshipRequest.setSinceMonth(months);
+			        bankRelationshipRequest.setSinceWhen((bankRelationshipRequest.getSinceYear() != null ? bankRelationshipRequest.getSinceYear() +" year" : "") + " " +(bankRelationshipRequest.getSinceMonth() != null ? bankRelationshipRequest.getSinceMonth()+" months" :  "" ));
 				}
             	bankRelationshipRequests.add(bankRelationshipRequest);
             }
@@ -959,6 +961,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 					Period age = Period.between(since, today);
 					bankRelationshipRequest.setSinceYear(age.getYears());
 					bankRelationshipRequest.setSinceMonth(age.getMonths());
+					bankRelationshipRequest.setSinceWhen((bankRelationshipRequest.getSinceYear() != null ? bankRelationshipRequest.getSinceYear() +" year" : "") + " " +(bankRelationshipRequest.getSinceMonth() != null ? bankRelationshipRequest.getSinceMonth()+" months" :  "" ));
 				}
             	bankRelationshipRequests.add(bankRelationshipRequest);
             }
