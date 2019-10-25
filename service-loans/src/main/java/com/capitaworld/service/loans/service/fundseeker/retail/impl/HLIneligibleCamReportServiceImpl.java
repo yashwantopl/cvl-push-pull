@@ -274,8 +274,9 @@ public class HLIneligibleCamReportServiceImpl implements HLIneligibleCamReportSe
 				CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
 				if (cibilScoreByPanCard != null) {
 					map.put("applicantV2Score", CommonUtils.getCibilV2ScoreRange(cibilScoreByPanCard.getActualScore()));
+					map.put("applicantCIBILScore", cibilScoreByPanCard != null && cibilScoreByPanCard.getActualScore() != null? cibilScoreByPanCard.getActualScore() : null);
 				}
-				map.put("applicantCIBILScore", cibilScoreByPanCard != null && cibilScoreByPanCard.getActualScore() != null? cibilScoreByPanCard.getActualScore() : null);
+				
 			} catch (Exception e) {
 				logger.error("Error While calling Cibil Score By PanCard : ",e);
 			}
@@ -422,8 +423,9 @@ public class HLIneligibleCamReportServiceImpl implements HLIneligibleCamReportSe
                     CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
                     if(cibilScoreByPanCard != null) {
                     	coApp.put("coAppV2Score", CommonUtils.getCibilV2ScoreRange(cibilScoreByPanCard.getActualScore()));
+                    	coApp.put("coAppCibilScore", cibilScoreByPanCard);
                     }
-                    coApp.put("coAppCibilScore", cibilScoreByPanCard.getActualScore());
+                    
                 } catch (Exception e) {
                     logger.error("Error While calling Cibil Score By PanCard : ",e);
                 }
