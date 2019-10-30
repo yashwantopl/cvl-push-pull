@@ -28,8 +28,12 @@ public class RecommendDetail {
     @Column(name="roi")
     private Double roi;
 
+    @Column(name="processing_fee")
+    private Double processingFee;
+
     @Column(name="remark")
     private String remark;
+
 
     public Long getId() {
         return id;
@@ -69,6 +73,14 @@ public class RecommendDetail {
 
     public void setRoi(Double roi) {
         this.roi = roi;
+    }
+
+    public Double getProcessingFee() {
+        return processingFee;
+    }
+
+    public void setProcessingFee(Double processingFee) {
+        this.processingFee = processingFee;
     }
 
     public String getRemark() {

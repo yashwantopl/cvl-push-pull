@@ -11,6 +11,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.domain.colending.RecommendDetail;
+import com.capitaworld.service.loans.repository.colending.RecommendDetailRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -232,6 +234,9 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
     
 	@Autowired
 	private NbfcProposalBlendedRateRepository nbfcProposalBlendedRateRepository;
+
+	@Autowired
+	private RecommendDetailRepository recommendDetailRepository;
     
 	
 	DecimalFormat decim = new DecimalFormat("#,###.00");
@@ -249,6 +254,16 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			corporatePrimaryViewResponse.setNbfcData(nbfcData);
 			ProposalDetails proposalDetailsForBank = proposalDetailsRepository.findFirstByApplicationIdAndIsActiveAndNbfcFlowOrderByIdDesc(applicationId, true, 2);
 			proposalId = proposalDetailsForBank.getId();
+
+			RecommendDetail detail = recommendDetailRepository.getByApplicationIdOrderByIdDescLimit1(applicationId);
+			if (!CommonUtils.isObjectNullOrEmpty(detail)) {
+				nbfcData.setRecommendedValue(detail.getValue());
+				nbfcData.setRecommendedTenure(detail.getTenure());
+				nbfcData.setRecommendedRoi(detail.getRoi());
+				nbfcData.setRecommendedProcessingFee(detail.getProcessingFee());
+				nbfcData.setRecommendedRemark(detail.getRemark());
+			}
+
 		}
 	// END
 		

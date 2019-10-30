@@ -1,10 +1,12 @@
 package com.capitaworld.service.loans.service.colending.impl;
 
+import com.capitaworld.service.loans.domain.colending.RecommendDetail;
 import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
 import com.capitaworld.service.loans.domain.fundprovider.ProposalDetailsAuditNbfc;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.ClientListingCoLending;
 import com.capitaworld.service.loans.repository.colending.CoLendingFlowRepository;
+import com.capitaworld.service.loans.repository.colending.RecommendDetailRepository;
 import com.capitaworld.service.loans.repository.fundprovider.NbfcProposalBlendedRateRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsAuditNbfcRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
@@ -56,6 +58,9 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 
 	@Autowired
 	private NbfcProposalBlendedRateRepository nbfcProposalBlendedRateRepository;
+
+	@Autowired
+	private RecommendDetailRepository recommendDetailRepository;
 
 	private static final String ERROR_WHILE_GETTING_CLIENT_LIST = "Error while getting client list.";
 	private static final String ERROR_WHILE_GETTING_NBFC_CLIENT_COUNT = "Error while getting NBFC client count.";
@@ -155,7 +160,15 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 				if(proposalDetailsTwo.getElAmount() == proposalDetailsOne.getElAmount()){
 					if(proposalDetailsTwo.getElTenure() == proposalDetailsOne.getElTenure()){
 						if(proposalDetailsTwo.getNbfcFlow() == NBFC_BANK_FLOW){
-							minLoanAmtProposalObj = proposalDetailsTwo;
+							RecommendDetail recommendDetail = recommendDetailRepository.getByApplicationIdOrderByIdDescLimit1(applicationId);
+							if(!CommonUtils.isObjectNullOrEmpty(recommendDetail) && !CommonUtils.isObjectNullOrEmpty(recommendDetail.getValue())){
+								minLoanAmtProposalObj.setElAmount(recommendDetail.getValue());
+								minLoanAmtProposalObj.setElTenure(recommendDetail.getTenure());
+								minLoanAmtProposalObj.setElRoi(recommendDetail.getRoi());
+								minLoanAmtProposalObj.setProcessingFee(recommendDetail.getProcessingFee());
+							}else{
+								minLoanAmtProposalObj = proposalDetailsTwo;
+							}
 						}else {
 							minLoanAmtProposalObj = proposalDetailsOne;
 						}
