@@ -106,7 +106,6 @@ import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.enums.DesignationList;
 import com.capitaworld.service.oneform.enums.DisabilityType;
 import com.capitaworld.service.oneform.enums.EducationStatusRetailMst;
-import com.capitaworld.service.oneform.enums.EmploymentCategory;
 import com.capitaworld.service.oneform.enums.EmploymentStatusRetailMst;
 import com.capitaworld.service.oneform.enums.EmploymentWithPL;
 import com.capitaworld.service.oneform.enums.EmploymentWithRetail;
@@ -289,6 +288,7 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 		logger.info("applicationProposalMapping  ==>{}",applicationProposalMapping);
 		Long userid = applicationProposalMapping.getUserId();
 		alTeaserViewResponse.setLoanType(applicationProposalMapping.getProductId() != null ? LoanType.getById(applicationProposalMapping.getProductId()).getValue().toString() : "");
+		alTeaserViewResponse.setProductId(applicationProposalMapping.getProductId());
 		alTeaserViewResponse.setLoanAmount(applicationProposalMapping.getLoanAmount().longValue());
 		alTeaserViewResponse.setTenure(applicationProposalMapping.getTenure()!=null ? ((applicationProposalMapping.getTenure()).toString()) + " Years":" - ");
 		alTeaserViewResponse.setCurrencyDenomination(applicationProposalMapping.getCurrencyId() != null ? Currency.getById(applicationProposalMapping.getCurrencyId()).getValue().toString() : "-");
