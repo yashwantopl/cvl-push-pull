@@ -242,6 +242,9 @@ public interface ProposalDetailsRepository extends JpaRepository<ProposalDetails
     @Query(value = "SELECT * FROM proposal_details pd WHERE application_id =:applicationId and pd.nbfc_flow = 1 ORDER BY pd.modified_date desc LIMIT 1",nativeQuery = true)
     public ProposalDetails getSanctionProposalByApplicationNBFCFlow(@Param("applicationId") Long applicationId);
 
+    @Query(value = "SELECT * FROM proposal_details pd WHERE application_id =:applicationId and pd.nbfc_flow = 2 and pd.proposal_status_id =5 ORDER BY pd.modified_date desc LIMIT 1",nativeQuery = true)
+    public ProposalDetails getSanctionProposalByApplicationBankFlow(@Param("applicationId") Long applicationId);
+
     // Count for checker maker (HOLD REJECT proposal)
     @Query(value = "SELECT p.id FROM proposal_details p WHERE p.is_active=TRUE and p.user_org_id=:userOrgId and p.branch_id=:branchId and nbfc_flow=:nbfcFlow_1 and p.application_id in (SELECT pd.application_id FROM proposal_details pd WHERE pd.proposal_status_id IN (:proposalStatus) and pd.is_active=TRUE and (pd.nbfc_flow=:nbfcFlow_2 OR pd.nbfc_flow=:nbfcFlow_1))",nativeQuery = true)
     public List<BigInteger> getFPProposalCountByStatusIdAndNBFCFlowType(@Param("proposalStatus") List<Long> proposalStatus,@Param("userOrgId") Long userOrgId, @Param("branchId") Long branchId,@Param("nbfcFlow_1") Integer nbfcFlow_1,  @Param("nbfcFlow_2") Integer nbfcFlow_2);
