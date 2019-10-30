@@ -282,8 +282,8 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		scoringModelReqRes=new ScoringModelReqRes();
 		scoringModelReqRes.setScoringModelId(termLoanParameterRequest.getScoreModelId());
 		
-		NbfcRatioMappingTemp nbfcRatioMapping = nbfcRatioMappingTempRepository.getOne(l);
-		coLendingRatio = coLendingRatioRepository.getOne(nbfcRatioMapping.getRatioId());
+		//NbfcRatioMappingTemp nbfcRatioMapping = nbfcRatioMappingTempRepository.getOne(l);
+		coLendingRatio = coLendingRatioRepository.getOne(l);
 		scoringModelReqRes.setOrgId(coLendingRatio.getUserOrgId());
 		
 		ScoringModelReqRes copyScoringModel = scoringClient.copyScoringModel(scoringModelReqRes);
