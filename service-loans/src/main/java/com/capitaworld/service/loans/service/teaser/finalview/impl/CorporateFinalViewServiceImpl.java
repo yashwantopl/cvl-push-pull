@@ -11,6 +11,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.matchengine.ProposalDetailsClient;
+import com.capitaworld.service.matchengine.exception.MatchException;
+import com.capitaworld.service.matchengine.model.DisbursementRequestModel;
+import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -331,6 +335,9 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 	@Value("${capitaworld.gstdata.enable}")
 	private Boolean gstCompRelFlag;
 
+	@Autowired
+	private ProposalDetailsClient proposalDetailsClient;
+
 	DecimalFormat decim = new DecimalFormat("#,###.00");
 
 	@SuppressWarnings("unchecked")
@@ -339,6 +346,17 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 
 
 		CorporateFinalViewResponse corporateFinalViewResponse = new CorporateFinalViewResponse();
+
+		DisbursementRequestModel request = new DisbursementRequestModel();
+		request.setApplicationId(toapplicationId);
+		request.setProposalId(proposalMapId);
+		request.setUserId(fundProviderUserId);
+		try {
+			ProposalMappingResponse s = proposalDetailsClient.getDisbursementRequestDetails(request);
+			corporateFinalViewResponse.setDisbursementRequestDetails(s.getData());
+		} catch (MatchException e) {
+			logger.error("Error while geting disbursedment details",e);
+		}
 
 		ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalMapId);
 
