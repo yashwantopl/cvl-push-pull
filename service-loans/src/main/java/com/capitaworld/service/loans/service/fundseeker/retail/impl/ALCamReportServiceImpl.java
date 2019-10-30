@@ -1208,8 +1208,8 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 				CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
 				if (cibilScoreByPanCard != null) {
 					map.put("applicantV2Score", CommonUtils.getCibilV2ScoreRange(cibilScoreByPanCard.getActualScore()));
+					map.put("applicantCIBILScore", cibilScoreByPanCard);
 				}
-				map.put("applicantCIBILScore", cibilScoreByPanCard);
 			} catch (Exception e) {
 				logger.error("Error While calling Cibil Score By PanCard : ",e);
 			}
@@ -1495,8 +1495,8 @@ public class ALCamReportServiceImpl implements ALCamReportService {
                     CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
                     if(cibilScoreByPanCard != null) {
                     	coApp.put("coAppV2Score", CommonUtils.getCibilV2ScoreRange(cibilScoreByPanCard.getActualScore()));
+                    	coApp.put("coAppCibilScore", cibilScoreByPanCard);
                     }
-                    coApp.put("coAppCibilScore", cibilScoreByPanCard);
                 } catch (Exception e) {
                     logger.error("Error While calling Cibil Score By PanCard : ",e);
                 }
