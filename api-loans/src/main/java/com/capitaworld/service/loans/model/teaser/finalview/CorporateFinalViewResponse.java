@@ -63,6 +63,7 @@ public class CorporateFinalViewResponse implements Serializable {
 	private String collateralSecurityAmount;
 	private List<Object> profilePic;
 	private Integer productId;
+	private Object disbursementRequestDetails;
 
 	private String purposeOfLoan;
 	private String businessAssetAmount;
@@ -2360,5 +2361,13 @@ public class CorporateFinalViewResponse implements Serializable {
 
 	public void setNbfcOther(List<Object> nbfcOther) {
 		this.nbfcOther = nbfcOther;
+	}
+
+	public Object getDisbursementRequestDetails() {
+		return disbursementRequestDetails;
+	}
+
+	public void setDisbursementRequestDetails(Object disbursementRequestDetails) {
+		this.disbursementRequestDetails = disbursementRequestDetails;
 	}
 }
