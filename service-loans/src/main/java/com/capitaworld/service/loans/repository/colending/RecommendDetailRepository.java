@@ -8,4 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 
 public interface RecommendDetailRepository extends JpaRepository<RecommendDetail,Long>{
+    RecommendDetail getOneByApplicationId(Long applicationId);
 }
