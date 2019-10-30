@@ -255,7 +255,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			ProposalDetails proposalDetailsForBank = proposalDetailsRepository.findFirstByApplicationIdAndIsActiveAndNbfcFlowOrderByIdDesc(applicationId, true, 2);
 			proposalId = proposalDetailsForBank.getId();
 
-			RecommendDetail detail = recommendDetailRepository.getOneByApplicationId(applicationId);
+			RecommendDetail detail = recommendDetailRepository.getByApplicationIdOrderByIdDescLimit1(applicationId);
 			if (!CommonUtils.isObjectNullOrEmpty(detail)) {
 				nbfcData.setRecommendedValue(detail.getValue());
 				nbfcData.setRecommendedTenure(detail.getTenure());
