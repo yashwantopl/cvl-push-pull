@@ -8539,7 +8539,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
                 return mapper.readValue(tutorials, new org.codehaus.jackson.type.TypeReference<List<TutorialUploadManageRes>>() {});
             }
 		} catch (IOException e) {
-			logger.info("error while string to list convert in getTutorialsByRoleId");
+			logger.info("error while string to list convert in getTutorialsByRoleId",e);
 		}
 		return Collections.emptyList();
 	}
@@ -8552,7 +8552,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
                 return MultipleJSONObjectHelper.getObjectFromString(tutorials,TutorialUploadManageRes.class);
             }
 		} catch (IOException e) {
-			logger.info("error while string to list convert in getTutorialsByRoleId");
+			logger.info("error while string to list convert in getTutorialsByRoleId",e);
 		}
 		return null;
 	}
