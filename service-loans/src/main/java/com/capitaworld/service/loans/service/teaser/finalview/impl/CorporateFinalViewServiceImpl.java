@@ -1941,6 +1941,41 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		} catch (DocumentException e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
+		documentRequest.setProductDocumentMappingId(DocumentAlias.NBFC_TRIPARTITE_AGREEMENT);
+		try {
+			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+			corporateFinalViewResponse.setNbfcTripartiteAgreement(documentResponse.getDataList());
+		} catch (DocumentException e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+		documentRequest.setProductDocumentMappingId(DocumentAlias.NBFC_SANCTION_LETTER);
+		try {
+			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+			corporateFinalViewResponse.setNbfcSanctionLetterOfNBFC(documentResponse.getDataList());
+		} catch (DocumentException e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+		documentRequest.setProductDocumentMappingId(DocumentAlias.NBFC_PROMISSONRY_NOTE);
+		try {
+			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+			corporateFinalViewResponse.setNbfcDemandPromissonryNote(documentResponse.getDataList());
+		} catch (DocumentException e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+		documentRequest.setProductDocumentMappingId(DocumentAlias.NBFC_lETTER_OF_INTENT);
+		try {
+			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+			corporateFinalViewResponse.setNbfcLetterOfIntent(documentResponse.getDataList());
+		} catch (DocumentException e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+		documentRequest.setProductDocumentMappingId(DocumentAlias.NBFC_OTHER);
+		try {
+			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+			corporateFinalViewResponse.setNbfcOther(documentResponse.getDataList());
+		} catch (DocumentException e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
 		/*DocumentRequest documentRequestForMCAZip = new DocumentRequest();
 		documentRequestForMCAZip.setApplicationId(Long.valueOf(loanApplicationMaster.getMcaCompanyId()));
 		documentRequestForMCAZip.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
