@@ -48,7 +48,13 @@ public class CorporatePrimaryViewResponseNbfc {
     private Double nbfcSanctionTenure;
 
     //disbursement fields
+    private Double bankDisbursedAmount;
+    private String bankTransactionNo;
+    private String bankRemark;
 
+    private Double nbfcDisbursedAmount;
+    private String nbfcTransactionNo;
+    private String nbfcRemark;
 
     public String getNbfcBlendedExistingLoanAmount() {
         return nbfcBlendedExistingLoanAmount;
@@ -312,5 +318,53 @@ public class CorporatePrimaryViewResponseNbfc {
 
     public void setNbfcSanctionTenure(Double nbfcSanctionTenure) {
         this.nbfcSanctionTenure = nbfcSanctionTenure;
+    }
+
+    public Double getBankDisbursedAmount() {
+        return bankDisbursedAmount;
+    }
+
+    public void setBankDisbursedAmount(Double bankDisbursedAmount) {
+        this.bankDisbursedAmount = bankDisbursedAmount;
+    }
+
+    public String getBankTransactionNo() {
+        return bankTransactionNo;
+    }
+
+    public void setBankTransactionNo(String bankTransactionNo) {
+        this.bankTransactionNo = bankTransactionNo;
+    }
+
+    public String getBankRemark() {
+        return bankRemark;
+    }
+
+    public void setBankRemark(String bankRemark) {
+        this.bankRemark = bankRemark;
+    }
+
+    public Double getNbfcDisbursedAmount() {
+        return nbfcDisbursedAmount;
+    }
+
+    public void setNbfcDisbursedAmount(Double nbfcDisbursedAmount) {
+        this.nbfcDisbursedAmount = nbfcDisbursedAmount;
+    }
+
+    public String getNbfcTransactionNo() {
+        return nbfcTransactionNo;
+    }
+
+    public void setNbfcTransactionNo(String nbfcTransactionNo) {
+        this.nbfcTransactionNo = nbfcTransactionNo;
+    }
+
+    public String getNbfcRemark() {
+        return nbfcRemark;
+    }
+
+    public void setNbfcRemark(String nbfcRemark) {
+        this.nbfcRemark = nbfcRemark;
     }
 }

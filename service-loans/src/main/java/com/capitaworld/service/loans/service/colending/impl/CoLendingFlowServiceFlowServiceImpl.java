@@ -79,6 +79,7 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 				clientDetailCoLending.setClientEmail(clientResponse.getClientEmail());
 				clientDetailCoLending.setClientMobile(clientResponse.getClientMobile());
 				clientDetailCoLending.setLastAccessId(clientResponse.getLastAccessId());
+				clientDetailCoLending.setOriginalEmailId(clientResponse.getOriginalEmailId());
 				//get city name
 				if (!CommonUtils.isObjectNullOrEmpty(clientResponse.getClientCity()) && clientResponse.getClientCity() != 0) {
 					List<Long> cityList = new ArrayList<>();

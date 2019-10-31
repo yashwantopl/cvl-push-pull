@@ -12,8 +12,10 @@ import java.util.List;
 import java.util.Map;
 
 import com.capitaworld.service.loans.domain.colending.RecommendDetail;
+import com.capitaworld.service.loans.domain.sanction.LoanDisbursementDomain;
 import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
 import com.capitaworld.service.loans.repository.colending.RecommendDetailRepository;
+import com.capitaworld.service.loans.repository.sanction.LoanDisbursementRepository;
 import com.capitaworld.service.loans.repository.sanction.LoanSanctionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -242,6 +244,9 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 
 	@Autowired
     private LoanSanctionRepository loanSanctionRepository;
+
+	@Autowired
+	private LoanDisbursementRepository loanDisbursementRepository;
 	
 	DecimalFormat decim = new DecimalFormat("#,###.00");
 
@@ -1508,6 +1513,19 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				corporatePrimaryView.setNbfcSanctionRoi(nbfcSanction.getRoi());
 				corporatePrimaryView.setNbfcSanctionTenure(nbfcSanction.getTenure());
 			}
+			LoanDisbursementDomain nbfcDisbursed = loanDisbursementRepository.findByAppliationIdAndNBFCFlow(applicationId,1);
+			if(!CommonUtils.isObjectNullOrEmpty(nbfcDisbursed)){
+				corporatePrimaryView.setNbfcDisbursedAmount(nbfcDisbursed.getDisbursedAmount());
+				corporatePrimaryView.setNbfcTransactionNo(nbfcDisbursed.getTransactionNo());
+				corporatePrimaryView.setNbfcRemark(nbfcDisbursed.getRemark());
+			}
+			LoanDisbursementDomain bankDisbursed = loanDisbursementRepository.findByAppliationIdAndNBFCFlow(applicationId,2);
+			if(!CommonUtils.isObjectNullOrEmpty(bankDisbursed)){
+				corporatePrimaryView.setBankDisbursedAmount(bankDisbursed.getDisbursedAmount());
+				corporatePrimaryView.setBankTransactionNo(bankDisbursed.getTransactionNo());
+				corporatePrimaryView.setBankRemark(bankDisbursed.getRemark());
+			}
+
 			return corporatePrimaryView;
 	}
 //	ENDS HERE CO-ORIGIN CODE 
