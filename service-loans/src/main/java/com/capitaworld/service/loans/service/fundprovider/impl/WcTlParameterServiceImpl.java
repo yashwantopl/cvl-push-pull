@@ -26,6 +26,8 @@ import com.capitaworld.client.workflow.WorkflowClient;
 import com.capitaworld.service.loans.domain.IndustrySectorDetail;
 import com.capitaworld.service.loans.domain.IndustrySectorDetailTemp;
 import com.capitaworld.service.loans.domain.fundprovider.CoLendingRatio;
+import com.capitaworld.service.loans.domain.fundprovider.ConstitutionMapping;
+import com.capitaworld.service.loans.domain.fundprovider.ConstitutionMappingTemp;
 import com.capitaworld.service.loans.domain.fundprovider.FpGstTypeMapping;
 import com.capitaworld.service.loans.domain.fundprovider.FpGstTypeMappingTemp;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalCityDetail;
@@ -45,7 +47,10 @@ import com.capitaworld.service.loans.domain.fundprovider.WcTlParameterTemp;
 import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.corporate.TermLoanParameterRequest;
 import com.capitaworld.service.loans.model.corporate.WcTlParameterRequest;
+import com.capitaworld.service.loans.model.corporate.WorkingCapitalParameterRequest;
 import com.capitaworld.service.loans.repository.fundprovider.CoLendingRatioRepository;
+import com.capitaworld.service.loans.repository.fundprovider.FpConstitutionMappingRepository;
+import com.capitaworld.service.loans.repository.fundprovider.FpConstitutionMappingTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.FpGstTypeMappingRepository;
 import com.capitaworld.service.loans.repository.fundprovider.FpGstTypeMappingTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalCityRepository;
@@ -144,7 +149,14 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 	private NbfcRatioMappingTempRepository nbfcRatioMappingTempRepository; 
 	
 	@Autowired
-	private NbfcRatioMappingRepository nbfcRatioMappingRepository; 
+	private NbfcRatioMappingRepository nbfcRatioMappingRepository;
+	
+    @Autowired
+	private FpConstitutionMappingRepository fpConstitutionMappingRepository;
+	
+	@Autowired
+	private FpConstitutionMappingTempRepository fpConstitutionMappingTempRepository;
+
 
 
 	@Override
@@ -216,6 +228,11 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 		//save nbfc ratio mapping
 		nbfcRatioMappingRepository.inActiveByFpProductId(wcTlParameterRequest.getId());
 		saveNbfcRatioMapping(wcTlParameterRequest);
+		
+
+		//save constitution mapping
+		fpConstitutionMappingRepository.inActiveMasterByFpProductId(wcTlParameterRequest.getId());
+		saveConstitutionType(wcTlParameterRequest);
 
 		// Ravina
 		boolean isUpdate = msmeValueMappingService.updateMsmeValueMapping(false, mappingId, wcTlParameter2.getId());
@@ -223,6 +240,47 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 		CommonDocumentUtils.endHook(logger, "saveOrUpdate");
 		return true;
 
+	}
+
+	private void saveConstitutionType(WcTlParameterRequest wcTlParameterRequest) {
+		// TODO Auto-generated method stub
+		CommonDocumentUtils.startHook(logger, "saveConstitutionType");
+		ConstitutionMapping constitutionMapping= null;
+		for (Integer dataRequest : wcTlParameterRequest.getConstitutionIds()) {
+			constitutionMapping = new ConstitutionMapping();
+			constitutionMapping.setFpProductId(wcTlParameterRequest.getId());
+			constitutionMapping.setConstitutionId(dataRequest);
+			constitutionMapping.setCreatedBy(wcTlParameterRequest.getUserId());
+			constitutionMapping.setModifiedBy(wcTlParameterRequest.getUserId());
+			constitutionMapping.setCreatedDate(new Date());
+			constitutionMapping.setModifiedDate(new Date());
+			constitutionMapping.setIsActive(true);
+			// create by and update
+			fpConstitutionMappingRepository.save(constitutionMapping);
+		}
+		CommonDocumentUtils.endHook(logger, "saveConstitutionType");
+		
+	}
+	
+	
+	private void saveConstitutionTypeTemp(WcTlParameterRequest wcTlParameterRequest) {
+		// TODO Auto-generated method stub
+		CommonDocumentUtils.startHook(logger, "saveConstitutionTypeTemp");
+		ConstitutionMappingTemp constitutionMapping= null;
+		for (Integer dataRequest : wcTlParameterRequest.getConstitutionIds()) {
+			constitutionMapping = new ConstitutionMappingTemp();
+			constitutionMapping.setFpProductId(wcTlParameterRequest.getId());
+			constitutionMapping.setConstitutionId(dataRequest);
+			constitutionMapping.setCreatedBy(wcTlParameterRequest.getUserId());
+			constitutionMapping.setModifiedBy(wcTlParameterRequest.getUserId());
+			constitutionMapping.setCreatedDate(new Date());
+			constitutionMapping.setModifiedDate(new Date());
+			constitutionMapping.setIsActive(true);
+			// create by and update
+			fpConstitutionMappingTempRepository.save(constitutionMapping);
+		}
+		CommonDocumentUtils.endHook(logger, "saveConstitutionTypeTemp");
+		
 	}
 
 	@Override
@@ -383,6 +441,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 		wcTlParameterRequest.setGstType(fpGstTypeMappingRepository.getIdsByFpProductId(wcTlParameterRequest.getId()));
 		
 		wcTlParameterRequest.setNbfcRatioIds(nbfcRatioMappingRepository.getIdsByFpProductId(wcTlParameterRequest.getId()));
+		wcTlParameterRequest.setConstitutionIds(fpConstitutionMappingRepository.getIdsByFpProductId(wcTlParameterRequest.getId()));
 		CommonDocumentUtils.endHook(logger, "getTermLoanParameterRequest");
 		return wcTlParameterRequest;
 	}
@@ -705,6 +764,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 				loanArrangementMappingTempRepository.getIdsByFpProductId(wcTlParameterRequest.getId()));
 		wcTlParameterRequest.setGstType(fpGstTypeMappingTempRepository.getIdsByFpProductId(wcTlParameterRequest.getId()));
 		wcTlParameterRequest.setNbfcRatioIds(nbfcRatioMappingTempRepository.getTempIdsByFpProductId(wcTlParameterRequest.getId()));
+		wcTlParameterRequest.setConstitutionIds(fpConstitutionMappingTempRepository.getIdsByFpProductId(wcTlParameterRequest.getId()));
 		CommonDocumentUtils.endHook(logger, "getWcTlRequestTemp");
 		return wcTlParameterRequest;
 	}
@@ -794,6 +854,10 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 		//save nbfc ratio mapping
 		nbfcRatioMappingTempRepository.inActiveTempByFpProductId(wcTlParameterRequest.getId());
 		saveNbfcRatioMappingTemp(wcTlParameterRequest);
+		
+		//save constitution mapping
+		fpConstitutionMappingTempRepository.inActiveMasterByFpProductId(wcTlParameterRequest.getId());
+		saveConstitutionTypeTemp(wcTlParameterRequest);
 		
 		// vinita
 		boolean isUpdate = msmeValueMappingService.updateMsmeValueMappingTemp(wcTlParameterRequest.getMsmeFundingIds(),

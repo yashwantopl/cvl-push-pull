@@ -22,6 +22,8 @@ import com.capitaworld.api.workflow.utility.WorkflowUtils;
 import com.capitaworld.client.workflow.WorkflowClient;
 import com.capitaworld.service.loans.domain.IndustrySectorDetail;
 import com.capitaworld.service.loans.domain.IndustrySectorDetailTemp;
+import com.capitaworld.service.loans.domain.fundprovider.ConstitutionMapping;
+import com.capitaworld.service.loans.domain.fundprovider.ConstitutionMappingTemp;
 import com.capitaworld.service.loans.domain.fundprovider.FpGstTypeMapping;
 import com.capitaworld.service.loans.domain.fundprovider.FpGstTypeMappingTemp;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalCityDetail;
@@ -38,7 +40,10 @@ import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameter
 import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameterTemp;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.DataRequest;
+import com.capitaworld.service.loans.model.corporate.TermLoanParameterRequest;
 import com.capitaworld.service.loans.model.corporate.WorkingCapitalParameterRequest;
+import com.capitaworld.service.loans.repository.fundprovider.FpConstitutionMappingRepository;
+import com.capitaworld.service.loans.repository.fundprovider.FpConstitutionMappingTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.FpGstTypeMappingRepository;
 import com.capitaworld.service.loans.repository.fundprovider.FpGstTypeMappingTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalCityRepository;
@@ -122,6 +127,12 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
     
     @Autowired
     private FpGstTypeMappingTempRepository fpGstTypeMappingTempRepository;
+    
+    @Autowired
+	private FpConstitutionMappingRepository fpConstitutionMappingRepository;
+	
+	@Autowired
+	private FpConstitutionMappingTempRepository fpConstitutionMappingTempRepository;
 
 
 	@Override
@@ -192,6 +203,11 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		loanArrangementMappingRepository.inActiveMasterByFpProductId(workingCapitalParameterRequest.getId());
 		saveLoanArrangements(workingCapitalParameterRequest);
 		
+
+		//save constitution mapping
+		fpConstitutionMappingRepository.inActiveMasterByFpProductId(workingCapitalParameterRequest.getId());
+		saveConstitutionType(workingCapitalParameterRequest);
+		
 		//gst type 
 		fpGstTypeMappingRepository.inActiveMasterByFpProductId(workingCapitalParameterRequest.getId());
 		saveLoanGstType(workingCapitalParameterRequest);
@@ -203,6 +219,47 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 
 		logger.info("end saveOrUpdate");
 		return true;
+	}
+	
+	private void saveConstitutionType(WorkingCapitalParameterRequest workingCapitalParameterRequest) {
+		// TODO Auto-generated method stub
+		CommonDocumentUtils.startHook(logger, "saveConstitutionType");
+		ConstitutionMapping constitutionMapping= null;
+		for (Integer dataRequest : workingCapitalParameterRequest.getConstitutionIds()) {
+			constitutionMapping = new ConstitutionMapping();
+			constitutionMapping.setFpProductId(workingCapitalParameterRequest.getId());
+			constitutionMapping.setConstitutionId(dataRequest);
+			constitutionMapping.setCreatedBy(workingCapitalParameterRequest.getUserId());
+			constitutionMapping.setModifiedBy(workingCapitalParameterRequest.getUserId());
+			constitutionMapping.setCreatedDate(new Date());
+			constitutionMapping.setModifiedDate(new Date());
+			constitutionMapping.setIsActive(true);
+			// create by and update
+			fpConstitutionMappingRepository.save(constitutionMapping);
+		}
+		CommonDocumentUtils.endHook(logger, "saveConstitutionType");
+		
+	}
+	
+	
+	private void saveConstitutionTypeTemp(WorkingCapitalParameterRequest workingCapitalParameterRequest) {
+		// TODO Auto-generated method stub
+		CommonDocumentUtils.startHook(logger, "saveConstitutionTypeTemp");
+		ConstitutionMappingTemp constitutionMapping= null;
+		for (Integer dataRequest : workingCapitalParameterRequest.getConstitutionIds()) {
+			constitutionMapping = new ConstitutionMappingTemp();
+			constitutionMapping.setFpProductId(workingCapitalParameterRequest.getId());
+			constitutionMapping.setConstitutionId(dataRequest);
+			constitutionMapping.setCreatedBy(workingCapitalParameterRequest.getUserId());
+			constitutionMapping.setModifiedBy(workingCapitalParameterRequest.getUserId());
+			constitutionMapping.setCreatedDate(new Date());
+			constitutionMapping.setModifiedDate(new Date());
+			constitutionMapping.setIsActive(true);
+			// create by and update
+			fpConstitutionMappingTempRepository.save(constitutionMapping);
+		}
+		CommonDocumentUtils.endHook(logger, "saveConstitutionTypeTemp");
+		
 	}
 
 	private void saveLoanGstType(WorkingCapitalParameterRequest workingCapitalParameterRequest) {
@@ -387,6 +444,9 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		workingCapitalParameterRequest.setMsmeFundingIds(msmeValueMappingService.getDataListFromFpProductId(2,id, workingCapitalParameterRequest.getUserId()));
 		workingCapitalParameterRequest.setGstType(fpGstTypeMappingRepository.getIdsByFpProductId(workingCapitalParameterRequest.getId()));
 		workingCapitalParameterRequest.setLoanArrangementIds(loanArrangementMappingRepository.getIdsByFpProductId(workingCapitalParameterRequest.getId()));
+		workingCapitalParameterRequest.setConstitutionIds(fpConstitutionMappingRepository.getIdsByFpProductId(workingCapitalParameterRequest.getId()));
+		
+		
 		logger.info("end getWorkingCapitalParameter");
 		return workingCapitalParameterRequest;
 	}
@@ -670,6 +730,7 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		workingCapitalParameterRequest.setMsmeFundingIds(msmeValueMappingService.getDataListFromFpProductId(1,id, userId));
 		workingCapitalParameterRequest.setLoanArrangementIds(loanArrangementMappingTempRepository.getIdsByFpProductId(workingCapitalParameterRequest.getId()));
 		workingCapitalParameterRequest.setGstType(fpGstTypeMappingTempRepository.getIdsByFpProductId(workingCapitalParameterRequest.getId()));
+		workingCapitalParameterRequest.setConstitutionIds(fpConstitutionMappingTempRepository.getIdsByFpProductId(workingCapitalParameterRequest.getId()));
 		logger.info("end getWorkingCapitalParameterTemp");
 		return workingCapitalParameterRequest;
 	}
@@ -755,6 +816,11 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		// negative industry save
 		negativeIndustryTempRepository.inActiveMappingByFpProductMasterId(workingCapitalParameter.getId());
 		saveNegativeIndustryTemp(workingCapitalParameterRequest);
+		
+
+		//save constitution mapping
+		fpConstitutionMappingTempRepository.inActiveMasterByFpProductId(workingCapitalParameter.getId());
+		saveConstitutionTypeTemp(workingCapitalParameterRequest);
 		//Dhaval
 		boolean isUpdate = msmeValueMappingService.updateMsmeValueMappingTemp(workingCapitalParameterRequest.getMsmeFundingIds(),workingCapitalParameterRequest.getId(), workingCapitalParameterRequest.getUserId());
 		
