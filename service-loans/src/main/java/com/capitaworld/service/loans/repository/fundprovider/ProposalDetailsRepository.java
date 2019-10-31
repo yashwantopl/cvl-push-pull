@@ -239,8 +239,8 @@ public interface ProposalDetailsRepository extends JpaRepository<ProposalDetails
     @Query(value = "SELECT p.id FROM proposal_details p WHERE p.proposal_status_id IN (:proposalStatus) AND p.user_org_id=:userOrgId AND p.nbfc_flow=:nbfcFlow_1 AND p.is_active=TRUE AND p.application_id IN (SELECT pd.application_id FROM proposal_details pd WHERE pd.proposal_status_id IN (:proposalStatus) AND pd.is_active=TRUE AND pd.nbfc_flow=:nbfcFlow_2) LIMIT :pageIndex,:pageSize",nativeQuery = true)
     public List<BigInteger> getFPProposalsByStatusIdAndUserOrgIdForBankHOPageable(@Param("proposalStatus") List<Long> proposalStatus, @Param("userOrgId") Long userOrgId, @Param("nbfcFlow_1") Integer nbfcFlow_1,  @Param("nbfcFlow_2") Integer nbfcFlow_2,@Param("pageIndex") int pageIndex, @Param("pageSize") int pageSize);
 
-    @Query(value = "SELECT * FROM proposal_details pd WHERE application_id =:applicationId and pd.nbfc_flow = 1 ORDER BY pd.modified_date desc LIMIT 1",nativeQuery = true)
-    public ProposalDetails getSanctionProposalByApplicationNBFCFlow(@Param("applicationId") Long applicationId);
+    @Query(value = "SELECT * FROM proposal_details pd WHERE application_id =:applicationId and pd.nbfc_flow =:nbfcFlow ORDER BY pd.modified_date desc LIMIT 1",nativeQuery = true)
+    public ProposalDetails getSanctionProposalByApplicationNBFCFlow(@Param("applicationId") Long applicationId,@Param("nbfcFlow") Integer nbfcFlow);
 
     @Query(value = "SELECT * FROM proposal_details pd WHERE application_id =:applicationId and pd.nbfc_flow = 2 and pd.proposal_status_id =5 ORDER BY pd.modified_date desc LIMIT 1",nativeQuery = true)
     public ProposalDetails getSanctionProposalByApplicationBankFlow(@Param("applicationId") Long applicationId);
