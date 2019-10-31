@@ -11,6 +11,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.domain.colending.RecommendDetail;
+import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
+import com.capitaworld.service.loans.repository.colending.RecommendDetailRepository;
+import com.capitaworld.service.loans.repository.sanction.LoanSanctionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -232,7 +236,12 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
     
 	@Autowired
 	private NbfcProposalBlendedRateRepository nbfcProposalBlendedRateRepository;
-    
+
+	@Autowired
+	private RecommendDetailRepository recommendDetailRepository;
+
+	@Autowired
+    private LoanSanctionRepository loanSanctionRepository;
 	
 	DecimalFormat decim = new DecimalFormat("#,###.00");
 
@@ -1478,6 +1487,16 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				corporatePrimaryView.setBankEmiAmount(proposalDetailsForBank.getEmi() != 0 ? CommonUtils.convertValueWithoutDecimal(proposalDetailsForBank.getEmi().doubleValue()) : "0");
 				corporatePrimaryView.setBankProcessingFees(proposalDetailsForBank.getProcessingFee() );
 			}
+
+			RecommendDetail detail = recommendDetailRepository.getByApplicationIdOrderByIdDescLimit1(applicationId);
+			if (!CommonUtils.isObjectNullOrEmpty(detail)) {
+				corporatePrimaryView.setRecommendedValue(detail.getValue());
+				corporatePrimaryView.setRecommendedTenure(detail.getTenure());
+				corporatePrimaryView.setRecommendedRoi(detail.getRoi());
+				corporatePrimaryView.setRecommendedProcessingFee(detail.getProcessingFee());
+				corporatePrimaryView.setRecommendedRemark(detail.getRemark());
+			}
+
 			return corporatePrimaryView;
 	}
 //	ENDS HERE CO-ORIGIN CODE 

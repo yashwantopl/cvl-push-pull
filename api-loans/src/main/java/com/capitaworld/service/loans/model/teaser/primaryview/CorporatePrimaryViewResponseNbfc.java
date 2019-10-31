@@ -32,6 +32,12 @@ public class CorporatePrimaryViewResponseNbfc {
 	    
 	    private boolean checkFlag;
 
+	    private Double recommendedValue;
+	    private Double recommendedTenure;
+	    private Double recommendedRoi;
+	    private Double recommendedProcessingFee;
+	    private String recommendedRemark;
+
 		public String getNbfcBlendedExistingLoanAmount() {
 			return nbfcBlendedExistingLoanAmount;
 		}
@@ -206,7 +212,45 @@ public class CorporatePrimaryViewResponseNbfc {
 
 		public void setCheckFlag(boolean checkFlag) {
 			this.checkFlag = checkFlag;
-		} 
-	    
-	    
+		}
+
+		public Double getRecommendedValue() {
+			return recommendedValue;
+		}
+
+		public void setRecommendedValue(Double recommendedValue) {
+			this.recommendedValue = recommendedValue;
+		}
+
+		public Double getRecommendedTenure() {
+			return recommendedTenure;
+		}
+
+		public void setRecommendedTenure(Double recommendedTenure) {
+			this.recommendedTenure = recommendedTenure;
+		}
+
+		public Double getRecommendedRoi() {
+			return recommendedRoi;
+		}
+
+		public void setRecommendedRoi(Double recommendedRoi) {
+			this.recommendedRoi = recommendedRoi;
+		}
+
+		public Double getRecommendedProcessingFee() {
+			return recommendedProcessingFee;
+		}
+
+		public void setRecommendedProcessingFee(Double recommendedProcessingFee) {
+			this.recommendedProcessingFee = recommendedProcessingFee;
+		}
+
+	public String getRecommendedRemark() {
+			return recommendedRemark;
+		}
+
+		public void setRecommendedRemark(String recommendedRemark) {
+			this.recommendedRemark = recommendedRemark;
+		}
 }
