@@ -1496,7 +1496,18 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				corporatePrimaryView.setRecommendedProcessingFee(detail.getProcessingFee());
 				corporatePrimaryView.setRecommendedRemark(detail.getRemark());
 			}
-
+			LoanSanctionDomain nbfcSanction = loanSanctionRepository.findByAppliationIdAndNBFCFlow(applicationId,1);
+			if(!CommonUtils.isObjectNullOrEmpty(nbfcSanction)){
+				corporatePrimaryView.setNbfcSanctionAmount(nbfcSanction.getSanctionAmount());
+				corporatePrimaryView.setNbfcSanctionRoi(nbfcSanction.getRoi());
+				corporatePrimaryView.setNbfcSanctionTenure(nbfcSanction.getTenure());
+			}
+			LoanSanctionDomain bankSanction = loanSanctionRepository.findByAppliationIdAndNBFCFlow(applicationId,2);
+			if(!CommonUtils.isObjectNullOrEmpty(bankSanction)){
+				corporatePrimaryView.setNbfcSanctionAmount(nbfcSanction.getSanctionAmount());
+				corporatePrimaryView.setNbfcSanctionRoi(nbfcSanction.getRoi());
+				corporatePrimaryView.setNbfcSanctionTenure(nbfcSanction.getTenure());
+			}
 			return corporatePrimaryView;
 	}
 //	ENDS HERE CO-ORIGIN CODE 
