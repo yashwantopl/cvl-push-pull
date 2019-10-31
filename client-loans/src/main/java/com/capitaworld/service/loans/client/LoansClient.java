@@ -961,15 +961,15 @@ public class LoansClient {
 		}
 	}
 	
-	public LoansResponse getTotalEMISoftPingForCoApplicant(Long coApplicant) throws LoansException{
-		String url = loansBaseUrl.concat(FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI_OF_SOFT_PING_FOR_CO_APP);
+	public LoansResponse getTotalEMISoftPingForCoApplicant(Long applicationId,Long coApplicant) throws LoansException{
+		String url = loansBaseUrl.concat(FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI_OF_SOFT_PING_FOR_CO_APP).concat("/").concat(applicationId.toString()).concat("/").concat(coApplicant.toString());
 		logger.info("url for Getting getTotalEMISoftPing From Client=================>{}", url);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<Long> entity = new HttpEntity<>(coApplicant, headers);
-			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			logger.error("Exception in getTotalEMIOfAllDir : ",e);
 			throw new LoansException(e.getCause().getMessage());

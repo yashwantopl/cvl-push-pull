@@ -81,8 +81,8 @@ public interface FinancialArrangementDetailsRepository extends JpaRepository<Fin
 	@Query("select sum(o.emi) from FinancialArrangementsDetail o where o.applicationId.id =:applicationId and o.directorBackgroundDetail =:directorId and o.isActive = true")
 	public Double getTotalEmiByApplicationIdAndDirectorId(@Param("applicationId")Long applicationId,@Param("directorId")Long directorId);
 	
-	@Query("select sum(o.emi) from FinancialArrangementsDetail o where o.directorBackgroundDetail =:directorId and o.isActive = true and LOWER(o.loanType) NOT IN (:loanType) and o.outstandingAmount IS NOT NULL and o.outstandingAmount > 0")
-	public Double getTotalEmiByDirectorId(@Param("directorId")Long directorId,@Param("loanType") List<String> loanType);
+	@Query("select sum(o.emi) from FinancialArrangementsDetail o where o.directorBackgroundDetail =:directorId and o.isActive = true and LOWER(o.loanType) NOT IN (:loanType) and o.outstandingAmount IS NOT NULL and o.outstandingAmount > 0 and o.applicationId.id =:applicationId")
+	public Double getTotalEmiByDirectorId(@Param("directorId")Long directorId,@Param("loanType") List<String> loanType,@Param("applicationId")Long applicationId);
 
 	@Query("select sum(o.emi) from FinancialArrangementsDetail o where o.applicationId.id =:applicationId and o.directorBackgroundDetail IS NOT NULL and o.isActive = true and LOWER(o.loanType) NOT IN (:loanType) and o.outstandingAmount IS NOT NULL and o.outstandingAmount > 0")
 	public Double getTotalEmiOfAllDirByApplicationId(@Param("applicationId")Long applicationId,@Param("loanType") List<String> loanType);
