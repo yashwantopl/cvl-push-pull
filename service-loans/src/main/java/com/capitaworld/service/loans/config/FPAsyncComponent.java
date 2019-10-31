@@ -1616,6 +1616,7 @@ public class FPAsyncComponent {
 				parameters.put(PARAMETERS_MOBILE_NO, mobile != null ? mobile : "NA");
 
 			}
+			parameters.put("application_code", applicationRequest.getApplicationCode());
 			String subject = "Intimation: Assigned - #ApplicationId=" + applicationRequest.getApplicationCode();
 			if (!CommonUtils.isObjectNullOrEmpty(assignedChecker) && !CommonUtils.isObjectNullOrEmpty(assignedChecker.getEmail())) {
 
@@ -1925,6 +1926,7 @@ public class FPAsyncComponent {
 				address = applicationRequest.getAddress();
 			}
 			parameters.put(CommonUtils.PARAMETERS_ADDRESS, address != null ? address : "NA");
+			parameters.put("application_code", applicationRequest.getApplicationCode());
 
 			String subjcet = "Intimation : Sent Back - #ApplicationId=" + applicationRequest.getApplicationCode();
 			// ====================== MAIL TO CHECKER ======================
@@ -2236,6 +2238,7 @@ public class FPAsyncComponent {
 			String subject = "Intimation: Re-sent Product - " + productMasterTemp.getName()+" for "+productType;
 			Map<String, Object> mailParameters = new HashMap<>();
 			mailParameters.put(PARAMETERS_PRODUCT_NAME,productMasterTemp.getName() != null ? productMasterTemp.getName() : "NA");
+			mailParameters.put("product_type",productType != null ? productType : "NA");
 			mailParameters.put("date",productMasterTemp.getModifiedDate() != null ? productMasterTemp.getModifiedDate() : "NA");
 			UsersRequest adminForMaker = new UsersRequest();
 			adminForMaker.setId(userId);

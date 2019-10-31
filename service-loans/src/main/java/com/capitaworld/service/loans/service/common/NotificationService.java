@@ -7,7 +7,7 @@ import com.capitaworld.service.loans.utils.CommonNotificationUtils.NotificationT
 
 public interface NotificationService {
 
-	public void sendViewNotification(String toUserId, Long fromUserId, Long fromUserTypeId, Long notificationId,Long applicationId,Long fpProductId, NotificationTemplate notificationTemplate,Long loginUserType);
+	public void sendViewNotification(String toUserId, Long fromUserId, Long fromUserTypeId, Long notificationId,Long applicationId,Long fpProductId, NotificationTemplate notificationTemplate,Long loginUserType,Object subject);
 
 	public void createEmailNotificationForUBI(String[] toIds, Long fromId, Long fromUserTypeId, Long templateId,
 			Long fromUserId, Map<String, Object> parameters, Long applicationId, Long fpProductId,
