@@ -56,6 +56,7 @@ import com.capitaworld.service.loans.utils.CommonNotificationUtils.NotificationT
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
+import com.capitaworld.service.notification.utils.EmailSubjectAlias;
 import com.capitaworld.service.notification.utils.NotificationAlias;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
@@ -1108,11 +1109,12 @@ public class PrimaryViewController {
 				if(req.getLoanTypeId() != null) {
 					loanType = Long.valueOf(req.getLoanTypeId());
 				}
+				Object subject=EmailSubjectAlias.EMAIL_PRIMARY_VIEW_FS.getSubjectId();
 		        if (!CommonUtils.isObjectNullOrEmpty(req.getEmailId())) {
 		        	Integer viewedTeaser = commonRepository.getViewedTeaser(req.getEmailId());
 					if(viewedTeaser != null && viewedTeaser > 0 && req.getUserId() != null) {
 						notificationService.sendViewNotification(String.valueOf(req.getUserId()), fromUserId, fromUserTypeId, notificationId,
-								applicationId, req.getFpProductId(), NotificationTemplate.PRIMARY_VIEW, loanType);
+								applicationId, req.getFpProductId(), NotificationTemplate.PRIMARY_VIEW, loanType,subject);
 					}
 				}	
 				
