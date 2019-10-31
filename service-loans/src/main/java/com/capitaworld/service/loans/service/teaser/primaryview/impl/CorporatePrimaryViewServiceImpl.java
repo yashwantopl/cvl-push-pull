@@ -1434,7 +1434,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 	}
 
 //	STARTS HERE CO-ORIGIN CODE 
-	private CorporatePrimaryViewResponseNbfc getNbfcData(Long applicationId)
+	public CorporatePrimaryViewResponseNbfc getNbfcData(Long applicationId)
 	{
 		CorporatePrimaryViewResponseNbfc corporatePrimaryView = new CorporatePrimaryViewResponseNbfc();
 		    Boolean isNBFCFlow = applicationProposalMappingRepository.getNbfcUserValue(applicationId);
