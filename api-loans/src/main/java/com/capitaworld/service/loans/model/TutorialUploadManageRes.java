@@ -35,6 +35,8 @@ public class TutorialUploadManageRes implements Serializable {
     
     private Long viewCount;
 
+    private String externalLink;
+
     public Long getId() {
         return id;
     }
@@ -129,5 +131,13 @@ public class TutorialUploadManageRes implements Serializable {
 
     public void setFileType(String fileType) {
         this.fileType = fileType;
+    }
+
+    public String getExternalLink() {
+        return externalLink;
+    }
+
+    public void setExternalLink(String externalLink) {
+        this.externalLink = externalLink;
     }
 }
