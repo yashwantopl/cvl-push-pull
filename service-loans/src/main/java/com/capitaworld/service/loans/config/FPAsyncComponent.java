@@ -2533,7 +2533,7 @@ public class FPAsyncComponent {
 		try {
 			Long domainId=DomainValue.MSME.getId();
 			logger.info("Into sending Mail to Maker when Admin Checker reverted product");
-			String subject = "Intimation :Re-Sent Product - " + productMasterTemp.getName() + " - Modification";
+//			String subject = "Intimation :Re-Sent Product - " + productMasterTemp.getName() + " - Modification";
 			Map<String, Object> mailParameters = new HashMap<String, Object>();
 			mailParameters.put(PARAMETERS_PRODUCT_NAME,
 					productMasterTemp.getName() != null ? productMasterTemp.getName() : "NA");
@@ -2609,7 +2609,8 @@ public class FPAsyncComponent {
 				} else {
 					mailParameters.put(PARAMETERS_ADMIN_MAKER, makerName != null ? makerName : PARAMETERS_SIR_MADAM);
 				}
-				createNotificationForEmail(to, userId.toString(), mailParameters,NotificationAlias.EMAIL_ADMIN_MAKER_PRODUCT_REVERTED_BY_CHECKER, subject,domainId,null);
+				createNotificationForEmail(to, userId.toString(), mailParameters,NotificationAlias.EMAIL_ADMIN_MAKER_PRODUCT_REVERTED_BY_CHECKER, 
+						EmailSubjectAlias.EMAIL_ADMIN_MAKER_PRODUCT_REVERTED_BY_CHECKER.getSubjectId(),domainId,null);
 			}
 			if (!CommonUtils.isObjectNullOrEmpty(assignedMaker.getMobile())) {
 				Map<String, Object> smsParameters = new HashMap<String, Object>();
@@ -2709,24 +2710,22 @@ public class FPAsyncComponent {
 		}
 
 	}
+	@SuppressWarnings("unchecked")
 	@Async
 	public void sendEmailToMakerHOBOWhenCheckerSanctionLoan(LoanSanctionDomain loanSanctionDomainOld) {
 		try {
 			Long domainId=DomainValue.MSME.getId();
 			logger.info("Into sending Mail to Maker/HO/BO when Checker sanction loan ");
-			String subject = "Intimation: Sanction - #ApplicationId=" + loanSanctionDomainOld.getApplicationId();
+//			String subject = "Intimation: Sanction - #ApplicationId=" + loanSanctionDomainOld.getApplicationId();
 			Map<String, Object> mailParameters = new HashMap<>();
 			ProposalMappingResponse proposal = proposalDetailsClient.getProposalByApplicationIdAndUserOrgId(loanSanctionDomainOld.getOrgId(),loanSanctionDomainOld.getApplicationId());
 			ProposalMappingRequest prpo= MultipleJSONObjectHelper.getObjectFromMap((Map)proposal.getData(), ProposalMappingRequest.class);
 			LoanApplicationRequest applicationRequest = loanApplicationService.getFromClient(prpo.getId());
 			
-			ProposalMappingResponse proposalResponse = null;
 			Map<String, Object> proposalresp = null;
 			try {
 				logger.info("Calling Proposal details client {}" , loanSanctionDomainOld.getApplicationId());
-//				proposalResponse = proposalDetailsClient.getInPricipleById(loanSanctionDomainOld.getApplicationId());
 				GatewayResponse inpData = gatewayClient.getInPrincipleByApplicationId(loanSanctionDomainOld.getApplicationId());
-//				proposalresp = MultipleJSONObjectHelper.getObjectFromMap((Map<String, Object>) inpData.getData(), Map.class);
 				proposalresp=(Map<String, Object>) inpData.getData();
 			} catch (Exception e) {
 				logger.info("Error calling Proposal Details Client {}" , loanSanctionDomainOld.getApplicationId());
@@ -2777,18 +2776,7 @@ public class FPAsyncComponent {
 				checkerForName.setId(Long.valueOf(loanSanctionDomainOld.getModifiedBy()));
 				logger.info(MSG_INTO_GETTING_FP_NAME , checkerForName);
 			}
-
-/*			UserResponse makerResponse = null;
-			try {
-				makerResponse = userClient.getEmailMobile(applicationRequest.getFpMakerId());
-			} catch (Exception e) {
-				logger.error(SOMETHING_WENT_WRONG_WHILE_CALLING_USERS_CLIENT,e);
-			}
-			UsersRequest maker = null;
-			if (!CommonUtils.isObjectNullOrEmpty(makerResponse)) {
-				maker = MultipleJSONObjectHelper.getObjectFromMap((Map<String, Object>) makerResponse.getData(),
-						UsersRequest.class);
-			}*/
+ 
 			UsersRequest makerForName = new UsersRequest();
 			makerForName.setId(applicationRequest.getFpMakerId());
 			String makerName = null;
@@ -2878,7 +2866,8 @@ public class FPAsyncComponent {
 					logger.info("Email Sending TO MAKER when Checker sanction loan===to==>{}", toIds);
 					mailParameters.put(CommonUtils.PARAMETERS_IS_DYNAMIC, true);
 					createNotificationForEmail(toIds, applicationRequest.getFpMakerId().toString(), mailParameters,
-							NotificationAlias.EMAIL_MAKER_AFTER_CHECKER_SUBMIT_SANCTION_POPUP, subject,domainId,cc);
+							NotificationAlias.EMAIL_MAKER_AFTER_CHECKER_SUBMIT_SANCTION_POPUP, 
+							EmailSubjectAlias.EMAIL_MAKER_AFTER_CHECKER_SUBMIT_SANCTION_POPUP.getSubjectId(),domainId,cc);
 				}
 				/** sending system notification to maker user*/
 				if (!CommonUtils.isObjectNullOrEmpty(applicationRequest.getFpMakerId())) {
