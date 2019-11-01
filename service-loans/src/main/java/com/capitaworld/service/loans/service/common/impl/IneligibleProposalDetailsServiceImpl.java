@@ -59,6 +59,7 @@ import com.capitaworld.service.notification.model.ContentAttachment;
 import com.capitaworld.service.notification.model.Notification;
 import com.capitaworld.service.notification.model.NotificationRequest;
 import com.capitaworld.service.notification.utils.ContentType;
+import com.capitaworld.service.notification.utils.EmailSubjectAlias;
 import com.capitaworld.service.notification.utils.NotificationAlias;
 import com.capitaworld.service.notification.utils.NotificationType;
 import com.capitaworld.service.oneform.client.OneFormClient;
@@ -341,7 +342,6 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 				LoanApplicationRequest applicationRequest = null;
 				try {
 					applicationRequest =loanApplicationService.getBasicInformation(applicationId);  // CHANGES FOR OFFLINE CAM REPORT PURPOSE NEW --->
-							//loanApplicationService.getFromClient(loanApplication.getProposalId()); // OLD
 				} catch (Exception e1) {
 					logger.error("Exception in getting : {}" , e1);
 				}
@@ -392,12 +392,13 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 					notificationParams.put("bank_name", organisationName);
  
 
-					 String subject = "MSME Offline Application";
+//					 String subject = "MSME Offline Application";
+					Object subjectId=EmailSubjectAlias.EMAIL_FS_WHEN_IN_ELIGIBLE.getSubjectId();
 	                    if (organisationName != null && applicationId!=null) {
 	                        notificationParams.put(CommonUtils.PARAMETERS_IS_DYNAMIC, false);
 
 						createNotificationForEmail(signUpUser.getEmail(), applicationRequest.getUserId().toString(),
-								notificationParams, NotificationAlias.EMAIL_FS_WHEN_IN_ELIGIBLE, subject,applicationId,true,null,null,null);
+								notificationParams, NotificationAlias.EMAIL_FS_WHEN_IN_ELIGIBLE, subjectId,applicationId,true,null,null,null);
 					}
 					// ===========================================================================================
 					// 2nd email Step2 Get Details of Bank branch --- Sending mail to Branch
@@ -405,24 +406,27 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 					// ============================================================================================
 					Map<String, Object> mailParameters = new HashMap<String, Object>();
 					mailParameters.put("app_id", applicationId !=null ?applicationId : "NA");
-					subject = "MSME Offline Application";
 					mailParameters.put(CommonUtils.PARAMETERS_FS_NAME,
 							notificationParams.get(CommonUtils.PARAMETERS_FS_NAME) != null ? notificationParams.get(CommonUtils.PARAMETERS_FS_NAME) : "NA");
 					mailParameters.put("mobile_no", signUpUser.getMobile() != null ? signUpUser.getMobile() : "NA");
 					mailParameters.put(CommonUtils.PARAMETERS_ADDRESS,
 							notificationParams.get(CommonUtils.PARAMETERS_ADDRESS) != null ? notificationParams.get(CommonUtils.PARAMETERS_ADDRESS) : "NA");
+					
+					subjectId=EmailSubjectAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE_MSME.getSubjectId();
+					
 					if (applicationRequest.getBusinessTypeId() == CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId()) {
-						//get loan amount and  loan type from loan applicationMaster
-//						get loan_amount from retail applicant details
-						subject = "Personal Loan Offline Application";
+//						subject = "Personal Loan Offline Application";
+						subjectId=EmailSubjectAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE_FOR_PERSONAL_LOAN.getSubjectId();
 						mailParameters.put(CommonUtils.PARAMETERS_LOAN_TYPE, "Personal Loan");
 						mailParameters.put(CommonUtils.PARAMETERS_LOAN_AMOUNT, notificationParams.get(CommonUtils.PARAMETERS_LOAN_AMOUNT));
 					}else if (applicationRequest.getBusinessTypeId() == CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId()) {
-						subject = "Home Loan Offline Application";
+//						subject = "Home Loan Offline Application";
+						subjectId=EmailSubjectAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE_FOR_HOME_LOAN.getSubjectId();
 						mailParameters.put(CommonUtils.PARAMETERS_LOAN_TYPE, "Home Loan");
 						mailParameters.put(CommonUtils.PARAMETERS_LOAN_AMOUNT, notificationParams.get(CommonUtils.PARAMETERS_LOAN_AMOUNT));
 					}else if (applicationRequest.getBusinessTypeId() == CommonUtils.BusinessType.RETAIL_AUTO_LOAN.getId()) {
-						subject = "Auto Loan Offline Application";
+//						subject = "Auto Loan Offline Application";
+						subjectId=EmailSubjectAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE_FOR_AUTO_LOAN.getSubjectId();
 						mailParameters.put(CommonUtils.PARAMETERS_LOAN_TYPE, "Auto Loan");
 						mailParameters.put(CommonUtils.PARAMETERS_LOAN_AMOUNT, notificationParams.get(CommonUtils.PARAMETERS_LOAN_AMOUNT));
 					} else {
@@ -476,7 +480,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 						String[] cc = ccList != null && !ccList.isEmpty() ? ccList.toArray(new String[ccList.size()]) : null;
 						
 						createNotificationForEmail(to, applicationRequest.getUserId().toString(),
-								mailParameters, NotificationAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE, subject,applicationId,false,bcc,cc,null);
+								mailParameters, NotificationAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE, subjectId,applicationId,false,bcc,cc,null);
 					}
 					isSent = true;
 				}
@@ -674,7 +678,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 	}
 
 	private void createNotificationForEmail(String toNo, String userId, Map<String, Object> mailParameters,
-			Long templateId, String emailSubject,Long applicationId,Boolean isFundSeeker,String[] bcc,String[] cc,List<ContentAttachment> content) throws NotificationException {
+			Long templateId, Object emailSubject,Long applicationId,Boolean isFundSeeker,String[] bcc,String[] cc,List<ContentAttachment> content) throws NotificationException {
 		logger.info("Inside send notification===>{}" , toNo);
 		NotificationRequest notificationRequest = new NotificationRequest();
 		notificationRequest.setClientRefId(userId);
@@ -948,7 +952,8 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 							param.put("org_name", "Bank");
 						}
 						if(fsEmail != null && fsMobile!=null && applicationId != null && !bankLogo.isEmpty()) {
-							String subject="PSBLOANSIN59MINUTES | Thankyou For Completing Your Online Journey";
+//							String subject="PSBLOANSIN59MINUTES | Thankyou For Completing Your Online Journey";
+							
 							String[] cc = {String.valueOf(param.get("branch_contact_email"))};
 							List<ContentAttachment> documentList=new ArrayList<ContentAttachment>();
 							if(user[0].equals("sbi") || (user[0].equals("sidbi") && isSIDBIFlowForIneligible && Integer.valueOf(user[1].toString()).equals(1))) {
@@ -971,7 +976,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 							}
 							
 							try {
-								createNotificationForEmail(fsEmail, String.valueOf(userId), param, NotificationAlias.EMAIL_OF_THANKYOU_BANKSPECIFIC_FS, subject, applicationId, true, bcc,cc,documentList);
+								createNotificationForEmail(fsEmail, String.valueOf(userId), param, NotificationAlias.EMAIL_OF_THANKYOU_BANKSPECIFIC_FS, EmailSubjectAlias.EMAIL_OF_THANKYOU_BANKSPECIFIC_FS.getSubjectId(), applicationId, true, bcc,cc,documentList);
 							} catch (NotificationException e) {
 								logger.error("Exception in sending thankyou email for ineligible prooposal:",e);
 							}
@@ -989,9 +994,9 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 								}
 								if(resp.getUserRole().equals("9") || resp.getUserRole().equals("5") || resp.getUserRole().equals("6")) {
 									param.put("bo_name", resp.getUserName()!=null?resp.getUserName():"Sir/Madam");
-									String subject = "Intimation of new proposal";
+//									String subject = "Intimation of new proposal";
 									try {
-										createNotificationForEmail(resp.getEmail(), String.valueOf(userId), param, NotificationAlias.EMAIL_OF_THANKYOU_BANKSPECIFIC_FP, subject, applicationId, false, bcc,null,null);
+										createNotificationForEmail(resp.getEmail(), String.valueOf(userId), param, NotificationAlias.EMAIL_OF_THANKYOU_BANKSPECIFIC_FP, EmailSubjectAlias.EMAIL_OF_THANKYOU_BANKSPECIFIC_FP.getSubjectId(), applicationId, false, bcc,null,null);
 									} catch (NotificationException e) {
 										logger.error("Exception in sending thankyou email for ineligible prooposal:",e);
 									} 
