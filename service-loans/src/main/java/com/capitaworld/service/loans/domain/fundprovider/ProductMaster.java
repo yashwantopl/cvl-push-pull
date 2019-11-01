@@ -114,6 +114,8 @@ public abstract class ProductMaster implements Serializable {
 	@Column(name="nbfc_product_type")
 	private Integer productType;
 	
+	@Column(name = "bureau_version")
+	private Integer bureauVersion;	
 	
 
 	public ProductMaster() {
@@ -346,6 +348,12 @@ public abstract class ProductMaster implements Serializable {
 	public void setProductType(Integer productType) {
 		this.productType = productType;
 	}
-	
-	
+
+	public Integer getBureauVersion() {
+		return bureauVersion;
+	}
+
+	public void setBureauVersion(Integer bureauVersion) {
+		this.bureauVersion = bureauVersion;
+	}
 }
