@@ -78,6 +78,9 @@ public class LoanDisbursementDomain implements Serializable {
 	@Column(name = "org_id")
 	private Long orgId;
 
+	@Column(name = "nbfc_flow")
+	private Integer nbfcFlow;
+
 	public Long getId() {
 		return id;
 	}
@@ -220,6 +223,14 @@ public class LoanDisbursementDomain implements Serializable {
 
 	public void setOrgId(Long orgId) {
 		this.orgId = orgId;
+	}
+
+	public Integer getNbfcFlow() {
+		return nbfcFlow;
+	}
+
+	public void setNbfcFlow(Integer nbfcFlow) {
+		this.nbfcFlow = nbfcFlow;
 	}
 
 	@Override

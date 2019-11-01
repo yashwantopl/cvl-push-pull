@@ -577,7 +577,7 @@ public class ProposalController {
 	/*@RequestPart("uploadRequest") String uploadRequestString,
 														@RequestPart("file") MultipartFile[] multipartFiles, HttpServletRequest request)*/
 
-	@RequestMapping(value = "/saveDisbursementRequestDetails", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/saveDisbursementRequestDetails", method = RequestMethod.POST)
 	public ResponseEntity<ProposalMappingResponse> saveDisbursementRequestDetails(@RequestPart("uploadRequest") String uploadRequestString,
 																				  @RequestPart("file") MultipartFile[] multipartFiles, HttpServletRequest httpRequest) {
 	//public ResponseEntity<ProposalMappingResponse> saveDisbursementRequestDetails(@RequestBody DisbursementRequestModel request, HttpServletRequest httpRequest, @RequestParam(value = "clientId", required = false) Long clientId) {

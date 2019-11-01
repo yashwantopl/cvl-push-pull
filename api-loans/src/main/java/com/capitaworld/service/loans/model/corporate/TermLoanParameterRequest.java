@@ -370,6 +370,66 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	private BigDecimal trading;
 	
 	private BigDecimal promotorContri;
+	
+	//co-origination new parameter
+		private Boolean isMinNoCreditTransactionDisplay=false;
+
+		private Boolean isMinNoCreditTransactionMandatory=false;
+		
+		private BigDecimal maxNoCreditTransaction;
+		
+		private BigDecimal minNoCreditTransaction;
+		
+
+		private Boolean isMinNoOverallTransactionDisplay=false;
+
+		private Boolean isMinNoOverallTransactionMandatory=false;
+		
+		private BigDecimal maxNoOverallTransaction;
+		
+		private BigDecimal minNoOverallTransaction;
+		
+		
+		
+		private Boolean isMinSalesGrowthDisplay=false;
+
+		private Boolean isMinSalesGrowthMandatory=false;
+		
+		private BigDecimal maxSalesGrowth;
+		
+		private BigDecimal minSalesGrowth ;
+		
+		
+		
+		
+		private Boolean isMinCashProfitGrowthDisplay=false;
+
+		private Boolean isMinCashProfitGrowthMandatory=false;
+		
+		private BigDecimal maxCashProfitGrowth;
+		
+		private BigDecimal minCashProfitGrowth ;
+		
+		
+		
+		private Boolean isMinMonthlyAvgBalDisplay =false;
+
+		private Boolean isMinMonthlyAvgBalMandatory=false;
+		
+		private BigDecimal maxMonthlyAvgBal;
+		
+		private BigDecimal minMonthlyAvgBal ;
+		
+		
+		private Boolean isMinNoDebitTransactionDisplay =false;
+
+		private Boolean isMinNoDebitTransactionMandatory=false;
+		
+		private BigDecimal maxNoDebitTransaction;
+		
+		private BigDecimal minNoDebitTransaction ;
+		
+		private List<Integer> constitutionIds;
 
 	
 	
@@ -1888,6 +1948,207 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 		this.trading = trading;
 	}
 
+	public Boolean getIsMinNoCreditTransactionDisplay() {
+		return isMinNoCreditTransactionDisplay;
+	}
+
+	public void setIsMinNoCreditTransactionDisplay(Boolean isMinNoCreditTransactionDisplay) {
+		this.isMinNoCreditTransactionDisplay = isMinNoCreditTransactionDisplay;
+	}
+
+	public Boolean getIsMinNoCreditTransactionMandatory() {
+		return isMinNoCreditTransactionMandatory;
+	}
+
+	public void setIsMinNoCreditTransactionMandatory(Boolean isMinNoCreditTransactionMandatory) {
+		this.isMinNoCreditTransactionMandatory = isMinNoCreditTransactionMandatory;
+	}
+
+	public BigDecimal getMaxNoCreditTransaction() {
+		return maxNoCreditTransaction;
+	}
+
+	public void setMaxNoCreditTransaction(BigDecimal maxNoCreditTransaction) {
+		this.maxNoCreditTransaction = maxNoCreditTransaction;
+	}
+
+	public BigDecimal getMinNoCreditTransaction() {
+		return minNoCreditTransaction;
+	}
+
+	public void setMinNoCreditTransaction(BigDecimal minNoCreditTransaction) {
+		this.minNoCreditTransaction = minNoCreditTransaction;
+	}
+
+	public Boolean getIsMinNoOverallTransactionDisplay() {
+		return isMinNoOverallTransactionDisplay;
+	}
+
+	public void setIsMinNoOverallTransactionDisplay(Boolean isMinNoOverallTransactionDisplay) {
+		this.isMinNoOverallTransactionDisplay = isMinNoOverallTransactionDisplay;
+	}
+
+	public Boolean getIsMinNoOverallTransactionMandatory() {
+		return isMinNoOverallTransactionMandatory;
+	}
+
+	public void setIsMinNoOverallTransactionMandatory(Boolean isMinNoOverallTransactionMandatory) {
+		this.isMinNoOverallTransactionMandatory = isMinNoOverallTransactionMandatory;
+	}
+
+	public BigDecimal getMaxNoOverallTransaction() {
+		return maxNoOverallTransaction;
+	}
+
+	public void setMaxNoOverallTransaction(BigDecimal maxNoOverallTransaction) {
+		this.maxNoOverallTransaction = maxNoOverallTransaction;
+	}
+
+	public BigDecimal getMinNoOverallTransaction() {
+		return minNoOverallTransaction;
+	}
+
+	public void setMinNoOverallTransaction(BigDecimal minNoOverallTransaction) {
+		this.minNoOverallTransaction = minNoOverallTransaction;
+	}
+
+	public Boolean getIsMinSalesGrowthDisplay() {
+		return isMinSalesGrowthDisplay;
+	}
+
+	public void setIsMinSalesGrowthDisplay(Boolean isMinSalesGrowthDisplay) {
+		this.isMinSalesGrowthDisplay = isMinSalesGrowthDisplay;
+	}
+
+	public Boolean getIsMinSalesGrowthMandatory() {
+		return isMinSalesGrowthMandatory;
+	}
+
+	public void setIsMinSalesGrowthMandatory(Boolean isMinSalesGrowthMandatory) {
+		this.isMinSalesGrowthMandatory = isMinSalesGrowthMandatory;
+	}
+
+	public BigDecimal getMaxSalesGrowth() {
+		return maxSalesGrowth;
+	}
+
+	public void setMaxSalesGrowth(BigDecimal maxSalesGrowth) {
+		this.maxSalesGrowth = maxSalesGrowth;
+	}
+
+	public BigDecimal getMinSalesGrowth() {
+		return minSalesGrowth;
+	}
+
+	public void setMinSalesGrowth(BigDecimal minSalesGrowth) {
+		this.minSalesGrowth = minSalesGrowth;
+	}
+
+	public Boolean getIsMinCashProfitGrowthDisplay() {
+		return isMinCashProfitGrowthDisplay;
+	}
+
+	public void setIsMinCashProfitGrowthDisplay(Boolean isMinCashProfitGrowthDisplay) {
+		this.isMinCashProfitGrowthDisplay = isMinCashProfitGrowthDisplay;
+	}
+
+	public Boolean getIsMinCashProfitGrowthMandatory() {
+		return isMinCashProfitGrowthMandatory;
+	}
+
+	public void setIsMinCashProfitGrowthMandatory(Boolean isMinCashProfitGrowthMandatory) {
+		this.isMinCashProfitGrowthMandatory = isMinCashProfitGrowthMandatory;
+	}
+
+	public BigDecimal getMaxCashProfitGrowth() {
+		return maxCashProfitGrowth;
+	}
+
+	public void setMaxCashProfitGrowth(BigDecimal maxCashProfitGrowth) {
+		this.maxCashProfitGrowth = maxCashProfitGrowth;
+	}
+
+	public BigDecimal getMinCashProfitGrowth() {
+		return minCashProfitGrowth;
+	}
+
+	public void setMinCashProfitGrowth(BigDecimal minCashProfitGrowth) {
+		this.minCashProfitGrowth = minCashProfitGrowth;
+	}
+
+	public Boolean getIsMinMonthlyAvgBalDisplay() {
+		return isMinMonthlyAvgBalDisplay;
+	}
+
+	public void setIsMinMonthlyAvgBalDisplay(Boolean isMinMonthlyAvgBalDisplay) {
+		this.isMinMonthlyAvgBalDisplay = isMinMonthlyAvgBalDisplay;
+	}
+
+	public Boolean getIsMinMonthlyAvgBalMandatory() {
+		return isMinMonthlyAvgBalMandatory;
+	}
+
+	public void setIsMinMonthlyAvgBalMandatory(Boolean isMinMonthlyAvgBalMandatory) {
+		this.isMinMonthlyAvgBalMandatory = isMinMonthlyAvgBalMandatory;
+	}
+
+	public BigDecimal getMaxMonthlyAvgBal() {
+		return maxMonthlyAvgBal;
+	}
+
+	public void setMaxMonthlyAvgBal(BigDecimal maxMonthlyAvgBal) {
+		this.maxMonthlyAvgBal = maxMonthlyAvgBal;
+	}
+
+	public BigDecimal getMinMonthlyAvgBal() {
+		return minMonthlyAvgBal;
+	}
+
+	public void setMinMonthlyAvgBal(BigDecimal minMonthlyAvgBal) {
+		this.minMonthlyAvgBal = minMonthlyAvgBal;
+	}
+
+	public Boolean getIsMinNoDebitTransactionDisplay() {
+		return isMinNoDebitTransactionDisplay;
+	}
+
+	public void setIsMinNoDebitTransactionDisplay(Boolean isMinNoDebitTransactionDisplay) {
+		this.isMinNoDebitTransactionDisplay = isMinNoDebitTransactionDisplay;
+	}
+
+	public Boolean getIsMinNoDebitTransactionMandatory() {
+		return isMinNoDebitTransactionMandatory;
+	}
+
+	public void setIsMinNoDebitTransactionMandatory(Boolean isMinNoDebitTransactionMandatory) {
+		this.isMinNoDebitTransactionMandatory = isMinNoDebitTransactionMandatory;
+	}
+
+	public BigDecimal getMaxNoDebitTransaction() {
+		return maxNoDebitTransaction;
+	}
+
+	public void setMaxNoDebitTransaction(BigDecimal maxNoDebitTransaction) {
+		this.maxNoDebitTransaction = maxNoDebitTransaction;
+	}
+
+	public BigDecimal getMinNoDebitTransaction() {
+		return minNoDebitTransaction;
+	}
+
+	public void setMinNoDebitTransaction(BigDecimal minNoDebitTransaction) {
+		this.minNoDebitTransaction = minNoDebitTransaction;
+	}
+
+	public List<Integer> getConstitutionIds() {
+		return constitutionIds;
+	}
+
+	public void setConstitutionIds(List<Integer> constitutionIds) {
+		this.constitutionIds = constitutionIds;
+	}
+
+	
 	
 	
 	

@@ -63,6 +63,7 @@ public class CorporateFinalViewResponse implements Serializable {
 	private String collateralSecurityAmount;
 	private List<Object> profilePic;
 	private Integer productId;
+	private Object disbursementRequestDetails;
 
 	private String purposeOfLoan;
 	private String businessAssetAmount;
@@ -151,6 +152,11 @@ public class CorporateFinalViewResponse implements Serializable {
 	private List<Object> irtPdfReport;
 	private List<Object> nbfcPANReport;
 	private List<Object> nbfcAddressProofReport;
+	private List<Object> nbfcTripartiteAgreement;
+	private List<Object> nbfcSanctionLetterOfNBFC;
+	private List<Object> nbfcLetterOfIntent;
+	private List<Object> nbfcDemandPromissonryNote;
+	private List<Object> nbfcOther;
 	private List<OwnershipDetailResponse> ownershipDetailResponseList;
 	private List<TotalCostOfProjectResponse> totalCostOfProjectResponseList;
 	private List<FinanceMeansDetailResponse> financeMeansDetailResponseList;
@@ -2315,5 +2321,53 @@ public class CorporateFinalViewResponse implements Serializable {
 
 	public void setNbfcAddressProofReport(List<Object> nbfcAddressProofReport) {
 		this.nbfcAddressProofReport = nbfcAddressProofReport;
+	}
+
+	public List<Object> getNbfcTripartiteAgreement() {
+		return nbfcTripartiteAgreement;
+	}
+
+	public void setNbfcTripartiteAgreement(List<Object> nbfcTripartiteAgreement) {
+		this.nbfcTripartiteAgreement = nbfcTripartiteAgreement;
+	}
+
+	public List<Object> getNbfcSanctionLetterOfNBFC() {
+		return nbfcSanctionLetterOfNBFC;
+	}
+
+	public void setNbfcSanctionLetterOfNBFC(List<Object> nbfcSanctionLetterOfNBFC) {
+		this.nbfcSanctionLetterOfNBFC = nbfcSanctionLetterOfNBFC;
+	}
+
+	public List<Object> getNbfcLetterOfIntent() {
+		return nbfcLetterOfIntent;
+	}
+
+	public void setNbfcLetterOfIntent(List<Object> nbfcLetterOfIntent) {
+		this.nbfcLetterOfIntent = nbfcLetterOfIntent;
+	}
+
+	public List<Object> getNbfcDemandPromissonryNote() {
+		return nbfcDemandPromissonryNote;
+	}
+
+	public void setNbfcDemandPromissonryNote(List<Object> nbfcDemandPromissonryNote) {
+		this.nbfcDemandPromissonryNote = nbfcDemandPromissonryNote;
+	}
+
+	public List<Object> getNbfcOther() {
+		return nbfcOther;
+	}
+
+	public void setNbfcOther(List<Object> nbfcOther) {
+		this.nbfcOther = nbfcOther;
+	}
+
+	public Object getDisbursementRequestDetails() {
+		return disbursementRequestDetails;
+	}
+
+	public void setDisbursementRequestDetails(Object disbursementRequestDetails) {
+		this.disbursementRequestDetails = disbursementRequestDetails;
 	}
 }

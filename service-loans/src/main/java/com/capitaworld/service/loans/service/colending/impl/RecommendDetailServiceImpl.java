@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
+
 /**
  * Created by dhaval.panchal on 12-Sep-19.
  */
@@ -29,6 +31,8 @@ public class RecommendDetailServiceImpl implements RecommendDetailService {
         RecommendDetail detail = new RecommendDetail();
         try {
             BeanUtils.copyProperties(request,detail);
+            detail.setCreatedDate(new Date());
+            detail.setModifiedDate(new Date());
             repository.save(detail);
         } catch (BeansException e) {
             e.printStackTrace();

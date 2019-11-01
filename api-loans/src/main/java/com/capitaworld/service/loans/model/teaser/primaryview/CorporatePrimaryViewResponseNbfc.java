@@ -2,211 +2,369 @@ package com.capitaworld.service.loans.model.teaser.primaryview;
 
 /**
  * @author yashwant.menaria
- *
  */
 public class CorporatePrimaryViewResponseNbfc {
 
-		private String nbfcBlendedExistingLoanAmount;
-	    private String nbfcBlendedAdditionalLoanAmount;
-	    private String nbfcBlendedAmount;
-	    private double nbfcBlendedRateOfInterest;
-	    private double nbfcBlendedTenure;
-	    private String nbfcBlendedEmiAmount;
-	    private double nbfcBlendedProcessingFees;
-	    
-	    private String bankExistingLoanAmount;
-	    private String bankAdditionalLoanAmount;
-	    private String bankAmount;
-	    private double bankRateOfInterest;
-	    private double bankTenure;
-	    private String bankEmiAmount;
-	    private double bankProcessingFees;
-	    
-	    private String nbfcExistingLoanAmount;
-	    private String nbfcAdditionalLoanAmount;
-	    private String nbfcAmount;
-	    private double nbfcRateOfInterest;
-	    private double nbfcTenure;
-	    private String nbfcEmiAmount;
-	    private double nbfcProcessingFees;
-	    
-	    private boolean checkFlag;
+    private String nbfcBlendedExistingLoanAmount;
+    private String nbfcBlendedAdditionalLoanAmount;
+    private String nbfcBlendedAmount;
+    private double nbfcBlendedRateOfInterest;
+    private double nbfcBlendedTenure;
+    private String nbfcBlendedEmiAmount;
+    private double nbfcBlendedProcessingFees;
 
-		public String getNbfcBlendedExistingLoanAmount() {
-			return nbfcBlendedExistingLoanAmount;
-		}
+    private String bankExistingLoanAmount;
+    private String bankAdditionalLoanAmount;
+    private String bankAmount;
+    private double bankRateOfInterest;
+    private double bankTenure;
+    private String bankEmiAmount;
+    private double bankProcessingFees;
 
-		public void setNbfcBlendedExistingLoanAmount(String nbfcBlendedExistingLoanAmount) {
-			this.nbfcBlendedExistingLoanAmount = nbfcBlendedExistingLoanAmount;
-		}
+    private String nbfcExistingLoanAmount;
+    private String nbfcAdditionalLoanAmount;
+    private String nbfcAmount;
+    private double nbfcRateOfInterest;
+    private double nbfcTenure;
+    private String nbfcEmiAmount;
+    private double nbfcProcessingFees;
 
-		public String getNbfcBlendedAdditionalLoanAmount() {
-			return nbfcBlendedAdditionalLoanAmount;
-		}
+    private boolean checkFlag;
 
-		public void setNbfcBlendedAdditionalLoanAmount(String nbfcBlendedAdditionalLoanAmount) {
-			this.nbfcBlendedAdditionalLoanAmount = nbfcBlendedAdditionalLoanAmount;
-		}
+    //recommended fields
+    private Double recommendedValue;
+    private Double recommendedTenure;
+    private Double recommendedRoi;
+    private Double recommendedProcessingFee;
+    private String recommendedRemark;
 
-		public String getNbfcBlendedAmount() {
-			return nbfcBlendedAmount;
-		}
+    //sanction fields
+    private Double bankSanctionAmount;
+    private Double bankSanctionRoi;
+    private Double bankSanctionTenure;
 
-		public void setNbfcBlendedAmount(String nbfcBlendedAmount) {
-			this.nbfcBlendedAmount = nbfcBlendedAmount;
-		}
+    private Double nbfcSanctionAmount;
+    private Double nbfcSanctionRoi;
+    private Double nbfcSanctionTenure;
 
-		public double getNbfcBlendedRateOfInterest() {
-			return nbfcBlendedRateOfInterest;
-		}
+    //disbursement fields
+    private Double bankDisbursedAmount;
+    private String bankTransactionNo;
+    private String bankRemark;
 
-		public void setNbfcBlendedRateOfInterest(double nbfcBlendedRateOfInterest) {
-			this.nbfcBlendedRateOfInterest = nbfcBlendedRateOfInterest;
-		}
+    private Double nbfcDisbursedAmount;
+    private String nbfcTransactionNo;
+    private String nbfcRemark;
 
-		public double getNbfcBlendedTenure() {
-			return nbfcBlendedTenure;
-		}
+    public String getNbfcBlendedExistingLoanAmount() {
+        return nbfcBlendedExistingLoanAmount;
+    }
 
-		public void setNbfcBlendedTenure(double nbfcBlendedTenure) {
-			this.nbfcBlendedTenure = nbfcBlendedTenure;
-		}
+    public void setNbfcBlendedExistingLoanAmount(String nbfcBlendedExistingLoanAmount) {
+        this.nbfcBlendedExistingLoanAmount = nbfcBlendedExistingLoanAmount;
+    }
 
-		public String getNbfcBlendedEmiAmount() {
-			return nbfcBlendedEmiAmount;
-		}
+    public String getNbfcBlendedAdditionalLoanAmount() {
+        return nbfcBlendedAdditionalLoanAmount;
+    }
 
-		public void setNbfcBlendedEmiAmount(String nbfcBlendedEmiAmount) {
-			this.nbfcBlendedEmiAmount = nbfcBlendedEmiAmount;
-		}
+    public void setNbfcBlendedAdditionalLoanAmount(String nbfcBlendedAdditionalLoanAmount) {
+        this.nbfcBlendedAdditionalLoanAmount = nbfcBlendedAdditionalLoanAmount;
+    }
 
-		public double getNbfcBlendedProcessingFees() {
-			return nbfcBlendedProcessingFees;
-		}
+    public String getNbfcBlendedAmount() {
+        return nbfcBlendedAmount;
+    }
 
-		public void setNbfcBlendedProcessingFees(double nbfcBlendedProcessingFees) {
-			this.nbfcBlendedProcessingFees = nbfcBlendedProcessingFees;
-		}
+    public void setNbfcBlendedAmount(String nbfcBlendedAmount) {
+        this.nbfcBlendedAmount = nbfcBlendedAmount;
+    }
 
-		public String getBankExistingLoanAmount() {
-			return bankExistingLoanAmount;
-		}
+    public double getNbfcBlendedRateOfInterest() {
+        return nbfcBlendedRateOfInterest;
+    }
 
-		public void setBankExistingLoanAmount(String bankExistingLoanAmount) {
-			this.bankExistingLoanAmount = bankExistingLoanAmount;
-		}
+    public void setNbfcBlendedRateOfInterest(double nbfcBlendedRateOfInterest) {
+        this.nbfcBlendedRateOfInterest = nbfcBlendedRateOfInterest;
+    }
 
-		public String getBankAdditionalLoanAmount() {
-			return bankAdditionalLoanAmount;
-		}
+    public double getNbfcBlendedTenure() {
+        return nbfcBlendedTenure;
+    }
 
-		public void setBankAdditionalLoanAmount(String bankAdditionalLoanAmount) {
-			this.bankAdditionalLoanAmount = bankAdditionalLoanAmount;
-		}
+    public void setNbfcBlendedTenure(double nbfcBlendedTenure) {
+        this.nbfcBlendedTenure = nbfcBlendedTenure;
+    }
 
-		public String getBankAmount() {
-			return bankAmount;
-		}
+    public String getNbfcBlendedEmiAmount() {
+        return nbfcBlendedEmiAmount;
+    }
 
-		public void setBankAmount(String bankAmount) {
-			this.bankAmount = bankAmount;
-		}
+    public void setNbfcBlendedEmiAmount(String nbfcBlendedEmiAmount) {
+        this.nbfcBlendedEmiAmount = nbfcBlendedEmiAmount;
+    }
 
-		public double getBankRateOfInterest() {
-			return bankRateOfInterest;
-		}
+    public double getNbfcBlendedProcessingFees() {
+        return nbfcBlendedProcessingFees;
+    }
 
-		public void setBankRateOfInterest(double bankRateOfInterest) {
-			this.bankRateOfInterest = bankRateOfInterest;
-		}
+    public void setNbfcBlendedProcessingFees(double nbfcBlendedProcessingFees) {
+        this.nbfcBlendedProcessingFees = nbfcBlendedProcessingFees;
+    }
 
-		public double getBankTenure() {
-			return bankTenure;
-		}
+    public String getBankExistingLoanAmount() {
+        return bankExistingLoanAmount;
+    }
 
-		public void setBankTenure(double bankTenure) {
-			this.bankTenure = bankTenure;
-		}
+    public void setBankExistingLoanAmount(String bankExistingLoanAmount) {
+        this.bankExistingLoanAmount = bankExistingLoanAmount;
+    }
 
-		public String getBankEmiAmount() {
-			return bankEmiAmount;
-		}
+    public String getBankAdditionalLoanAmount() {
+        return bankAdditionalLoanAmount;
+    }
 
-		public void setBankEmiAmount(String bankEmiAmount) {
-			this.bankEmiAmount = bankEmiAmount;
-		}
+    public void setBankAdditionalLoanAmount(String bankAdditionalLoanAmount) {
+        this.bankAdditionalLoanAmount = bankAdditionalLoanAmount;
+    }
 
-		public double getBankProcessingFees() {
-			return bankProcessingFees;
-		}
+    public String getBankAmount() {
+        return bankAmount;
+    }
 
-		public void setBankProcessingFees(double bankProcessingFees) {
-			this.bankProcessingFees = bankProcessingFees;
-		}
+    public void setBankAmount(String bankAmount) {
+        this.bankAmount = bankAmount;
+    }
 
-		public String getNbfcExistingLoanAmount() {
-			return nbfcExistingLoanAmount;
-		}
+    public double getBankRateOfInterest() {
+        return bankRateOfInterest;
+    }
 
-		public void setNbfcExistingLoanAmount(String nbfcExistingLoanAmount) {
-			this.nbfcExistingLoanAmount = nbfcExistingLoanAmount;
-		}
+    public void setBankRateOfInterest(double bankRateOfInterest) {
+        this.bankRateOfInterest = bankRateOfInterest;
+    }
 
-		public String getNbfcAdditionalLoanAmount() {
-			return nbfcAdditionalLoanAmount;
-		}
+    public double getBankTenure() {
+        return bankTenure;
+    }
 
-		public void setNbfcAdditionalLoanAmount(String nbfcAdditionalLoanAmount) {
-			this.nbfcAdditionalLoanAmount = nbfcAdditionalLoanAmount;
-		}
+    public void setBankTenure(double bankTenure) {
+        this.bankTenure = bankTenure;
+    }
 
-		public String getNbfcAmount() {
-			return nbfcAmount;
-		}
+    public String getBankEmiAmount() {
+        return bankEmiAmount;
+    }
 
-		public void setNbfcAmount(String nbfcAmount) {
-			this.nbfcAmount = nbfcAmount;
-		}
+    public void setBankEmiAmount(String bankEmiAmount) {
+        this.bankEmiAmount = bankEmiAmount;
+    }
 
-		public double getNbfcRateOfInterest() {
-			return nbfcRateOfInterest;
-		}
+    public double getBankProcessingFees() {
+        return bankProcessingFees;
+    }
 
-		public void setNbfcRateOfInterest(double nbfcRateOfInterest) {
-			this.nbfcRateOfInterest = nbfcRateOfInterest;
-		}
+    public void setBankProcessingFees(double bankProcessingFees) {
+        this.bankProcessingFees = bankProcessingFees;
+    }
 
-		public double getNbfcTenure() {
-			return nbfcTenure;
-		}
+    public String getNbfcExistingLoanAmount() {
+        return nbfcExistingLoanAmount;
+    }
 
-		public void setNbfcTenure(double nbfcTenure) {
-			this.nbfcTenure = nbfcTenure;
-		}
+    public void setNbfcExistingLoanAmount(String nbfcExistingLoanAmount) {
+        this.nbfcExistingLoanAmount = nbfcExistingLoanAmount;
+    }
 
-		public String getNbfcEmiAmount() {
-			return nbfcEmiAmount;
-		}
+    public String getNbfcAdditionalLoanAmount() {
+        return nbfcAdditionalLoanAmount;
+    }
 
-		public void setNbfcEmiAmount(String nbfcEmiAmount) {
-			this.nbfcEmiAmount = nbfcEmiAmount;
-		}
+    public void setNbfcAdditionalLoanAmount(String nbfcAdditionalLoanAmount) {
+        this.nbfcAdditionalLoanAmount = nbfcAdditionalLoanAmount;
+    }
 
-		public double getNbfcProcessingFees() {
-			return nbfcProcessingFees;
-		}
+    public String getNbfcAmount() {
+        return nbfcAmount;
+    }
 
-		public void setNbfcProcessingFees(double nbfcProcessingFees) {
-			this.nbfcProcessingFees = nbfcProcessingFees;
-		}
+    public void setNbfcAmount(String nbfcAmount) {
+        this.nbfcAmount = nbfcAmount;
+    }
 
-		public boolean isCheckFlag() {
-			return checkFlag;
-		}
+    public double getNbfcRateOfInterest() {
+        return nbfcRateOfInterest;
+    }
 
-		public void setCheckFlag(boolean checkFlag) {
-			this.checkFlag = checkFlag;
-		} 
-	    
-	    
+    public void setNbfcRateOfInterest(double nbfcRateOfInterest) {
+        this.nbfcRateOfInterest = nbfcRateOfInterest;
+    }
+
+    public double getNbfcTenure() {
+        return nbfcTenure;
+    }
+
+    public void setNbfcTenure(double nbfcTenure) {
+        this.nbfcTenure = nbfcTenure;
+    }
+
+    public String getNbfcEmiAmount() {
+        return nbfcEmiAmount;
+    }
+
+    public void setNbfcEmiAmount(String nbfcEmiAmount) {
+        this.nbfcEmiAmount = nbfcEmiAmount;
+    }
+
+    public double getNbfcProcessingFees() {
+        return nbfcProcessingFees;
+    }
+
+    public void setNbfcProcessingFees(double nbfcProcessingFees) {
+        this.nbfcProcessingFees = nbfcProcessingFees;
+    }
+
+    public boolean isCheckFlag() {
+        return checkFlag;
+    }
+
+    public void setCheckFlag(boolean checkFlag) {
+        this.checkFlag = checkFlag;
+    }
+
+    public Double getRecommendedValue() {
+        return recommendedValue;
+    }
+
+    public void setRecommendedValue(Double recommendedValue) {
+        this.recommendedValue = recommendedValue;
+    }
+
+    public Double getRecommendedTenure() {
+        return recommendedTenure;
+    }
+
+    public void setRecommendedTenure(Double recommendedTenure) {
+        this.recommendedTenure = recommendedTenure;
+    }
+
+    public Double getRecommendedRoi() {
+        return recommendedRoi;
+    }
+
+    public void setRecommendedRoi(Double recommendedRoi) {
+        this.recommendedRoi = recommendedRoi;
+    }
+
+    public Double getRecommendedProcessingFee() {
+        return recommendedProcessingFee;
+    }
+
+    public void setRecommendedProcessingFee(Double recommendedProcessingFee) {
+        this.recommendedProcessingFee = recommendedProcessingFee;
+    }
+
+    public String getRecommendedRemark() {
+        return recommendedRemark;
+    }
+
+    public void setRecommendedRemark(String recommendedRemark) {
+        this.recommendedRemark = recommendedRemark;
+    }
+
+    public Double getBankSanctionAmount() {
+        return bankSanctionAmount;
+    }
+
+    public void setBankSanctionAmount(Double bankSanctionAmount) {
+        this.bankSanctionAmount = bankSanctionAmount;
+    }
+
+    public Double getBankSanctionRoi() {
+        return bankSanctionRoi;
+    }
+
+    public void setBankSanctionRoi(Double bankSanctionRoi) {
+        this.bankSanctionRoi = bankSanctionRoi;
+    }
+
+    public Double getBankSanctionTenure() {
+        return bankSanctionTenure;
+    }
+
+    public void setBankSanctionTenure(Double bankSanctionTenure) {
+        this.bankSanctionTenure = bankSanctionTenure;
+    }
+
+    public Double getNbfcSanctionAmount() {
+        return nbfcSanctionAmount;
+    }
+
+    public void setNbfcSanctionAmount(Double nbfcSanctionAmount) {
+        this.nbfcSanctionAmount = nbfcSanctionAmount;
+    }
+
+    public Double getNbfcSanctionRoi() {
+        return nbfcSanctionRoi;
+    }
+
+    public void setNbfcSanctionRoi(Double nbfcSanctionRoi) {
+        this.nbfcSanctionRoi = nbfcSanctionRoi;
+    }
+
+    public Double getNbfcSanctionTenure() {
+        return nbfcSanctionTenure;
+    }
+
+    public void setNbfcSanctionTenure(Double nbfcSanctionTenure) {
+        this.nbfcSanctionTenure = nbfcSanctionTenure;
+    }
+
+    public Double getBankDisbursedAmount() {
+        return bankDisbursedAmount;
+    }
+
+    public void setBankDisbursedAmount(Double bankDisbursedAmount) {
+        this.bankDisbursedAmount = bankDisbursedAmount;
+    }
+
+    public String getBankTransactionNo() {
+        return bankTransactionNo;
+    }
+
+    public void setBankTransactionNo(String bankTransactionNo) {
+        this.bankTransactionNo = bankTransactionNo;
+    }
+
+    public String getBankRemark() {
+        return bankRemark;
+    }
+
+    public void setBankRemark(String bankRemark) {
+        this.bankRemark = bankRemark;
+    }
+
+    public Double getNbfcDisbursedAmount() {
+        return nbfcDisbursedAmount;
+    }
+
+    public void setNbfcDisbursedAmount(Double nbfcDisbursedAmount) {
+        this.nbfcDisbursedAmount = nbfcDisbursedAmount;
+    }
+
+    public String getNbfcTransactionNo() {
+        return nbfcTransactionNo;
+    }
+
+    public void setNbfcTransactionNo(String nbfcTransactionNo) {
+        this.nbfcTransactionNo = nbfcTransactionNo;
+    }
+
+    public String getNbfcRemark() {
+        return nbfcRemark;
+    }
+
+    public void setNbfcRemark(String nbfcRemark) {
+        this.nbfcRemark = nbfcRemark;
+    }
 }

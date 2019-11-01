@@ -366,7 +366,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					proposalId = proposalDetailsForBank.getId();
 				}*/
 				logger.info("Start Fetching Cam Data For ApplicationId==>{}  with  ProductId==>{}  and  ProposalId==>{}" , applicationId , productId , proposalId);
-				map.put("nbfcData", getNBFCData(applicationId));
+				map.put("nbfcDatas", corporatePrimaryViewService.getNbfcData(applicationId));
 			}
 		}catch (Exception e) {
 			logger.error("Error/Exception while fetching Details For NBFC by ApplicationId==>{}" , applicationId);
@@ -1460,6 +1460,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}catch (Exception e) {
 			logger.error("error in getting gst comparision data : {}",e);
 		}
+		
+		// get ngbc final data
+		
 
 		/**ReportRequest reportRequest = new ReportRequest();
 		reportRequest.setApplicationId(applicationId);
@@ -2292,106 +2295,6 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		financials.put((currentYear - 2), prevFinYear);
 		financials.put((currentYear - 3), yrBeforePrevFinYear);
 		logger.info("financials========={}",financials.toString());
-	}
-	
-	private Map<String ,Object> getNBFCData(Long applicationId){
-		Map<String ,Object> nbfcData = new HashMap<String, Object>();
-		try {
-			NbfcProposalBlendedRate nbfcProposalBlendedRate = nbfcProposalBlendedRateRepository.getByApplicationIdOrderByIdDescLimit1(applicationId);
-			if(nbfcProposalBlendedRate != null) {
-				logger.info("Fetching for Combined Data for MSME Cam by ApplicationId==>{}" ,applicationId);
-				
-				//Existing and Additional Loan Amount
-				Long loanAmount = nbfcProposalBlendedRate.getElAmount() != null ? nbfcProposalBlendedRate.getElAmount().longValue() : null;
-				Long existingLoanAmount = nbfcProposalBlendedRate.getExistingLoanAmount() != null ? nbfcProposalBlendedRate.getExistingLoanAmount().longValue() : 0l;
-				Long additionalLoanAmount = nbfcProposalBlendedRate.getAdditionalLoanAmount() != null ? nbfcProposalBlendedRate.getAdditionalLoanAmount().longValue() : 0l;
-	
-				logger.info("Getting Existing LoanAmount==>{} and Additional LoanAmount==>{} from nbfc Proposal Blended Rate...of ApplicationId==>{}",
-						existingLoanAmount , additionalLoanAmount , applicationId);
-				if(existingLoanAmount != 0 && additionalLoanAmount != 0) {
-					loanAmount = existingLoanAmount + additionalLoanAmount;
-				}
-				
-				nbfcData.put("nbfcBlendedExistingLoanAmount", existingLoanAmount != 0 ? CommonUtils.convertValueWithoutDecimal(existingLoanAmount.doubleValue()) : 0);
-				
-				if(existingLoanAmount != 0)
-					nbfcData.put("nbfcBlendedAdditionalLoanAmount", additionalLoanAmount  != 0 ? CommonUtils.convertValueWithoutDecimal(additionalLoanAmount.doubleValue()) : 0);
-				else
-					nbfcData.put("nbfcBlendedAdditionalLoanAmount", additionalLoanAmount != 0 ? CommonUtils.convertValueWithoutDecimal(additionalLoanAmount.doubleValue()) : CommonUtils.convertValueWithoutDecimal(Double.valueOf(loanAmount)));
-				
-				nbfcData.put("nbfcBlendedAmount", loanAmount != null ? CommonUtils.convertValueWithoutDecimal(loanAmount.doubleValue()) : "NA");
-				
-				nbfcData.put("nbfcBlendedRateOfInterest", nbfcProposalBlendedRate.getElRoi() != null? nbfcProposalBlendedRate.getElRoi() + " %":"NA");
-				nbfcData.put("nbfcBlendedTenure", nbfcProposalBlendedRate.getElTenure() != null? nbfcProposalBlendedRate.getElTenure() : "-");
-				nbfcData.put("nbfcBlendedEmiAmount", nbfcProposalBlendedRate.getEmi() != null ? CommonUtils.convertValueWithoutDecimal(nbfcProposalBlendedRate.getEmi()) : "-");
-				nbfcData.put("nbfcBlendedProcessingFees", nbfcProposalBlendedRate.getProcessingFee() != null  ? nbfcProposalBlendedRate.getProcessingFee() : "NA");
-			}
-			
-			ProposalDetails proposalDetailsForBank = proposalDetailsRepository.findFirstByApplicationIdAndIsActiveAndNbfcFlowOrderByIdDesc(applicationId, true, 2);
-			if(proposalDetailsForBank != null) {
-				logger.info("Fetching for Banks Data for MSME Cam by ApplicationId==>{} with ProposalId==>{}" ,applicationId ,proposalDetailsForBank.getId());
-				
-				//Existing and Additional Loan Amount
-				Long loanAmount = proposalDetailsForBank.getElAmount() != null ? proposalDetailsForBank.getElAmount().longValue() : null;
-				Long existingLoanAmount = proposalDetailsForBank.getExistingLoanAmount() != null ? proposalDetailsForBank.getExistingLoanAmount().longValue() : 0l;
-				Long additionalLoanAmount = proposalDetailsForBank.getAdditionalLoanAmount() != null ? proposalDetailsForBank.getAdditionalLoanAmount().longValue() : 0l;
-	
-				logger.info("Getting Existing LoanAmount==>{} and Additional LoanAmount==>{} from proposal Details For Bank...of ApplicationId==>{}",
-						existingLoanAmount , additionalLoanAmount , applicationId);
-				if(existingLoanAmount != 0 && additionalLoanAmount != 0) {
-					loanAmount = existingLoanAmount + additionalLoanAmount;
-				}
-				
-				nbfcData.put("bankExistingLoanAmount", existingLoanAmount != 0 ? CommonUtils.convertValueWithoutDecimal(existingLoanAmount.doubleValue()) : 0);
-				
-				if(existingLoanAmount != 0)
-					nbfcData.put("bankAdditionalLoanAmount", additionalLoanAmount  != 0 ? CommonUtils.convertValueWithoutDecimal(additionalLoanAmount.doubleValue()) : 0);
-				else
-					nbfcData.put("bankAdditionalLoanAmount", additionalLoanAmount != 0 ? CommonUtils.convertValueWithoutDecimal(additionalLoanAmount.doubleValue()) : CommonUtils.convertValueWithoutDecimal(Double.valueOf(loanAmount)));
-				
-				nbfcData.put("bankAmount", loanAmount != null ? CommonUtils.convertValueWithoutDecimal(loanAmount.doubleValue()) : "NA");
-				
-				nbfcData.put("bankRateOfInterest", proposalDetailsForBank.getElRoi() != null? proposalDetailsForBank.getElRoi() + " %":"NA");
-				nbfcData.put("bankTenure", proposalDetailsForBank.getElTenure() != null? proposalDetailsForBank.getElTenure() : "-");
-				nbfcData.put("bankEmiAmount", proposalDetailsForBank.getEmi() != null ? CommonUtils.convertValueWithoutDecimal(proposalDetailsForBank.getEmi()) : "-");
-				nbfcData.put("bankProcessingFees", proposalDetailsForBank.getProcessingFee() != null  ? proposalDetailsForBank.getProcessingFee() : "NA");
-				
-			}
-			
-			ProposalDetails proposalDetailsForNbfc = proposalDetailsRepository.findFirstByApplicationIdAndIsActiveAndNbfcFlowOrderByIdDesc(applicationId, true, 1);
-			if(proposalDetailsForNbfc != null) {
-				logger.info("Fetching for NBFC Data  for MSME Cam by ApplicationId==>{} with ProposalId==>{}" ,applicationId ,proposalDetailsForNbfc.getId());
-				
-				//Existing and Additional Loan Amount
-				Long loanAmount = proposalDetailsForNbfc.getElAmount() != null ? proposalDetailsForNbfc.getElAmount().longValue() : null;
-				Long existingLoanAmount = proposalDetailsForNbfc.getExistingLoanAmount() != null ? proposalDetailsForNbfc.getExistingLoanAmount().longValue() : 0l;
-				Long additionalLoanAmount = proposalDetailsForNbfc.getAdditionalLoanAmount() != null ? proposalDetailsForNbfc.getAdditionalLoanAmount().longValue() : 0l;
-	
-				logger.info("Getting Existing LoanAmount==>{} and Additional LoanAmount==>{} from proposal Details For Bank...of ApplicationId==>{}",
-						existingLoanAmount , additionalLoanAmount , applicationId);
-				if(existingLoanAmount != 0 && additionalLoanAmount != 0) {
-					loanAmount = existingLoanAmount + additionalLoanAmount;
-				}
-				
-				nbfcData.put("nbfcExistingLoanAmount", existingLoanAmount != 0 ? CommonUtils.convertValueWithoutDecimal(existingLoanAmount.doubleValue()) : 0);
-				
-				if(existingLoanAmount != 0)
-					nbfcData.put("nbfcAdditionalLoanAmount", additionalLoanAmount  != 0 ? CommonUtils.convertValueWithoutDecimal(additionalLoanAmount.doubleValue()) : 0);
-				else
-					nbfcData.put("nbfcAdditionalLoanAmount", additionalLoanAmount != 0 ? CommonUtils.convertValueWithoutDecimal(additionalLoanAmount.doubleValue()) : CommonUtils.convertValueWithoutDecimal(Double.valueOf(loanAmount)));
-				
-				nbfcData.put("nbfcAmount", loanAmount != null ? CommonUtils.convertValueWithoutDecimal(loanAmount.doubleValue()) : "NA");
-				
-				nbfcData.put("nbfcRateOfInterest", proposalDetailsForNbfc.getElRoi() != null? proposalDetailsForNbfc.getElRoi() + " %":"NA");
-				nbfcData.put("nbfcTenure", proposalDetailsForNbfc.getElTenure() != null? proposalDetailsForNbfc.getElTenure() : "-");
-				nbfcData.put("nbfcEmiAmount", proposalDetailsForNbfc.getEmi() != null ? CommonUtils.convertValueWithoutDecimal(proposalDetailsForNbfc.getEmi()) : "-");
-				nbfcData.put("nbfcProcessingFees", proposalDetailsForNbfc.getProcessingFee() != null  ? proposalDetailsForNbfc.getProcessingFee() : "NA");
-			}
-		}catch (Exception e) {
-			logger.error("Error/Exception while fetching NBFC Details by ApplicationId==>{}" , applicationId);
-		}
-		
-		return !nbfcData.isEmpty() ? nbfcData : null;
 	}
 	
 	

@@ -11,6 +11,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.domain.colending.RecommendDetail;
+import com.capitaworld.service.loans.domain.sanction.LoanDisbursementDomain;
+import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
+import com.capitaworld.service.loans.repository.colending.RecommendDetailRepository;
+import com.capitaworld.service.loans.repository.sanction.LoanDisbursementRepository;
+import com.capitaworld.service.loans.repository.sanction.LoanSanctionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -232,7 +238,15 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
     
 	@Autowired
 	private NbfcProposalBlendedRateRepository nbfcProposalBlendedRateRepository;
-    
+
+	@Autowired
+	private RecommendDetailRepository recommendDetailRepository;
+
+	@Autowired
+    private LoanSanctionRepository loanSanctionRepository;
+
+	@Autowired
+	private LoanDisbursementRepository loanDisbursementRepository;
 	
 	DecimalFormat decim = new DecimalFormat("#,###.00");
 
@@ -1420,7 +1434,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 	}
 
 //	STARTS HERE CO-ORIGIN CODE 
-	private CorporatePrimaryViewResponseNbfc getNbfcData(Long applicationId)
+	public CorporatePrimaryViewResponseNbfc getNbfcData(Long applicationId)
 	{
 		CorporatePrimaryViewResponseNbfc corporatePrimaryView = new CorporatePrimaryViewResponseNbfc();
 		    Boolean isNBFCFlow = applicationProposalMappingRepository.getNbfcUserValue(applicationId);
@@ -1478,6 +1492,40 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				corporatePrimaryView.setBankEmiAmount(proposalDetailsForBank.getEmi() != 0 ? CommonUtils.convertValueWithoutDecimal(proposalDetailsForBank.getEmi().doubleValue()) : "0");
 				corporatePrimaryView.setBankProcessingFees(proposalDetailsForBank.getProcessingFee() );
 			}
+
+			RecommendDetail detail = recommendDetailRepository.getByApplicationIdOrderByIdDescLimit1(applicationId);
+			if (!CommonUtils.isObjectNullOrEmpty(detail)) {
+				corporatePrimaryView.setRecommendedValue(detail.getValue());
+				corporatePrimaryView.setRecommendedTenure(detail.getTenure());
+				corporatePrimaryView.setRecommendedRoi(detail.getRoi());
+				corporatePrimaryView.setRecommendedProcessingFee(detail.getProcessingFee());
+				corporatePrimaryView.setRecommendedRemark(detail.getRemark());
+			}
+			LoanSanctionDomain nbfcSanction = loanSanctionRepository.findByAppliationIdAndNBFCFlow(applicationId,1);
+			if(!CommonUtils.isObjectNullOrEmpty(nbfcSanction)){
+				corporatePrimaryView.setNbfcSanctionAmount(nbfcSanction.getSanctionAmount());
+				corporatePrimaryView.setNbfcSanctionRoi(nbfcSanction.getRoi());
+				corporatePrimaryView.setNbfcSanctionTenure(nbfcSanction.getTenure());
+			}
+			LoanSanctionDomain bankSanction = loanSanctionRepository.findByAppliationIdAndNBFCFlow(applicationId,2);
+			if(!CommonUtils.isObjectNullOrEmpty(bankSanction)){
+				corporatePrimaryView.setNbfcSanctionAmount(nbfcSanction.getSanctionAmount());
+				corporatePrimaryView.setNbfcSanctionRoi(nbfcSanction.getRoi());
+				corporatePrimaryView.setNbfcSanctionTenure(nbfcSanction.getTenure());
+			}
+			LoanDisbursementDomain nbfcDisbursed = loanDisbursementRepository.findByAppliationIdAndNBFCFlow(applicationId,1);
+			if(!CommonUtils.isObjectNullOrEmpty(nbfcDisbursed)){
+				corporatePrimaryView.setNbfcDisbursedAmount(nbfcDisbursed.getDisbursedAmount());
+				corporatePrimaryView.setNbfcTransactionNo(nbfcDisbursed.getTransactionNo());
+				corporatePrimaryView.setNbfcRemark(nbfcDisbursed.getRemark());
+			}
+			LoanDisbursementDomain bankDisbursed = loanDisbursementRepository.findByAppliationIdAndNBFCFlow(applicationId,2);
+			if(!CommonUtils.isObjectNullOrEmpty(bankDisbursed)){
+				corporatePrimaryView.setBankDisbursedAmount(bankDisbursed.getDisbursedAmount());
+				corporatePrimaryView.setBankTransactionNo(bankDisbursed.getTransactionNo());
+				corporatePrimaryView.setBankRemark(bankDisbursed.getRemark());
+			}
+
 			return corporatePrimaryView;
 	}
 //	ENDS HERE CO-ORIGIN CODE 
