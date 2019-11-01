@@ -79,6 +79,7 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 				clientDetailCoLending.setClientEmail(clientResponse.getClientEmail());
 				clientDetailCoLending.setClientMobile(clientResponse.getClientMobile());
 				clientDetailCoLending.setLastAccessId(clientResponse.getLastAccessId());
+				clientDetailCoLending.setOriginalEmailId(clientResponse.getOriginalEmailId());
 				//get city name
 				if (!CommonUtils.isObjectNullOrEmpty(clientResponse.getClientCity()) && clientResponse.getClientCity() != 0) {
 					List<Long> cityList = new ArrayList<>();
@@ -157,31 +158,60 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 				ProposalDetails proposalDetailsOne = proposalDetailsList.get(0);
 				ProposalDetails proposalDetailsTwo = proposalDetailsList.get(1);
 				ProposalDetails minLoanAmtProposalObj = new ProposalDetails();
-				if(proposalDetailsTwo.getElAmount() == proposalDetailsOne.getElAmount()){
-					if(proposalDetailsTwo.getElTenure() == proposalDetailsOne.getElTenure()){
-						if(proposalDetailsTwo.getNbfcFlow() == NBFC_BANK_FLOW){
-							RecommendDetail recommendDetail = recommendDetailRepository.getByApplicationIdOrderByIdDescLimit1(applicationId);
-							if(!CommonUtils.isObjectNullOrEmpty(recommendDetail) && !CommonUtils.isObjectNullOrEmpty(recommendDetail.getValue())){
-								minLoanAmtProposalObj.setElAmount(recommendDetail.getValue());
-								minLoanAmtProposalObj.setElTenure(recommendDetail.getTenure());
-								minLoanAmtProposalObj.setElRoi(recommendDetail.getRoi());
-								minLoanAmtProposalObj.setProcessingFee(recommendDetail.getProcessingFee());
-							}else{
+				ProposalMappingRequest recomReq = new ProposalMappingRequest();
+				RecommendDetail recommendDetail = recommendDetailRepository.getByApplicationIdOrderByIdDescLimit1(applicationId);
+				if(!CommonUtils.isObjectNullOrEmpty(recommendDetail) && !CommonUtils.isObjectNullOrEmpty(recommendDetail.getValue())){
+					if(proposalDetailsOne.getNbfcFlow() == NBFC_BANK_FLOW){
+						BeanUtils.copyProperties(proposalDetailsOne,recomReq,"additionalLoanAmount","existingLoanAmount");
+					}else if(proposalDetailsTwo.getNbfcFlow() == NBFC_BANK_FLOW){
+						BeanUtils.copyProperties(proposalDetailsTwo,recomReq,"additionalLoanAmount","existingLoanAmount");
+					}
+					recomReq.setElAmount(recommendDetail.getValue());
+					recomReq.setElTenure(recommendDetail.getTenure());
+					recomReq.setElRoi(recommendDetail.getRoi());
+					recomReq.setProcessingFee(recommendDetail.getProcessingFee());
+				}
+
+				if(!CommonUtils.isObjectNullOrEmpty(recomReq)
+						&& !CommonUtils.isObjectNullOrEmpty(recomReq.getElAmount())
+						&& !CommonUtils.isObjectNullOrEmpty(recomReq.getElTenure())){ // set reco values
+					if(proposalDetailsTwo.getElAmount() == recomReq.getElAmount()){
+						if(proposalDetailsTwo.getElTenure() == recomReq.getElTenure()){
+							if(proposalDetailsTwo.getNbfcFlow() == NBFC_BANK_FLOW){
 								minLoanAmtProposalObj = proposalDetailsTwo;
+							}else {
+								BeanUtils.copyProperties(recomReq,minLoanAmtProposalObj);
 							}
+						}else if(proposalDetailsTwo.getElTenure() < recomReq.getElTenure()){
+							minLoanAmtProposalObj = proposalDetailsTwo;
+						}else {
+							BeanUtils.copyProperties(recomReq,minLoanAmtProposalObj);
+						}
+					}else if(proposalDetailsTwo.getElAmount() < recomReq.getElAmount()){
+						minLoanAmtProposalObj = proposalDetailsTwo;
+					}else {
+						BeanUtils.copyProperties(recomReq,minLoanAmtProposalObj);
+					}
+				}else{// set normal values
+					if(proposalDetailsTwo.getElAmount() == proposalDetailsOne.getElAmount()){
+						if(proposalDetailsTwo.getElTenure() == proposalDetailsOne.getElTenure()){
+							if(proposalDetailsTwo.getNbfcFlow() == NBFC_BANK_FLOW){
+								minLoanAmtProposalObj = proposalDetailsTwo;
+							}else {
+								minLoanAmtProposalObj = proposalDetailsOne;
+							}
+						}else if(proposalDetailsTwo.getElTenure() < proposalDetailsOne.getElTenure()){
+							minLoanAmtProposalObj = proposalDetailsTwo;
 						}else {
 							minLoanAmtProposalObj = proposalDetailsOne;
 						}
-					}else if(proposalDetailsTwo.getElTenure() < proposalDetailsOne.getElTenure()){
+					}else if(proposalDetailsTwo.getElAmount() < proposalDetailsOne.getElAmount()){
 						minLoanAmtProposalObj = proposalDetailsTwo;
 					}else {
 						minLoanAmtProposalObj = proposalDetailsOne;
 					}
-				}else if(proposalDetailsTwo.getElAmount() < proposalDetailsOne.getElAmount()){
-					minLoanAmtProposalObj = proposalDetailsTwo;
-				}else {
-					minLoanAmtProposalObj = proposalDetailsOne;
 				}
+
 				/*ProposalDetails minLoanAmtProposalObj = proposalDetailsList
 						.stream()
 						.min(Comparator.comparing(ProposalDetails::getElAmount))

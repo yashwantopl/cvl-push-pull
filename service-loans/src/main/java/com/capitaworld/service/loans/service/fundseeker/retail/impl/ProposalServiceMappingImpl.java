@@ -1525,7 +1525,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				if (proposalDetail.getNbfcFlow() == 2) {
 
 					String msg = "";
-					proposalSanctionDisbusedByNbfc = proposalDetailRepository.getSanctionProposalByApplicationNBFCFlow(proposalMappingRequest.getApplicationId());
+					proposalSanctionDisbusedByNbfc = proposalDetailRepository.getSanctionProposalByApplicationNBFCFlow(proposalMappingRequest.getApplicationId(),1);
 
 					if (!CommonUtils.isObjectNullOrEmpty(proposalSanctionDisbusedByNbfc)) {
 						if (proposalSanctionDisbusedByNbfc.getProposalStatusId().getId() == CommonUtils.ApplicationStatus.ASSIGNED) {
@@ -1534,12 +1534,17 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							messageOfButton = msg;
 							proposalMappingRequest.setMessageOfButton(messageOfButton);
 							proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
-						} else if (proposalSanctionDisbusedByNbfc.getProposalStatusId().getId() == CommonUtils.ApplicationStatus.APPROVED) {
-							msg = "Disbursement pending from NBFC";
-							isButtonDisplay = false;
-							messageOfButton = msg;
-							proposalMappingRequest.setMessageOfButton(messageOfButton);
-							proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+						} else {
+							if (proposalSanctionDisbusedByNbfc.getProposalStatusId().getId() == CommonUtils.ApplicationStatus.APPROVED) {
+								proposalSanctionDisbusedByNbfc = proposalDetailRepository.getSanctionProposalByApplicationNBFCFlow(proposalMappingRequest.getApplicationId(), 2);
+								if (proposalSanctionDisbusedByNbfc.getProposalStatusId().getId() == CommonUtils.ApplicationStatus.APPROVED) { // check only if bank sanctioned on not
+									msg = "Disbursement pending from NBFC";
+									isButtonDisplay = false;
+									messageOfButton = msg;
+									proposalMappingRequest.setMessageOfButton(messageOfButton);
+									proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+								}
+							}
 						}
 					}
 				}else {
