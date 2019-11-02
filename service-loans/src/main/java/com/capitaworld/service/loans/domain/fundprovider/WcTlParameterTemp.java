@@ -543,6 +543,13 @@ public class WcTlParameterTemp extends ProductMasterTemp implements Serializable
 	@Column(name = "min_no_debit_transaction")
 	private BigDecimal minNoDebitTransaction ;
 	
+	@Column(name = "is_constitution_display")
+	private Boolean isConstitutionDisplay = false;
+
+	@Column(name = "is_constitution_mandatory")
+	private Boolean isConstitutionMandatory = false;
+	
+	
 
 	/* ends here */
 	
@@ -1890,6 +1897,23 @@ public class WcTlParameterTemp extends ProductMasterTemp implements Serializable
 		this.minNoDebitTransaction = minNoDebitTransaction;
 	}
 
+	public Boolean getIsConstitutionDisplay() {
+		return isConstitutionDisplay;
+	}
+
+	public void setIsConstitutionDisplay(Boolean isConstitutionDisplay) {
+		this.isConstitutionDisplay = isConstitutionDisplay;
+	}
+
+	public Boolean getIsConstitutionMandatory() {
+		return isConstitutionMandatory;
+	}
+
+	public void setIsConstitutionMandatory(Boolean isConstitutionMandatory) {
+		this.isConstitutionMandatory = isConstitutionMandatory;
+	}
+
+	
 	
 	
 	

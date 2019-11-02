@@ -348,6 +348,10 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	
 	private List<Integer> constitutionIds;
 	
+	private Boolean isConstitutionDisplay = false;
+
+	private Boolean isConstitutionMandatory = false;
+	
 	
 	
 
@@ -1900,6 +1904,23 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	public void setConstitutionIds(List<Integer> constitutionIds) {
 		this.constitutionIds = constitutionIds;
 	}
+
+	public Boolean getIsConstitutionDisplay() {
+		return isConstitutionDisplay;
+	}
+
+	public void setIsConstitutionDisplay(Boolean isConstitutionDisplay) {
+		this.isConstitutionDisplay = isConstitutionDisplay;
+	}
+
+	public Boolean getIsConstitutionMandatory() {
+		return isConstitutionMandatory;
+	}
+
+	public void setIsConstitutionMandatory(Boolean isConstitutionMandatory) {
+		this.isConstitutionMandatory = isConstitutionMandatory;
+	}
+
 	
 	
 	

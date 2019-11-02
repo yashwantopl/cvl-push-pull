@@ -550,6 +550,13 @@ public class WorkingCapitalParameter extends ProductMaster implements Serializab
 	private BigDecimal minNoDebitTransaction ;
 	
 	
+	@Column(name = "is_constitution_display")
+	private Boolean isConstitutionDisplay = false;
+
+	@Column(name = "is_constitution_mandatory")
+	private Boolean isConstitutionMandatory = false;
+	
+	
 	
 	
 	
@@ -1953,6 +1960,23 @@ public class WorkingCapitalParameter extends ProductMaster implements Serializab
 	public void setMinNoDebitTransaction(BigDecimal minNoDebitTransaction) {
 		this.minNoDebitTransaction = minNoDebitTransaction;
 	}
+
+	public Boolean getIsConstitutionDisplay() {
+		return isConstitutionDisplay;
+	}
+
+	public void setIsConstitutionDisplay(Boolean isConstitutionDisplay) {
+		this.isConstitutionDisplay = isConstitutionDisplay;
+	}
+
+	public Boolean getIsConstitutionMandatory() {
+		return isConstitutionMandatory;
+	}
+
+	public void setIsConstitutionMandatory(Boolean isConstitutionMandatory) {
+		this.isConstitutionMandatory = isConstitutionMandatory;
+	}
+
 	
 
 	
