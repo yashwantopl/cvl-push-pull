@@ -5,8 +5,6 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 
-import javax.persistence.Column;
-
 import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -430,6 +428,11 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 		private BigDecimal minNoDebitTransaction ;
 		
 		private List<Integer> constitutionIds;
+		
+		private Boolean isConstitutionDisplay = false;
+
+		private Boolean isConstitutionMandatory = false;
+		
 
 	
 	
@@ -2147,6 +2150,23 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	public void setConstitutionIds(List<Integer> constitutionIds) {
 		this.constitutionIds = constitutionIds;
 	}
+
+	public Boolean getIsConstitutionDisplay() {
+		return isConstitutionDisplay;
+	}
+
+	public void setIsConstitutionDisplay(Boolean isConstitutionDisplay) {
+		this.isConstitutionDisplay = isConstitutionDisplay;
+	}
+
+	public Boolean getIsConstitutionMandatory() {
+		return isConstitutionMandatory;
+	}
+
+	public void setIsConstitutionMandatory(Boolean isConstitutionMandatory) {
+		this.isConstitutionMandatory = isConstitutionMandatory;
+	}
+
 
 	
 	

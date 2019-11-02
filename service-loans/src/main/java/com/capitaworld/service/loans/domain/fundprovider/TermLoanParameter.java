@@ -593,6 +593,13 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 
 	@Column(name="kotak_sub_parameter")
 	private Integer kotakSubParameter ;
+	
+	@Column(name = "is_constitution_display")
+	private Boolean isConstitutionDisplay = false;
+
+	@Column(name = "is_constitution_mandatory")
+	private Boolean isConstitutionMandatory = false;
+	
 
 	public Integer getIndividualCibil() {
 		return individualCibil;
@@ -1986,6 +1993,23 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 	public void setMinNoDebitTransaction(BigDecimal minNoDebitTransaction) {
 		this.minNoDebitTransaction = minNoDebitTransaction;
 	}
+
+	public Boolean getIsConstitutionDisplay() {
+		return isConstitutionDisplay;
+	}
+
+	public void setIsConstitutionDisplay(Boolean isConstitutionDisplay) {
+		this.isConstitutionDisplay = isConstitutionDisplay;
+	}
+
+	public Boolean getIsConstitutionMandatory() {
+		return isConstitutionMandatory;
+	}
+
+	public void setIsConstitutionMandatory(Boolean isConstitutionMandatory) {
+		this.isConstitutionMandatory = isConstitutionMandatory;
+	}
+
 
 	
 	

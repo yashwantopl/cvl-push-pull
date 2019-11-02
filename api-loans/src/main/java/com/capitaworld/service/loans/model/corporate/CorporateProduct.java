@@ -472,6 +472,10 @@ public class CorporateProduct extends ProductMasterRequest implements Serializab
 	private BigDecimal minNoDebitTransaction;
 
 	private List<Integer> constitutionIds;
+	
+	private Boolean isConstitutionDisplay = false;
+
+	private Boolean isConstitutionMandatory = false;
 
 	public Boolean getIsGeographicalDisplayMFI() {
 		return isGeographicalDisplayMFI;
@@ -2328,5 +2332,23 @@ public class CorporateProduct extends ProductMasterRequest implements Serializab
 	public void setConstitutionIds(List<Integer> constitutionIds) {
 		this.constitutionIds = constitutionIds;
 	}
+
+	public Boolean getIsConstitutionDisplay() {
+		return isConstitutionDisplay;
+	}
+
+	public void setIsConstitutionDisplay(Boolean isConstitutionDisplay) {
+		this.isConstitutionDisplay = isConstitutionDisplay;
+	}
+
+	public Boolean getIsConstitutionMandatory() {
+		return isConstitutionMandatory;
+	}
+
+	public void setIsConstitutionMandatory(Boolean isConstitutionMandatory) {
+		this.isConstitutionMandatory = isConstitutionMandatory;
+	}
+	
+	
 
 }
