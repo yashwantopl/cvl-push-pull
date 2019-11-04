@@ -211,6 +211,14 @@ public class AlTeaserViewResponse {
 	private Boolean  isUserHaveAadhar; 
 	private Map matchDisplayObjectMap;
 	
+	// Supplier Info
+	private Integer assetMake;
+	private String manufacturerName;
+	private String assetModelNo;
+	private String supplierName;
+	private String supplierCity;
+	private String supplierState;
+	
 	public AlTeaserViewResponse() {
 		// TODO Auto-generated constructor stub
 	}
@@ -1669,8 +1677,52 @@ public class AlTeaserViewResponse {
 		this.isUserHaveAadhar = isUserHaveAadhar;
 	}
 
+	public Integer getAssetMake() {
+		return assetMake;
+	}
 
-	
-	
+	public void setAssetMake(Integer assetMake) {
+		this.assetMake = assetMake;
+	}
+
+	public String getManufacturerName() {
+		return manufacturerName;
+	}
+
+	public void setManufacturerName(String manufacturerName) {
+		this.manufacturerName = manufacturerName;
+	}
+
+	public String getAssetModelNo() {
+		return assetModelNo;
+	}
+
+	public void setAssetModelNo(String assetModelNo) {
+		this.assetModelNo = assetModelNo;
+	}
+
+	public String getSupplierName() {
+		return supplierName;
+	}
+
+	public void setSupplierName(String supplierName) {
+		this.supplierName = supplierName;
+	}
+
+	public String getSupplierCity() {
+		return supplierCity;
+	}
+
+	public void setSupplierCity(String supplierCity) {
+		this.supplierCity = supplierCity;
+	}
+
+	public String getSupplierState() {
+		return supplierState;
+	}
+
+	public void setSupplierState(String supplierState) {
+		this.supplierState = supplierState;
+	}
 
 }
