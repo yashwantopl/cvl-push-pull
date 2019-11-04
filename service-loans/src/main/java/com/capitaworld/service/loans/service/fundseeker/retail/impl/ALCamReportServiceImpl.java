@@ -1925,7 +1925,19 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 		              loanDetails.put("vehicleShowroomPrice", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getVehicleExShowRoomPrice()) ? CommonUtils.convertValueWithoutDecimal(Double.valueOf(primaryAutoLoanDetailRequest.getVehicleExShowRoomPrice())) : "-");
 		              loanDetails.put("vehicleOnRoadPrice", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getVehicleOnRoadPrice()) ? CommonUtils.convertValueWithoutDecimal(Double.valueOf(primaryAutoLoanDetailRequest.getVehicleOnRoadPrice())) : "-");
 		              loanDetails.put("isVehicleHypothecation", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getIsVehicleHypothecation()) && primaryAutoLoanDetailRequest.getIsVehicleHypothecation() ? "Yes" : "No");
-		        }
+		              loanDetails.put("assetMake", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getAssetMake()) ? primaryAutoLoanDetailRequest.getAssetMake() : "-");
+		              
+		              Object[] autoLoanDetails = commonRepository.fetchALDetailsOfManufacturerAssetsSupplier(primaryAutoLoanDetailRequest.getManufacturerId() != null ? primaryAutoLoanDetailRequest.getManufacturerId() : 0, 
+		            		  primaryAutoLoanDetailRequest.getAssetModelId() != null ? primaryAutoLoanDetailRequest.getAssetModelId() : 0, primaryAutoLoanDetailRequest.getSupplierId() != null ? primaryAutoLoanDetailRequest.getSupplierId().intValue() : 0);
+		              if (!CommonUtils.isObjectNullOrEmpty(autoLoanDetails)) {
+						loanDetails.put("manufacturerName", autoLoanDetails[0] != null ? autoLoanDetails[0] : "-");
+						loanDetails.put("assetModelNo", autoLoanDetails[1] != null ? autoLoanDetails[1] : "-");
+						loanDetails.put("supplierName", autoLoanDetails[2] != null ? autoLoanDetails[2] : "-");
+						loanDetails.put("supplierCity", autoLoanDetails[3] != null ? autoLoanDetails[3] : "-");
+						loanDetails.put("supplierState", autoLoanDetails[4] != null ? autoLoanDetails[4] : "-");
+					}
+		              
+ 		        }
 		        
 		        return !loanDetails.isEmpty() ? loanDetails : null;
 	    	}
@@ -2065,6 +2077,9 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 	
 	@Override
 	public Map<String ,Object> getDataForApplicationForm(Long applicationId, Long productId, Long proposalId){
+		
+		ApplicationProposalMapping applicationProposalMapping = applicationMappingRepository.getByApplicationIdAndProposalId(applicationId, proposalId);
+		
 		Map<String , Object> map = new HashMap<String, Object>();
 		
 		Long userId = loanApplicationRepository.getUserIdByApplicationId(applicationId);
@@ -2128,21 +2143,19 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 		}
 		
 		//MATCHES RESPONSE
-		if(proposalId != null) {
-			try {
-				ApplicationProposalMapping applicationProposalMapping = applicationMappingRepository.getByApplicationIdAndProposalId(applicationId, proposalId);
-				MatchRequest matchRequest = new MatchRequest();
-				matchRequest.setApplicationId(applicationId);
-				matchRequest.setProductId(productId);
-				matchRequest.setBusinessTypeId(applicationProposalMapping.getBusinessTypeId());
-				MatchDisplayResponse matchResponse= matchEngineClient.displayMatchesOfRetail(matchRequest);
-				logger.info("matchesResponse ==>{} " , matchResponse);
-				map.put("matchesResponse", !CommonUtils.isListNullOrEmpty(matchResponse.getMatchDisplayObjectList()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectList(),null) : " ");
-			}
-			catch (Exception e) {
-				logger.error("Error while getting matches data in ApplicationForm: ",e);
-			}
-		}
+				try {
+					MatchRequest matchRequest = new MatchRequest();
+					matchRequest.setApplicationId(applicationId);
+					matchRequest.setProductId(productId);
+					matchRequest.setBusinessTypeId(applicationProposalMapping.getBusinessTypeId());
+					MatchDisplayResponse matchResponse= matchEngineClient.displayMatchesOfRetail(matchRequest);
+					logger.info("matchesResponse ==>{}", matchResponse);
+					map.put("matchesResponse", !CommonUtils.isObjectNullOrEmpty(matchResponse.getMatchDisplayObjectMap()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectMap(),null) : null);
+				}
+				catch (Exception e) {
+					logger.error("Error while getting matches data : ",e);
+				}
+		
 		
 		return map;
 	}
