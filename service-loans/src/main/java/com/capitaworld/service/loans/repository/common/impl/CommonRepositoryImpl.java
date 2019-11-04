@@ -163,4 +163,18 @@ public class CommonRepositoryImpl  implements CommonRepository {
 		}
 	}
 	
+	@Override
+	public Object[] fetchALDetailsOfManufacturerAssetsSupplier(Long manufacturerId , Long assetModelId, Integer supplierId)  {
+		StoredProcedureQuery storedProcedureQuery = manager.createStoredProcedureQuery("loan_application.fetch_auto_loan_details");
+		storedProcedureQuery.registerStoredProcedureParameter("manufacturerId",Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter("assetModelId",Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter("supplierId",Integer.class, ParameterMode.IN);
+		storedProcedureQuery.setParameter("manufacturerId",manufacturerId);
+		storedProcedureQuery.setParameter("assetModelId",assetModelId);
+		storedProcedureQuery.setParameter("supplierId",supplierId);
+		storedProcedureQuery.execute();
+		return (Object[]) storedProcedureQuery.getSingleResult();
+	}
+	
+	
 }
