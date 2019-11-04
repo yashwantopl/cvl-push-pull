@@ -369,6 +369,11 @@ public class WcTlParameterRequest extends ProductMasterRequest implements Serial
 		private BigDecimal minNoDebitTransaction ;
 		
 		private List<Integer> constitutionIds;
+		
+		private Boolean isConstitutionDisplay = false;
+
+		private Boolean isConstitutionMandatory = false;
+		
 
 	public Integer getIndividualCibil() {
 		return individualCibil;
@@ -1801,6 +1806,23 @@ public class WcTlParameterRequest extends ProductMasterRequest implements Serial
 	public void setConstitutionIds(List<Integer> constitutionIds) {
 		this.constitutionIds = constitutionIds;
 	}
+
+	public Boolean getIsConstitutionDisplay() {
+		return isConstitutionDisplay;
+	}
+
+	public void setIsConstitutionDisplay(Boolean isConstitutionDisplay) {
+		this.isConstitutionDisplay = isConstitutionDisplay;
+	}
+
+	public Boolean getIsConstitutionMandatory() {
+		return isConstitutionMandatory;
+	}
+
+	public void setIsConstitutionMandatory(Boolean isConstitutionMandatory) {
+		this.isConstitutionMandatory = isConstitutionMandatory;
+	}
+
 
 	
 	
