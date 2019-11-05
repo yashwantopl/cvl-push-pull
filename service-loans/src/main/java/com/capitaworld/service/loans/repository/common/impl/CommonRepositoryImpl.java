@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.repository.common.impl;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -10,6 +11,7 @@ import javax.persistence.StoredProcedureQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import com.capitaworld.service.loans.repository.common.CommonRepository;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -165,7 +167,7 @@ public class CommonRepositoryImpl  implements CommonRepository {
 	
 	@Override
 	public Object[] fetchALDetailsOfManufacturerAssetsSupplier(Long manufacturerId , Long assetModelId, Integer supplierId)  {
-		StoredProcedureQuery storedProcedureQuery = manager.createStoredProcedureQuery("loan_application.fetch_auto_loan_details");
+		StoredProcedureQuery storedProcedureQuery = manager.createStoredProcedureQuery("fetch_auto_loan_details");
 		storedProcedureQuery.registerStoredProcedureParameter("manufacturerId",Long.class, ParameterMode.IN);
 		storedProcedureQuery.registerStoredProcedureParameter("assetModelId",Long.class, ParameterMode.IN);
 		storedProcedureQuery.registerStoredProcedureParameter("supplierId",Integer.class, ParameterMode.IN);
@@ -175,6 +177,17 @@ public class CommonRepositoryImpl  implements CommonRepository {
 		storedProcedureQuery.execute();
 		return (Object[]) storedProcedureQuery.getSingleResult();
 	}
+	
+	
+	@Override
+	public BigInteger checkApplicationDisbursed(String pan) {
+		return (BigInteger) manager.createNativeQuery("SELECT COUNT(*) FROM `connect`.`connect_log` cn\n" +
+				"INNER JOIN `loan_application`.`proposal_details` pd ON pd.application_id=cn.application_id AND pd.is_active=TRUE AND pd.proposal_status_id IN (11,13)\n" +
+				"WHERE (SUBSTR(cn.gstin,3,10) =:pan) AND\n" +
+				"((cn.stage_id IN (7,9) AND cn.status=3) OR (cn.stage_id=4 AND cn.status=6))").setParameter("pan", pan).getSingleResult();
+	}
+
+	
 	
 	
 }
