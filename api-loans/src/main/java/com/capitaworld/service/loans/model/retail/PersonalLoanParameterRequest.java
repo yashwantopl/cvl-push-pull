@@ -197,6 +197,7 @@ public class PersonalLoanParameterRequest extends ProductMasterRequest implement
 	private Boolean noBureauCreditHistory = true;
 	
 	private List<Integer> bureauScoreIds = Collections.emptyList();
+	private Integer bureauVersion;
 
 	/*
 	 * //FP NEW REQUIREMENT private Integer employmentId;
@@ -946,6 +947,14 @@ public class PersonalLoanParameterRequest extends ProductMasterRequest implement
 
 	public void setBureauScoreIds(List<Integer> bureauScoreIds) {
 		this.bureauScoreIds = bureauScoreIds;
+	}
+
+	public Integer getBureauVersion() {
+		return bureauVersion;
+	}
+
+	public void setBureauVersion(Integer bureauVersion) {
+		this.bureauVersion = bureauVersion;
 	}
 
 }

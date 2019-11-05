@@ -80,6 +80,7 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 				clientDetailCoLending.setClientMobile(clientResponse.getClientMobile());
 				clientDetailCoLending.setLastAccessId(clientResponse.getLastAccessId());
 				clientDetailCoLending.setOriginalEmailId(clientResponse.getOriginalEmailId());
+				clientDetailCoLending.setPan(clientResponse.getPan());
 				//get city name
 				if (!CommonUtils.isObjectNullOrEmpty(clientResponse.getClientCity()) && clientResponse.getClientCity() != 0) {
 					List<Long> cityList = new ArrayList<>();
@@ -273,7 +274,9 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 			roi = proposalDetails.getElRoi();
 			calcTenure = minLoanAmtProposalObj.getElTenure();
 			blRoi = (ratioVal * roi) / 100;
-			calcProcessingFee = (ratioVal * proposalDetails.getProcessingFee()) / 100;
+			if(!CommonUtils.isObjectNullOrEmpty(proposalDetails.getProcessingFee())){
+				calcProcessingFee = (ratioVal * proposalDetails.getProcessingFee()) / 100;
+			}
 
 			if(!CommonUtils.isObjectNullOrEmpty(additionalAmt) && additionalAmt!=0){
 				additionalAmt = (ratioVal * additionalAmt) / 100;

@@ -1,6 +1,8 @@
 package com.capitaworld.service.loans.repository.common;
 
+import java.math.BigInteger;
 import java.util.List;
+
 
 public interface CommonRepository {
 
@@ -33,4 +35,9 @@ public interface CommonRepository {
 	public List<String> getUserDetailsByUserOrgIdAndUserRoleIdAndBranchId(Long orgId ,Long roleId ,Long branchId);
 	
 	public Object getIsNBFCUser(Long applicationId);
+	
+	public Object[] fetchALDetailsOfManufacturerAssetsSupplier(Long manufacturerId , Long assetModelId, Integer supplierId) ;
+	
+	public BigInteger checkApplicationDisbursed(String pan);
+	
 }

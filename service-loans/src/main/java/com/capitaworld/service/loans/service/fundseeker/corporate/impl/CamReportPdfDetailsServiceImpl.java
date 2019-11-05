@@ -21,6 +21,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.capitaworld.api.eligibility.model.CLEligibilityRequest;
@@ -340,6 +342,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	@Autowired
 	private CommonRepository commonRepository;
 	
+	
 	@Autowired
 	private NbfcProposalBlendedRateRepository nbfcProposalBlendedRateRepository;
 
@@ -409,6 +412,19 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
                 UsersRequest request = MultipleJSONObjectHelper.getObjectFromMap(lm,UsersRequest.class);
                 map.put("mobile", request.getMobile());
                 map.put("email", StringEscapeUtils.escapeXml(request.getEmail()));
+                
+                
+                if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getPanNo())) {
+                	 BigInteger isEmailMobileFound = commonRepository.checkApplicationDisbursed(corporateApplicantRequest.getPanNo());
+         			String msg;
+         			if(Integer.parseInt(String.valueOf(isEmailMobileFound)) > 0){
+         				msg="SIDBI has already disbursed to this Customer from PSB59 Platform.";
+         			}else {
+         				msg="SIDBI has not disbursed any funds to this Customer from PSB59 Platform.";
+         			}
+         			map.put("messageFromUsers", msg);
+				}
+               
             } catch (IOException e1) {
                 logger.error("Error while getting registration details : ",e1);
             }
