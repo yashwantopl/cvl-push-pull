@@ -33,6 +33,6 @@ public interface LoanDisbursementRepository extends JpaRepository<LoanDisburseme
 	@Query(value="SELECT SUM(disbursed_amount) AS disbursed_amount, MAX(DATE_FORMAT(disbursement_date, '%d/%m/%Y')) AS disbursement_date FROM loan_application.disbursement_detail WHERE application_id =:applicationId AND is_active = TRUE", nativeQuery = true)
 	public List<Object[]> getDisbursmentData(@Param("applicationId") Long applicationId );
 
-	@Query("SELECT lsd FROM LoanDisbursementDomain lsd where lsd.applicationId =:applicationId AND lsd.nbfcFlow=:nbfcFlow AND lsd.isActive = true")
+	@Query(value = "SELECT * FROM disbursement_detail lsd where lsd.application_id =:applicationId AND lsd.nbfc_flow=:nbfcFlow AND lsd.is_active = true order by id desc limit 1",nativeQuery = true)
 	public LoanDisbursementDomain findByAppliationIdAndNBFCFlow(@Param("applicationId") Long applicationId, @Param("nbfcFlow") Integer nbfcFlow);
 }
