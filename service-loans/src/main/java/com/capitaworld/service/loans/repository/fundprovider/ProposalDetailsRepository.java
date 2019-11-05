@@ -137,6 +137,9 @@ public interface ProposalDetailsRepository extends JpaRepository<ProposalDetails
     @Query(value = "SELECT * FROM proposal_details as  pd WHERE pd.application_id =:applicationId and is_active=true",nativeQuery = true)
     public ProposalDetails getByApplicationIdAndFPProductId(@Param("applicationId") Long applicationId);
 
+    @Query(value = "SELECT * FROM proposal_details as  pd WHERE pd.application_id =:applicationId and fp_product_id=:fpProductId and is_active=true",nativeQuery = true)
+    public ProposalDetails getByApplicationIdAndFPProductId(@Param("applicationId") Long applicationId,@Param("fpProductId") Long fpProductId);
+
     @Query(value = "SELECT p.application_id FROM proposal_details p WHERE p.proposal_status_id=:proposalStatus AND p.application_id IN (SELECT lm.application_id FROM fs_loan_application_master lm WHERE lm.business_type_id = 6 AND STATUS>4 AND np_org_id=:npOrgId)",nativeQuery = true)
     public List<BigInteger> getProposalsByProposalStatusAndBusinessTypeId(@Param("proposalStatus") Long proposalStatus,@Param("npOrgId") Long npOrgId);
 
@@ -242,8 +245,8 @@ public interface ProposalDetailsRepository extends JpaRepository<ProposalDetails
     @Query(value = "SELECT * FROM proposal_details pd WHERE application_id =:applicationId and pd.nbfc_flow =:nbfcFlow ORDER BY pd.modified_date desc LIMIT 1",nativeQuery = true)
     public ProposalDetails getSanctionProposalByApplicationNBFCFlow(@Param("applicationId") Long applicationId,@Param("nbfcFlow") Integer nbfcFlow);
 
-    @Query(value = "SELECT * FROM proposal_details pd WHERE application_id =:applicationId and pd.nbfc_flow = 2 and pd.proposal_status_id =5 ORDER BY pd.modified_date desc LIMIT 1",nativeQuery = true)
-    public ProposalDetails getSanctionProposalByApplicationBankFlow(@Param("applicationId") Long applicationId);
+    @Query(value = "SELECT * FROM proposal_details pd WHERE application_id =:applicationId and pd.nbfc_flow =:nbfcFlow and pd.proposal_status_id =5 ORDER BY pd.modified_date desc LIMIT 1",nativeQuery = true)
+    public ProposalDetails getSanctionProposalByApplicationBankFlow(@Param("applicationId") Long applicationId,@Param("nbfcFlow") Integer nbfcFlow);
 
     // Count for checker maker (HOLD REJECT proposal)
     @Query(value = "SELECT p.id FROM proposal_details p WHERE p.is_active=TRUE and p.user_org_id=:userOrgId and p.branch_id=:branchId and nbfc_flow=:nbfcFlow_1 and p.application_id in (SELECT pd.application_id FROM proposal_details pd WHERE pd.proposal_status_id IN (:proposalStatus) and pd.is_active=TRUE and (pd.nbfc_flow=:nbfcFlow_2 OR pd.nbfc_flow=:nbfcFlow_1))",nativeQuery = true)
