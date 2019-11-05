@@ -38,6 +38,6 @@ public interface CommonRepository {
 	
 	public Object[] fetchALDetailsOfManufacturerAssetsSupplier(Long manufacturerId , Long assetModelId, Integer supplierId) ;
 	
-	public BigInteger checkApplicationDisbursed(@Param("pan")String pan);
+	public BigInteger checkApplicationDisbursed(String pan);
 	
 }
