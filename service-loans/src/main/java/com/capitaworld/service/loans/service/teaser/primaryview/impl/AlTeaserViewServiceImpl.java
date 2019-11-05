@@ -265,6 +265,7 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 	
 	@Autowired
 	private CoApplicantIncomeService coApplicantIncomeService;
+	
 
 
 	@Override
@@ -625,6 +626,18 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 		alTeaserViewResponse.setVehicleAgreedPurchasePrice(autoDetails.getVehicleAgreedPurchasePrice());
 		alTeaserViewResponse.setIsVehicleHypothecation(autoDetails.getIsVehicleHypothecation()); 
 		alTeaserViewResponse.setBorrowerContribution(autoDetails.getBorrowerContribution());
+		
+		// Supplier info
+        alTeaserViewResponse.setAssetMake(autoDetails.getAssetMake());
+         Object[] autoManuFactureInfo = commonRepo.fetchALDetailsOfManufacturerAssetsSupplier(autoDetails.getManufacturerId() != null ? autoDetails.getManufacturerId() : 0,  autoDetails.getAssetModelId() != null ? autoDetails.getAssetModelId() : 0, autoDetails.getSupplierId() != null ? autoDetails.getSupplierId().intValue() : 0);
+         if (!CommonUtils.isObjectNullOrEmpty(autoManuFactureInfo)) {
+        	 alTeaserViewResponse.setManufacturerName((String)(autoManuFactureInfo[0]));
+        	 alTeaserViewResponse.setAssetModelNo((String)(autoManuFactureInfo[1]));
+        	 alTeaserViewResponse.setSupplierName((String)(autoManuFactureInfo[2]));
+        	 alTeaserViewResponse.setSupplierCity((String)(autoManuFactureInfo[3]));
+        	 alTeaserViewResponse.setSupplierState((String)(autoManuFactureInfo[4]));
+         }
+		
 		
 		// final details
 //		List<PurchasePropertyDetails> purchasePropertyDetails = purchasePropertyDetailsRepository.getListByApplicationId(toApplicationId);
