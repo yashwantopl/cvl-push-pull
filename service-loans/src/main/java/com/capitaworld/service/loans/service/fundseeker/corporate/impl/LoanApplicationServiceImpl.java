@@ -8475,12 +8475,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						gstRelatedPartyRequest.setPurchase(" - ");
 						
 						if(gstRelatedPartyRequest.getTransactionType() != null && "Sales".equals(gstRelatedPartyRequest.getTransactionType()) && gstRelatedPartyRequest.getInvoiceValue() != null ) {
-							gstRelatedPartyRequest.setSales(String.valueOf(CommonUtils.convertValueIndianCurrency(gstRelatedPartyRequest.getInvoiceValue().toString())));
+							gstRelatedPartyRequest.setSales(gstRelatedPartyRequest.getInvoiceValue() != null ? CommonUtils.convertValue(gstRelatedPartyRequest.getInvoiceValue()) : "0");
 							grandTotalOfSales=gstRelatedPartyRequest.getGrandTotal();
 							if(gstRelatedPartyRequest.getInvoiceValue() != null)
 								totalOfSales+=gstRelatedPartyRequest.getInvoiceValue();
 						}else if(gstRelatedPartyRequest.getTransactionType() != null && "Purchase".equals(gstRelatedPartyRequest.getTransactionType()) && gstRelatedPartyRequest.getInvoiceValue() != null) {
-							gstRelatedPartyRequest.setPurchase(String.valueOf(CommonUtils.convertValueIndianCurrency(gstRelatedPartyRequest.getInvoiceValue().toString())));
+							gstRelatedPartyRequest.setPurchase(gstRelatedPartyRequest.getInvoiceValue() != null ? CommonUtils.convertValue(gstRelatedPartyRequest.getInvoiceValue()) : "0");
 							grandTotalOfPurchase=gstRelatedPartyRequest.getGrandTotal();
 							if(gstRelatedPartyRequest.getInvoiceValue() != null)
 								totalOfPurchase+=gstRelatedPartyRequest.getInvoiceValue();
