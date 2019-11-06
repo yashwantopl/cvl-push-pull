@@ -353,6 +353,10 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		request.setUserId(fundProviderUserId);
 		try {
 			ProposalMappingResponse s = proposalDetailsClient.getDisbursementRequestDetails(request);
+			corporateFinalViewResponse.setIsNBFCApplication(false);
+			if(s !=null && s.getData() !=null){
+				corporateFinalViewResponse.setIsNBFCApplication(true);
+			}
 			corporateFinalViewResponse.setDisbursementRequestDetails(s.getData());
 		} catch (MatchException e) {
 			logger.error("Error while geting disbursedment details",e);
