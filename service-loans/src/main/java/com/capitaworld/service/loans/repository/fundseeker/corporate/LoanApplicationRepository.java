@@ -402,7 +402,7 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 
 	/*For select on on Loan Type*/
 	@Modifying
-	@Query(value = "UPDATE connect.connect_log SET loan_type_id =:loanType where application_id=:applicationId", nativeQuery = true)
+	@Query(value = "UPDATE connect.connect_log SET loan_type_id =:loanType, is_coapp_page = false where application_id=:applicationId", nativeQuery = true)
 	public int updateLoanType(@Param("applicationId")  Long applicationId,@Param("loanType") Long loanType);
 
 	@Modifying
