@@ -80,4 +80,6 @@ public interface LoanRepository{
 	public String getAgriLoanApplicationsByOrgIdAndStatus(Integer orgId,Integer status,Integer fromLimit,Integer toLimit);
 
 	public List<Object[]> getCoLendingRatio(Long fpProductId);
+	
+	public Object [] getBureauVersionIdById(Long scoringModelId);
 }

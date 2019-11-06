@@ -554,4 +554,20 @@ public class LoanRepositoryImpl implements LoanRepository {
 								.setParameter("fpProductId",fpProductId).getResultList();
 		return ratioList;
 	}
+
+	@Override
+	public Object [] getBureauVersionIdById(Long scoringModelId) {
+		Object [] object = null;
+		try {
+			object = (Object[]) entityManager.createNativeQuery("select md.cibil_bureau_version_concession,md.cibil_bureau_grad_version FROM scoring_sidbi.scoring_model md where md.id =:id")
+					.setParameter("id", scoringModelId)
+					.getSingleResult();	
+		}catch(Exception e) {
+			object = new Object[2];
+			object[0] = 1;
+			object[1] = 2;
+			logger.error("Error while getting version from Scoring Model Id = >{}",scoringModelId);
+		}
+		return object;
+	}
 }
