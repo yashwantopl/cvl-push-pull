@@ -1500,7 +1500,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				corporatePrimaryView.setRecommendedRoi(detail.getRoi());
 				corporatePrimaryView.setRecommendedProcessingFee(detail.getProcessingFee());
 				corporatePrimaryView.setRecommendedRemark(detail.getRemark());
-			}
+			}	
 			LoanSanctionDomain nbfcSanction = loanSanctionRepository.findByAppliationIdAndNBFCFlow(applicationId,1);
 			if(!CommonUtils.isObjectNullOrEmpty(nbfcSanction)){
 				corporatePrimaryView.setNbfcSanctionAmount(nbfcSanction.getSanctionAmount());
@@ -1509,9 +1509,9 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			}
 			LoanSanctionDomain bankSanction = loanSanctionRepository.findByAppliationIdAndNBFCFlow(applicationId,2);
 			if(!CommonUtils.isObjectNullOrEmpty(bankSanction)){
-				corporatePrimaryView.setNbfcSanctionAmount(nbfcSanction.getSanctionAmount());
-				corporatePrimaryView.setNbfcSanctionRoi(nbfcSanction.getRoi());
-				corporatePrimaryView.setNbfcSanctionTenure(nbfcSanction.getTenure());
+				corporatePrimaryView.setBankSanctionAmount(bankSanction.getSanctionAmount());
+				corporatePrimaryView.setBankSanctionRoi(bankSanction.getRoi());
+				corporatePrimaryView.setBankSanctionTenure(bankSanction.getTenure());
 			}
 			LoanDisbursementDomain nbfcDisbursed = loanDisbursementRepository.findByAppliationIdAndNBFCFlow(applicationId,1);
 			if(!CommonUtils.isObjectNullOrEmpty(nbfcDisbursed)){
