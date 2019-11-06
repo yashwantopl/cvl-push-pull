@@ -96,6 +96,6 @@ public interface ScoringService {
 
     public List<GenericCheckerReqRes> sendToCheckerREPO(List <GenericCheckerReqRes> genericCheckerReqRes , Long userId)  throws ScoringException ;
 
-    public Object [] getRetailConcessionDetails(ScoringRequestLoans scoringRequestLoans,List<String> bankStringsList,List<BankingRelation> bankingRelationList,List<FinancialArrangementsDetail> financialArrangementsDetailList,RetailApplicantDetail retailApplicantDetail,CibilScoreLogRequest cibilResponse1);
+    public Object [] getRetailConcessionDetails(ScoringRequestLoans scoringRequestLoans,List<String> bankStringsList,List<BankingRelation> bankingRelationList,List<FinancialArrangementsDetail> financialArrangementsDetailList,RetailApplicantDetail retailApplicantDetail,List<CibilScoreLogRequest> cibilResponse1);
 
 }
