@@ -14,6 +14,7 @@ import com.capitaworld.service.loans.domain.fundprovider.FpCoLendingBanks;
 import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
+import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.NhbsApplicationRequest;
@@ -28,6 +29,7 @@ import com.capitaworld.service.loans.repository.fundprovider.NbfcRatioMappingTem
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
+import com.capitaworld.service.loans.repository.sanction.LoanSanctionRepository;
 import com.capitaworld.service.loans.service.fundprovider.CoLendingService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -93,6 +95,9 @@ public class CoLendingServiceImpl implements CoLendingService {
 
 	@Autowired
 	private LoanRepository loanRepository;
+
+	@Autowired
+	private LoanSanctionRepository sanctionRepository;
 
 	DecimalFormat df = new DecimalFormat("#");
 
@@ -789,13 +794,35 @@ public class CoLendingServiceImpl implements CoLendingService {
 						try {
 							ConnectRequest connectRequest = null;
 							ConnectResponse connectResponse = connectClient.getApplicationList(proposalMapping.getApplicationId());
-							if (!CommonUtils.isObjectNullOrEmpty(connectResponse) && !CommonUtils.isListNullOrEmpty(connectResponse.getDataList())) {
-								List<LinkedHashMap<String, Object>> list = (List<LinkedHashMap<String, Object>>) connectResponse.getDataList();
-								for (LinkedHashMap<String, Object> mp : list) {
-									connectRequest = com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap(mp, ConnectRequest.class);
-									if (response.getProposalId().equals(proposalId)) {
-										Date inPrincipleDate = connectRequest.getModifiedDate();
-										response.setInPrincipleDate(!CommonUtils.isObjectNullOrEmpty(inPrincipleDate) ? CommonUtils.DATE_FORMAT.format(inPrincipleDate) : "-");
+							if(request.getDdrStatusId() == MatchConstant.ProposalStatus.APPROVED || request.getDdrStatusId() == MatchConstant.ProposalStatus.APPROVED_BY_NBFC){
+								Integer nbfcFlow = null;
+								try {
+									if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.NBFC_FP_MAKER == request.getUserRoleId().intValue() ||
+											com.capitaworld.service.users.utils.CommonUtils.UserRoles.NBFC_FP_CHECKER == request.getUserRoleId().intValue() ||
+											com.capitaworld.service.users.utils.CommonUtils.UserRoles.NBFC_ASSISTED_USER == request.getUserRoleId().intValue() ||
+											com.capitaworld.service.users.utils.CommonUtils.UserRoles.NBFC_HO == request.getUserRoleId().intValue()) {
+										nbfcFlow = 1;
+									}else {
+										nbfcFlow = 2;
+									}
+
+									LoanSanctionDomain loanSanctionDomain = sanctionRepository.findByAppliationIdAndNBFCFlow(proposalMapping.getApplicationId(),nbfcFlow);
+									if(loanSanctionDomain != null){
+										response.setInPrincipleDate(!CommonUtils.isObjectNullOrEmpty(loanSanctionDomain.getSanctionDate()) ? CommonUtils.DATE_FORMAT.format(loanSanctionDomain.getSanctionDate()) : "-");
+									}
+								} catch (Exception e) {
+									logger.error("Error while formatting sanction date",e);
+								}
+							}else {
+								if (!CommonUtils.isObjectNullOrEmpty(connectResponse) && !CommonUtils.isListNullOrEmpty(connectResponse.getDataList())) {
+									List<LinkedHashMap<String, Object>> list = (List<LinkedHashMap<String, Object>>) connectResponse.getDataList();
+									for (LinkedHashMap<String, Object> mp : list) {
+										connectRequest = com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap(mp, ConnectRequest.class);
+										response.setInPrincipleDate("-");
+										if (response.getProposalId().equals(proposalId)) {
+											Date inPrincipleDate = connectRequest.getModifiedDate();
+											response.setInPrincipleDate(!CommonUtils.isObjectNullOrEmpty(inPrincipleDate) ? CommonUtils.DATE_FORMAT.format(inPrincipleDate) : "-");
+										}
 									}
 								}
 							}
