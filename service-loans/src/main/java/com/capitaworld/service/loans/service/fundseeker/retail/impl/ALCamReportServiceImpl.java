@@ -27,6 +27,7 @@ import com.capitaworld.cibil.api.model.CibilRequest;
 import com.capitaworld.cibil.api.model.CibilScoreLogRequest;
 import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
+import com.capitaworld.connect.api.ConnectStage;
 import com.capitaworld.itr.api.model.ITRBasicDetailsResponse;
 import com.capitaworld.itr.api.model.ITRConnectionResponse;
 import com.capitaworld.itr.client.ITRClient;
@@ -1358,12 +1359,14 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 			map.put("netMonthlyIncome", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getMonthlyIncome()) ? CommonUtils.convertValueWithoutDecimal(plRetailApplicantRequest.getMonthlyIncome()) : null);
 			map.put("applicantCategory", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getCategory()) ? CastCategory.getById(plRetailApplicantRequest.getCategory()).getValue() : "-");
 			map.put("experienceInPresentJob", !CommonUtils.isObjectNullOrEmpty(experienceInPresentJob) ? experienceInPresentJob : "-");
+			map.put("fathersName", !CommonUtils.isObjectNullOrEmptyOrDash(plRetailApplicantRequest.getFatherName()) ? plRetailApplicantRequest.getFatherName() :"-" );
 			map.put("salaryMode", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getSalaryMode()) ? SalaryModeMst.getById(plRetailApplicantRequest.getSalaryMode()).getValue() : "-");
 			if(ResidenceStatusRetailMst.OWNED.getId() == plRetailApplicantRequest.getResidenceType()) {
 				map.put("mortgageInOwnedProperty", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getIsOwnedProp()) ? plRetailApplicantRequest.getIsOwnedProp() == true ? "Yes" : "No" : "-");
 			}else {
 				map.put("mortgageInOwnedProperty", "-");
 			}
+	
 			//KEY VERTICAL FUNDING
 			List<Long> keyVerticalFundingId = new ArrayList<>();
 			if (!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getKeyVerticalFunding()))
@@ -1947,6 +1950,7 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 		 return null;
 	}
 	
+	
 	@Override
 	public Map<String, Object> getHLBankStatementAnalysisReport(Long applicationId, Long productId) {
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -2002,18 +2006,12 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 		// ENDS HERE===================>
 		
 		//CHANGES FOR DATE OF PROPOSAL IN CAM REPORTS (NEW CODE)
-        try {
-              Date inPrincipleDate = loanApplicationRepository.getInPrincipleDate(applicationId);
-              if(!CommonUtils.isObjectNullOrEmpty(inPrincipleDate)) {
-                    map.put("dateOfInPrincipalApproval",!CommonUtils.isObjectNullOrEmpty(inPrincipleDate)? simpleDateFormat.format(inPrincipleDate):"-");
-                    map.put("dateOfInEligible", 
-    						!CommonUtils.isObjectNullOrEmpty(inPrincipleDate)
-    								? CommonUtils.DATE_FORMAT.format(inPrincipleDate)
-    								: "-");
-              }
-        } catch (Exception e2) {
-              logger.error(CommonUtils.EXCEPTION,e2);
-        }
+		try {
+			Date InPrincipleDate = loanApplicationRepository.getInEligibleModifiedDate(applicationId,ConnectStage.RETAIL_ONE_FORM_LOAN_DETAILS.getId(), 6);
+				map.put("dateOfInEligible",!CommonUtils.isObjectNullOrEmpty(InPrincipleDate)? CommonUtils.DATE_FORMAT.format(InPrincipleDate): "-");
+		} catch (Exception e2) {
+			logger.error(CommonUtils.EXCEPTION, e2);
+		}
         
         // ENDS HERE===================>
         
