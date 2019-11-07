@@ -10,10 +10,12 @@ import com.capitaworld.connect.api.ConnectRequest;
 import com.capitaworld.connect.api.ConnectResponse;
 import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.service.loans.domain.fundprovider.CoLendingRatio;
+import com.capitaworld.service.loans.domain.fundprovider.DisbursementDetails;
 import com.capitaworld.service.loans.domain.fundprovider.FpCoLendingBanks;
 import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
+import com.capitaworld.service.loans.domain.sanction.LoanDisbursementDomain;
 import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.DataRequest;
@@ -29,6 +31,7 @@ import com.capitaworld.service.loans.repository.fundprovider.NbfcRatioMappingTem
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
+import com.capitaworld.service.loans.repository.sanction.LoanDisbursementRepository;
 import com.capitaworld.service.loans.repository.sanction.LoanSanctionRepository;
 import com.capitaworld.service.loans.service.fundprovider.CoLendingService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
@@ -98,6 +101,10 @@ public class CoLendingServiceImpl implements CoLendingService {
 
 	@Autowired
 	private LoanSanctionRepository sanctionRepository;
+
+	@Autowired
+	private LoanDisbursementRepository loanDisbursementRepository;
+
 
 	DecimalFormat df = new DecimalFormat("#");
 
@@ -794,7 +801,11 @@ public class CoLendingServiceImpl implements CoLendingService {
 						try {
 							ConnectRequest connectRequest = null;
 							ConnectResponse connectResponse = connectClient.getApplicationList(proposalMapping.getApplicationId());
-							if(request.getDdrStatusId() == MatchConstant.ProposalStatus.APPROVED || request.getDdrStatusId() == MatchConstant.ProposalStatus.APPROVED_BY_NBFC){
+							if(request.getDdrStatusId() == MatchConstant.ProposalStatus.APPROVED ||
+									request.getDdrStatusId() == MatchConstant.ProposalStatus.APPROVED_BY_NBFC ||
+									request.getDdrStatusId() == MatchConstant.ProposalStatus.DISBURSED ||
+									request.getDdrStatusId() == MatchConstant.ProposalStatus.DISBURSED_BY_NBFC){
+
 								Integer nbfcFlow = null;
 								try {
 									if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.NBFC_FP_MAKER == request.getUserRoleId().intValue() ||
@@ -806,9 +817,22 @@ public class CoLendingServiceImpl implements CoLendingService {
 										nbfcFlow = 2;
 									}
 
-									LoanSanctionDomain loanSanctionDomain = sanctionRepository.findByAppliationIdAndNBFCFlow(proposalMapping.getApplicationId(),nbfcFlow);
-									if(loanSanctionDomain != null){
-										response.setInPrincipleDate(!CommonUtils.isObjectNullOrEmpty(loanSanctionDomain.getSanctionDate()) ? CommonUtils.DATE_FORMAT.format(loanSanctionDomain.getSanctionDate()) : "-");
+									if(request.getDdrStatusId() == MatchConstant.ProposalStatus.DISBURSED || request.getDdrStatusId() == MatchConstant.ProposalStatus.DISBURSED_BY_NBFC){
+										LoanDisbursementDomain loanDisbursementDomain = loanDisbursementRepository.findByAppliationIdAndNBFCFlow(proposalMapping.getApplicationId(),nbfcFlow);
+										if(loanDisbursementDomain != null){
+											if(loanDisbursementDomain.getDisbursementDate() != null){
+												response.setInPrincipleDate(!CommonUtils.isObjectNullOrEmpty(loanDisbursementDomain.getDisbursementDate()) ? CommonUtils.DATE_FORMAT.format(loanDisbursementDomain.getDisbursementDate()) : "-");
+											}else if(loanDisbursementDomain.getModifiedDate() !=null){
+												response.setInPrincipleDate(!CommonUtils.isObjectNullOrEmpty(loanDisbursementDomain.getModifiedDate()) ? CommonUtils.DATE_FORMAT.format(loanDisbursementDomain.getModifiedDate()) : "-");
+											}else{
+												response.setInPrincipleDate(!CommonUtils.isObjectNullOrEmpty(loanDisbursementDomain.getCreatedDate()) ? CommonUtils.DATE_FORMAT.format(loanDisbursementDomain.getCreatedDate()) : "-");
+											}
+										}
+									}else{
+										LoanSanctionDomain loanSanctionDomain = sanctionRepository.findByAppliationIdAndNBFCFlow(proposalMapping.getApplicationId(),nbfcFlow);
+										if(loanSanctionDomain != null){
+											response.setInPrincipleDate(!CommonUtils.isObjectNullOrEmpty(loanSanctionDomain.getSanctionDate()) ? CommonUtils.DATE_FORMAT.format(loanSanctionDomain.getSanctionDate()) : "-");
+										}
 									}
 								} catch (Exception e) {
 									logger.error("Error while formatting sanction date",e);
