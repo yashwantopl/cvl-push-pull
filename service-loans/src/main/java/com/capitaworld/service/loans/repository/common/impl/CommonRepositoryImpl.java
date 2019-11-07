@@ -131,6 +131,15 @@ public class CommonRepositoryImpl  implements CommonRepository {
 	}
 	
 	@Override
+	public String getGatewayProvider() {
+		try {
+			return (String) manager.createNativeQuery("SELECT cp.value FROM payment_service.common_properties cp WHERE cp.name = 'gatewayProvider' and cp.type= 'Integration' and cp.is_active=true").getSingleResult();
+		}catch (Exception e) {
+			return null;
+		}
+	}
+	
+	@Override
 	public List<Object[]> getBankDetails(Long applicationId, Long orgId){
 		StoredProcedureQuery storedProcedureQuery = manager.createStoredProcedureQuery("users.getCurrentBranchByAppIdAndOrgId");
 		storedProcedureQuery.registerStoredProcedureParameter("applicationId",Long.class, ParameterMode.IN);
