@@ -834,7 +834,7 @@ public class ScoringServiceImpl implements ScoringService {
             }
 */
 
-            ProductMaster productMaster=productMasterRepository.findOne(fpProductId);
+//            productMasterRepository.findOne(fpProductId);
 
             ///////// Start Getting Individual Product Request ///////
 
