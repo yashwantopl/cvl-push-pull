@@ -26,8 +26,6 @@ public interface CommonRepository {
 	
 	public Object[] getInEligibleByApplicationId(Long applicationId);
 	
-	public String getSidbiAmount();
-	
 	public List<Object[]> getBankDetails(Long applicationId, Long orgId);
 
 	public Object[] getUserDetailsByApplicationId(Long applicationId) throws Exception;
@@ -39,5 +37,11 @@ public interface CommonRepository {
 	public Object[] fetchALDetailsOfManufacturerAssetsSupplier(Long manufacturerId , Long assetModelId, Integer supplierId) ;
 	
 	public BigInteger checkApplicationDisbursed(String pan);
+	
+	//Payment Common Properties
+	
+	public String getSidbiAmount();
+	
+	public String getGatewayProvider();
 	
 }
