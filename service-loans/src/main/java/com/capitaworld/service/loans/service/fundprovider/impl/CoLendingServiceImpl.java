@@ -801,10 +801,7 @@ public class CoLendingServiceImpl implements CoLendingService {
 						try {
 							ConnectRequest connectRequest = null;
 							ConnectResponse connectResponse = connectClient.getApplicationList(proposalMapping.getApplicationId());
-							if(request.getDdrStatusId() == MatchConstant.ProposalStatus.APPROVED ||
-									request.getDdrStatusId() == MatchConstant.ProposalStatus.APPROVED_BY_NBFC ||
-									request.getDdrStatusId() == MatchConstant.ProposalStatus.DISBURSED ||
-									request.getDdrStatusId() == MatchConstant.ProposalStatus.DISBURSED_BY_NBFC){
+							if(request.getDdrStatusId() != MatchConstant.ProposalStatus.ACCEPT){
 
 								Integer nbfcFlow = null;
 								try {
@@ -828,10 +825,15 @@ public class CoLendingServiceImpl implements CoLendingService {
 												response.setInPrincipleDate(!CommonUtils.isObjectNullOrEmpty(loanDisbursementDomain.getCreatedDate()) ? CommonUtils.DATE_FORMAT.format(loanDisbursementDomain.getCreatedDate()) : "-");
 											}
 										}
-									}else{
+									}else if(request.getDdrStatusId() == MatchConstant.ProposalStatus.APPROVED || request.getDdrStatusId() == MatchConstant.ProposalStatus.APPROVED_BY_NBFC){
 										LoanSanctionDomain loanSanctionDomain = sanctionRepository.findByAppliationIdAndNBFCFlow(proposalMapping.getApplicationId(),nbfcFlow);
 										if(loanSanctionDomain != null){
 											response.setInPrincipleDate(!CommonUtils.isObjectNullOrEmpty(loanSanctionDomain.getSanctionDate()) ? CommonUtils.DATE_FORMAT.format(loanSanctionDomain.getSanctionDate()) : "-");
+										}
+									}else {
+										ProposalDetails proposalDetails = proposalDetailsRepository.getProposalByProposalId(proposalId.longValue());
+										if(proposalDetails != null){
+											response.setInPrincipleDate(!CommonUtils.isObjectNullOrEmpty(proposalDetails.getModifiedDate()) ? CommonUtils.DATE_FORMAT.format(proposalDetails.getModifiedDate()) : "-");
 										}
 									}
 								} catch (Exception e) {
