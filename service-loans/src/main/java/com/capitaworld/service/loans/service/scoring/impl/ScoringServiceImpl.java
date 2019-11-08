@@ -148,6 +148,7 @@ public class ScoringServiceImpl implements ScoringService {
 
 
     private final Logger logger = LoggerFactory.getLogger(ScoringServiceImpl.class);
+    public static final String CIBIL_SCORE_VERSION_2 = "CibilScoreVersion2";
 
     @Autowired
     private OperatingStatementDetailsRepository operatingStatementDetailsRepository;
@@ -834,7 +835,7 @@ public class ScoringServiceImpl implements ScoringService {
             }
 */
 
-            ProductMaster productMaster=productMasterRepository.findOne(fpProductId);
+//            productMasterRepository.findOne(fpProductId);
 
             ///////// Start Getting Individual Product Request ///////
 
@@ -1868,9 +1869,9 @@ public class ScoringServiceImpl implements ScoringService {
     private Double filterBureauScoreByVersion(Integer version,List<CibilScoreLogRequest> logRequests) {
 		List<CibilScoreLogRequest> filtered = null;
 		if(version == null || version == 1) {
-			filtered = logRequests.stream().filter(score -> !CibilUtils.CIBIL_SCORE_VERSION_2.equalsIgnoreCase(score.getScoreName())).collect(Collectors.toList());	
+			filtered = logRequests.stream().filter(score -> !CIBIL_SCORE_VERSION_2.equalsIgnoreCase(score.getScoreName())).collect(Collectors.toList());	
 		}else {
-			filtered = logRequests.stream().filter(score -> CibilUtils.CIBIL_SCORE_VERSION_2.equalsIgnoreCase(score.getScoreName())).collect(Collectors.toList());
+			filtered = logRequests.stream().filter(score -> CIBIL_SCORE_VERSION_2.equalsIgnoreCase(score.getScoreName())).collect(Collectors.toList());
 		}
 		if(CommonUtils.isListNullOrEmpty(filtered)) {
 			logger.info("Actual Score Found Null For Version ===>{}",version);
