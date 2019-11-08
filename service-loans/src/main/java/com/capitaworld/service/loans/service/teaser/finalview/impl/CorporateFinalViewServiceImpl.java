@@ -1998,6 +1998,13 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		} catch (DocumentException e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
+		documentRequest.setProductDocumentMappingId(DocumentAlias.NBFC_PROJECTED_FINANCIALS);
+		try {
+			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+			corporateFinalViewResponse.setNbfcProjectedFinancials(documentResponse.getDataList());
+		} catch (DocumentException e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
 		/*DocumentRequest documentRequestForMCAZip = new DocumentRequest();
 		documentRequestForMCAZip.setApplicationId(Long.valueOf(loanApplicationMaster.getMcaCompanyId()));
 		documentRequestForMCAZip.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);

@@ -158,6 +158,7 @@ public class CorporateFinalViewResponse implements Serializable {
 	private List<Object> nbfcDemandPromissonryNote;
 	private List<Object> nbfcOther;
 	private Boolean isNBFCApplication;
+	private List<Object> nbfcProjectedFinancials;
 	private List<OwnershipDetailResponse> ownershipDetailResponseList;
 	private List<TotalCostOfProjectResponse> totalCostOfProjectResponseList;
 	private List<FinanceMeansDetailResponse> financeMeansDetailResponseList;
@@ -2378,5 +2379,12 @@ public class CorporateFinalViewResponse implements Serializable {
 
 	public void setIsNBFCApplication(Boolean NBFCApplication) {
 		isNBFCApplication = NBFCApplication;
+	}
+	public List<Object> getNbfcProjectedFinancials() {
+		return nbfcProjectedFinancials;
+	}
+
+	public void setNbfcProjectedFinancials(List<Object> nbfcProjectedFinancials) {
+		this.nbfcProjectedFinancials = nbfcProjectedFinancials;
 	}
 }
