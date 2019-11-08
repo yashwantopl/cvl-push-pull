@@ -3353,14 +3353,14 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			}
 
 			boolean allUploaded = true;
-			int count = 0;
+			/*int count = 0;
 			for (MultipartFile uploadingFile : multipartFiles) {
 				String imageForMfi = uploadImageForMfi(uploadingFile, disbursementRequestModel.getApplicationId(), 605 + count);
 				if (com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(imageForMfi)) {
 					allUploaded = false;
 				}
 				count++;
-			}
+			}*/
 			if (allUploaded) {
 				try {
 					return proposalDetailsClient.saveRequestDisbursementDetails(disbursementRequestModel);
