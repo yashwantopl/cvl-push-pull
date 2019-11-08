@@ -156,6 +156,11 @@ public class CorporateFinalViewResponse implements Serializable {
 	private List<Object> nbfcSanctionLetterOfNBFC;
 	private List<Object> nbfcLetterOfIntent;
 	private List<Object> nbfcDemandPromissonryNote;
+	private List<Object> ageProofDocument;
+	private List<Object> idProofDocument;
+	private List<Object> addressProofDocument;
+	private List<Object> applicationForm;
+	private List<Object> detailedAssessmentNote;
 	private List<Object> nbfcOther;
 	private Boolean isNBFCApplication;
 	private List<OwnershipDetailResponse> ownershipDetailResponseList;
@@ -2378,5 +2383,45 @@ public class CorporateFinalViewResponse implements Serializable {
 
 	public void setIsNBFCApplication(Boolean NBFCApplication) {
 		isNBFCApplication = NBFCApplication;
+	}
+
+	public List<Object> getAgeProofDocument() {
+		return ageProofDocument;
+	}
+
+	public void setAgeProofDocument(List<Object> ageProofDocument) {
+		this.ageProofDocument = ageProofDocument;
+	}
+
+	public List<Object> getIdProofDocument() {
+		return idProofDocument;
+	}
+
+	public void setIdProofDocument(List<Object> idProofDocument) {
+		this.idProofDocument = idProofDocument;
+	}
+
+	public List<Object> getAddressProofDocument() {
+		return addressProofDocument;
+	}
+
+	public void setAddressProofDocument(List<Object> addressProofDocument) {
+		this.addressProofDocument = addressProofDocument;
+	}
+
+	public List<Object> getApplicationForm() {
+		return applicationForm;
+	}
+
+	public void setApplicationForm(List<Object> applicationForm) {
+		this.applicationForm = applicationForm;
+	}
+
+	public List<Object> getDetailedAssessmentNote() {
+		return detailedAssessmentNote;
+	}
+
+	public void setDetailedAssessmentNote(List<Object> detailedAssessmentNote) {
+		this.detailedAssessmentNote = detailedAssessmentNote;
 	}
 }
