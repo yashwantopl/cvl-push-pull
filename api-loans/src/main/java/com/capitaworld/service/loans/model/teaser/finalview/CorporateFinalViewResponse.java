@@ -2425,4 +2425,12 @@ public class CorporateFinalViewResponse implements Serializable {
 	public void setDetailedAssessmentNote(List<Object> detailedAssessmentNote) {
 		this.detailedAssessmentNote = detailedAssessmentNote;
 	}
+
+	public List<Object> getNbfcProjectedFinancials() {
+		return nbfcProjectedFinancials;
+	}
+
+	public void setNbfcProjectedFinancials(List<Object> nbfcProjectedFinancials) {
+		this.nbfcProjectedFinancials = nbfcProjectedFinancials;
+	}
 }
