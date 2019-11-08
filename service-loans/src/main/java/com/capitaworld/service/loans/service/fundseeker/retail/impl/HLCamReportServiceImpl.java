@@ -1271,15 +1271,16 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				
 				//cibil score
 				try {
-					CibilRequest cibilReq=new CibilRequest();
-					cibilReq.setPan(plRetailApplicantRequest.getPan());
-					cibilReq.setApplicationId(applicationId);
-					CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
-					if (cibilScoreByPanCard != null) {
-						map.put("applicantV2Score", CommonUtils.getCibilV2ScoreRange(cibilScoreByPanCard.getActualScore()));
-						map.put("applicantCIBILScore", cibilScoreByPanCard);
-					}
 					
+					List<CibilScoreLogRequest> cibilScoreByPanCard = cibilClient.getSoftpingScores(applicationId, plRetailApplicantRequest.getPan());
+					for(CibilScoreLogRequest req : cibilScoreByPanCard) {
+							if(req.getScoreName().contains("CIBILTransUnionScore")) {
+								map.put("applicantCIBILScore", cibilScoreByPanCard);
+							}
+							if(req.getScoreName().contains("CibilScoreVersion2")) {
+								map.put("applicantV2Score", req.getActualScore() != null ? req.getActualScore() : null);
+							}
+					}
 				} catch (Exception e) {
 					logger.error("Error While calling Cibil Score By PanCard : ",e);
 				}
@@ -1659,19 +1660,21 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 					logger.error("Error while getting income details : ",e);
 				}
 				
-				 try {
-	                    CibilRequest cibilReq=new CibilRequest();
-	                    cibilReq.setPan(coApplicantDetail.getPan());
-	                    cibilReq.setApplicationId(applicationId);
-	                    CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
-	                    if(cibilScoreByPanCard != null) {
-	                    	coApp.put("coAppV2Score", CommonUtils.getCibilV2ScoreRange(cibilScoreByPanCard.getActualScore()));
-	                    	 coApp.put("coAppCibilScore", cibilScoreByPanCard);
-	                    }
-	                   
-	                } catch (Exception e) {
-	                    logger.error("Error While calling Cibil Score By PanCard : ",e);
-	                }
+				try {
+
+					List<CibilScoreLogRequest> cibilScoreByPanCard = cibilClient.getSoftpingScores(applicationId,
+							coApplicantDetail.getPan());
+					for (CibilScoreLogRequest req : cibilScoreByPanCard) {
+						if (req.getScoreName().contains("CIBILTransUnionScore")) {
+							coApp.put("applicantCIBILScore", cibilScoreByPanCard);
+						}
+						if (req.getScoreName().contains("CibilScoreVersion2")) {
+							coApp.put("applicantV2Score", req.getActualScore() != null ? req.getActualScore() : null);
+						}
+					}
+				} catch (Exception e) {
+					logger.error("Error While calling Cibil Score By PanCard : ", e);
+				}
 				
 				
 				ITRBasicDetailsResponse itrBasicDetailsResponse = new ITRBasicDetailsResponse();

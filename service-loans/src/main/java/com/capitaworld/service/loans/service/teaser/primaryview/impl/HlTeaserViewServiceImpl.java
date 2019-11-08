@@ -65,6 +65,7 @@ import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
 import com.capitaworld.service.loans.model.retail.RetailFinalInfoRequest;
 import com.capitaworld.service.loans.model.teaser.primaryview.HlTeaserViewResponse;
 import com.capitaworld.service.loans.repository.common.CommonRepository;
+import com.capitaworld.service.loans.repository.common.LoanRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
@@ -258,6 +259,9 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 	
 	@Autowired
 	private CoApplicantIncomeService coApplicantIncomeService;
+	
+	@Autowired
+	private LoanRepository loanRepo;
 	
 	
 	Date dateOfProposal =null;
@@ -675,14 +679,17 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				
 		//cibil score
 		try {
-			CibilRequest cibilReq=new CibilRequest();
-			cibilReq.setPan(plRetailApplicantResponse.getPan());
-			cibilReq.setApplicationId(toApplicationId);
-			CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
-			if(cibilScoreByPanCard != null) {
-				hlTeaserViewResponse.setCibilScoreRange(CommonUtils.getCibilV2ScoreRange(cibilScoreByPanCard.getActualScore()));
+			//old client
+			/*CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);*/
+			List<CibilScoreLogRequest> cibilScoreByPanCard = cibilClient.getSoftpingScores(toApplicationId, plRetailApplicantResponse.getPan());
+			for(CibilScoreLogRequest req : cibilScoreByPanCard) {
+				if(req.getScoreName().contains("CIBILTransUnionScore")) {
+					hlTeaserViewResponse.setCibilScore(req);
+				}
+				if(req.getScoreName().contains("CibilScoreVersion2")) {
+					hlTeaserViewResponse.setCibilScoreV2(req.getActualScore());
+				}
 			}
-			hlTeaserViewResponse.setCibilScore(cibilScoreByPanCard);
 		} catch (Exception e) {
 			logger.error("Error While calling Cibil Score By PanCard : ",e);
 		}
@@ -1244,14 +1251,17 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 					logger.error(":::::::::::---------Error while fetching name as per itr----------:::::::::::",e);
 				}*/
 				try {
-					CibilRequest cibilReq=new CibilRequest();
-					cibilReq.setPan(coApplicantDetail.getPan());
-					cibilReq.setApplicationId(applicationId);
-					CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
-					if(cibilScoreByPanCard != null) {
-						plRetailApplicantResponse.setCibilScoreRange(CommonUtils.getCibilV2ScoreRange(cibilScoreByPanCard.getActualScore()));
+					//old client
+					/*CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);*/
+					List<CibilScoreLogRequest> cibilScoreByPanCard = cibilClient.getSoftpingScores(applicationId, coApplicantDetail.getPan());
+					for(CibilScoreLogRequest req : cibilScoreByPanCard) {
+						if(req.getScoreName().contains("CIBILTransUnionScore")) {
+							plRetailApplicantResponse.setCibilScore(req);
+						}
+						if(req.getScoreName().contains("CibilScoreVersion2")) {
+							plRetailApplicantResponse.setCibilScoreV2(req.getActualScore());
+						}
 					}
-					plRetailApplicantResponse.setCibilScore(cibilScoreByPanCard);
 				} catch (Exception e) {
 					logger.error("Error While calling Cibil Score By PanCard : ",e);
 				}

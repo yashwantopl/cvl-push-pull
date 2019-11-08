@@ -464,16 +464,18 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				}
 				
 		//cibil score
-		
 				try {
-					CibilRequest cibilReq=new CibilRequest();
-					cibilReq.setPan(plRetailApplicantResponse.getPan());
-					cibilReq.setApplicationId(toApplicationId);
-					CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
-					if(cibilScoreByPanCard != null) {
-						plTeaserViewResponse.setCibilScoreRange(CommonUtils.getCibilV2ScoreRange(cibilScoreByPanCard.getActualScore()));
+					//old client
+					/*CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);*/
+					List<CibilScoreLogRequest> cibilScoreByPanCard = cibilClient.getSoftpingScores(toApplicationId, plRetailApplicantResponse.getPan());
+					for(CibilScoreLogRequest req : cibilScoreByPanCard) {
+						if(req.getScoreName().contains("CIBILTransUnionScore")) {
+							plTeaserViewResponse.setCibilScore(req);
+						}
+						if(req.getScoreName().contains("CibilScoreVersion2")) {
+							plTeaserViewResponse.setCibilScoreV2(req.getActualScore());
+						}
 					}
-					plTeaserViewResponse.setCibilScore(cibilScoreByPanCard);																
 				} catch (Exception e) {
 					logger.error("Error While calling Cibil Score By PanCard : ",e);
 				}
@@ -1141,14 +1143,17 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		
 		//cibil score
 		try {
-			CibilRequest cibilReq=new CibilRequest();
-			cibilReq.setPan(plRetailApplicantResponse.getPan());
-			cibilReq.setApplicationId(toApplicationId);
-			CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
-			if (cibilScoreByPanCard != null) {
-				plTeaserViewResponse.setCibilScoreRange(CommonUtils.getCibilV2ScoreRange(cibilScoreByPanCard.getActualScore()));
+			//old client
+			/*CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);*/
+			List<CibilScoreLogRequest> cibilScoreByPanCard = cibilClient.getSoftpingScores(toApplicationId, plRetailApplicantResponse.getPan());
+			for(CibilScoreLogRequest req : cibilScoreByPanCard) {
+				if(req.getScoreName().contains("CIBILTransUnionScore")) {
+					plTeaserViewResponse.setCibilScore(req);
+				}
+				if(req.getScoreName().contains("CibilScoreVersion2")) {
+					plTeaserViewResponse.setCibilScoreV2(req.getActualScore());
+				}
 			}
-			plTeaserViewResponse.setCibilScore(cibilScoreByPanCard);
 		} catch (Exception e) {
 			logger.error("Error While calling Cibil Score By PanCard : ",e);
 		}

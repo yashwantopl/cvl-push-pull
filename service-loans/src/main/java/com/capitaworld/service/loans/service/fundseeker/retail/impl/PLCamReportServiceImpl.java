@@ -1058,6 +1058,21 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 				logger.error("Error While calling Cibil Score By PanCard : ",e);
 			}
 			
+			try {
+				
+				List<CibilScoreLogRequest> cibilScoreByPanCard = cibilClient.getSoftpingScores(applicationId, plRetailApplicantRequest.getPan());
+				for(CibilScoreLogRequest req : cibilScoreByPanCard) {
+						if(req.getScoreName().contains("CIBILTransUnionScore")) {
+							map.put("applicantCIBILScore", cibilScoreByPanCard);
+						}
+						if(req.getScoreName().contains("CibilScoreVersion2")) {
+							map.put("applicantV2Score", req.getActualScore() != null ? req.getActualScore() : null);
+						}
+				}
+			} catch (Exception e) {
+				logger.error("Error While calling Cibil Score By PanCard : ",e);
+			}
+			
 	
 			/*	For name comparison:*/
 			/* Addition */
