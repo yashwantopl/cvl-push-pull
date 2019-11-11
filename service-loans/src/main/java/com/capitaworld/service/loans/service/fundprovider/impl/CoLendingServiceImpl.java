@@ -845,7 +845,7 @@ public class CoLendingServiceImpl implements CoLendingService {
 									for (LinkedHashMap<String, Object> mp : list) {
 										connectRequest = com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap(mp, ConnectRequest.class);
 										response.setInPrincipleDate("-");
-										if (response.getProposalId().equals(proposalId)) {
+										if (response.getProposalId().longValue() == proposalId.longValue()) {
 											Date inPrincipleDate = connectRequest.getModifiedDate();
 											response.setInPrincipleDate(!CommonUtils.isObjectNullOrEmpty(inPrincipleDate) ? CommonUtils.DATE_FORMAT.format(inPrincipleDate) : "-");
 										}
