@@ -372,3 +372,4 @@ alter table scoring_sidbi.scoring_model add column cibil_bureau_version_concessi
 alter table scoring_sidbi.scoring_model_temp add column cibil_bureau_version_concession INT(2) DEFAULT 1;
 alter table scoring_sidbi.scoring_model add column cibil_bureau_grad_version INT(2) DEFAULT 1;
 alter table scoring_sidbi.scoring_model_temp add column cibil_bureau_grad_version INT(2) DEFAULT 1;
+ALTER TABLE scoring_sidbi.proposal_score_detail add column addi_values VARCHAR(100);
