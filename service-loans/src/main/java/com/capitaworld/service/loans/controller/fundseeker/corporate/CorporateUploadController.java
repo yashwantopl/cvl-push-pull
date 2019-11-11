@@ -218,6 +218,10 @@ public class CorporateUploadController {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}
 
+			if(userId == null){
+                userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+            }
+
 			DocumentResponse response = corporateUploadService.uploadOtherDoc(documentRequestString, multipartFiles,userId);
 			if (response != null && response.getStatus() == 200) {
 				logger.info("File Uploaded SuccessFully");
