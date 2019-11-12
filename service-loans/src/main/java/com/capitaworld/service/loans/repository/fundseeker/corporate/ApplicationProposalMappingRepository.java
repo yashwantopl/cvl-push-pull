@@ -202,5 +202,9 @@ public interface ApplicationProposalMappingRepository extends JpaRepository<Appl
     
     @Query(value = "SELECT is_nbfc_user FROM connect.connect_log cd WHERE cd.application_id =:applicationId and cd.is_active = true",nativeQuery = true)
     public Boolean getNbfcUserValue(@Param("applicationId") Long applicationId);
+
+    @Modifying
+    @Query("update ApplicationProposalMapping lm set lm.loanAmount=:loanAmount where lm.isActive = true and lm.applicationId=:applicationId")
+    public int updateLoanAmount(@Param("loanAmount") Double loanAmount,@Param("applicationId") Long applicationId);
     
 }
