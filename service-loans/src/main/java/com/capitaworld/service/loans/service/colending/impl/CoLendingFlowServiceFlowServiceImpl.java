@@ -262,7 +262,7 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 					blEmi = Double.valueOf(blendedVal[1].toString());
 					loanAmount = Double.valueOf(blendedVal[2].toString());
 					logger.info("Before rate calculation : "+ "LoanAmount : "+loanAmount + " Tenure : " + blendedVal[3] + " Blended ROI:" + blRoi +" Blended  EMI :" + blEmi);
-					blRoi = Double.valueOf(df.format(RATE.simpleCalculateRate(Double.valueOf(blendedVal[3].toString()),blEmi,loanAmount)));
+					blRoi = Double.valueOf(df.format(RATE.simpleCalculateRate(Double.valueOf(blendedVal[3].toString()),blEmi,-loanAmount)));
 					logger.info(" After rate calculation ROI: " + blRoi);
 				}
 
