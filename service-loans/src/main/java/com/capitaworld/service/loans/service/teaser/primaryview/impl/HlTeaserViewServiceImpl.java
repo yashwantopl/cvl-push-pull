@@ -688,11 +688,10 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 			/*CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);*/
 			List<CibilScoreLogRequest> cibilScoreByPanCard = cibilClient.getSoftpingScores(toApplicationId, plRetailApplicantResponse.getPan());
 			for(CibilScoreLogRequest req : cibilScoreByPanCard) {
-				if(req.getScoreName().contains("CIBILTransUnionScore")) {
-					hlTeaserViewResponse.setCibilScore(req);
-				}
 				if(req.getScoreName().contains("CibilScoreVersion2")) {
 					hlTeaserViewResponse.setCibilScoreV2(req.getActualScore());
+				}else {
+					hlTeaserViewResponse.setCibilScore(req);
 				}
 			}
 		} catch (Exception e) {
@@ -1260,11 +1259,10 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 					/*CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);*/
 					List<CibilScoreLogRequest> cibilScoreByPanCard = cibilClient.getSoftpingScores(applicationId, coApplicantDetail.getPan());
 					for(CibilScoreLogRequest req : cibilScoreByPanCard) {
-						if(req.getScoreName().contains("CIBILTransUnionScore")) {
-							plRetailApplicantResponse.setCibilScore(req);
-						}
 						if(req.getScoreName().contains("CibilScoreVersion2")) {
 							plRetailApplicantResponse.setCibilScoreV2(req.getActualScore());
+						}else {
+							plRetailApplicantResponse.setCibilScore(req);
 						}
 					}
 				} catch (Exception e) {

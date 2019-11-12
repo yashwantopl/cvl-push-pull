@@ -1210,11 +1210,10 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 				
 				List<CibilScoreLogRequest> cibilScoreByPanCard = cibilClient.getSoftpingScores(applicationId, plRetailApplicantRequest.getPan());
 				for(CibilScoreLogRequest req : cibilScoreByPanCard) {
-						if(req.getScoreName().contains("CIBILTransUnionScore")) {
-							map.put("applicantCIBILScore", cibilScoreByPanCard);
-						}
 						if(req.getScoreName().contains("CibilScoreVersion2")) {
 							map.put("applicantV2Score", req.getActualScore() != null ? req.getActualScore() : null);
+						}else {
+							map.put("applicantCIBILScore", cibilScoreByPanCard);
 						}
 				}
 			} catch (Exception e) {
@@ -1502,11 +1501,10 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 					List<CibilScoreLogRequest> cibilScoreByPanCard = cibilClient.getSoftpingScores(applicationId,
 							coApplicantDetail.getPan());
 					for (CibilScoreLogRequest req : cibilScoreByPanCard) {
-						if (req.getScoreName().contains("CIBILTransUnionScore")) {
-							coApp.put("applicantCIBILScore", cibilScoreByPanCard);
-						}
 						if (req.getScoreName().contains("CibilScoreVersion2")) {
 							coApp.put("applicantV2Score", req.getActualScore() != null ? req.getActualScore() : null);
+						}else {
+							coApp.put("applicantCIBILScore", cibilScoreByPanCard);
 						}
 					}
 				} catch (Exception e) {

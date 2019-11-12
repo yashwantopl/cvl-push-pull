@@ -665,11 +665,10 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 		//cibil score
 		try {List<CibilScoreLogRequest> cibilScoreByPanCard = cibilClient.getSoftpingScores(toApplicationId, plRetailApplicantResponse.getPan());
 		for(CibilScoreLogRequest req : cibilScoreByPanCard) {
-			if(req.getScoreName().contains("CIBILTransUnionScore")) {
-				alTeaserViewResponse.setCibilScore(req);
-			}
 			if(req.getScoreName().contains("CibilScoreVersion2")) {
 				alTeaserViewResponse.setCibilScoreV2(req.getActualScore());
+			}else {
+				alTeaserViewResponse.setCibilScore(req);
 			}
 		}
 		} catch (Exception e) {
@@ -1236,11 +1235,10 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 					/*CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);*/
 					List<CibilScoreLogRequest> cibilScoreByPanCard = cibilClient.getSoftpingScores(applicationId, coApplicantDetail.getPan());
 					for(CibilScoreLogRequest req : cibilScoreByPanCard) {
-						if(req.getScoreName().contains("CIBILTransUnionScore")) {
-							plRetailApplicantResponse.setCibilScore(req);
-						}
 						if(req.getScoreName().contains("CibilScoreVersion2")) {
 							plRetailApplicantResponse.setCibilScoreV2(req.getActualScore());
+						}else {
+							plRetailApplicantResponse.setCibilScore(req);
 						}
 					}
 				} catch (Exception e) {

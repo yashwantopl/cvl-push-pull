@@ -1050,28 +1050,13 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			
 			//cibil score
 			try {
-				CibilRequest cibilReq=new CibilRequest();
-				cibilReq.setPan(plRetailApplicantRequest.getPan());
-				cibilReq.setApplicationId(applicationId);
-				CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
-				if (cibilScoreByPanCard != null) {
-					map.put("applicantV2Score", CommonUtils.getCibilV2ScoreRange(cibilScoreByPanCard.getActualScore()));
-					map.put("applicantCIBILScore", cibilScoreByPanCard);
-				}
-				
-			} catch (Exception e) {
-				logger.error("Error While calling Cibil Score By PanCard : ",e);
-			}
-			
-			try {
 				
 				List<CibilScoreLogRequest> cibilScoreByPanCard = cibilClient.getSoftpingScores(applicationId, plRetailApplicantRequest.getPan());
 				for(CibilScoreLogRequest req : cibilScoreByPanCard) {
-						if(req.getScoreName().contains("CIBILTransUnionScore")) {
-							map.put("applicantCIBILScore", cibilScoreByPanCard);
-						}
 						if(req.getScoreName().contains("CibilScoreVersion2")) {
 							map.put("applicantV2Score", req.getActualScore() != null ? req.getActualScore() : null);
+						}else {
+							map.put("applicantCIBILScore", cibilScoreByPanCard);
 						}
 				}
 			} catch (Exception e) {
