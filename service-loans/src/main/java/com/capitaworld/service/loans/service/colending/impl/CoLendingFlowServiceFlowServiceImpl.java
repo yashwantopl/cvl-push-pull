@@ -338,7 +338,12 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 					blendedVal[0] = blRoi;
 				}
 			}
-			blendedVal[2] = Double.valueOf(blendedVal[2].toString()) + loanAmount;
+			if(!CommonUtils.isObjectNullOrEmpty(blendedVal[2])){
+				blendedVal[2] = Double.valueOf(blendedVal[2].toString()) + loanAmount;
+			}else {
+				blendedVal[2] = loanAmount;
+			}
+
 			blendedVal[3] = mTenure;
 
 			ProposalDetailsAuditNbfc proposalDetailsAuditNbfc = new ProposalDetailsAuditNbfc();
