@@ -338,6 +338,7 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 			BeanUtils.copyProperties(proposalDetails,proposalDetailsAuditNbfc);
 			proposalDetailsAuditNbfc.setProposalId(proposalDetails.getId());
 			proposalDetailsAuditNbfc.setModifiedDate(new Date());
+			proposalDetailsAudiNbfcRepository.save(proposalDetailsAuditNbfc);
 
 
 			proposalDetails.setElAmount(loanAmount);
