@@ -318,6 +318,10 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 					matchRequest.setBusinessTypeId(applicationProposalMapping.getBusinessTypeId());
 					MatchDisplayResponse matchResponse = matchEngineClient.displayMatchesOfRetail(matchRequest);
 					alTeaserViewResponse.setMatchDisplayObjectMap(matchResponse.getMatchDisplayObjectMap());
+					if(productMappingId != null) {
+						Integer version = productMasterRepository.findBureauVersionByFpProductId(productMappingId);
+						alTeaserViewResponse.setMatchesBureauVersion(version != null ? version : 1);
+					}
 				} catch (Exception e) {
 					logger.error("Error while getting matches data : " + e);
 				}

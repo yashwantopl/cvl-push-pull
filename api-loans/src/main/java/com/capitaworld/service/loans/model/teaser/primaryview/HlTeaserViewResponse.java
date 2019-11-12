@@ -27,7 +27,7 @@ import com.capitaworld.service.loans.model.corporate.CorporateDirectorIncomeRequ
 public class HlTeaserViewResponse {
 	
 	private List<?> matchesList;
-
+	private Integer matchesBureauVersion;
 	private String organisationName;
     private String fpProductName;
     private String scoringModelName;
@@ -1346,6 +1346,14 @@ public class HlTeaserViewResponse {
 
 	public void setCibilScoreV2(String cibilScoreV2) {
 		this.cibilScoreV2 = cibilScoreV2;
+	}
+
+	public Integer getMatchesBureauVersion() {
+		return matchesBureauVersion;
+	}
+
+	public void setMatchesBureauVersion(Integer matchesBureauVersion) {
+		this.matchesBureauVersion = matchesBureauVersion;
 	}
 
 	

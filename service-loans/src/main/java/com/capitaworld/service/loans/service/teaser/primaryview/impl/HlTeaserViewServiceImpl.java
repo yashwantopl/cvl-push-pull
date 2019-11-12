@@ -326,6 +326,11 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 					matchRequest.setBusinessTypeId(applicationProposalMapping.getBusinessTypeId());
 					MatchDisplayResponse matchResponse = matchEngineClient.displayMatchesOfRetail(matchRequest);
 					hlTeaserViewResponse.setMatchesList(matchResponse.getMatchDisplayObjectList());
+					if(productMappingId != null) {
+						Integer version = productMasterRepository.findBureauVersionByFpProductId(productMappingId);
+						hlTeaserViewResponse.setMatchesBureauVersion(version != null ? version : 1);
+					}
+					
 				} catch (Exception e) {
 					logger.error("Error while getting matches data : " + e);
 				}

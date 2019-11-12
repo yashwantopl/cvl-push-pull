@@ -270,6 +270,11 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			MatchDisplayResponse matchResponse= matchEngineClient.displayMatchesOfRetail(matchRequest);
 			logger.info("matchesResponse"+matchResponse);
 			map.put("matchesResponse", !CommonUtils.isListNullOrEmpty(matchResponse.getMatchDisplayObjectList()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectList(),null) : " ");
+			if(productId != null) {
+				Integer version = productMasterRepository.findBureauVersionByFpProductId(productId);
+				map.put("matchesBureauVersion", version != null ? version : 1) ;
+			}
+			
 		}
 		catch (Exception e) {
 			logger.error("Error while getting matches data : ",e);
@@ -1608,6 +1613,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 				MatchDisplayResponse matchResponse= matchEngineClient.displayMatchesOfRetail(matchRequest);
 				logger.info("matchesResponse ==>{} " , matchResponse);
 				map.put("matchesResponse", !CommonUtils.isListNullOrEmpty(matchResponse.getMatchDisplayObjectList()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectList(),null) : " ");
+				map.put("matchesBureauVersion", productId != null ? productMasterRepository.findBureauVersionByFpProductId(productId) : null) ;
 			}
 			catch (Exception e) {
 				logger.error("Error while getting matches data in ApplicationForm: ",e);

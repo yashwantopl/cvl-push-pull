@@ -167,4 +167,7 @@ public interface ProductMasterRepository extends JpaRepository<ProductMaster, Lo
 
 	@Query("from ProductMaster pm where pm.userId =:userId  and productId in (:productIds)")
 	public List<ProductMaster> getProductListByUserId(@Param("userId") Long userId,@Param("productIds") List<Integer> productIds);
+	
+	@Query(value="select bureau_version from fp_product_master pm where pm.fp_product_id=:productId", nativeQuery=true)
+	public Integer findBureauVersionByFpProductId(@Param("productId") Long fpProductId);
 }

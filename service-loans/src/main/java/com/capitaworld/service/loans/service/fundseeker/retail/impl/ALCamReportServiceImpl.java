@@ -329,6 +329,10 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 			MatchDisplayResponse matchResponse= matchEngineClient.displayMatchesOfRetail(matchRequest);
 			logger.info("matchesResponse ==>{}", matchResponse);
 			map.put("matchesResponse", !CommonUtils.isObjectNullOrEmpty(matchResponse.getMatchDisplayObjectMap()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectMap(),null) : null);
+			if(productId != null) {
+				Integer version = productMasterRepository.findBureauVersionByFpProductId(productId);
+				map.put("matchesBureauVersion", version != null ? version : 1) ;
+			}
 		}
 		catch (Exception e) {
 			logger.error("Error while getting matches data : ",e);

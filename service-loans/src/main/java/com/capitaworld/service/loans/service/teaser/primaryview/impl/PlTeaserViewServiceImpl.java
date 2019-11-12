@@ -262,6 +262,10 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 					matchRequest.setBusinessTypeId(loanApplicationMaster.getBusinessTypeId());
 					MatchDisplayResponse matchResponse = matchEngineClient.displayMatchesOfRetail(matchRequest);
 					plTeaserViewResponse.setMatchesList(matchResponse.getMatchDisplayObjectList());
+					if(productMappingId != null) {
+						Integer version = productMasterRepository.findBureauVersionByFpProductId(productMappingId);
+						plTeaserViewResponse.setMatchesBureauVersion(version != null ? version : 1);
+					}
 				} catch (Exception e) {
 					logger.error("Error while getting matches data :{} " , e);
 				}
@@ -825,6 +829,10 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 					matchRequest.setProposalId(proposalId);
 					matchRequest.setBusinessTypeId(applicationProposalMapping.getBusinessTypeId());
 					MatchDisplayResponse matchResponse = matchEngineClient.displayMatchesOfRetail(matchRequest);
+					if(productMappingId != null) {
+						Integer version = productMasterRepository.findBureauVersionByFpProductId(productMappingId);
+						plTeaserViewResponse.setMatchesBureauVersion(version != null ? version : 1);
+					}
 					plTeaserViewResponse.setMatchesList(matchResponse.getMatchDisplayObjectList());
 				} catch (Exception e) {
 					logger.error("Error while getting matches data : " + e);

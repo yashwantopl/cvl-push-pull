@@ -22,7 +22,7 @@ import com.capitaworld.service.loans.model.retail.ALOneformPrimaryRes;
 public class AlTeaserViewResponse {
 
 	private List<?> matchesList;
-
+	private Integer matchesBureauVersion;
 	
 	private String organisationName;
 	private String fpProductName;
@@ -1725,6 +1725,14 @@ public class AlTeaserViewResponse {
 
 	public void setSupplierState(String supplierState) {
 		this.supplierState = supplierState;
+	}
+
+	public Integer getMatchesBureauVersion() {
+		return matchesBureauVersion;
+	}
+
+	public void setMatchesBureauVersion(Integer matchesBureauVersion) {
+		this.matchesBureauVersion = matchesBureauVersion;
 	}
 
 }

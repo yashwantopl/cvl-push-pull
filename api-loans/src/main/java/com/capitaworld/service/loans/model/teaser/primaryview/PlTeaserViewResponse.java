@@ -22,7 +22,7 @@ import com.capitaworld.service.loans.model.corporate.CorporateDirectorIncomeRequ
 public class PlTeaserViewResponse {
 	
 	private List<?> matchesList;
-
+	private Integer matchesBureauVersion;
     private String organisationName;
     private String fpProductName;
     private String scoringModelName;
@@ -1252,7 +1252,10 @@ public class PlTeaserViewResponse {
 	public void setOrgId(Long orgId) {
 		this.orgId = orgId;
 	}
-	
-	
-	
+	public Integer getMatchesBureauVersion() {
+		return matchesBureauVersion;
+	}
+	public void setMatchesBureauVersion(Integer matchesBureauVersion) {
+		this.matchesBureauVersion = matchesBureauVersion;
+	}
 }
