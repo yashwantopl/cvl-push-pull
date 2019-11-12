@@ -10,6 +10,7 @@ import com.capitaworld.service.loans.repository.colending.RecommendDetailReposit
 import com.capitaworld.service.loans.repository.fundprovider.NbfcProposalBlendedRateRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsAuditNbfcRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.service.colending.CoLendingFlowService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
@@ -62,6 +63,9 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 
 	@Autowired
 	private RecommendDetailRepository recommendDetailRepository;
+
+	@Autowired
+	private ApplicationProposalMappingRepository applicationProposalMappingRepository;
 
 	final DecimalFormat df1 = new DecimalFormat("#");
 
@@ -225,7 +229,7 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 				ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
 				BeanUtils.copyProperties(minLoanAmtProposalObj,proposalMappingRequest);
 				Object[] ratioValues = coLendingFlowRepository.getRatioNbfcBankProduct(applicationId);
-				Double tenure = 0d,nbfcRatio = 0d,bankRatio = 0d;
+				Double tenure = 0d,nbfcRatio = 0d,bankRatio = 0d,loanAmount=0d;
 				if(!CommonUtils.isObjectNullOrEmpty(ratioValues)){
 					if(!CommonUtils.isObjectNullOrEmpty(ratioValues[1])){
 						tenure = Double.valueOf(ratioValues[1].toString());
@@ -237,7 +241,7 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 						bankRatio = Double.valueOf(ratioValues[3].toString());
 					}
 				}
-				Object[] blendedVal = new Object[2];
+				Object[] blendedVal = new Object[4];
 				Long nbfcOrgId = null,bankOrgId = null;
 				Double blRoi = 0d,blEmi = 0d;
 				for (ProposalDetails proposalDetails : proposalDetailsList) {
@@ -256,8 +260,16 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 				if(!CommonUtils.isObjectNullOrEmpty(blendedVal)){
 					blRoi = Double.valueOf(blendedVal[0].toString());
 					blEmi = Double.valueOf(blendedVal[1].toString());
+					loanAmount = Double.valueOf(blendedVal[2].toString());
+					logger.info("Before rate calculation : "+ "LoanAmount : "+loanAmount + " Tenure : " + blendedVal[3] + " Blended ROI:" + blRoi +" Blended  EMI :" + blEmi);
+					blRoi = Double.valueOf(df.format(RATE.simpleCalculateRate(Double.valueOf(blendedVal[3].toString()),blEmi,loanAmount)));
+					logger.info(" After rate calculation ROI: " + blRoi);
 				}
+
 				Integer isDataSaved = coLendingFlowRepository.saveBlendedValues(applicationId,nbfcOrgId,bankOrgId,blRoi,blEmi);
+				int isUpdated = applicationProposalMappingRepository.updateLoanAmount(loanAmount,applicationId);
+				logger.info("Loan Amount updated: ",(isUpdated>0));
+
 				if(isDataSaved == 0){
 					logger.error("Blended rate Data not saved");
 					throw new LoansException("Blended rate Data not saved for co-origination flow");
@@ -319,17 +331,15 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 					blendedVal[0] = blRoi;
 				}
 			}
+			blendedVal[2] = Double.valueOf(blendedVal[2].toString()) + loanAmount;
+			blendedVal[3] = mTenure;
 
 			ProposalDetailsAuditNbfc proposalDetailsAuditNbfc = new ProposalDetailsAuditNbfc();
 			BeanUtils.copyProperties(proposalDetails,proposalDetailsAuditNbfc);
 			proposalDetailsAuditNbfc.setProposalId(proposalDetails.getId());
 			proposalDetailsAuditNbfc.setModifiedDate(new Date());
-
-			logger.info("Before rate calculation : "+ "LoanAmount : "+loanAmount.toString() + " Tenure : " + tenure + " Blended ROI:" + blRoi +" Blended  EMI :" + blEmi);
-			blRoi = Double.valueOf(df.format(RATE.simpleCalculateRate(tenure,blEmi,-loanAmount)));
-			blendedVal[0] = blRoi;
-			logger.info(" After calculation ROI: " + blRoi);
 			proposalDetailsAudiNbfcRepository.save(proposalDetailsAuditNbfc);
+
 
 			proposalDetails.setElAmount(loanAmount);
 			proposalDetails.setAdditionalLoanAmount(additionalAmt);
