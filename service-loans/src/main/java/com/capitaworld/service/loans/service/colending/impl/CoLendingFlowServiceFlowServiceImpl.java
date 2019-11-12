@@ -171,7 +171,7 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 				ProposalMappingRequest recomReq = new ProposalMappingRequest();
 				RecommendDetail recommendDetail = recommendDetailRepository.getByApplicationIdOrderByIdDescLimit1(applicationId);
 				if(!CommonUtils.isObjectNullOrEmpty(recommendDetail) && !CommonUtils.isObjectNullOrEmpty(recommendDetail.getValue())){
-					if(proposalDetailsOne.getNbfcFlow() == NBFC_BANK_FLOW){
+					if(proposalDetailsOne.getNbfcFlow() == NBFC_FLOW){
 						BeanUtils.copyProperties(proposalDetailsOne,recomReq,"additionalLoanAmount","existingLoanAmount");
 					}else if(proposalDetailsTwo.getNbfcFlow() == NBFC_BANK_FLOW){
 						BeanUtils.copyProperties(proposalDetailsTwo,recomReq,"additionalLoanAmount","existingLoanAmount");
@@ -317,7 +317,6 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 
 
 			blRoi = Double.valueOf(df.format(blRoi));
-			roi = blRoi;
 			calcProcessingFee = Double.valueOf(df.format(calcProcessingFee));
 
 
@@ -328,14 +327,12 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 				if(!CommonUtils.isObjectNullOrEmpty(blendedVal[0])){
 					blRoi+= Double.valueOf(blendedVal[0].toString());
 
-					monthlyRate = (blRoi/100) / 12;
-					blEmi= getPMTCalculationByLoanAmt(monthlyRate,mTenure,minLoanAmtProposalObj.getElAmount());
-					blEmi = Double.valueOf(df1.format(blEmi));
-					blRoi = Double.valueOf(df.format(blRoi));
+					blRoi = Double.valueOf(df1.format(blRoi));
 					blendedVal[0] = blRoi;
-					blendedVal[1] = blEmi;
+					blendedVal[1] = Double.valueOf(blendedVal[1].toString()) + calcEmi;
 				}else {
 					blendedVal[0] = blRoi;
+					blendedVal[1] = calcEmi;
 				}
 			}
 			if(!CommonUtils.isObjectNullOrEmpty(blendedVal[2])){
