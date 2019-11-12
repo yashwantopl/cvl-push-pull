@@ -1440,15 +1440,16 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		    Boolean isNBFCFlow = applicationProposalMappingRepository.getNbfcUserValue(applicationId);
 		    corporatePrimaryView.setCheckFlag(isNBFCFlow);
 		    
-		    NbfcProposalBlendedRate nbfcProposalBlendedRate = nbfcProposalBlendedRateRepository.getByApplicationIdOrderByIdDescLimit1(applicationId);
+		  //nbfc_proposal_blended_rate
+		    NbfcProposalBlendedRate nbfcProposalBlendedRate = nbfcProposalBlendedRateRepository.getByApplicationIdOrderByIdDescLimit1(applicationId);  
 			if(!CommonUtils.isObjectNullOrEmpty(nbfcProposalBlendedRate)) {
 				//Existing and Additional Loan Amount
 				Long loanAmount = nbfcProposalBlendedRate.getElAmount() != null ? nbfcProposalBlendedRate.getElAmount().longValue() : null;
 				Long existingLoanAmount = nbfcProposalBlendedRate.getExistingLoanAmount() != null ? nbfcProposalBlendedRate.getExistingLoanAmount().longValue() : 0l;
 				Long additionalLoanAmount = nbfcProposalBlendedRate.getAdditionalLoanAmount() != null ? nbfcProposalBlendedRate.getAdditionalLoanAmount().longValue() : 0l;
-				if(existingLoanAmount != 0 && additionalLoanAmount != 0) {
+				/*if(existingLoanAmount != 0 && additionalLoanAmount != 0) {	
 					loanAmount = existingLoanAmount + additionalLoanAmount;
-				}
+				}*/
 				corporatePrimaryView.setNbfcBlendedExistingLoanAmount(existingLoanAmount != 0 ? CommonUtils.convertValueWithoutDecimal(existingLoanAmount.doubleValue()) : "0");
 				corporatePrimaryView.setNbfcBlendedAdditionalLoanAmount(additionalLoanAmount != 0 ? CommonUtils.convertValueWithoutDecimal(additionalLoanAmount.doubleValue()) : "0");
 				corporatePrimaryView.setNbfcBlendedAmount(loanAmount != 0 ? CommonUtils.convertValueWithoutDecimal(loanAmount.doubleValue()) : "0");
@@ -1458,14 +1459,15 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				corporatePrimaryView.setNbfcBlendedProcessingFees(nbfcProposalBlendedRate.getProcessingFee());
 			}
 			
+			//proposal_details NBFC
 			ProposalDetails proposalDetailsForNbfc = proposalDetailsRepository.findFirstByApplicationIdAndIsActiveAndNbfcFlowOrderByIdDesc(applicationId, true, 1);
 			if(!CommonUtils.isObjectNullOrEmpty(proposalDetailsForNbfc)) {
  				Long loanAmount = proposalDetailsForNbfc.getElAmount() != null ? proposalDetailsForNbfc.getElAmount().longValue() : null;
 				Long existingLoanAmount = proposalDetailsForNbfc.getExistingLoanAmount() != null ? proposalDetailsForNbfc.getExistingLoanAmount().longValue() : 0l;
 				Long additionalLoanAmount = proposalDetailsForNbfc.getAdditionalLoanAmount() != null ? proposalDetailsForNbfc.getAdditionalLoanAmount().longValue() : 0l;
-				if(existingLoanAmount != 0 && additionalLoanAmount != 0) {
+				/*if(existingLoanAmount != 0 && additionalLoanAmount != 0) {
 					loanAmount = existingLoanAmount + additionalLoanAmount;
-				}
+				}*/
 				corporatePrimaryView.setNbfcExistingLoanAmount(existingLoanAmount != 0 ? CommonUtils.convertValueWithoutDecimal(existingLoanAmount.doubleValue()) : "0");
 				corporatePrimaryView.setNbfcAdditionalLoanAmount(additionalLoanAmount != 0 ? CommonUtils.convertValueWithoutDecimal(additionalLoanAmount.doubleValue()) : "0");
 				corporatePrimaryView.setNbfcAmount(loanAmount != 0 ? CommonUtils.convertValueWithoutDecimal(loanAmount.doubleValue()) : "0");
@@ -1474,16 +1476,16 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				corporatePrimaryView.setNbfcEmiAmount(proposalDetailsForNbfc.getEmi() != 0 ? CommonUtils.convertValueWithoutDecimal(proposalDetailsForNbfc.getEmi().doubleValue()) : "0");
 				corporatePrimaryView.setNbfcProcessingFees(proposalDetailsForNbfc.getProcessingFee());
 			}
-			
+			//proposal_details BANK
 			ProposalDetails proposalDetailsForBank = proposalDetailsRepository.findFirstByApplicationIdAndIsActiveAndNbfcFlowOrderByIdDesc(applicationId, true, 2);
 			if(!CommonUtils.isObjectNullOrEmpty(proposalDetailsForBank)) {
 				//Existing and Additional Loan Amount
 				Long loanAmount = proposalDetailsForBank.getElAmount() != null ? proposalDetailsForBank.getElAmount().longValue() : null;
 				Long existingLoanAmount = proposalDetailsForBank.getExistingLoanAmount() != null ? proposalDetailsForBank.getExistingLoanAmount().longValue() : 0l;
 				Long additionalLoanAmount = proposalDetailsForBank.getAdditionalLoanAmount() != null ? proposalDetailsForBank.getAdditionalLoanAmount().longValue() : 0l;
-				if(existingLoanAmount != 0 && additionalLoanAmount != 0) {
+				/*if(existingLoanAmount != 0 && additionalLoanAmount != 0) {
 					loanAmount = existingLoanAmount + additionalLoanAmount;
-				}
+				}*/
 				corporatePrimaryView.setBankExistingLoanAmount(existingLoanAmount != 0 ? CommonUtils.convertValueWithoutDecimal(existingLoanAmount.doubleValue()) : "0");
 				corporatePrimaryView.setBankAdditionalLoanAmount(additionalLoanAmount != 0 ? CommonUtils.convertValueWithoutDecimal(additionalLoanAmount.doubleValue()) : "0");
 				corporatePrimaryView.setBankAmount(loanAmount != 0 ? CommonUtils.convertValueWithoutDecimal(loanAmount.doubleValue()) : "0");
@@ -1492,7 +1494,8 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				corporatePrimaryView.setBankEmiAmount(proposalDetailsForBank.getEmi() != 0 ? CommonUtils.convertValueWithoutDecimal(proposalDetailsForBank.getEmi().doubleValue()) : "0");
 				corporatePrimaryView.setBankProcessingFees(proposalDetailsForBank.getProcessingFee() );
 			}
-
+			
+			//TABLE recommend_detail 
 			RecommendDetail detail = recommendDetailRepository.getByApplicationIdOrderByIdDescLimit1(applicationId);
 			if (!CommonUtils.isObjectNullOrEmpty(detail)) {
 				corporatePrimaryView.setRecommendedValue(detail.getValue());
@@ -1501,24 +1504,29 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				corporatePrimaryView.setRecommendedProcessingFee(detail.getProcessingFee());
 				corporatePrimaryView.setRecommendedRemark(detail.getRemark());
 			}	
+			//sanction_detail NBFC
 			LoanSanctionDomain nbfcSanction = loanSanctionRepository.findByAppliationIdAndNBFCFlow(applicationId,1);
 			if(!CommonUtils.isObjectNullOrEmpty(nbfcSanction)){
 				corporatePrimaryView.setNbfcSanctionAmount(nbfcSanction.getSanctionAmount());
 				corporatePrimaryView.setNbfcSanctionRoi(nbfcSanction.getRoi());
 				corporatePrimaryView.setNbfcSanctionTenure(nbfcSanction.getTenure());
 			}
+			//sanction_detail BANK
 			LoanSanctionDomain bankSanction = loanSanctionRepository.findByAppliationIdAndNBFCFlow(applicationId,2);
 			if(!CommonUtils.isObjectNullOrEmpty(bankSanction)){
 				corporatePrimaryView.setBankSanctionAmount(bankSanction.getSanctionAmount());
 				corporatePrimaryView.setBankSanctionRoi(bankSanction.getRoi());
 				corporatePrimaryView.setBankSanctionTenure(bankSanction.getTenure());
 			}
+			
+			//disbursement_detail NBFC
 			LoanDisbursementDomain nbfcDisbursed = loanDisbursementRepository.findByAppliationIdAndNBFCFlow(applicationId,1);
 			if(!CommonUtils.isObjectNullOrEmpty(nbfcDisbursed)){
 				corporatePrimaryView.setNbfcDisbursedAmount(nbfcDisbursed.getDisbursedAmount());
 				corporatePrimaryView.setNbfcTransactionNo(nbfcDisbursed.getTransactionNo());
 				corporatePrimaryView.setNbfcRemark(nbfcDisbursed.getRemark());
 			}
+			////disbursement_detail BANK
 			LoanDisbursementDomain bankDisbursed = loanDisbursementRepository.findByAppliationIdAndNBFCFlow(applicationId,2);
 			if(!CommonUtils.isObjectNullOrEmpty(bankDisbursed)){
 				corporatePrimaryView.setBankDisbursedAmount(bankDisbursed.getDisbursedAmount());
