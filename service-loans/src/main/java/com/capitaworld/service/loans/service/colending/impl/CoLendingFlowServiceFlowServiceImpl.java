@@ -13,6 +13,7 @@ import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepo
 import com.capitaworld.service.loans.service.colending.CoLendingFlowService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.loans.utils.RATE;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.model.MasterResponse;
@@ -61,6 +62,10 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 
 	@Autowired
 	private RecommendDetailRepository recommendDetailRepository;
+
+	final DecimalFormat df1 = new DecimalFormat("#");
+
+	final DecimalFormat df = new DecimalFormat("#.##");
 
 	private static final String ERROR_WHILE_GETTING_CLIENT_LIST = "Error while getting client list.";
 	private static final String ERROR_WHILE_GETTING_NBFC_CLIENT_COUNT = "Error while getting NBFC client count.";
@@ -292,11 +297,11 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 			Double mTenure = calcTenure*12;
 			calcEmi= getPMTCalculationByLoanAmt(monthlyRate,mTenure,loanAmount);
 
-			DecimalFormat df = new DecimalFormat("#.##");
+
 			blRoi = Double.valueOf(df.format(blRoi));
 			calcProcessingFee = Double.valueOf(df.format(calcProcessingFee));
 
-			DecimalFormat df1 = new DecimalFormat("#");
+
 			calcEmi = Double.valueOf(df1.format(calcEmi));
 
 
@@ -319,6 +324,11 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 			BeanUtils.copyProperties(proposalDetails,proposalDetailsAuditNbfc);
 			proposalDetailsAuditNbfc.setProposalId(proposalDetails.getId());
 			proposalDetailsAuditNbfc.setModifiedDate(new Date());
+
+			logger.info("Before rate calculation : "+ "LoanAmount : "+loanAmount.toString() + " Tenure : " + tenure + " Blended ROI:" + blRoi +" Blended  EMI :" + blEmi);
+			blRoi = Double.valueOf(df.format(RATE.simpleCalculateRate(tenure,blEmi,-loanAmount)));
+			blendedVal[0] = blRoi;
+			logger.info(" After calculation ROI: " + blRoi);
 			proposalDetailsAudiNbfcRepository.save(proposalDetailsAuditNbfc);
 
 			proposalDetails.setElAmount(loanAmount);

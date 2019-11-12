@@ -1942,9 +1942,9 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 		              Object[] autoLoanDetails = commonRepository.fetchALDetailsOfManufacturerAssetsSupplier(primaryAutoLoanDetailRequest.getManufacturerId() != null ? primaryAutoLoanDetailRequest.getManufacturerId() : 0, 
 		            		  primaryAutoLoanDetailRequest.getAssetModelId() != null ? primaryAutoLoanDetailRequest.getAssetModelId() : 0, primaryAutoLoanDetailRequest.getSupplierId() != null ? primaryAutoLoanDetailRequest.getSupplierId().intValue() : 0);
 		              if (!CommonUtils.isObjectNullOrEmpty(autoLoanDetails)) {
-						loanDetails.put("manufacturerName", autoLoanDetails[0] != null ? autoLoanDetails[0] : "-");
+						loanDetails.put("manufacturerName", autoLoanDetails[0] != null ? StringEscapeUtils.escapeXml(String.valueOf(autoLoanDetails[0])) : "-");
 						loanDetails.put("assetModelNo", autoLoanDetails[1] != null ? autoLoanDetails[1] : "-");
-						loanDetails.put("supplierName", autoLoanDetails[2] != null ? autoLoanDetails[2] : "-");
+						loanDetails.put("supplierName", autoLoanDetails[2] != null ? StringEscapeUtils.escapeXml(String.valueOf(autoLoanDetails[2])) : "-");
 						loanDetails.put("supplierCity", autoLoanDetails[3] != null ? autoLoanDetails[3] : "-");
 						loanDetails.put("supplierState", autoLoanDetails[4] != null ? autoLoanDetails[4] : "-");
 					}

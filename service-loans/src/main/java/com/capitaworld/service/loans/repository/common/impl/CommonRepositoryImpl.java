@@ -115,6 +115,11 @@ public class CommonRepositoryImpl  implements CommonRepository {
 	public String getEmailIdFromUsers(Long userId) {
 		return (String) manager.createNativeQuery("SELECT u.email FROM users.users u WHERE u.user_id=:userId").setParameter("userId", userId).getSingleResult();
 	}
+	
+	@Override
+	public Object[] getEmailIdAndMobileForNBFCUser(Long userId) {
+		return (Object[]) manager.createNativeQuery("SELECT fsd.email , fsd.mobile FROM users.fund_seeker_details fsd WHERE fsd.user_id=:userId").setParameter("userId", userId).getSingleResult();
+	}
 
 	@Override
 	public Object[] getInEligibleByApplicationId(Long applicationId) {

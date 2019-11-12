@@ -356,6 +356,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	@Override
 	public Map<String, Object> getCamReportPrimaryDetails(Long applicationId, Long productId,Long proposalId, boolean isFinalView) {
 
+		Boolean nbfcUser = false;
 		ProposalMappingRequestString proposalMappingRequestString = null;
 		Map<String, Object> map = new HashMap<String, Object>();
 		
@@ -368,6 +369,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					productId = proposalDetailsForBank.getFpProductId();
 					proposalId = proposalDetailsForBank.getId();
 				}*/
+				nbfcUser = true;
 				logger.info("Start Fetching Cam Data For ApplicationId==>{}  with  ProductId==>{}  and  ProposalId==>{}" , applicationId , productId , proposalId);
 				map.put("nbfcDatas", corporatePrimaryViewService.getNbfcData(applicationId));
 			}
@@ -410,9 +412,15 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
             LinkedHashMap<String, Object> lm = (LinkedHashMap<String, Object>)userResponse.getData();
             try {
                 UsersRequest request = MultipleJSONObjectHelper.getObjectFromMap(lm,UsersRequest.class);
-                map.put("mobile", request.getMobile());
-                map.put("email", StringEscapeUtils.escapeXml(request.getEmail()));
                 
+                if(nbfcUser) {
+                	Object[] str = commonRepository.getEmailIdAndMobileForNBFCUser(userId);
+                	map.put("mobile", str != null && str.length > 0 && str[0] != null ? str[0] : "-");
+	                map.put("email", str != null && str.length > 0 && str[1] != null ? StringEscapeUtils.escapeXml(String.valueOf(str[1])) : "-");
+                }else {
+	                map.put("mobile", request.getMobile());
+	                map.put("email", StringEscapeUtils.escapeXml(request.getEmail()));
+                }
                 
                 if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getPanNo())) {
                 	 BigInteger isEmailMobileFound = commonRepository.checkApplicationDisbursed(corporateApplicantRequest.getPanNo());
