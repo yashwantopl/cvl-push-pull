@@ -115,7 +115,13 @@ public abstract class ProductMaster implements Serializable {
 	private Integer productType;
 	
 	@Column(name = "bureau_version")
-	private Integer bureauVersion;	
+	private Integer bureauVersion;
+
+	@Column(name = "min_roi")
+	private Long minRoi;
+
+	@Column(name = "max_roi")
+	private Long maxRoi;
 	
 
 	public ProductMaster() {
@@ -355,5 +361,21 @@ public abstract class ProductMaster implements Serializable {
 
 	public void setBureauVersion(Integer bureauVersion) {
 		this.bureauVersion = bureauVersion;
+	}
+
+	public Long getMinRoi() {
+		return minRoi;
+	}
+
+	public void setMinRoi(Long minRoi) {
+		this.minRoi = minRoi;
+	}
+
+	public Long getMaxRoi() {
+		return maxRoi;
+	}
+
+	public void setMaxRoi(Long maxRoi) {
+		this.maxRoi = maxRoi;
 	}
 }
