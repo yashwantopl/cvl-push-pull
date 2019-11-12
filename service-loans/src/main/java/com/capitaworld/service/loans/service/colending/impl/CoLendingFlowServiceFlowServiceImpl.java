@@ -285,14 +285,20 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 
 	private void calcAndSaveBlednedRate(ProposalDetails proposalDetails,Double tenure,Double ratioVal,ProposalMappingRequest minLoanAmtProposalObj,Object[] blendedVal){
 		try {
-			Double calcTenure = 0d,roi = 0d,calcProcessingFee = 0d,monthlyRate = 0d,calcEmi = 0d;
+			Double calcTenure = 0d,roi = 0d,processingFee = 0d,calcProcessingFee = 0d,monthlyRate = 0d,calcEmi = 0d;
 			Double loanAmount = minLoanAmtProposalObj.getElAmount(),existingAmt = minLoanAmtProposalObj.getExistingLoanAmount(),additionalAmt = minLoanAmtProposalObj.getAdditionalLoanAmount();
 			Double blRoi = 0d,blEmi = 0d;
-			roi = proposalDetails.getElRoi();
+			if(proposalDetails.getNbfcFlow() == NBFC_FLOW && proposalDetails.getId() == minLoanAmtProposalObj.getId()){
+				roi = minLoanAmtProposalObj.getElRoi();
+				processingFee = minLoanAmtProposalObj.getProcessingFee();
+			}else {
+				roi = proposalDetails.getElRoi();
+				processingFee = proposalDetails.getProcessingFee();
+			}
 			calcTenure = minLoanAmtProposalObj.getElTenure();
 			blRoi = (ratioVal * roi) / 100;
-			if(!CommonUtils.isObjectNullOrEmpty(proposalDetails.getProcessingFee())){
-				calcProcessingFee = (ratioVal * proposalDetails.getProcessingFee()) / 100;
+			if(!CommonUtils.isObjectNullOrEmpty(processingFee)){
+				calcProcessingFee = (ratioVal * processingFee) / 100;
 			}
 
 			if(!CommonUtils.isObjectNullOrEmpty(additionalAmt) && additionalAmt!=0){
