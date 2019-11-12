@@ -317,6 +317,7 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 
 
 			blRoi = Double.valueOf(df.format(blRoi));
+			roi = blRoi;
 			calcProcessingFee = Double.valueOf(df.format(calcProcessingFee));
 
 
@@ -352,7 +353,7 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 			proposalDetails.setExistingLoanAmount(existingAmt);
 			proposalDetails.setEmi(calcEmi);
 			proposalDetails.setProcessingFee(calcProcessingFee);
-			//proposalDetails.setElRoi(calcRoi);
+			proposalDetails.setElRoi(roi);
 			proposalDetails.setElTenure(calcTenure);
 			proposalDetails.setModifiedDate(new Date());
 
