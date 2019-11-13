@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.service.fundseeker.retail;
 
 import java.util.List;
+import java.util.Map;
 
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.FrameRequest;
@@ -13,6 +14,8 @@ public interface RetailApplicantIncomeService {
 	public boolean saveAll(List<RetailApplicantIncomeRequest> appIncomeReqList) throws LoansException;
 	
 	public List<RetailApplicantIncomeRequest> getAll(Long applicationId);
+	
+	public Map<String, Double> getLatestYearIncomeDetails(Long applicationId);
 
 	public List<RetailApplicantIncomeRequest> getAllByProposalId(Long applicationId, Long proposalId);
 	
