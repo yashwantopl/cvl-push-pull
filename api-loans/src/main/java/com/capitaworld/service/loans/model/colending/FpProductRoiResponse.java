@@ -5,24 +5,24 @@ package com.capitaworld.service.loans.model.colending;
  */
 public class FpProductRoiResponse {
 
-    private Long minRoi;
+    private Double minRoi;
 
-    private Long maxRoi;
+    private Double maxRoi;
 
 
-    public Long getMinRoi() {
+    public Double getMinRoi() {
         return minRoi;
     }
 
-    public void setMinRoi(Long minRoi) {
+    public void setMinRoi(Double minRoi) {
         this.minRoi = minRoi;
     }
 
-    public Long getMaxRoi() {
+    public Double getMaxRoi() {
         return maxRoi;
     }
 
-    public void setMaxRoi(Long maxRoi) {
+    public void setMaxRoi(Double maxRoi) {
         this.maxRoi = maxRoi;
     }
 }
