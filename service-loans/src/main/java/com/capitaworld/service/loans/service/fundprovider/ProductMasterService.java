@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.model.colending.FpProductRoiResponse;
 import org.json.simple.JSONObject;
 
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
@@ -80,4 +81,6 @@ public interface ProductMasterService {
 	public Long createJobId(Long userId);
 	
 	public Boolean changeStatusWithWorkFlow(WorkflowData workflowData);
+
+	public FpProductRoiResponse getMinMaxRoiFromFpProductId(Long fpProductId);
 }
