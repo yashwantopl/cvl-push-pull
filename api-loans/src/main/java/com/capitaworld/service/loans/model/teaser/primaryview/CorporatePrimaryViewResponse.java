@@ -161,6 +161,10 @@ public class CorporatePrimaryViewResponse {
     private CorporatePrimaryViewResponseNbfc nbfcData;
     private Object gstBankComp;
     
+    private List<Object> nbfcPANReport;
+	private List<Object> nbfcAddressProofReport;
+	private List<Object> nbfcProjectedFinancials;
+    
 	public CorporatePrimaryViewResponseNbfc getNbfcData() {
 		return nbfcData;
 	}
@@ -1326,9 +1330,24 @@ public class CorporatePrimaryViewResponse {
 	public void setVerifyApiData(Object verifyApiData) {
 		this.verifyApiData = verifyApiData;
 	}
-
-
- 
+	public List<Object> getNbfcPANReport() {
+		return nbfcPANReport;
+	}
+	public void setNbfcPANReport(List<Object> nbfcPANReport) {
+		this.nbfcPANReport = nbfcPANReport;
+	}
+	public List<Object> getNbfcAddressProofReport() {
+		return nbfcAddressProofReport;
+	}
+	public void setNbfcAddressProofReport(List<Object> nbfcAddressProofReport) {
+		this.nbfcAddressProofReport = nbfcAddressProofReport;
+	}
+	public List<Object> getNbfcProjectedFinancials() {
+		return nbfcProjectedFinancials;
+	}
+	public void setNbfcProjectedFinancials(List<Object> nbfcProjectedFinancials) {
+		this.nbfcProjectedFinancials = nbfcProjectedFinancials;
+	}
 	
 	
 	/*

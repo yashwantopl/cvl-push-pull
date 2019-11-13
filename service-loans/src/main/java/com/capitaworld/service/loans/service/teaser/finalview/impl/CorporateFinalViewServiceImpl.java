@@ -1949,7 +1949,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
-		documentRequest.setProductDocumentMappingId(DocumentAlias.NBFC_PAN_UPLOAD);
+		/*documentRequest.setProductDocumentMappingId(DocumentAlias.NBFC_PAN_UPLOAD);
 		try {
 			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 			corporateFinalViewResponse.setNbfcPANReport(documentResponse.getDataList());
@@ -1962,7 +1962,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			corporateFinalViewResponse.setNbfcAddressProofReport(documentResponse.getDataList());
 		} catch (DocumentException e) {
 			logger.error(CommonUtils.EXCEPTION,e);
-		}
+		}*/
 		documentRequest.setProductDocumentMappingId(DocumentAlias.NBFC_TRIPARTITE_AGREEMENT);
 		try {
 			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
@@ -1998,13 +1998,13 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		} catch (DocumentException e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
-		documentRequest.setProductDocumentMappingId(DocumentAlias.NBFC_PROJECTED_FINANCIALS);
+		/*documentRequest.setProductDocumentMappingId(DocumentAlias.NBFC_PROJECTED_FINANCIALS);
 		try {
 			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 			corporateFinalViewResponse.setNbfcProjectedFinancials(documentResponse.getDataList());
 		} catch (DocumentException e) {
 			logger.error(CommonUtils.EXCEPTION,e);
-		}
+		}*/
 		documentRequest.setProductDocumentMappingId(DocumentAlias.AGE_PROOF_DOCUMENT);
 		try {
 			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);

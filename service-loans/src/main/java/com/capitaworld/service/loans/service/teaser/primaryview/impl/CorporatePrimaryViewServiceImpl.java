@@ -1423,6 +1423,31 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		
+		// FOR NBFC RELATED CHANGES
+		documentRequest.setProductDocumentMappingId(DocumentAlias.NBFC_PAN_UPLOAD);
+		try {
+			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+			corporatePrimaryViewResponse.setNbfcPANReport(documentResponse.getDataList());
+		} catch (DocumentException e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+		documentRequest.setProductDocumentMappingId(DocumentAlias.NBFC_ADDRESS_PROOF);
+		try {
+			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+			corporatePrimaryViewResponse.setNbfcAddressProofReport(documentResponse.getDataList());
+		} catch (DocumentException e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+		
+		documentRequest.setProductDocumentMappingId(DocumentAlias.NBFC_PROJECTED_FINANCIALS);
+		try {
+			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+			corporatePrimaryViewResponse.setNbfcProjectedFinancials(documentResponse.getDataList());
+		} catch (DocumentException e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+		//ENDS HERE NBFC DOWNLOADS
+		
 		if(gstCompRelFlag) {
 			LinkedHashMap<String, Object> gstVsItrVsBsComparision = gstVsItrVsBsComparision(applicationId, (FinancialInputRequest) corporatePrimaryViewResponse.getFinancialInputRequest());
 			corporatePrimaryViewResponse.setBankComparisionData(gstVsItrVsBsComparision);
