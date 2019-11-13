@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantIncomeDetail;
 import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
+import com.capitaworld.service.loans.repository.fundseeker.retail.CoApplicantIncomeRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantIncomeRepository;
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantIncomeService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -31,6 +33,9 @@ public class RetailApplicantIncomeServiceImpl implements RetailApplicantIncomeSe
 	
 	@Autowired
 	private RetailApplicantIncomeRepository appIncomeRepository;
+	
+	@Autowired
+	private CoApplicantIncomeRepository coAppIncomeRepository;
 	
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
@@ -204,6 +209,15 @@ public class RetailApplicantIncomeServiceImpl implements RetailApplicantIncomeSe
 			return appIncomeReqList != null && !appIncomeReqList.isEmpty() ? appIncomeReqList : null;
 		}
 		return null;
+	}
+
+
+	@Override
+	public Map<String, Double> getLatestYearIncomeDetails(Long applicationId) {
+		Map<String, Double> income = new HashMap<String, Double>(); 
+		income.put("applicantIncome", appIncomeRepository.getApplicantLatestYearIncome(applicationId)); 
+		income.put("coApplicantIncome", coAppIncomeRepository.getCoApplicantLatestYearIncome(applicationId));  
+		return income;
 	}
 	
 }

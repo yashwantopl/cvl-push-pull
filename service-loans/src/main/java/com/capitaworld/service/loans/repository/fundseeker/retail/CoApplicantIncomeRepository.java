@@ -31,4 +31,8 @@ public interface CoApplicantIncomeRepository extends JpaRepository<CoApplicantIn
 	@Query("select i.incomeRatio from CoApplicantIncomeDetail i where i.applicationId =:id and i.year=:year and i.isActive = true ")
 	public Double getTotalIncomeByApplicationIdAndYear(@Param("id")Long id,@Param("year")Integer year);
 	
+	@Query(value="SELECT salary_income FROM  `loan_application`.`fs_retail_co_applicant_income_details` WHERE application_id = :applicationId AND proposal_mapping_id IS NULL AND is_active = TRUE ORDER BY YEAR DESC LIMIT 1", nativeQuery=true)
+	public Double getCoApplicantLatestYearIncome(@Param("applicationId") Long applicationId);
+
+	
 }
