@@ -157,6 +157,8 @@ public class FundSeekerInputRequestResponse {
     private Double borrowerDcldProjectedSales;
     
     private String currentFinancialYear;
+
+    private String xmlResponseExternal;
     
 	public Long getUserId() {
         return userId;
@@ -731,7 +733,12 @@ public class FundSeekerInputRequestResponse {
 		this.currentFinancialYear = currentFinancialYear;
 	}
 
-	
 
+    public String getXmlResponseExternal() {
+        return xmlResponseExternal;
+    }
 
+    public void setXmlResponseExternal(String xmlResponseExternal) {
+        this.xmlResponseExternal = xmlResponseExternal;
+    }
 }

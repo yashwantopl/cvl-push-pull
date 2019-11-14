@@ -77,9 +77,11 @@ public class ScoringRequestLoans {
 	private ScoreParameterNTBRequest scoreParameterNTBRequest;
 
 	private ScoreParameterRetailRequest scoreParameterRetailRequest;
+	
+	private Integer bureauVersion;
 
 	private Double eligibleLoanAmountCircular;
-
+	
 	public Double getEligibleLoanAmountCircular() {
 		return eligibleLoanAmountCircular;
 	}
@@ -494,6 +496,14 @@ public class ScoringRequestLoans {
 
 	public void setNetTakeHomepay(Double netTakeHomepay) {
 		this.netTakeHomepay = netTakeHomepay;
+	}
+	
+	public Integer getBureauVersion() {
+		return bureauVersion;
+	}
+
+	public void setBureauVersion(Integer bureauVersion) {
+		this.bureauVersion = bureauVersion;
 	}
 
 	@Override

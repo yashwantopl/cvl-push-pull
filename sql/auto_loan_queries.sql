@@ -366,3 +366,10 @@ ALTER TABLE `scoring_sidbi`.`risk_grading`  ADD COLUMN max_sub_score DOUBLE AFTE
 
 INSERT INTO `scoring_sidbi`.`field_master` (`id`,`name`, `type`, `created_date`, `modified_date`, `created_by`, `modified_by`, `is_active`, `parent_field_id`) VALUES(209,'IS_ADHAAR_CARD_AL','2',NOW(),NULL,NULL,NULL,TRUE,NULL);
 INSERT INTO `scoring_sidbi`.`field_mapping` (`created_by`, `created_date`, `is_active`, `loan_type_id`, `modified_by`, `modified_date`, `field_master_id`, `business_type_id`, `financial_type_id`, `is_consider_co_app`, `employment_type_id`) VALUES(NULL,NOW(),TRUE,NULL,NULL,NULL,209,'8','3',FALSE,NULL);
+alter table loan_application.fp_product_master add column bureau_version INT(2) DEFAULT 1;
+alter table loan_application.fp_product_master_temp add column bureau_version INT(2) DEFAULT 1;
+alter table scoring_sidbi.scoring_model add column cibil_bureau_version_concession INT(2) DEFAULT 1;
+alter table scoring_sidbi.scoring_model_temp add column cibil_bureau_version_concession INT(2) DEFAULT 1;
+alter table scoring_sidbi.scoring_model add column cibil_bureau_grad_version INT(2) DEFAULT 1;
+alter table scoring_sidbi.scoring_model_temp add column cibil_bureau_grad_version INT(2) DEFAULT 1;
+ALTER TABLE scoring_sidbi.proposal_score_detail add column addi_values VARCHAR(100);

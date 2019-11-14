@@ -6290,7 +6290,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 		if(!CommonUtils.isObjectNullOrEmpty(productDetails)){
 			List<ApplicationProposalMapping> applicationProposalMappingList = applicationProposalMappingRepository.getListByApplicationIdAndOrgId(proposalDetails.getApplicationId(),loanApplicationRequest.getNpOrgId());
-			if(!CommonUtils.isObjectNullOrEmpty(applicationProposalMappingList)){
+			if(!CommonUtils.isObjectNullOrEmpty(applicationProposalMappingList) && CommonUtils.isObjectNullOrEmpty(proposalDetails.getNbfcFlow())){
 				Integer deleteApplicationData = applicationProposalMappingRepository.deleteByApplicationIdAndOrgId(proposalDetails.getApplicationId(),loanApplicationRequest.getNpOrgId());
 				if(!CommonUtils.isObjectNullOrEmpty(deleteApplicationData) && deleteApplicationData>0){
 					logger.info("Data deleted for applicationId:"+proposalDetails.getApplicationId()+" and for fpProductId:"+proposalDetails.getFpProductId()+" deleted data count:"+deleteApplicationData);
@@ -8475,12 +8475,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						gstRelatedPartyRequest.setPurchase(" - ");
 						
 						if(gstRelatedPartyRequest.getTransactionType() != null && "Sales".equals(gstRelatedPartyRequest.getTransactionType()) && gstRelatedPartyRequest.getInvoiceValue() != null ) {
-							gstRelatedPartyRequest.setSales(String.valueOf(CommonUtils.convertValueIndianCurrency(gstRelatedPartyRequest.getInvoiceValue().toString())));
+							gstRelatedPartyRequest.setSales(gstRelatedPartyRequest.getInvoiceValue() != null ? CommonUtils.convertValue(gstRelatedPartyRequest.getInvoiceValue()) : "0");
 							grandTotalOfSales=gstRelatedPartyRequest.getGrandTotal();
 							if(gstRelatedPartyRequest.getInvoiceValue() != null)
 								totalOfSales+=gstRelatedPartyRequest.getInvoiceValue();
 						}else if(gstRelatedPartyRequest.getTransactionType() != null && "Purchase".equals(gstRelatedPartyRequest.getTransactionType()) && gstRelatedPartyRequest.getInvoiceValue() != null) {
-							gstRelatedPartyRequest.setPurchase(String.valueOf(CommonUtils.convertValueIndianCurrency(gstRelatedPartyRequest.getInvoiceValue().toString())));
+							gstRelatedPartyRequest.setPurchase(gstRelatedPartyRequest.getInvoiceValue() != null ? CommonUtils.convertValue(gstRelatedPartyRequest.getInvoiceValue()) : "0");
 							grandTotalOfPurchase=gstRelatedPartyRequest.getGrandTotal();
 							if(gstRelatedPartyRequest.getInvoiceValue() != null)
 								totalOfPurchase+=gstRelatedPartyRequest.getInvoiceValue();

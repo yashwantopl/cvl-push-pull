@@ -181,5 +181,18 @@ public class RetailApplicantIncomeController {
 			return new ResponseEntity<List<RetailApplicantIncomeRequest>>(Collections.emptyList(),HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
+	@RequestMapping(value = "/getLatestYearIncomeDetails/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getLatestYearIncomeDetails(@PathVariable("applicationId") Long applicationId){
+		logger.info("Enter in getLatestYearIncomeDetails :- " + applicationId);
+		try {
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setMap(applicantIncomeService.getLatestYearIncomeDetails(applicationId));
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);	
+		} catch (Exception e) {
+			logger.error("Throw Exception while getLatestYearIncomeDetails: {}",e);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 
 }

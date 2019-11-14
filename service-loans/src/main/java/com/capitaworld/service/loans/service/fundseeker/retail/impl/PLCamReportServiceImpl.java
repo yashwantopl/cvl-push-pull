@@ -95,6 +95,7 @@ import com.capitaworld.service.oneform.enums.ReligionRetailMst;
 import com.capitaworld.service.oneform.enums.ResidenceStatusRetailMst;
 import com.capitaworld.service.oneform.enums.ResidentStatusMst;
 import com.capitaworld.service.oneform.enums.ResidentialStatus;
+import com.capitaworld.service.oneform.enums.SalaryModeMst;
 import com.capitaworld.service.oneform.enums.SpouseEmploymentList;
 import com.capitaworld.service.oneform.enums.Title;
 import com.capitaworld.service.oneform.enums.WcRenewalType;
@@ -1017,6 +1018,8 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			map.put("grossMonthlyIncome", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getGrossMonthlyIncome()) ? CommonUtils.convertValueWithoutDecimal(plRetailApplicantRequest.getGrossMonthlyIncome()) : null);
 			map.put("netMonthlyIncome", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getMonthlyIncome()) ? CommonUtils.convertValueWithoutDecimal(plRetailApplicantRequest.getMonthlyIncome()) : null);
 			map.put("nationality", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getResidentialStatus()) ? ResidentStatusMst.getById(plRetailApplicantRequest.getResidentialStatus()).getValue() : "-");
+			map.put("salaryMode", !CommonUtils.isObjectNullOrEmptyOrDash(plRetailApplicantRequest.getSalaryMode()) ? SalaryModeMst.getById(plRetailApplicantRequest.getSalaryMode()).getValue() : "-" );
+
 			if(ResidenceStatusRetailMst.OWNED.getId() == plRetailApplicantRequest.getResidenceType()) {
 				map.put("mortgageInOwnedProperty", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getIsOwnedProp()) ? plRetailApplicantRequest.getIsOwnedProp() == true ? "Yes" : "No" : "-");
 			}else {
@@ -1231,10 +1234,6 @@ public class PLCamReportServiceImpl implements PLCamReportService{
      		map.put("loanType", !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getProductId()) ? CommonUtils.LoanType.getType(loanApplicationMaster.getProductId()).getName() : " ");	
 		}
 		try {
-    			// ConnectResponse connectResponse =
-    			// connectClient.getByAppStageBusinessTypeId(applicationId,
-    			// ConnectStage.COMPLETE.getId(),
-    			// com.capitaworld.service.loans.utils.CommonUtils.BusinessType.EXISTING_BUSINESS.getId());
     			Date InPrincipleDate = loanApplicationRepository.getInEligibleModifiedDate(applicationId,ConnectStage.RETAIL_ONE_FORM_LOAN_DETAILS.getId(), 6);
     				map.put("dateOfInEligible",!CommonUtils.isObjectNullOrEmpty(InPrincipleDate)? CommonUtils.DATE_FORMAT.format(InPrincipleDate): "-");
     		} catch (Exception e2) {
@@ -1265,18 +1264,18 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 		// ENDS HERE===================>
 
 		//MATCHES RESPONSE
-	/*	try {
+		try {
 			MatchRequest matchRequest = new MatchRequest();
 			matchRequest.setApplicationId(applicationId);
-			matchRequest.setProductId(productId);
+			//matchRequest.setProductId(productId);
 			matchRequest.setBusinessTypeId(loanApplicationMaster.getBusinessTypeId());
-			MatchDisplayResponse matchResponse= matchEngineClient.displayMatchesOfRetail(matchRequest);
+			MatchDisplayResponse matchResponse= matchEngineClient.displayOfflineMatchesOfRetail(matchRequest);
 			logger.info("matchesResponse"+matchResponse);
-			map.put("matchesResponse", !CommonUtils.isListNullOrEmpty(matchResponse.getMatchDisplayObjectList()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectList(),null) : " ");
+			map.put("matchesResponse", !CommonUtils.isObjectNullOrEmpty(matchResponse.getMatchDisplayObjectMap()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectMap(),null) : " ");
 		}
 		catch (Exception e) {
 			logger.error("Error while getting matches data : ",e);
-		}*/
+		}
 		//PROPOSAL RESPONSE
 		try {
 			ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();

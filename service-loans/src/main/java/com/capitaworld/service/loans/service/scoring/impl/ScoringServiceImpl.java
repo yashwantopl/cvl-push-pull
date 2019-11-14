@@ -11,6 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -147,6 +148,7 @@ public class ScoringServiceImpl implements ScoringService {
 
 
     private final Logger logger = LoggerFactory.getLogger(ScoringServiceImpl.class);
+    public static final String CIBIL_SCORE_VERSION_2 = "CibilScoreVersion2";
 
     @Autowired
     private OperatingStatementDetailsRepository operatingStatementDetailsRepository;
@@ -733,7 +735,6 @@ public class ScoringServiceImpl implements ScoringService {
 
     public ResponseEntity<LoansResponse> calculateRetailPersonalLoanScoringList(List<ScoringRequestLoans> scoringRequestLoansList) {
 
-        ScoringResponse scoringResponseMain = null;
         Boolean isItrMannualFilled = false;
         Integer minBankRelationshipInMonths = null;
         List<Double> incomeOfItrOf3Years = null;
@@ -834,7 +835,7 @@ public class ScoringServiceImpl implements ScoringService {
             }
 */
 
-            ProductMaster productMaster=productMasterRepository.findOne(fpProductId);
+//            productMasterRepository.findOne(fpProductId);
 
             ///////// Start Getting Individual Product Request ///////
 
@@ -863,6 +864,17 @@ public class ScoringServiceImpl implements ScoringService {
             /*ScoringRequestLoans requestLoans = new ScoringRequestLoans();
             requestLoans.setApplicationId(applicationId);
             requestLoans.setFpProductId(fpProductId);*/
+            Integer consessionBureauVersion = null;
+             Object[] bureauVersionIdById = loanRepository.getBureauVersionIdById(scoreModelId);
+             if(!CommonUtils.isObjectNullOrEmpty(bureauVersionIdById)) {
+            	 if(!CommonUtils.isObjectNullOrEmpty(bureauVersionIdById[0])) {
+            		 consessionBureauVersion = Integer.valueOf(bureauVersionIdById[0].toString());            		 
+            	 }else {
+            		 consessionBureauVersion = 1;
+            	 }
+            	 scoringRequestLoans.setBureauVersion(consessionBureauVersion);
+             }
+              
             Object [] concessionResp = getRetailConcessionDetails(scoringRequestLoans, null, null, null,retailApplicantDetail, null);
             logger.info("==========getRetailConcessionDetailS PERSONAL LOAN ========>>>>>"+concessionResp);
 
@@ -1611,8 +1623,7 @@ public class ScoringServiceImpl implements ScoringService {
         }
 
         try {
-            scoringResponseMain = scoringClient.calculateScoreList(scoringRequestList);
-
+            scoringClient.calculateScoreList(scoringRequestList);
             logger.info(SCORE_IS_SUCCESSFULLY_CALCULATED);
             LoansResponse loansResponse = new LoansResponse(SCORE_IS_SUCCESSFULLY_CALCULATED, HttpStatus.OK.value());
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
@@ -1625,7 +1636,7 @@ public class ScoringServiceImpl implements ScoringService {
     }
 
     @Override
-    public Object[] getRetailConcessionDetails(ScoringRequestLoans scoringRequestLoans,List<String> bankStringsList,List<BankingRelation> bankingRelationList,List<FinancialArrangementsDetail> financialArrangementsDetailList,RetailApplicantDetail retailApplicantDetail,CibilScoreLogRequest cibilResponse1) {
+    public Object[] getRetailConcessionDetails(ScoringRequestLoans scoringRequestLoans,List<String> bankStringsList,List<BankingRelation> bankingRelationList,List<FinancialArrangementsDetail> financialArrangementsDetailList,RetailApplicantDetail retailApplicantDetail,List<CibilScoreLogRequest> cibilResponse1) {
     	logger.info("Getting Retail Concession Details===={}========{}==>>>>"+scoringRequestLoans.getApplicationId()+""
     			+ "fpProductId===={}=====>"+scoringRequestLoans.getFpProductId());
 
@@ -1652,7 +1663,7 @@ public class ScoringServiceImpl implements ScoringService {
         		// CIBIL BASED CONCESSION RATE  OF INTEREST
         		Boolean isCreaditHisotryGreaterSixMonths = false;
         		Boolean isCreaditHisotryLessThenSixMonths= false;
-        		Boolean isNoCreaditHistory =false;
+        		Boolean isNoCreaditHistory = false;        		
         		// ENDS HERE
         		Boolean isWomenApplicant = false;
 
@@ -1693,39 +1704,35 @@ public class ScoringServiceImpl implements ScoringService {
             	}
     			// ENDS HERE =========================================================>
 
-                 Double cibilActualScore = 0.0d;
+                 Double cibilActualScore = null;
                  try {
                  	if(cibilResponse1 == null) {
-                 		CibilRequest cibilRequest = new CibilRequest();
-                        cibilRequest.setPan(retailApplicantDetail.getPan());
-                        cibilRequest.setApplicationId(applicationId);
-                        cibilResponse1 = cibilClient.getCibilScoreByPanCard(cibilRequest);
-                        if(cibilResponse1 == null) {
-                        	logger.info("CIBIL Score Reponse Not Found NULL THIS APPLICATION ID ====>" + applicationId);
-                        }
+                 		cibilResponse1 = cibilClient.getSoftpingScores(applicationId, retailApplicantDetail.getPan());
+                 		if(CommonUtils.isListNullOrEmpty(cibilResponse1)) {
+        					logger.error("Cibil Score Not found for ApplicationId == >{}",applicationId);        					
+        				}
                  	}
 
-                 	if (!CommonUtils.isObjectNullOrEmpty(cibilResponse1) && !CommonUtils.isObjectNullOrEmpty(cibilResponse1.getActualScore())) {
-
-    					if ("000-1".equalsIgnoreCase(cibilResponse1.getActualScore())) {
-    								cibilActualScore = -1d;
-    					} else {
-    								cibilActualScore = Double.parseDouble(cibilResponse1.getActualScore());
-    					}
+                 	if (!CommonUtils.isListNullOrEmpty(cibilResponse1)) {
+                 		cibilActualScore = filterBureauScoreByVersion(scoringRequestLoans.getBureauVersion(), cibilResponse1);
     					logger.info("CIBIL ACTUAL SOCRE ------------------>" + "applicationId=====>" + applicationId + "----"+ cibilActualScore);
+    					if(cibilActualScore != null) {
+                     		if(cibilActualScore >= 300 && cibilActualScore <=900) {
+                     		 	isCreaditHisotryGreaterSixMonths = true;
+                     	 	}
+
+    	                 	if(cibilActualScore>= 0 && cibilActualScore <= 5){
+    	                  		isCreaditHisotryLessThenSixMonths = true;
+    	                  	}
+    	
+    	                 	if(cibilActualScore.equals(-1d)){
+    	                 		isNoCreaditHistory = true;
+    	                 	}
+                     	}
                  	}
 
-                 	 if(cibilActualScore >= 300 && cibilActualScore <=900) {
-                 		 	isCreaditHisotryGreaterSixMonths = true;
-                 	 	}
-
-                 	 if(cibilActualScore>= 0 && cibilActualScore <= 5){
-                  			isCreaditHisotryLessThenSixMonths = true;
-                  	}
-
-                 	if(cibilActualScore.equals(-1d)){
-                 			isNoCreaditHistory = true;
-                 		}
+                 	
+                 	 
                  }catch (Exception e) {
                      logger.error("EXCEPTION IS GETTING WHILE GETTING CIBIL SCORE========={}");
          		}
@@ -1859,6 +1866,31 @@ public class ScoringServiceImpl implements ScoringService {
 
     }
 
+    private Double filterBureauScoreByVersion(Integer version,List<CibilScoreLogRequest> logRequests) {
+		List<CibilScoreLogRequest> filtered = null;
+		if(version == null || version == 1) {
+			filtered = logRequests.stream().filter(score -> !CIBIL_SCORE_VERSION_2.equalsIgnoreCase(score.getScoreName())).collect(Collectors.toList());	
+		}else {
+			filtered = logRequests.stream().filter(score -> CIBIL_SCORE_VERSION_2.equalsIgnoreCase(score.getScoreName())).collect(Collectors.toList());
+		}
+		if(CommonUtils.isListNullOrEmpty(filtered)) {
+			logger.info("Actual Score Found Null For Version ===>{}",version);
+			return null;
+		}
+		CibilScoreLogRequest cibilScoreLogRequest = filtered.get(0);
+		if(CommonUtils.isObjectNullOrEmpty(cibilScoreLogRequest.getActualScore())) {
+			logger.info("Actual Score Found Null For ApplicationId = >{}",cibilScoreLogRequest.getApplicantId());
+			return null;
+		}
+		if(cibilScoreLogRequest.getActualScore().equals("000-1")){
+			return -1d;
+		}else
+		{
+			return Double.parseDouble(cibilScoreLogRequest.getActualScore());
+		}
+		
+	}
+    
     @SuppressWarnings("unchecked")
 	@Override
     public ResponseEntity<LoansResponse> calculateRetailHomeLoanScoringList(List<ScoringRequestLoans> scoringRequestLoansList) {
@@ -1875,7 +1907,7 @@ public class ScoringServiceImpl implements ScoringService {
         List<Data> bankStatementDatas = null;
         List<Integer> dpds = Collections.emptyList();
         Double totalEMI = 0.0d;
-        CibilScoreLogRequest cibilResponse = null;
+        List<CibilScoreLogRequest> cibilResponse = null;
         List<BankingRelation> bankingRelationList = null;
         List<String> bankStringsList = null;
         List<FinancialArrangementsDetail> financialArrangementsDetailList = null;
@@ -1948,11 +1980,8 @@ public class ScoringServiceImpl implements ScoringService {
 
             totalEMI = financialArrangementDetailsService.getTotalEmiByApplicationIdSoftPing(applicationId);
 
-            CibilRequest cibilRequest = new CibilRequest();
-            cibilRequest.setPan(retailApplicantDetail.getPan());
-            cibilRequest.setApplicationId(applicationId);
             try {
-            	cibilResponse = cibilClient.getCibilScoreByPanCard(cibilRequest);
+            	cibilResponse = cibilClient.getSoftpingScores(applicationId, retailApplicantDetail.getPan());
             	if(cibilResponse == null) {
             		return new ResponseEntity<>(new LoansResponse("CIBIL Score Reponse Found NULL for ApplicationID====>" + applicationId, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
             	}
@@ -2044,6 +2073,16 @@ public class ScoringServiceImpl implements ScoringService {
             ScoringRequestLoans requestLoans = new ScoringRequestLoans();
             requestLoans.setApplicationId(applicationId);
             requestLoans.setFpProductId(fpProductId);*/
+            Integer consessionBureauVersion = null;
+            Object[] bureauVersionIdById = loanRepository.getBureauVersionIdById(scoreModelId);
+            if(!CommonUtils.isObjectNullOrEmpty(bureauVersionIdById)) {
+           	 if(!CommonUtils.isObjectNullOrEmpty(bureauVersionIdById[0])) {
+           		 consessionBureauVersion = Integer.valueOf(bureauVersionIdById[0].toString());            		 
+           	 }else {
+           		 consessionBureauVersion = 1;
+           	 }
+           	 scoringRequestLoans.setBureauVersion(consessionBureauVersion);
+            }
             Object [] concessionResp = getRetailConcessionDetails(scoringRequestLoans, bankStringsList, bankingRelationList, financialArrangementsDetailList,retailApplicantDetail, cibilResponse);
             logger.info("==========getRetailConcessionDetails========>>>>>"+concessionResp);
 
@@ -2245,28 +2284,9 @@ public class ScoringServiceImpl implements ScoringService {
             				}
             				break;
             			case ScoreParameter.Retail.HomeLoan.BUREAU_SCORE:
-            				Double cibilScore = null;
-                            try {
-                            	if(!CommonUtils.isObjectNullOrEmpty(cibilResponse)) {
-                            		logger.info("Cibil Score Response For HL==== > {}",cibilResponse.getActualScore());
-                                    if (!CommonUtils.isObjectNullOrEmpty(cibilResponse.getActualScore())) {
-
-                                        if(cibilResponse.getActualScore().equals("000-1"))
-                                        {
-                                            cibilScore =-1d;
-                                        }
-                                        else
-                                        {
-                                            cibilScore = Double.parseDouble(cibilResponse.getActualScore());
-                                        }
-                                        scoreParameterRetailRequest.setCibilActualScore(cibilScore);
-                                        scoreParameterRetailRequest.setCibilScore_p(true);
-                                    }
-                            	}
-                            } catch (Exception e) {
-                                logger.error("error while getting BUREAU_SCORE parameter from CIBIL client : ",e);
-                                scoreParameterRetailRequest.setCibilScore_p(false);
-                            }
+            				scoreParameterRetailRequest.setCibilActualScore(filterBureauScoreByVersion(1, cibilResponse));
+            				scoreParameterRetailRequest.setCibilActualScoreVersion2(filterBureauScoreByVersion(2, cibilResponse));
+            				scoreParameterRetailRequest.setCibilScore_p(true);
             				break;
             			case ScoreParameter.Retail.HomeLoan.MARITAL_STATUS:
             				try {
@@ -2639,7 +2659,7 @@ public class ScoringServiceImpl implements ScoringService {
         Double grossMonthlyIncome = 0.0d;
         List<Data> coApplicantBankStatementDatas = Collections.emptyList();
         Double totalEMI = 0.0;
-        CibilScoreLogRequest cibilResponse = null;
+        List<CibilScoreLogRequest> cibilResponse = null;
         List<Integer> dpds = Collections.emptyList();
         Boolean itrSkippedForCoApp = null;
         Boolean itrMannualForCoApp = null;
@@ -2661,7 +2681,7 @@ public class ScoringServiceImpl implements ScoringService {
             cibilRequest.setPan(coApplicantDetail.getPan());
             cibilRequest.setApplicationId(scoringRequestLoansReq.getApplicationId());
             try {
-            	cibilResponse = cibilClient.getCibilScoreByPanCard(cibilRequest);
+            	cibilResponse = cibilClient.getSoftpingScores(scoringRequestLoansReq.getApplicationId(), coApplicantDetail.getPan());
             	CibilResponse cibilResponseDpdCoApp = cibilClient.getDPDLastXMonth(applicationId,coApplicantDetail.getPan());
             	 if(!CommonUtils.isObjectNullOrEmpty(cibilResponseDpdCoApp) && !CommonUtils.isObjectListNull(cibilResponseDpdCoApp.getListData())){
      				List cibilResponseList = cibilResponseDpdCoApp.getListData();
@@ -2917,22 +2937,9 @@ public class ScoringServiceImpl implements ScoringService {
             				}
             				break;
             			case ScoreParameter.Retail.HomeLoan.BUREAU_SCORE:
-            				Double cibilScore = null;
-                            try {
-                                if (!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isObjectNullOrEmpty(cibilResponse.getActualScore())) {
-                                	logger.info("Cibil Score Response For HL==== > {}=ApplicationId====>{}",cibilResponse.getActualScore(),applicationId);
-                                	if("000-1".equalsIgnoreCase(cibilResponse.getActualScore())) {
-                                		cibilScore = -1d;
-                                	}else {
-                                		cibilScore = Double.parseDouble(cibilResponse.getActualScore());
-                                	}
-                                    scoreParameterRetailRequest.setCibilActualScore(cibilScore);
-                                    scoreParameterRetailRequest.setCibilScore_p(true);
-                                }
-                            } catch (Exception e) {
-                                logger.error("error while getting BUREAU_SCORE parameter from CIBIL client : ",e);
-                                scoreParameterRetailRequest.setCibilScore_p(false);
-                            }
+            				scoreParameterRetailRequest.setCibilActualScore(filterBureauScoreByVersion(1, cibilResponse));
+            				scoreParameterRetailRequest.setCibilActualScoreVersion2(filterBureauScoreByVersion(2, cibilResponse));
+            				scoreParameterRetailRequest.setCibilScore_p(true);
             				break;
             			case ScoreParameter.Retail.HomeLoan.MARITAL_STATUS:
             				try {
@@ -3255,7 +3262,7 @@ public class ScoringServiceImpl implements ScoringService {
         List<Data> coApplicantBankStatementDatas = Collections.emptyList();
         Double totalEMI = 0.0;
         List<Integer> dpds = Collections.emptyList();
-        CibilScoreLogRequest cibilResponse = null;
+        List<CibilScoreLogRequest> cibilResponse = null;
         Boolean itrSkippedForCoApp = null;
         Boolean itrMannualForCoApp = null;
         List<Double> incomeOfItrOf3YearsCoApplicant = null;
@@ -3276,7 +3283,7 @@ public class ScoringServiceImpl implements ScoringService {
             cibilRequest.setPan(coApplicantDetail.getPan());
             cibilRequest.setApplicationId(scoringRequestLoansReq.getApplicationId());
             try {
-            	cibilResponse = cibilClient.getCibilScoreByPanCard(cibilRequest);
+            	cibilResponse = cibilClient.getSoftpingScores(scoringRequestLoansReq.getApplicationId(), coApplicantDetail.getPan());
             	CibilResponse cibilResponseDpdCoApp = cibilClient.getDPDLastXMonth(applicationId,coApplicantDetail.getPan());
             	if(!CommonUtils.isObjectNullOrEmpty(cibilResponseDpdCoApp) && !CommonUtils.isObjectListNull(cibilResponseDpdCoApp.getListData())){
     				List cibilResponseList = cibilResponseDpdCoApp.getListData();
@@ -3592,22 +3599,9 @@ public class ScoringServiceImpl implements ScoringService {
             				}
             				break;
             			case ScoreParameter.Retail.AutoLoan.BUREAU_SCORE:
-            				Double cibilScore = null;
-                            try {
-                                if (!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isObjectNullOrEmpty(cibilResponse.getActualScore())) {
-                                	logger.info("Cibil Score Response For HL==== > {}=ApplicationId====>{}",cibilResponse.getActualScore(),applicationId);
-                                	if("000-1".equalsIgnoreCase(cibilResponse.getActualScore())) {
-                                		cibilScore = -1d;
-                                	}else {
-                                		cibilScore = Double.parseDouble(cibilResponse.getActualScore());
-                                	}
-                                    scoreParameterRetailRequest.setCibilActualScore(cibilScore);
-                                    scoreParameterRetailRequest.setCibilScore_p(true);
-                                }
-                            } catch (Exception e) {
-                                logger.error("error while getting BUREAU_SCORE parameter from CIBIL client : ",e);
-                                scoreParameterRetailRequest.setCibilScore_p(false);
-                            }
+            				scoreParameterRetailRequest.setCibilActualScore(filterBureauScoreByVersion(1, cibilResponse));
+            				scoreParameterRetailRequest.setCibilActualScoreVersion2(filterBureauScoreByVersion(2, cibilResponse));
+            				scoreParameterRetailRequest.setCibilScore_p(true);
             				break;
             			case ScoreParameter.Retail.AutoLoan.MARITAL_STATUS:
             				try {
@@ -8063,7 +8057,7 @@ public class ScoringServiceImpl implements ScoringService {
         PrimaryAutoLoanDetail primaryAutoLoanDetail = null;
         List<Data> bankStatementDatas = null;
         Double totalEMI = 0.0d;
-        CibilScoreLogRequest cibilResponse = null;
+        List<CibilScoreLogRequest> cibilResponse = null;
         List<BankingRelation> bankingRelationList = null;
         List<String> bankStringsList = null;
         List<FinancialArrangementsDetail> financialArrangementsDetailList = null;
@@ -8137,11 +8131,8 @@ public class ScoringServiceImpl implements ScoringService {
 
             totalEMI = financialArrangementDetailsService.getTotalEmiByApplicationIdSoftPing(applicationId);
 
-            CibilRequest cibilRequest = new CibilRequest();
-            cibilRequest.setPan(retailApplicantDetail.getPan());
-            cibilRequest.setApplicationId(applicationId);
             try {
-            	cibilResponse = cibilClient.getCibilScoreByPanCard(cibilRequest);
+            	cibilResponse = cibilClient.getSoftpingScores(applicationId, retailApplicantDetail.getPan());
             	if(cibilResponse == null) {
             		return new ResponseEntity<>(new LoansResponse("CIBIL Score Reponse Found NULL for ApplicationID====>" + applicationId, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
             	}
@@ -8322,6 +8313,16 @@ public class ScoringServiceImpl implements ScoringService {
             ScoringRequestLoans requestLoans = new ScoringRequestLoans();
             requestLoans.setApplicationId(applicationId);
             requestLoans.setFpProductId(fpProductId);*/
+            Integer consessionBureauVersion = null;
+            Object[] bureauVersionIdById = loanRepository.getBureauVersionIdById(scoreModelId);
+            if(!CommonUtils.isObjectNullOrEmpty(bureauVersionIdById)) {
+           	 if(!CommonUtils.isObjectNullOrEmpty(bureauVersionIdById[0])) {
+           		 consessionBureauVersion = Integer.valueOf(bureauVersionIdById[0].toString());            		 
+           	 }else {
+           		 consessionBureauVersion = 1;
+           	 }
+           	 scoringRequestLoans.setBureauVersion(consessionBureauVersion);
+            }
             Object [] concessionResp = getRetailConcessionDetails(scoringRequestLoans, bankStringsList, bankingRelationList, financialArrangementsDetailList,retailApplicantDetail, cibilResponse);
             logger.info("==========getRetailConcessionDetails========>>>>>"+concessionResp);
 
@@ -8534,28 +8535,9 @@ public class ScoringServiceImpl implements ScoringService {
             				}
             				break;
             			case ScoreParameter.Retail.AutoLoan.BUREAU_SCORE:
-            				Double cibilScore = null;
-                            try {
-                            	if(!CommonUtils.isObjectNullOrEmpty(cibilResponse)) {
-                            		logger.info("Cibil Score Response For AL==== > {}",cibilResponse.getActualScore());
-                                    if (!CommonUtils.isObjectNullOrEmpty(cibilResponse.getActualScore())) {
-
-                                        if(cibilResponse.getActualScore().equals("000-1"))
-                                        {
-                                            cibilScore =-1d;
-                                        }
-                                        else
-                                        {
-                                            cibilScore = Double.parseDouble(cibilResponse.getActualScore());
-                                        }
-                                        scoreParameterRetailRequest.setCibilActualScore(cibilScore);
-                                        scoreParameterRetailRequest.setCibilScore_p(true);
-                                    }
-                            	}
-                            } catch (Exception e) {
-                                logger.error("error while getting BUREAU_SCORE parameter from CIBIL client : ",e);
-                                scoreParameterRetailRequest.setCibilScore_p(false);
-                            }
+            				scoreParameterRetailRequest.setCibilActualScore(filterBureauScoreByVersion(1, cibilResponse));
+            				scoreParameterRetailRequest.setCibilActualScoreVersion2(filterBureauScoreByVersion(2, cibilResponse));
+            				scoreParameterRetailRequest.setCibilScore_p(true);
             				break;
             			case ScoreParameter.Retail.AutoLoan.MARITAL_STATUS:
             				try {

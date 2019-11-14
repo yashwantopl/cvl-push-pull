@@ -33,6 +33,7 @@ public class RecommendDetailServiceImpl implements RecommendDetailService {
             BeanUtils.copyProperties(request,detail);
             detail.setCreatedDate(new Date());
             detail.setModifiedDate(new Date());
+            detail.setIsActive(true);
             repository.save(detail);
         } catch (BeansException e) {
             e.printStackTrace();

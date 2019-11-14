@@ -353,6 +353,10 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		request.setUserId(fundProviderUserId);
 		try {
 			ProposalMappingResponse s = proposalDetailsClient.getDisbursementRequestDetails(request);
+			corporateFinalViewResponse.setIsNBFCApplication(false);
+			if(s !=null && s.getData() !=null){
+				corporateFinalViewResponse.setIsNBFCApplication(true);
+			}
 			corporateFinalViewResponse.setDisbursementRequestDetails(s.getData());
 		} catch (MatchException e) {
 			logger.error("Error while geting disbursedment details",e);
@@ -1945,7 +1949,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
-		documentRequest.setProductDocumentMappingId(DocumentAlias.NBFC_PAN_UPLOAD);
+		/*documentRequest.setProductDocumentMappingId(DocumentAlias.NBFC_PAN_UPLOAD);
 		try {
 			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 			corporateFinalViewResponse.setNbfcPANReport(documentResponse.getDataList());
@@ -1958,7 +1962,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			corporateFinalViewResponse.setNbfcAddressProofReport(documentResponse.getDataList());
 		} catch (DocumentException e) {
 			logger.error(CommonUtils.EXCEPTION,e);
-		}
+		}*/
 		documentRequest.setProductDocumentMappingId(DocumentAlias.NBFC_TRIPARTITE_AGREEMENT);
 		try {
 			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
@@ -1994,6 +1998,54 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		} catch (DocumentException e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
+		/*documentRequest.setProductDocumentMappingId(DocumentAlias.NBFC_PROJECTED_FINANCIALS);
+		try {
+			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+			corporateFinalViewResponse.setNbfcProjectedFinancials(documentResponse.getDataList());
+		} catch (DocumentException e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}*/
+		documentRequest.setProductDocumentMappingId(DocumentAlias.AGE_PROOF_DOCUMENT);
+		try {
+			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+			corporateFinalViewResponse.setAgeProofDocument(documentResponse.getDataList());
+		} catch (DocumentException e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+
+		documentRequest.setProductDocumentMappingId(DocumentAlias.ID_PROOF_DOCUMENT);
+		try {
+			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+			corporateFinalViewResponse.setIdProofDocument(documentResponse.getDataList());
+		} catch (DocumentException e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+
+		documentRequest.setProductDocumentMappingId(DocumentAlias.ADDRESS_PROOF_DOCUMENT);
+		try {
+			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+			corporateFinalViewResponse.setAddressProofDocument(documentResponse.getDataList());
+		} catch (DocumentException e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+
+		documentRequest.setProductDocumentMappingId(DocumentAlias.APPLICATION_FORM);
+		try {
+			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+			corporateFinalViewResponse.setApplicationForm(documentResponse.getDataList());
+		} catch (DocumentException e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+
+		documentRequest.setProductDocumentMappingId(DocumentAlias.DETAILED_ASSESSMENT_NOTE);
+		try {
+			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+			corporateFinalViewResponse.setDetailedAssessmentNote(documentResponse.getDataList());
+		} catch (DocumentException e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+
+
 		/*DocumentRequest documentRequestForMCAZip = new DocumentRequest();
 		documentRequestForMCAZip.setApplicationId(Long.valueOf(loanApplicationMaster.getMcaCompanyId()));
 		documentRequestForMCAZip.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);

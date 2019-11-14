@@ -366,7 +366,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			}
 			cibilFullFillOfferRequest.setPhoneNumber(applicantDetail.getContactNo());
 			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getGenderId())) {
-				cibilFullFillOfferRequest.setGender(Gender.getById(applicantDetail.getGenderId()).getValue());
+				cibilFullFillOfferRequest.setGender(Gender.getById(applicantDetail.getGenderId()).getCibilValue());
 			}
 			// Email ID
 /*			UserResponse userResponse = usersClient.getEmailMobile(userId);

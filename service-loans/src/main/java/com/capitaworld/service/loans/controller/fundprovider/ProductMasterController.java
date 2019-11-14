@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.capitaworld.service.loans.model.colending.FpProductRoiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1103,5 +1104,27 @@ public class ProductMasterController {
 					HttpStatus.OK);
 		}
 	}
-	
+
+	/**
+	 * @author Dhaval
+	 * @param fpProductId
+	 * @return
+	 */
+	@GetMapping(value = "/getMinMaxROI/{fpProductId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getMinMaxROIFromFpProduct_id(@PathVariable("fpProductId") Long fpProductId) {
+		try {
+			if (fpProductId == null) {
+				logger.warn("fp product id not be null");
+				return new ResponseEntity<>(new LoansResponse(CommonUtils.REQUESTED_DATA_CAN_NOT_BE_EMPTY, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			FpProductRoiResponse fpProductRoiResponse = productMasterService.getMinMaxRoiFromFpProductId(fpProductId);
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
+			loansResponse.setData(fpProductRoiResponse);
+			return new ResponseEntity<>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getting min max roi", e);
+			return new ResponseEntity<>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
 }

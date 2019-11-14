@@ -535,6 +535,8 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			}
 
 			BeanUtils.copyProperties(corporateApplicantDetail, fundSeekerInputResponse);
+			fundSeekerInputResponse.setSinceMonth(corporateApplicantDetail.getBusinessSinceMonth());
+			fundSeekerInputResponse.setSinceYear(corporateApplicantDetail.getBusinessSinceYear());
 			copyAddressFromDomainToRequest(corporateApplicantDetail, fundSeekerInputResponse);
 			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getConstitutionId()) && corporateApplicantDetail.getConstitutionId()==7){
 				ReportRequest reportRequest = new ReportRequest();

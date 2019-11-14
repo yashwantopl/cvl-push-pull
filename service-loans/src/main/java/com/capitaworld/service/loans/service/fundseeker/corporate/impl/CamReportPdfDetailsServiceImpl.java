@@ -21,6 +21,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.capitaworld.api.eligibility.model.CLEligibilityRequest;
@@ -340,6 +342,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	@Autowired
 	private CommonRepository commonRepository;
 	
+	
 	@Autowired
 	private NbfcProposalBlendedRateRepository nbfcProposalBlendedRateRepository;
 
@@ -353,6 +356,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	@Override
 	public Map<String, Object> getCamReportPrimaryDetails(Long applicationId, Long productId,Long proposalId, boolean isFinalView) {
 
+		Boolean nbfcUser = false;
 		ProposalMappingRequestString proposalMappingRequestString = null;
 		Map<String, Object> map = new HashMap<String, Object>();
 		
@@ -365,6 +369,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					productId = proposalDetailsForBank.getFpProductId();
 					proposalId = proposalDetailsForBank.getId();
 				}*/
+				nbfcUser = true;
 				logger.info("Start Fetching Cam Data For ApplicationId==>{}  with  ProductId==>{}  and  ProposalId==>{}" , applicationId , productId , proposalId);
 				map.put("nbfcDatas", corporatePrimaryViewService.getNbfcData(applicationId));
 			}
@@ -407,8 +412,27 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
             LinkedHashMap<String, Object> lm = (LinkedHashMap<String, Object>)userResponse.getData();
             try {
                 UsersRequest request = MultipleJSONObjectHelper.getObjectFromMap(lm,UsersRequest.class);
-                map.put("mobile", request.getMobile());
-                map.put("email", StringEscapeUtils.escapeXml(request.getEmail()));
+                
+                if(nbfcUser) {
+                	Object[] str = commonRepository.getEmailIdAndMobileForNBFCUser(userId);
+                	map.put("mobile", str != null && str.length > 0 && str[0] != null ? str[0] : "-");
+	                map.put("email", str != null && str.length > 0 && str[1] != null ? StringEscapeUtils.escapeXml(String.valueOf(str[1])) : "-");
+                }else {
+	                map.put("mobile", request.getMobile());
+	                map.put("email", StringEscapeUtils.escapeXml(request.getEmail()));
+                }
+                
+                if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getPanNo())) {
+                	 BigInteger isEmailMobileFound = commonRepository.checkApplicationDisbursed(corporateApplicantRequest.getPanNo());
+         			String msg;
+         			if(Integer.parseInt(String.valueOf(isEmailMobileFound)) > 0){
+         				msg="SIDBI has already disbursed to this Customer from PSB59 Platform.";
+         			}else {
+         				msg="SIDBI has not disbursed any funds to this Customer from PSB59 Platform.";
+         			}
+         			map.put("messageFromUsers", msg);
+				}
+               
             } catch (IOException e1) {
                 logger.error("Error while getting registration details : ",e1);
             }

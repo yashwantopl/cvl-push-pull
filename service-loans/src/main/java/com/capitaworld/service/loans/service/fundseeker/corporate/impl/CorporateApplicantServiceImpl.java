@@ -810,9 +810,10 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		CorporateApplicantDetail applicantDetail = applicantRepository.findOneByApplicationIdId(applicationId);
 		if (!CommonUtils.isObjectListNull(applicantDetail)) {
 			obj.put("entityName", applicantDetail.getOrganisationName());
-			obj.put("amount", commonRepository.getSidbiAmount() != null ? commonRepository.getSidbiAmount() : 1180);
 			obj.put("panNo", corporateApplicantDetailRepository.getPanNoByApplicationId(applicationId));
 		}
+		obj.put("amount", commonRepository.getSidbiAmount() != null ? commonRepository.getSidbiAmount() : 1180);
+		obj.put("gatewayProvider", commonRepository.getGatewayProvider());
 		PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateDetailRepository.getOne(applicationId);
 		if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)
 				&& !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getPurposeOfLoanId())){

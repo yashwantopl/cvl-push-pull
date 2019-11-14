@@ -1514,62 +1514,53 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					(Map<String, Object>) response.getData(), ProposalMappingRequest.class);
 
 			ProposalDetails proposalDetails = proposalDetailRepository.getSanctionProposalByApplicationId(proposalMappingRequest.getApplicationId());
+			ProposalDetails proposalDetails1 = proposalDetailRepository.getByApplicationIdAndFPProductId(request.getApplicationId(), request.getFpProductId());
 
 			Boolean isButtonDisplay=true;
 			String messageOfButton=null;
+			Boolean isNBFCProposal = false;
 
-			if((!CommonUtils.isObjectNullOrEmpty(proposalDetails)) && (!CommonUtils.isObjectNullOrEmpty(proposalDetails.getNbfcFlow()))) {
-
-				ProposalDetails proposalDetail = proposalDetailRepository.getProposalByProposalId(proposalMappingRequest.getId());
-				ProposalDetails proposalSanctionDisbusedByNbfc = null;
-				if (proposalDetail.getNbfcFlow() == 2) {
-
-					String msg = "";
-					proposalSanctionDisbusedByNbfc = proposalDetailRepository.getSanctionProposalByApplicationNBFCFlow(proposalMappingRequest.getApplicationId(),1);
-
-					if (!CommonUtils.isObjectNullOrEmpty(proposalSanctionDisbusedByNbfc)) {
-						if (proposalSanctionDisbusedByNbfc.getProposalStatusId().getId() == CommonUtils.ApplicationStatus.ASSIGNED) {
-							msg = "Sanction pending from NBFC";
-							isButtonDisplay = false;
-							messageOfButton = msg;
-							proposalMappingRequest.setMessageOfButton(messageOfButton);
-							proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
-						} else {
-							if (proposalSanctionDisbusedByNbfc.getProposalStatusId().getId() == CommonUtils.ApplicationStatus.APPROVED) {
-								proposalSanctionDisbusedByNbfc = proposalDetailRepository.getSanctionProposalByApplicationNBFCFlow(proposalMappingRequest.getApplicationId(), 2);
-								if (proposalSanctionDisbusedByNbfc.getProposalStatusId().getId() == CommonUtils.ApplicationStatus.APPROVED) { // check only if bank sanctioned on not
-									msg = "Disbursement pending from NBFC";
-									isButtonDisplay = false;
-									messageOfButton = msg;
-									proposalMappingRequest.setMessageOfButton(messageOfButton);
-									proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
-								}
-							}
+			proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+			ProposalDetails proposalSanctionDisbusedByNbfc = null;
+			if (proposalDetails1 != null && proposalDetails1.getNbfcFlow() != null) {
+				isNBFCProposal = true;
+				if (proposalDetails1.getNbfcFlow() == 2) {
+					proposalSanctionDisbusedByNbfc = proposalDetailRepository.getSanctionProposalByApplicationNBFCFlow(proposalMappingRequest.getApplicationId(), 1);
+					if (proposalSanctionDisbusedByNbfc.getProposalStatusId().getId() == CommonUtils.ApplicationStatus.ASSIGNED) {
+						proposalMappingRequest.setMessageOfButton("Sanction pending from NBFC");
+						proposalMappingRequest.setIsButtonDisplay(false);
+					} else if (proposalSanctionDisbusedByNbfc.getProposalStatusId().getId() == CommonUtils.ApplicationStatus.APPROVED) {
+						proposalSanctionDisbusedByNbfc = proposalDetailRepository.getSanctionProposalByApplicationNBFCFlow(proposalMappingRequest.getApplicationId(), 2);
+						if (proposalSanctionDisbusedByNbfc.getProposalStatusId().getId() == CommonUtils.ApplicationStatus.APPROVED) { // check only if bank sanctioned on not
+							proposalMappingRequest.setMessageOfButton("Disbursement pending from NBFC");
+							proposalMappingRequest.setIsButtonDisplay(false);
 						}
 					}
-				}else {
-
-					proposalSanctionDisbusedByNbfc = proposalDetailRepository.getSanctionProposalByApplicationBankFlow(proposalMappingRequest.getApplicationId());
-					if (proposalSanctionDisbusedByNbfc == null) {
+				} else if (proposalDetails1.getNbfcFlow() == 1) {
+					ProposalDetails proposalSanctionDisbusedByBank = proposalDetailRepository.getSanctionProposalByApplicationBankFlow(proposalMappingRequest.getApplicationId(), 2);
+					proposalSanctionDisbusedByNbfc = proposalDetailRepository.getSanctionProposalByApplicationBankFlow(proposalMappingRequest.getApplicationId(), 1);
+					if (proposalSanctionDisbusedByNbfc != null && proposalSanctionDisbusedByBank == null) {
 						messageOfButton = "Sanction pending from bank";
-						isButtonDisplay=false;
+						isButtonDisplay = false;
 						proposalMappingRequest.setMessageOfButton(messageOfButton);
 						proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
 					}
 				}
 			}
 
-			if(!CommonUtils.isObjectNullOrEmpty(proposalDetails))
-			{
-				if((!proposalDetails.getUserOrgId().toString().equals(request.getUserOrgId().toString())) && CommonUtils.isObjectNullOrEmpty(proposalDetails.getNbfcFlow()))
+			if(!isNBFCProposal){
+				if(!CommonUtils.isObjectNullOrEmpty(proposalDetails))
 				{
-					if(ProposalStatus.APPROVED ==  proposalDetails.getProposalStatusId().getId())
-						messageOfButton="This proposal has been Sanctioned by Other Bank.";
-					else if(ProposalStatus.DISBURSED ==  proposalDetails.getProposalStatusId().getId())
-						messageOfButton="This proposal has been Disbursed by Other Bank.";
-					else if(ProposalStatus.PARTIALLY_DISBURSED ==  proposalDetails.getProposalStatusId().getId())
-						messageOfButton="This proposal has been Partially Disbursed by Other Bank.";
-					isButtonDisplay=false;
+					if((!proposalDetails.getUserOrgId().toString().equals(request.getUserOrgId().toString())) && CommonUtils.isObjectNullOrEmpty(proposalDetails.getNbfcFlow()))
+					{
+						if(ProposalStatus.APPROVED ==  proposalDetails.getProposalStatusId().getId())
+							messageOfButton="This proposal has been Sanctioned by Other Bank.";
+						else if(ProposalStatus.DISBURSED ==  proposalDetails.getProposalStatusId().getId())
+							messageOfButton="This proposal has been Disbursed by Other Bank.";
+						else if(ProposalStatus.PARTIALLY_DISBURSED ==  proposalDetails.getProposalStatusId().getId())
+							messageOfButton="This proposal has been Partially Disbursed by Other Bank.";
+						isButtonDisplay=false;
+
 
 					proposalMappingRequest.setMessageOfButton(messageOfButton);
 					proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
@@ -1591,14 +1582,16 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							messageOfButton="This proposal has been Sanctioned by Other Bank.";
 						isButtonDisplay=false;
 
-						proposalMappingRequest.setMessageOfButton(messageOfButton);
-						proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
-					}else{
-						proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+							proposalMappingRequest.setMessageOfButton(messageOfButton);
+							proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+						}else{
+							proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+						}
 					}
+					proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
 				}
-				proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
 			}
+
 			response.setData(proposalMappingRequest);
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
@@ -3360,14 +3353,14 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			}
 
 			boolean allUploaded = true;
-			int count = 0;
+			/*int count = 0;
 			for (MultipartFile uploadingFile : multipartFiles) {
 				String imageForMfi = uploadImageForMfi(uploadingFile, disbursementRequestModel.getApplicationId(), 605 + count);
 				if (com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(imageForMfi)) {
 					allUploaded = false;
 				}
 				count++;
-			}
+			}*/
 			if (allUploaded) {
 				try {
 					return proposalDetailsClient.saveRequestDisbursementDetails(disbursementRequestModel);
