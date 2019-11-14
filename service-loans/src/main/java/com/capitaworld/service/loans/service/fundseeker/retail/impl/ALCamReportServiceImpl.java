@@ -1974,12 +1974,27 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 	public Map<String ,Object> getIneligibleDataForCam(Long applicationId){
 		Map<String, Object> map = new HashMap<String, Object>();
 		
+		
 		Long userId = loanApplicationRepository.getUserIdByApplicationId(applicationId);
 		
 		try {
 			map.putAll(bindDataOfRetailApplicant(applicationId, userId, null));
 		}catch (Exception e) {
 			logger.error("Error/Exception while fetching Data For Primary Detail for AL Ineligible Cam with ApplicationId==>{} and UserId==>{}",applicationId, userId);
+		}
+		
+		//NEW MATCHES CODE INCLUDED
+		try {
+			MatchRequest matchRequest = new MatchRequest();
+			matchRequest.setApplicationId(applicationId);
+			//matchRequest.setProductId(productId);
+			//matchRequest.setBusinessTypeId(loanApplicationMaster.getBusinessTypeId());
+			MatchDisplayResponse matchResponse= matchEngineClient.displayOfflineMatchesOfRetail(matchRequest);
+			logger.info("matchesResponse"+matchResponse);
+			map.put("matchesResponse", !CommonUtils.isObjectNullOrEmpty(matchResponse.getMatchDisplayObjectMap()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectMap(),null) : " ");
+		}
+		catch (Exception e) {
+			logger.error("Error while getting matches data : ",e);
 		}
 		
 		//INCOME DETAILS - NET INCOME

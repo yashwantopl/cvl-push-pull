@@ -58,7 +58,10 @@ import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryHomeLoanSe
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantIncomeService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
+import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
+import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequestString;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.oneform.client.OneFormClient;
@@ -134,6 +137,9 @@ public class HLIneligibleCamReportServiceImpl implements HLIneligibleCamReportSe
 	
 	@Autowired
 	private CIBILClient cibilClient;
+	
+	@Autowired
+	private MatchEngineClient matchEngineClient;
 	
 	@Autowired
 	private ProposalDetailsRepository proposalDetailsRepository;
@@ -276,6 +282,22 @@ public class HLIneligibleCamReportServiceImpl implements HLIneligibleCamReportSe
 			} catch (Exception e) {
 				logger.error(":::::::::::---------Error while fetching name as per itr----------:::::::::::",e);
 			}
+			
+			
+			//NEW MATCHES CODE INCLUDED
+			try {
+				MatchRequest matchRequest = new MatchRequest();
+				matchRequest.setApplicationId(applicationId);
+				//matchRequest.setProductId(productId);
+				matchRequest.setBusinessTypeId(loanApplicationMaster.getBusinessTypeId());
+				MatchDisplayResponse matchResponse= matchEngineClient.displayOfflineMatchesOfRetail(matchRequest);
+				logger.info("matchesResponse"+matchResponse);
+				map.put("matchesResponse", !CommonUtils.isObjectNullOrEmpty(matchResponse.getMatchDisplayObjectMap()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectMap(),null) : " ");
+			}
+			catch (Exception e) {
+				logger.error("Error while getting matches data : ",e);
+			}
+			
 
 			// for name is edited or not:
 			String fullName = (plRetailApplicantRequest.getFirstName() != null ? plRetailApplicantRequest.getFirstName() : "") +" "+ (plRetailApplicantRequest.getMiddleName() != null ? plRetailApplicantRequest.getMiddleName() : "") +" "+ (plRetailApplicantRequest.getLastName() != null ?  plRetailApplicantRequest.getLastName() : "");
