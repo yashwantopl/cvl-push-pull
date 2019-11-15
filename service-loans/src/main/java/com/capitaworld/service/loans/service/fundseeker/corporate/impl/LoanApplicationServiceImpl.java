@@ -6062,7 +6062,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						disbursementRequest.setFpImage(imagePath);
 					}
 					//For Fetching Sanctioned amount
-					LoanSanctionDomain loanSanctionDomain =loanSanctionRepository.findByAppliationId(disbursementRequest.getApplicationId());
+					LoanSanctionDomain loanSanctionDomain =loanSanctionRepository.findByApplicationIdAndNbfcFlowAndIsActive(disbursementRequest.getApplicationId(),disbursementRequest.getNbfcFlow(),true);
 					if(!CommonUtils.isObjectNullOrEmpty(loanSanctionDomain) ){
 						disbursementRequest.setSenctionedAmount(loanSanctionDomain.getSanctionAmount());
 						disbursementRequest.setTenure(loanSanctionDomain.getTenure());

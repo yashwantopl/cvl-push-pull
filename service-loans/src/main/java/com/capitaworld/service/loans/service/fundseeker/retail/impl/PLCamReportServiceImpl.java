@@ -1269,18 +1269,18 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 		// ENDS HERE===================>
 
 		//MATCHES RESPONSE
-	/*	try {
+		try {
 			MatchRequest matchRequest = new MatchRequest();
 			matchRequest.setApplicationId(applicationId);
-			matchRequest.setProductId(productId);
+			//matchRequest.setProductId(productId);
 			matchRequest.setBusinessTypeId(loanApplicationMaster.getBusinessTypeId());
-			MatchDisplayResponse matchResponse= matchEngineClient.displayMatchesOfRetail(matchRequest);
+			MatchDisplayResponse matchResponse= matchEngineClient.displayOfflineMatchesOfRetail(matchRequest);
 			logger.info("matchesResponse"+matchResponse);
-			map.put("matchesResponse", !CommonUtils.isListNullOrEmpty(matchResponse.getMatchDisplayObjectList()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectList(),null) : " ");
+			map.put("matchesResponse", !CommonUtils.isObjectNullOrEmpty(matchResponse.getMatchDisplayObjectMap()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectMap(),null) : " ");
 		}
 		catch (Exception e) {
 			logger.error("Error while getting matches data : ",e);
-		}*/
+		}
 		//PROPOSAL RESPONSE
 		try {
 			ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
