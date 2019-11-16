@@ -1582,209 +1582,218 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		SimpleDateFormat sdf=new SimpleDateFormat("MMyyyy");
 		SimpleDateFormat sdf1=new SimpleDateFormat("MMMyy");
 		SimpleDateFormat displayFormate=new SimpleDateFormat("MM-yyyy");
-		// gst vs bank statement month wise purchase		
-		if(bsMap != null && !bsMap.isEmpty() && gstResp != null && gstResp.getData() != null) {
+		// gst vs bank statement month wise purchase
+		if( gstResp != null && gstResp.getData() != null) {
 			LinkedHashMap<String,Object> gstData= (LinkedHashMap<String, Object>) gstResp.getData();
-			
-			try {
-					List<Map<String,Object>>bsData = new ArrayList<>();
-					Double totalBsResipts = 0d;
-					Double totalGstValue = 0d;
-					Double bsValue= 0d;
-					for (Map.Entry<String, Object> entry : bsMap.entrySet()) {
-						Date parse = sdf1.parse(String.valueOf(entry.getKey()));
-						HashMap<String,Object>gstSalesVsBankStatementMonthly = new HashMap();
-
-						gstSalesVsBankStatementMonthly.put("month", displayFormate.format(parse));
-						gstSalesVsBankStatementMonthly.put("gstValue", " - ");
-						gstSalesVsBankStatementMonthly.put("bsDivededBygst", " - ");
-						gstSalesVsBankStatementMonthly.put("bsValue", " - ");
-						
-						for (Map.Entry<String, Object> creditEntry : ((Map<String, Object>) entry.getValue()).entrySet()) {
+			if(bsMap != null && !bsMap.isEmpty()) {
+				
+				
+				try {
+						List<Map<String,Object>>bsData = new ArrayList<>();
+						Double totalBsResipts = 0d;
+						Double totalGstValue = 0d;
+						Double bsValue= 0d;
+						for (Map.Entry<String, Object> entry : bsMap.entrySet()) {
+							Date parse = sdf1.parse(String.valueOf(entry.getKey()));
+							HashMap<String,Object>gstSalesVsBankStatementMonthly = new HashMap();
+	
+							gstSalesVsBankStatementMonthly.put("month", displayFormate.format(parse));
+							gstSalesVsBankStatementMonthly.put("gstValue", " - ");
+							gstSalesVsBankStatementMonthly.put("bsDivededBygst", " - ");
+							gstSalesVsBankStatementMonthly.put("bsValue", " - ");
 							
-							if(creditEntry != null && creditEntry.getValue() != null && creditEntry.getKey().equals("credit")) {
-								 bsValue = Double.valueOf(String.valueOf(creditEntry.getValue()));
-								 gstSalesVsBankStatementMonthly.put("bsValue", bsValue != null && bsValue != 0 ? CommonUtils.convertStringFormate(bsValue):"0");
-								 totalBsResipts += bsValue;
-								if(gstData != null && gstData.get("monthWiseTotalSales") != null) {
-									for(Map.Entry<String, Object> monthWiseTotalSales: ((Map<String, Object>) gstData.get("monthWiseTotalSales")).entrySet()) {
-										if(monthWiseTotalSales.getKey().equals(sdf.format(parse))) {
-											 Double gstValue =Double.valueOf(String.valueOf(monthWiseTotalSales.getValue()));
-											 gstSalesVsBankStatementMonthly.put("gstValue", monthWiseTotalSales.getValue() != null && gstValue  != 0 ? CommonUtils.convertValueIndianCurrency(gstValue):" - ");
-											 totalGstValue += gstValue;
-											 Double bsDividedByGst = gstValue != null && gstValue != 0 ?((bsValue/gstValue)*100):0;
-											 gstSalesVsBankStatementMonthly.put("bsDivededBygst",bsDividedByGst != null && bsDividedByGst != 0 ?CommonUtils.convertValueIndianCurrency(bsDividedByGst).toString().concat(" %") : " - ");
+							for (Map.Entry<String, Object> creditEntry : ((Map<String, Object>) entry.getValue()).entrySet()) {
+								
+								if(creditEntry != null && creditEntry.getValue() != null && creditEntry.getKey().equals("credit")) {
+									 bsValue = Double.valueOf(String.valueOf(creditEntry.getValue()));
+									 gstSalesVsBankStatementMonthly.put("bsValue", bsValue != null && bsValue != 0 ? CommonUtils.convertStringFormate(bsValue):"0");
+									 totalBsResipts += bsValue;
+									if(gstData != null && gstData.get("monthWiseTotalSales") != null) {
+										for(Map.Entry<String, Object> monthWiseTotalSales: ((Map<String, Object>) gstData.get("monthWiseTotalSales")).entrySet()) {
+											if(monthWiseTotalSales.getKey().equals(sdf.format(parse))) {
+												 Double gstValue =Double.valueOf(String.valueOf(monthWiseTotalSales.getValue()));
+												 gstSalesVsBankStatementMonthly.put("gstValue", monthWiseTotalSales.getValue() != null && gstValue  != 0 ? CommonUtils.convertValueIndianCurrency(gstValue):" - ");
+												 totalGstValue += gstValue;
+												 Double bsDividedByGst = gstValue != null && gstValue != 0 ?((bsValue/gstValue)*100):0;
+												 gstSalesVsBankStatementMonthly.put("bsDivededBygst",bsDividedByGst != null && bsDividedByGst != 0 ?CommonUtils.convertValueIndianCurrency(bsDividedByGst).toString().concat(" %") : " - ");
+											}
 										}
 									}
 								}
 							}
+							bsData.add(gstSalesVsBankStatementMonthly);
 						}
-						bsData.add(gstSalesVsBankStatementMonthly);
-					}
-					comparisionData.put("gstVsBsSalesMonthly", !bsData.isEmpty()?bsData:null);
-					comparisionData.put("totalGstValueForGstVsBsSalesMonthly", CommonUtils.convertValueIndianCurrency(totalGstValue));
-					comparisionData.put("totalBsResiptsForGstVsBsSalesMonthly", CommonUtils.convertValueIndianCurrency(totalBsResipts));
-					if(totalBsResipts != null && totalGstValue != 0 ) {
-						Double totalGstVsBsTotalValues= totalBsResipts/totalGstValue*100;
-						comparisionData.put("totalBsVsGstValueForGstVsBsSalesMonthly", totalGstVsBsTotalValues != null ?convertValue(totalGstVsBsTotalValues).concat(" %") : " - ");
-					}else {
-						comparisionData.put("totalBsVsGstValueForGstVsBsSalesMonthly", " - ");
-					}
-			}catch (Exception e) {
-				logger.error("exception in getting the details of gstSalesVsBankStatementMonthly {}",e);
-			}
-		//	for monthly wise purchase gst vs bankstatement
-			try {
-				Double totalBsResipts = 0d;
-				Double totalGstValue = 0d;
-				List<LinkedHashMap<String,Object>>bsPurchaseData = new ArrayList<>();
-				
-				for (Map.Entry<String, Object> bsMapEntry : bsMap.entrySet()) {
-					if(bsMapEntry != null) {
-						Date parse = sdf1.parse(String.valueOf(bsMapEntry.getKey()));
-						
-						LinkedHashMap<String,Object>gstPurchaseVsBankStatementMonthly = new LinkedHashMap<>(); 
-						
-						gstPurchaseVsBankStatementMonthly.put("month", displayFormate.format(parse));
-						gstPurchaseVsBankStatementMonthly.put("bsValue", " - ");
-						for (Map.Entry<String, Object> debitEntry : ((Map<String, Object>) bsMapEntry.getValue()).entrySet()) {
-							 if(debitEntry != null && debitEntry.getKey() != null  && debitEntry.getValue() != null && debitEntry.getKey().equals("debit")) {
-								gstPurchaseVsBankStatementMonthly.put("bsDivededBygst", " - ");
-								gstPurchaseVsBankStatementMonthly.put("gstValue", " - ");
-		
-								 Double bsValue = Double.valueOf(debitEntry.getValue().toString());
-								 gstPurchaseVsBankStatementMonthly.put("bsValue", bsValue != null && bsValue != 0 ? CommonUtils.convertValueIndianCurrency(bsValue):"0");
-								 totalBsResipts +=bsValue;
-								 
-								for (Map.Entry<String ,Object> entry: ((Map<String, Object>) gstData.get("monthWisePurchase")).entrySet()) {
-									 if(bsMapEntry != null && entry.getKey().equals(sdf.format(parse))) {
-										 Double gstValue =Double.valueOf(String.valueOf(entry.getValue()));
-										gstPurchaseVsBankStatementMonthly.put("gstValue", gstValue != null && gstValue != 0 ? CommonUtils.convertValueIndianCurrency(gstValue):" - " );
-										totalGstValue += gstValue;
-								
-										Double bsDividedByGst = gstValue != null && gstValue != 0 ?((bsValue/gstValue)*100):0;
-										gstPurchaseVsBankStatementMonthly.put("bsDivededBygst",bsDividedByGst != 0 ?CommonUtils.convertValueIndianCurrency(bsDividedByGst).toString().concat(" %") : " - ");
-									 }
-								}
-							 }
-						 }
-						bsPurchaseData.add(gstPurchaseVsBankStatementMonthly);
-					}
-				}
-				comparisionData.put("gstVsBsPurchaseMonthly", !bsPurchaseData.isEmpty()?bsPurchaseData:null);
-				comparisionData.put("gstVsBsPurchaseTotalGstValueMonthly", totalGstValue != null && totalGstValue !=0 ?CommonUtils.convertValueIndianCurrency(totalGstValue):" - ");
-				comparisionData.put("gstVsBsPurchaseTotalBsResiptsMonthly", totalBsResipts != null && totalBsResipts != 0? CommonUtils.convertValueIndianCurrency(totalBsResipts) :" - ");
-				if(totalGstValue != null && totalGstValue != 0) {
-					Double total = totalBsResipts/totalGstValue*100;
-					comparisionData.put("gstVsBsPurchaseTotalReciptsToSales", total != null && total != 0?CommonUtils.convertValueIndianCurrency(total).toString().concat(" %"):" - ");
-				}else {
-					comparisionData.put("gstVsBsPurchaseTotalReciptsToSales", " - ");
-				}
-			}catch (Exception e) {
-				logger.error("Exception in getting gst vs bankstatement purchase : {}",e);
-			}
-			
-		// GSTVsITR Yearly Sales 
-			try {
-				if(gstData != null && gstData.get("yearWiseTotalSales") != null) {
-				List<LinkedHashMap<String,Object>>itrSalesData = new ArrayList<>();
-				Double totalOfGstSalesTotal = 0d;
-				Double totalOfITRSalesTotal = 0d;
-				Double totalOfGstToItr = 0d;
-				
-				for (Map.Entry<String, Object> yearWiseSales: ((Map<String, Object>) gstData.get("yearWiseTotalSales")).entrySet()) {
-					if(yearWiseSales != null) {
-				
-					for (Map<String, Object> itrSales:  financialInputRequest.getYearSalesPurchasList()) {
-						if(itrSales != null &&  !String.valueOf(Integer.valueOf(itrSales.get("year").toString())-1).equals("2017") && String.valueOf(Integer.valueOf(itrSales.get("year").toString())-1).equals(yearWiseSales.getKey().split("-")[0])) {
-						
-							LinkedHashMap<String,Object>gstPurchaseVsBankStatementMonthly = new LinkedHashMap<>(); 
-							gstPurchaseVsBankStatementMonthly.put("year", yearWiseSales.getKey() != null ? yearWiseSales.getKey() : " - ");
-							gstPurchaseVsBankStatementMonthly.put("gstSalesTotal",CommonUtils.convertValueIndianCurrency(yearWiseSales.getValue()));
-							gstPurchaseVsBankStatementMonthly.put("gstToItr"," - ");
-							Double totalOfGst=Double.valueOf(String.valueOf(yearWiseSales.getValue()));
-							gstPurchaseVsBankStatementMonthly.put("itrSales", itrSales.get("itrSales") != null && Double.valueOf(String.valueOf(itrSales.get("itrSales"))) != 0 && !itrSales.get("itrSales").equals(" - ")?CommonUtils.convertValueIndianCurrency(itrSales.get("itrSales")):" - ");
-							Double gstToItr = 0d;
-							if(itrSales.get("itrSales") != null && Double.valueOf(itrSales.get("itrSales").toString()) != 0) {
-								gstToItr = totalOfGst/Double.valueOf(itrSales.get("itrSales").toString()) * 100;
-							}
-							gstPurchaseVsBankStatementMonthly.put("gstToItr",gstToItr != 0?convertValue(gstToItr) + " %":" - ");
-							
-							// calculating total
-							totalOfGstSalesTotal += totalOfGst; 
-							totalOfITRSalesTotal += itrSales.get("itrSales") != null && !itrSales.get("itrSales").toString().equals("0") && !itrSales.get("itrSales").toString().equals("-")?Double.valueOf(itrSales.get("itrSales").toString()):0;
-	
-							if(!gstPurchaseVsBankStatementMonthly.isEmpty()) {
-								itrSalesData.add(gstPurchaseVsBankStatementMonthly);
-							}
+						comparisionData.put("gstVsBsSalesMonthly", !bsData.isEmpty()?bsData:null);
+						comparisionData.put("totalGstValueForGstVsBsSalesMonthly", CommonUtils.convertValueIndianCurrency(totalGstValue));
+						comparisionData.put("totalBsResiptsForGstVsBsSalesMonthly", CommonUtils.convertValueIndianCurrency(totalBsResipts));
+						if(totalBsResipts != null && totalGstValue != 0 ) {
+							Double totalGstVsBsTotalValues= totalBsResipts/totalGstValue*100;
+							comparisionData.put("totalBsVsGstValueForGstVsBsSalesMonthly", totalGstVsBsTotalValues != null ?convertValue(totalGstVsBsTotalValues).concat(" %") : " - ");
+						}else {
+							comparisionData.put("totalBsVsGstValueForGstVsBsSalesMonthly", " - ");
 						}
-					}
-				}
-			
-				if(totalOfITRSalesTotal != 0) {
-					totalOfGstToItr = totalOfGstSalesTotal/totalOfITRSalesTotal*100;
-				}
-			 }
-				comparisionData.put("gstVsItrYearlySales", !itrSalesData.isEmpty()?itrSalesData:null);
-				comparisionData.put("gstVsItrYearlySalesTotalOfGstSalesTotal", totalOfGstSalesTotal !=0 ?CommonUtils.convertValueIndianCurrency(totalOfGstSalesTotal): " - ");
-				comparisionData.put("gstVsItrYearlySalesTotalOfITRSalesTotal", totalOfITRSalesTotal!=0?CommonUtils.convertValueIndianCurrency(totalOfITRSalesTotal): " - ");
-				comparisionData.put("gstVsItrYearlySalesTotalOfGstToItr", totalOfGstToItr!=0?CommonUtils.convertValueIndianCurrency(totalOfGstToItr).toString().concat(" %"): " - ");
-			}
-			}catch (Exception e) {
-				logger.error("Exception in getting value of gstVsItrYearlySales {}",e);
-			}
-			// GSTVsITR Yearly Purchase 				
-				if(gstData != null && gstData.get("yearWisePurchase") != null) {
-				try{
-					Double totalOfGstPurchase = 0d;
-					Double totalOfITRPurchase = 0d;
-					Double totalOfGstToItr = 0d;
-				List<LinkedHashMap<String,Object>>bsPurchaseData = new ArrayList<>();
-				((Map<String, Object>) gstData.get("yearWisePurchase")).entrySet().stream().sorted(new DateComparator2());
-				for(Map.Entry<String, Object> y:((Map<String, Object>) gstData.get("yearWisePurchase")).entrySet()) {
-					
-					if(financialInputRequest.getYearSalesPurchasList() !=null  && !financialInputRequest.getYearSalesPurchasList().isEmpty()) {
-						financialInputRequest.getYearSalesPurchasList().stream().sorted(new DateComparator2());		
-						for(Map<String, Object> fi: financialInputRequest.getYearSalesPurchasList()) {
-							if(fi != null && !String.valueOf(Integer.valueOf(fi.get("year").toString())-1).equals("2017") && String.valueOf(Integer.valueOf(fi.get("year").toString())-1).split("-")[0].contains(String.valueOf(fi.get("year")))) {
-								LinkedHashMap<String,Object>gstPurchaseVsBankStatementMonthly = new LinkedHashMap<>();
-								gstPurchaseVsBankStatementMonthly.put("year", y.getKey() != null ?y.getKey().toString() : " - ");
-								gstPurchaseVsBankStatementMonthly.put("gstPurchase", y.getValue()!= null && y.getValue().toString() != "0" ?CommonUtils.convertStringFormate(y.getValue()).toString() : " - ");
-								totalOfGstPurchase += Double.valueOf(y.getValue().toString());
-								
-								gstPurchaseVsBankStatementMonthly.put("itrPurchase", fi.get("rowMaterialIndigenous") != null && Double.valueOf(fi.get("rowMaterialIndigenous").toString()) != 0?CommonUtils.convertStringFormate(fi.get("rowMaterialIndigenous").toString()):" - ");
-								
-								totalOfITRPurchase += fi.get("rowMaterialIndigenous") != null ?Double.valueOf(fi.get("rowMaterialIndigenous").toString()):0;
-								Double gstToItr = 0d;
-								if(fi.get("rowMaterialIndigenous") != null && y.getValue() != null && Double.valueOf(fi.get("rowMaterialIndigenous").toString()) != 0) {
-									gstToItr = (Double.valueOf(fi.get("rowMaterialIndigenous").toString())/Double.valueOf(y.getValue().toString()) * 100);
-								}
-								gstPurchaseVsBankStatementMonthly.put("gstToItr",gstToItr != 0? convertValue(gstToItr) + " %":" - ");
-								
-								if(!gstPurchaseVsBankStatementMonthly.isEmpty()) {
-									bsPurchaseData.add(gstPurchaseVsBankStatementMonthly);
-								}
-							}
-						}
-						
-					}
-					
-				}
-				if(totalOfITRPurchase != 0) {
-					totalOfGstToItr = totalOfGstPurchase/totalOfITRPurchase*100;
-				}
-				comparisionData.put("gstVsItrYearlyPurchase", !bsPurchaseData.isEmpty()?bsPurchaseData:null);
-				comparisionData.put("gstVsItrYearlyPurchaseTotalOfGstPurchase", totalOfGstPurchase!= 0?CommonUtils.convertValueIndianCurrency(totalOfGstPurchase): " - ");
-				comparisionData.put("gstVsItrYearlyPurchaseTotalOfITRPurchase", totalOfITRPurchase !=0 ?CommonUtils.convertValueIndianCurrency(totalOfITRPurchase): " - ");
-				comparisionData.put("gstVsItrYearlyPurchaseTotalOfGstToItr", totalOfGstToItr!=0?CommonUtils.convertValueIndianCurrency(totalOfGstToItr).toString().concat(" %"): " - ");
 				}catch (Exception e) {
-					logger.error("Exception in getting value of gstVsItrYearlyPurchase {}",e);
+					logger.error("exception in getting the details of gstSalesVsBankStatementMonthly {}",e);
 				}
+			//	for monthly wise purchase gst vs bankstatement
+				try {
+					Double totalBsResipts = 0d;
+					Double totalGstValue = 0d;
+					List<LinkedHashMap<String,Object>>bsPurchaseData = new ArrayList<>();
+					
+					for (Map.Entry<String, Object> bsMapEntry : bsMap.entrySet()) {
+						if(bsMapEntry != null) {
+							Date parse = sdf1.parse(String.valueOf(bsMapEntry.getKey()));
+							
+							LinkedHashMap<String,Object>gstPurchaseVsBankStatementMonthly = new LinkedHashMap<>(); 
+							
+							gstPurchaseVsBankStatementMonthly.put("month", displayFormate.format(parse));
+							gstPurchaseVsBankStatementMonthly.put("bsValue", " - ");
+							for (Map.Entry<String, Object> debitEntry : ((Map<String, Object>) bsMapEntry.getValue()).entrySet()) {
+								 if(debitEntry != null && debitEntry.getKey() != null  && debitEntry.getValue() != null && debitEntry.getKey().equals("debit")) {
+									gstPurchaseVsBankStatementMonthly.put("bsDivededBygst", " - ");
+									gstPurchaseVsBankStatementMonthly.put("gstValue", " - ");
+			
+									 Double bsValue = Double.valueOf(debitEntry.getValue().toString());
+									 gstPurchaseVsBankStatementMonthly.put("bsValue", bsValue != null && bsValue != 0 ? CommonUtils.convertValueIndianCurrency(bsValue):"0");
+									 totalBsResipts +=bsValue;
+									 
+									for (Map.Entry<String ,Object> entry: ((Map<String, Object>) gstData.get("monthWisePurchase")).entrySet()) {
+										 if(bsMapEntry != null && entry.getKey().equals(sdf.format(parse))) {
+											 Double gstValue =Double.valueOf(String.valueOf(entry.getValue()));
+											gstPurchaseVsBankStatementMonthly.put("gstValue", gstValue != null && gstValue != 0 ? CommonUtils.convertValueIndianCurrency(gstValue):" - " );
+											totalGstValue += gstValue;
+									
+											Double bsDividedByGst = gstValue != null && gstValue != 0 ?((bsValue/gstValue)*100):0;
+											gstPurchaseVsBankStatementMonthly.put("bsDivededBygst",bsDividedByGst != 0 ?CommonUtils.convertValueIndianCurrency(bsDividedByGst).toString().concat(" %") : " - ");
+										 }
+									}
+								 }
+							 }
+							bsPurchaseData.add(gstPurchaseVsBankStatementMonthly);
+						}
+					}
+					comparisionData.put("gstVsBsPurchaseMonthly", !bsPurchaseData.isEmpty()?bsPurchaseData:null);
+					comparisionData.put("gstVsBsPurchaseTotalGstValueMonthly", totalGstValue != null && totalGstValue !=0 ?CommonUtils.convertValueIndianCurrency(totalGstValue):" - ");
+					comparisionData.put("gstVsBsPurchaseTotalBsResiptsMonthly", totalBsResipts != null && totalBsResipts != 0? CommonUtils.convertValueIndianCurrency(totalBsResipts) :" - ");
+					if(totalGstValue != null && totalGstValue != 0) {
+						Double total = totalBsResipts/totalGstValue*100;
+						comparisionData.put("gstVsBsPurchaseTotalReciptsToSales", total != null && total != 0?CommonUtils.convertValueIndianCurrency(total).toString().concat(" %"):" - ");
+					}else {
+						comparisionData.put("gstVsBsPurchaseTotalReciptsToSales", " - ");
+					}
+				}catch (Exception e) {
+					logger.error("Exception in getting gst vs bankstatement purchase : {}",e);
+				}
+				
+			}else {
+				logger.error("Exception in getting gst and bank statement data");
 			}
-		}else {
-			logger.error("Response not found in bankstatement  for bank comparision dispalay for :{}",applicationId);
-		}
+			if(financialInputRequest != null && !financialInputRequest.getYearSalesPurchasList().isEmpty()) {
+				
+			// GSTVsITR Yearly Sales 
+				try {
+					if(gstData != null && gstData.get("yearWiseTotalSales") != null) {
+					List<LinkedHashMap<String,Object>>itrSalesData = new ArrayList<>();
+					Double totalOfGstSalesTotal = 0d;
+					Double totalOfITRSalesTotal = 0d;
+					Double totalOfGstToItr = 0d;
+					
+					for (Map.Entry<String, Object> yearWiseSales: ((Map<String, Object>) gstData.get("yearWiseTotalSales")).entrySet()) {
+						if(yearWiseSales != null) {
+					
+						for (Map<String, Object> itrSales:  financialInputRequest.getYearSalesPurchasList()) {
+							if(itrSales != null && !String.valueOf(Integer.valueOf(itrSales.get("year").toString())-1).equals("2017") && String.valueOf(Integer.valueOf(itrSales.get("year").toString())-1).equals(yearWiseSales.getKey().split("-")[0])) {
+							
+								LinkedHashMap<String,Object>gstPurchaseVsBankStatementMonthly = new LinkedHashMap<>(); 
+								gstPurchaseVsBankStatementMonthly.put("year", yearWiseSales.getKey() != null ? yearWiseSales.getKey() : " - ");
+								gstPurchaseVsBankStatementMonthly.put("gstSalesTotal",CommonUtils.convertValueIndianCurrency(yearWiseSales.getValue()));
+								gstPurchaseVsBankStatementMonthly.put("gstToItr"," - ");
+								Double totalOfGst=Double.valueOf(String.valueOf(yearWiseSales.getValue()));
+								gstPurchaseVsBankStatementMonthly.put("itrSales", itrSales.get("itrSales") != null && Double.valueOf(String.valueOf(itrSales.get("itrSales"))) != 0 && !itrSales.get("itrSales").equals(" - ")?CommonUtils.convertValueIndianCurrency(itrSales.get("itrSales")):" - ");
+								Double gstToItr = 0d;
+								if(itrSales.get("itrSales") != null && Double.valueOf(itrSales.get("itrSales").toString()) != 0) {
+									gstToItr = totalOfGst/Double.valueOf(itrSales.get("itrSales").toString()) * 100;
+								}
+								gstPurchaseVsBankStatementMonthly.put("gstToItr",gstToItr != 0?convertValue(gstToItr) + " %":" - ");
+								
+								// calculating total
+								totalOfGstSalesTotal += totalOfGst; 
+								totalOfITRSalesTotal += itrSales.get("itrSales") != null && !itrSales.get("itrSales").toString().equals("0") && !itrSales.get("itrSales").toString().equals("-")?Double.valueOf(itrSales.get("itrSales").toString()):0;
 		
+								if(!gstPurchaseVsBankStatementMonthly.isEmpty()) {
+									itrSalesData.add(gstPurchaseVsBankStatementMonthly);
+								}
+							}
+						}
+					}
+				
+					if(totalOfITRSalesTotal != 0) {
+						totalOfGstToItr = totalOfGstSalesTotal/totalOfITRSalesTotal*100;
+					}
+				 }
+					comparisionData.put("gstVsItrYearlySales", !itrSalesData.isEmpty()?itrSalesData:null);
+					comparisionData.put("gstVsItrYearlySalesTotalOfGstSalesTotal", totalOfGstSalesTotal !=0 ?CommonUtils.convertValueIndianCurrency(totalOfGstSalesTotal): " - ");
+					comparisionData.put("gstVsItrYearlySalesTotalOfITRSalesTotal", totalOfITRSalesTotal!=0?CommonUtils.convertValueIndianCurrency(totalOfITRSalesTotal): " - ");
+					comparisionData.put("gstVsItrYearlySalesTotalOfGstToItr", totalOfGstToItr!=0?CommonUtils.convertValueIndianCurrency(totalOfGstToItr).toString().concat(" %"): " - ");
+				}
+				}catch (Exception e) {
+					logger.error("Exception in getting value of gstVsItrYearlySales {}",e);
+				}
+				// GSTVsITR Yearly Purchase 				
+				if(gstData != null && gstData.get("yearWisePurchase") != null) {
+					try{
+						Double totalOfGstPurchase = 0d;
+						Double totalOfITRPurchase = 0d;
+						Double totalOfGstToItr = 0d;
+					List<LinkedHashMap<String,Object>>bsPurchaseData = new ArrayList<>();
+					((Map<String, Object>) gstData.get("yearWisePurchase")).entrySet().stream().sorted(new DateComparator2());
+					for(Map.Entry<String, Object> yearWisePurchase:((Map<String, Object>) gstData.get("yearWisePurchase")).entrySet()) {
+						
+						if(financialInputRequest.getYearSalesPurchasList() !=null  && !financialInputRequest.getYearSalesPurchasList().isEmpty()) {
+							financialInputRequest.getYearSalesPurchasList().stream().sorted(new DateComparator2());		
+							for(Map<String, Object> fi: financialInputRequest.getYearSalesPurchasList()) {
+								if(fi != null && !String.valueOf(Integer.valueOf(fi.get("year").toString())-1).equals("2017") 
+									  && String.valueOf(Integer.valueOf(fi.get("year").toString())-1).split("-")[0].equals(yearWisePurchase.getKey().split("-")[0])) {
+									
+									LinkedHashMap<String,Object>gstPurchaseVsBankStatementMonthly = new LinkedHashMap<>();
+									gstPurchaseVsBankStatementMonthly.put("year", yearWisePurchase.getKey() != null ?yearWisePurchase.getKey().toString() : " - ");
+									gstPurchaseVsBankStatementMonthly.put("gstPurchase", yearWisePurchase.getValue()!= null && yearWisePurchase.getValue().toString() != "0" ?CommonUtils.convertStringFormate(yearWisePurchase.getValue()).toString() : " - ");
+									totalOfGstPurchase += Double.valueOf(yearWisePurchase.getValue().toString());
+									
+									gstPurchaseVsBankStatementMonthly.put("itrPurchase", fi.get("rowMaterialIndigenous") != null && Double.valueOf(fi.get("rowMaterialIndigenous").toString()) != 0?CommonUtils.convertStringFormate(fi.get("rowMaterialIndigenous").toString()):" - ");
+									
+									totalOfITRPurchase += fi.get("rowMaterialIndigenous") != null ?Double.valueOf(fi.get("rowMaterialIndigenous").toString()):0;
+									Double gstToItr = 0d;
+									if(fi.get("rowMaterialIndigenous") != null && yearWisePurchase.getValue() != null && Double.valueOf(fi.get("rowMaterialIndigenous").toString()) != 0) {
+										gstToItr = (Double.valueOf(fi.get("rowMaterialIndigenous").toString())/Double.valueOf(yearWisePurchase.getValue().toString()) * 100);
+									}
+									gstPurchaseVsBankStatementMonthly.put("gstToItr",gstToItr != 0? convertValue(gstToItr) + " %":" - ");
+									
+									if(!gstPurchaseVsBankStatementMonthly.isEmpty()) {
+										bsPurchaseData.add(gstPurchaseVsBankStatementMonthly);
+									}
+								}
+							}
+							
+						}
+						
+					}
+					if(totalOfITRPurchase != 0) {
+						totalOfGstToItr = totalOfGstPurchase/totalOfITRPurchase*100;
+					}
+					comparisionData.put("gstVsItrYearlyPurchase", !bsPurchaseData.isEmpty()?bsPurchaseData:null);
+					comparisionData.put("gstVsItrYearlyPurchaseTotalOfGstPurchase", totalOfGstPurchase!= 0?CommonUtils.convertValueIndianCurrency(totalOfGstPurchase): " - ");
+					comparisionData.put("gstVsItrYearlyPurchaseTotalOfITRPurchase", totalOfITRPurchase !=0 ?CommonUtils.convertValueIndianCurrency(totalOfITRPurchase): " - ");
+					comparisionData.put("gstVsItrYearlyPurchaseTotalOfGstToItr", totalOfGstToItr!=0?CommonUtils.convertValueIndianCurrency(totalOfGstToItr).toString().concat(" %"): " - ");
+					}catch (Exception e) {
+						logger.error("Exception in getting value of gstVsItrYearlyPurchase {}",e);
+					}
+				}
+			}else {
+				logger.error("Response not found in bankstatement  for bank comparision dispalay for :{}",applicationId);
+			}
+		}
 		return comparisionData;
 	}
 
