@@ -1766,7 +1766,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 									totalOfITRPurchase += fi.get("rowMaterialIndigenous") != null ?Double.valueOf(fi.get("rowMaterialIndigenous").toString()):0;
 									Double gstToItr = 0d;
 									if(fi.get("rowMaterialIndigenous") != null && yearWisePurchase.getValue() != null && Double.valueOf(fi.get("rowMaterialIndigenous").toString()) != 0) {
-										gstToItr = Double.valueOf(yearWisePurchase.getValue().toString()) /(Double.valueOf(fi.get("rowMaterialIndigenous").toString()) * 100);
+										gstToItr = Double.valueOf(yearWisePurchase.getValue().toString()) /Double.valueOf(fi.get("rowMaterialIndigenous").toString()) * 100;
 									}
 									gstPurchaseVsBankStatementMonthly.put("gstToItr",gstToItr != 0? convertValue(gstToItr) + " %":" - ");
 									
