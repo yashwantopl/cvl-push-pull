@@ -243,7 +243,7 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 				}
 				Object[] blendedVal = new Object[4];
 				Long nbfcOrgId = null,bankOrgId = null;
-				Double blRoi = 0d,blEmi = 0d;
+				Double blRoi = 0d,blEmi = 0d,blProcessingFee = 0d,nbfcAmt = 0d,bankAmt = 0d,nbfcPf = 0d,bankPf = 0d;
 				for (ProposalDetails proposalDetails : proposalDetailsList) {
 					if(!CommonUtils.isObjectNullOrEmpty(proposalDetails.getNbfcFlow())){
 						Double ratioVal = 0d;
@@ -255,18 +255,43 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 							bankOrgId = proposalDetails.getUserOrgId();
 						}
 						calcAndSaveBlednedRate(proposalDetails,tenure,ratioVal,proposalMappingRequest,blendedVal);
+
+						if(proposalDetails.getNbfcFlow() == NBFC_FLOW){
+							nbfcAmt = proposalDetails.getElAmount();
+							nbfcPf = proposalDetails.getProcessingFee();
+						}else if(proposalDetails.getNbfcFlow() == NBFC_BANK_FLOW){
+							bankAmt = proposalDetails.getElAmount();
+							bankPf = proposalDetails.getProcessingFee();
+						}
 					}
 				}
 				if(!CommonUtils.isObjectNullOrEmpty(blendedVal)){
-					blRoi = Double.valueOf(blendedVal[0].toString());
+					//blRoi = Double.valueOf(blendedVal[0].toString());
 					blEmi = Double.valueOf(blendedVal[1].toString());
 					loanAmount = Double.valueOf(blendedVal[2].toString());
-					logger.info("Before rate calculation : "+ "LoanAmount : "+loanAmount + " Tenure : " + blendedVal[3] + " Blended ROI:" + blRoi +" Blended  EMI :" + blEmi);
+					//logger.info("Before rate calculation : "+ "LoanAmount : "+loanAmount + " Tenure : " + blendedVal[3] + " Blended ROI:" + blRoi +" Blended  EMI :" + blEmi);
 					blRoi = Double.valueOf(df.format(RATE.simpleCalculateRate(Double.valueOf(blendedVal[3].toString()),blEmi,-loanAmount)));
-					logger.info(" After rate calculation ROI: " + blRoi);
+					//logger.info(" After rate calculation ROI: " + blRoi);
+
+					Double pf = 0d;
+					if(!CommonUtils.isObjectNullOrEmpty(nbfcPf) && nbfcPf != 0){
+						pf = (nbfcPf * 100) / nbfcRatio;
+						pf = ((Double.valueOf(df.format(pf))) * nbfcAmt) / 100;
+						blProcessingFee =  ((Double.valueOf(df.format(pf))) * 100) / loanAmount;
+					}else if(!CommonUtils.isObjectNullOrEmpty(bankPf) && bankPf != 0){
+						pf = (bankPf * 100) / bankRatio;
+						pf = ((Double.valueOf(df.format(pf))) * bankAmt) / 100;
+						blProcessingFee =  ((Double.valueOf(df.format(pf))) * 100) / loanAmount;
+					}else {
+						Double calcNbfcPf = (nbfcPf * nbfcAmt) / 100;
+						Double calcBankPf = (bankPf * bankAmt) / 100;
+
+						pf = ((calcNbfcPf + calcBankPf) / loanAmount) * 100 ;
+						blProcessingFee = Double.valueOf(df.format(pf));
+					}
 				}
 
-				Integer isDataSaved = coLendingFlowRepository.saveBlendedValues(applicationId,nbfcOrgId,bankOrgId,blRoi,blEmi);
+				Integer isDataSaved = coLendingFlowRepository.saveBlendedValues(applicationId,nbfcOrgId,bankOrgId,blRoi,blEmi,blProcessingFee);
 				int isUpdated = applicationProposalMappingRepository.updateLoanAmount(loanAmount,applicationId);
 				logger.info("Loan Amount updated: ",(isUpdated>0));
 
@@ -298,7 +323,7 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 			calcTenure = minLoanAmtProposalObj.getElTenure();
 			blRoi = (ratioVal * roi) / 100;
 			if(!CommonUtils.isObjectNullOrEmpty(processingFee)){
-				calcProcessingFee = (ratioVal * processingFee) / 100;
+				calcProcessingFee = processingFee;//(ratioVal * processingFee) / 100;
 			}
 
 			if(!CommonUtils.isObjectNullOrEmpty(additionalAmt) && additionalAmt!=0){
@@ -327,7 +352,7 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 				if(!CommonUtils.isObjectNullOrEmpty(blendedVal[0])){
 					blRoi+= Double.valueOf(blendedVal[0].toString());
 
-					blRoi = Double.valueOf(df1.format(blRoi));
+					blRoi = Double.valueOf(df.format(blRoi));
 					blendedVal[0] = blRoi;
 					blendedVal[1] = Double.valueOf(blendedVal[1].toString()) + calcEmi;
 				}else {

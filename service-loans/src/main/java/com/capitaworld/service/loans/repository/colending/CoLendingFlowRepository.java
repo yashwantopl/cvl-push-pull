@@ -12,7 +12,7 @@ public interface CoLendingFlowRepository {
 
     public Object[] getRatioNbfcBankProduct(Long applicationId);
 
-    public Integer saveBlendedValues(Long applicationId,Long nbfcOrgId,Long bankOrgId,Double blRoi,Double blEmi);
+    public Integer saveBlendedValues(Long applicationId,Long nbfcOrgId,Long bankOrgId,Double blRoi,Double blEmi,Double blProcessingPf);
 
     public List<BigInteger> getBankList(Long nbfcOrgId);
 }
