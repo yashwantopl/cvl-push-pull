@@ -250,6 +250,8 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 						if(proposalDetails.getNbfcFlow() == NBFC_FLOW){
 							ratioVal = nbfcRatio;
 							nbfcOrgId = proposalDetails.getUserOrgId();
+							proposalMappingRequest.setElRoi(recomReq.getElRoi());
+							proposalMappingRequest.setProcessingFee(recomReq.getProcessingFee());
 						}else if(proposalDetails.getNbfcFlow() == NBFC_BANK_FLOW){
 							ratioVal = bankRatio;
 							bankOrgId = proposalDetails.getUserOrgId();
@@ -279,28 +281,28 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 					if((CommonUtils.isObjectNullOrEmpty(nbfcPf) || nbfcPf == 0) || (CommonUtils.isObjectNullOrEmpty(nbfcPf) && nbfcPf == 0)){
 						if(!CommonUtils.isObjectNullOrEmpty(nbfcPf) && nbfcPf != 0){
 							pf = (nbfcPf * 100) / nbfcRatio;
-							logger.info("nbfc processing fee1:"+pf);
+							//logger.info("nbfc processing fee1:"+pf);
 							pf = ((Double.valueOf(df.format(pf))) * nbfcAmt) / 100;
-							logger.info("nbfc processing fee2:"+pf);
+							//logger.info("nbfc processing fee2:"+pf);
 							blProcessingFee =  ((Double.valueOf(df.format(pf))) * 100) / loanAmount;
 						}else if(!CommonUtils.isObjectNullOrEmpty(bankPf) && bankPf != 0){
 							pf = (bankPf * 100) / bankRatio;
-							logger.info("bank processing fee1:"+pf);
+							//logger.info("bank processing fee1:"+pf);
 							pf = ((Double.valueOf(df.format(pf))) * bankAmt) / 100;
-							logger.info("bank processing fee1:"+pf);
+							//logger.info("bank processing fee1:"+pf);
 							blProcessingFee =  ((Double.valueOf(df.format(pf))) * 100) / loanAmount;
 						}
 					}else {
 						Double calcNbfcPf = (nbfcPf * nbfcAmt) / 100;
-						logger.info("calcNbfcPf processing fee:"+calcNbfcPf);
+						//logger.info("calcNbfcPf processing fee:"+calcNbfcPf);
 						Double calcBankPf = (bankPf * bankAmt) / 100;
-						logger.info("calcBankPf processing fee:"+calcBankPf);
+						//logger.info("calcBankPf processing fee:"+calcBankPf);
 
 						pf = ((calcNbfcPf + calcBankPf) / loanAmount) * 100 ;
 						blProcessingFee = Double.valueOf(df.format(pf));
 					}
 				}
-				logger.info("final processing fee:"+blProcessingFee);
+				//logger.info("final processing fee:"+blProcessingFee);
 				Integer isDataSaved = coLendingFlowRepository.saveBlendedValues(applicationId,nbfcOrgId,bankOrgId,blRoi,blEmi,blProcessingFee);
 				int isUpdated = applicationProposalMappingRepository.updateLoanAmount(loanAmount,applicationId);
 				logger.info("Loan Amount updated: ",(isUpdated>0));
@@ -323,7 +325,7 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 			Double calcTenure = 0d,roi = 0d,processingFee = 0d,calcProcessingFee = 0d,monthlyRate = 0d,calcEmi = 0d;
 			Double loanAmount = minLoanAmtProposalObj.getElAmount(),existingAmt = minLoanAmtProposalObj.getExistingLoanAmount(),additionalAmt = minLoanAmtProposalObj.getAdditionalLoanAmount();
 			Double blRoi = 0d,blEmi = 0d;
-			if(proposalDetails.getNbfcFlow() == NBFC_FLOW && proposalDetails.getId() == minLoanAmtProposalObj.getId()){
+			if(proposalDetails.getNbfcFlow() == NBFC_FLOW ){//&& proposalDetails.getId() == minLoanAmtProposalObj.getId()){
 				roi = minLoanAmtProposalObj.getElRoi();
 				processingFee = minLoanAmtProposalObj.getProcessingFee();
 			}else {
