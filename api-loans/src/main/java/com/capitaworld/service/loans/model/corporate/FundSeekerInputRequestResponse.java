@@ -160,6 +160,19 @@ public class FundSeekerInputRequestResponse {
 
     private String xmlResponseExternal;
     
+    private Boolean isIsoCertified;
+    
+    
+    
+    
+	public Boolean getIsIsoCertified() {
+		return isIsoCertified;
+	}
+
+	public void setIsIsoCertified(Boolean isIsoCertified) {
+		this.isIsoCertified = isIsoCertified;
+	}
+
 	public Long getUserId() {
         return userId;
     }
@@ -677,11 +690,33 @@ public class FundSeekerInputRequestResponse {
         this.productServiceDescription = productServiceDescription;
     }
 
-	
-    
-    
 
-    @Override
+	public Double getBorrowerDcldProjectedSales() {
+		return borrowerDcldProjectedSales;
+	}
+
+	public void setBorrowerDcldProjectedSales(Double borrowerDcldProjectedSales) {
+		this.borrowerDcldProjectedSales = borrowerDcldProjectedSales;
+	}
+
+	public String getCurrentFinancialYear() {
+		return currentFinancialYear;
+	}
+
+	public void setCurrentFinancialYear(String currentFinancialYear) {
+		this.currentFinancialYear = currentFinancialYear;
+	}
+
+
+    public String getXmlResponseExternal() {
+        return xmlResponseExternal;
+    }
+
+    public void setXmlResponseExternal(String xmlResponseExternal) {
+        this.xmlResponseExternal = xmlResponseExternal;
+    }
+
+	@Override
 	public String toString() {
 		return "FundSeekerInputRequestResponse [userId=" + userId + ", clientId=" + clientId + ", applicationId="
 				+ applicationId + ", businessTypeId=" + businessTypeId + ", keyVericalFunding=" + keyVericalFunding
@@ -714,31 +749,9 @@ public class FundSeekerInputRequestResponse {
 				+ ", projectedProfitCurrFinYear=" + projectedProfitCurrFinYear + ", enhancementAmount="
 				+ enhancementAmount + ", isAdditionalAmount=" + isAdditionalAmount + ", isAllowSwitchExistingLender="
 				+ isAllowSwitchExistingLender + ", additionalLoanAmount=" + additionalLoanAmount
-				+ ", borrowerDcldProjectedSales=" + borrowerDcldProjectedSales + "]";
+				+ ", borrowerDcldProjectedSales=" + borrowerDcldProjectedSales + ", currentFinancialYear="
+				+ currentFinancialYear + ", xmlResponseExternal=" + xmlResponseExternal + ", isIsoCertified="
+				+ isIsoCertified + "]";
 	}
-
-	public Double getBorrowerDcldProjectedSales() {
-		return borrowerDcldProjectedSales;
-	}
-
-	public void setBorrowerDcldProjectedSales(Double borrowerDcldProjectedSales) {
-		this.borrowerDcldProjectedSales = borrowerDcldProjectedSales;
-	}
-
-	public String getCurrentFinancialYear() {
-		return currentFinancialYear;
-	}
-
-	public void setCurrentFinancialYear(String currentFinancialYear) {
-		this.currentFinancialYear = currentFinancialYear;
-	}
-
-
-    public String getXmlResponseExternal() {
-        return xmlResponseExternal;
-    }
-
-    public void setXmlResponseExternal(String xmlResponseExternal) {
-        this.xmlResponseExternal = xmlResponseExternal;
-    }
+    
 }
