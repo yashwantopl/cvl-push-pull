@@ -84,4 +84,6 @@ public interface LoanRepository{
 	public Object [] getBureauVersionIdById(Long scoringModelId);
 
 	public Object[] getUserDetails(Long userId);
+
+	public List<Object[]> getCoLendingAllRatio(Long applicationId);
 }
