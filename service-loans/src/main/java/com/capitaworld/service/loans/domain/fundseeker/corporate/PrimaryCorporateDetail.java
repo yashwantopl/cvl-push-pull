@@ -66,6 +66,9 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
 
     @Column(name = "assessment_id")
     private Integer assessmentId;
+    
+    @Column(name="is_iso_certified")
+    private Boolean isIsoCertified;
 
     /*
      * SBI MSME Integration related fields
@@ -140,10 +143,19 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
     @Column(name="borrower_dcld_projected_sales")
     private Double borrowerDcldProjectedSales;
     
+    
   //End By Akshay for OnePager Eligibility
 
 
-    public PrimaryCorporateDetail() {
+    public Boolean getIsIsoCertified() {
+		return isIsoCertified;
+	}
+
+	public void setIsIsoCertified(Boolean isIsoCertified) {
+		this.isIsoCertified = isIsoCertified;
+	}
+
+	public PrimaryCorporateDetail() {
         // Do nothing because of X and Y.
     }
 
