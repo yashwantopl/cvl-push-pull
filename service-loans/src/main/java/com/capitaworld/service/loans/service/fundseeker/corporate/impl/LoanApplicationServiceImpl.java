@@ -8632,4 +8632,20 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	public String getTutorialsAuditList(TutorialsViewAudits request) {
 		return  mfiTutorialsViewAuditsRepository.getTutorialAuditList(request.getTutorialId());
 	}
+
+	@Override
+	public UsersRequest getUserDetailsForUrlSepration(Long userId){
+		Object userDetails[] = loanRepository.getUserDetails(userId);
+		if(!CommonUtils.isObjectNullOrEmpty(userDetails)){
+			UsersRequest usersRequest = new UsersRequest();
+			if(!CommonUtils.isObjectNullOrEmpty(userDetails[0])){
+				usersRequest.setLastAccessBusinessTypeId(Long.valueOf(userDetails[0].toString()));
+			}
+			if(!CommonUtils.isObjectNullOrEmpty(userDetails[1])){
+				usersRequest.setIsNbfcUser(Boolean.valueOf(userDetails[1].toString()));
+			}
+			return usersRequest;
+		}
+		return null;
+	}
 }

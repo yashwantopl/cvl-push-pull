@@ -286,7 +286,17 @@ public class CommonController {
 				logger.error("Throw exception while check email verified or not : ",e);
 			}
 		}
-		
+
+		UsersRequest usersRequestObj = applicationService.getUserDetailsForUrlSepration(userId);
+		if(!CommonUtils.isObjectNullOrEmpty(usersRequestObj)){
+			if(!CommonUtils.isObjectNullOrEmpty(usersRequestObj.getLastAccessBusinessTypeId())){
+				obj.put("lastAccessBusinessType",usersRequestObj.getLastAccessBusinessTypeId());
+			}
+			if(!CommonUtils.isObjectNullOrEmpty(usersRequestObj.getIsNbfcUser()) && usersRequestObj.getIsNbfcUser()){
+				obj.put("coOriginationUser",usersRequestObj.getIsNbfcUser());
+			}
+		}
+
 		CommonDocumentUtils.endHook(logger, "user_verification");
 		return new ResponseEntity<UserResponse>(new UserResponse(obj, CommonUtils.SUCCESSFULLY_GET_DATA, HttpStatus.OK.value()),
 				HttpStatus.OK);

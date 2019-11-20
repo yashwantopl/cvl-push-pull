@@ -570,4 +570,17 @@ public class LoanRepositoryImpl implements LoanRepository {
 		}
 		return object;
 	}
+
+	@Override
+	public Object[] getUserDetails(Long userId){
+		try {
+			Object[] obj = (Object[]) entityManager.createNativeQuery("select u.last_access_business_type_id,u.is_nbfc_user FROM users.users u where u.user_id =:userId")
+					.setParameter("userId", userId)
+					.getSingleResult();
+			return obj;
+		}catch (Exception e){
+			logger.error("Data not found for userId:",userId);
+		}
+		return null;
+	}
 }
