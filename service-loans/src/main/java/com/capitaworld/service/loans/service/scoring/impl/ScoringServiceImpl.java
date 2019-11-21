@@ -6611,23 +6611,20 @@ public class ScoringServiceImpl implements ScoringService {
 
                             	try {
                             	String cmrScore = cibilClient.getCMRScore(applicationId);
-                            	 	logger.info("THIS IS CMR SCORE FROM CIBIL====={applicationId}===={}=====>",cmrScore,"==={cmrScore}===>"+applicationId);
-                            	 	
-                            	 	
+                            	 	logger.info("{CMR_SCORE_MSME_RANKING}====={cmrScore}===={}=====>",cmrScore,"==={applicationId}===>"+applicationId);
                             	 	
                             		if(!CommonUtils.isObjectNullOrEmpty(cmrScore) && (!cmrScore.equals("NA"))){
-                            			
-                            			String cmrValue = cmrScore.substring(4,6);
-                            			if(!CommonUtils.isObjectNullOrEmpty(cmrValue))
-                            			{
-                            					scoringParameterRequest.setCmrScoreMsmeRanking(Double.valueOf(cmrValue));
-                            			}
-                            			else
-                            			{
-                            				scoringParameterRequest.setCmrScoreMsmeRanking(0.0);
-                            			}
-                            			scoringParameterRequest.setCmrScoreMsmeRanking_p(true);
-                            			
+                            			// String cmrValue = cmrScore.substring(4,6);
+                            			String [] cmrValue = cmrScore.trim().split("-");
+	                            			if(!CommonUtils.isObjectNullOrEmpty(cmrValue) && !CommonUtils.isObjectNullOrEmpty(cmrValue[1]))
+	                            			{
+	                            					scoringParameterRequest.setCmrScoreMsmeRanking(Double.valueOf(cmrValue[1]));
+	                            			 }
+	                            			else
+	                            			{
+	                            				scoringParameterRequest.setCmrScoreMsmeRanking(0.0);
+	                            			}
+	                            			scoringParameterRequest.setCmrScoreMsmeRanking_p(true);
                                    }else{
                                 	   scoringParameterRequest.setCmrScoreMsmeRanking_p(true);
                                 	   scoringParameterRequest.setCmrScoreMsmeRanking(0.0);
@@ -6641,7 +6638,7 @@ public class ScoringServiceImpl implements ScoringService {
                             case ScoreParameter.ISO_CERTIFICATION: {
                             	// One form ISO CERTIFIED
                             	Boolean isoCertifiedResp = primaryCorporateDetail.getIsIsoCertified();
-                            	logger.info("ENTER HERE ISO_CERTIFICATION::::::::::======{ISO_CERTIFICATION}======{}===>>>",isoCertifiedResp);
+                            	logger.info("ENTER HERE (ISO_CERTIFICATION)::::::::::{ISO_CERTIFICATION}======{}===>>>",isoCertifiedResp);
                             	if(!CommonUtils.isObjectNullOrEmpty(isoCertifiedResp)){
                             		
                             		scoringParameterRequest.setIsoCertification_p(true);		
@@ -6654,7 +6651,7 @@ public class ScoringServiceImpl implements ScoringService {
                                 break;
                             }
                             case ScoreParameter.TOTAL_NO_OF_INWARD_CHEQUE_BOUNCES_LAST_SIX_MONTHS: {
-                            	logger.info("TOTAL_NO_OF_INWARD_CHEQUE_BOUNCES_LAST_SIX_MONTHS::::::::::======{TOTAL_NO_OF_INWARD_CHEQUE_BOUNCES_LAST_SIX_MONTHS}======{}===>>>");
+                            	logger.info("TOTAL_NO_OF_INWARD_CHEQUE_BOUNCES_LAST_SIX_MONTHS::::::::::");
                             	
                             	try{
                             		Double totalNoOfInwardChequeBouncesLatSixMonths = 0.0;
@@ -6682,7 +6679,9 @@ public class ScoringServiceImpl implements ScoringService {
                         						}
                        							scoringParameterRequest.setTotalNoOfChequeBounceLastSixMonths_p(true);
                        							scoringParameterRequest.setTotalNoOfInwardChequeBouncesLatSixMonths(totalNoOfInwardChequeBouncesLatSixMonths);
-                       							logger.info("TOTAL_NO_OF_INWARD_CHEQUE_BOUNCES_LAST_SIX_MONTHS::::::::::======{}======{}===>>>"+totalNoOfInwardChequeBouncesLatSixMonths);			 
+                       							logger.info("{noOfChequeBounceLast6MonthsCount}::::::::::======{1}======{}===>>>"+noOfChequeBounceLast6MonthsCount);
+                       							logger.info("{noOfChequeIssuelastSixMonthsCount}::::::::::======{2}======{}===>>>"+noOfChequeIssuelastSixMonthsCount);
+                       							logger.info("{totalNoOfInwardChequeBouncesLatSixMonths}::::::::::======{3}======{}===>>>"+totalNoOfInwardChequeBouncesLatSixMonths);
                         					}catch(Exception e) {
                         						logger.error("EXCEPTION IS GETTING WHILE CALCULATE CHEQUE BOUNCES / ISSUE LOGIC=====>{}====>{}",noOfChequeIssuelastSixMonthsCount,noOfChequeBounceLast6MonthsCount,e);
                         						scoringParameterRequest.setChequesBouncedLastSixMonth_p(false);
