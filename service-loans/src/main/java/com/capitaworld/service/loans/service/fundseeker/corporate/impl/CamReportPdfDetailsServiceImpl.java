@@ -1254,7 +1254,6 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					map.put("isoCertificationActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
 					map.put("isoCertificationScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
 					map.put("isoCertificationScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
-					business++;
 					continue;					
 				case ScoreParameter.TOTAL_NO_OF_INWARD_CHEQUE_BOUNCES_LAST_SIX_MONTHS: // New MSME
 					map.put("totalNoOfInwardChqBouncesLastSixMonthsActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
