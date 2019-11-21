@@ -6509,7 +6509,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     } else {
                                         noOfChequeBounce = 0.0;
                                     }
-                                    scoringParameterRequest.setNoOfChequesBouncedLastMonth(noOfChequeBounce);
+                                    scoringParameterRequest.setNoOfChequesBouncedLastSixMonth(noOfChequeBounce);
                                     scoringParameterRequest.setChequesBouncedLastSixMonth_p(true);
                                 }catch (Exception e){
                                     logger.error("error while getting NO_OF_CHEQUES_BOUNCED_LAST_SIX_MONTH parameter : ",e);
