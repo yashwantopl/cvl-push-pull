@@ -113,6 +113,7 @@ import com.capitaworld.service.oneform.enums.GetStringFromIdForMasterData;
 import com.capitaworld.service.oneform.enums.MaritalStatusMst;
 import com.capitaworld.service.oneform.enums.OccupationHL;
 import com.capitaworld.service.oneform.enums.OccupationNature;
+import com.capitaworld.service.oneform.enums.OccupationNatureNTB;
 import com.capitaworld.service.oneform.enums.RelationshipTypeHL;
 import com.capitaworld.service.oneform.enums.ReligionRetailMst;
 import com.capitaworld.service.oneform.enums.ResidenceStatusRetailMst;
@@ -606,15 +607,18 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
 						companyMap.put(Retail.AutoLoan.PERSONAL_RELATIONSHIP_WITH_BANK, CommonUtils.printFields(collect.get(0),null));
 					}
-                                        collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.IS_ADHAAR_CARD)).collect(Collectors.toList());
+                    collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.IS_ADHAAR_CARD)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
 						companyMap.put(Retail.AutoLoan.IS_ADHAAR_CARD, CommonUtils.printFields(collect.get(0),null));
 					}
-                                        collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.CAR_SEGMENT)).collect(Collectors.toList());
+                    collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.CAR_SEGMENT)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
 						companyMap.put(Retail.AutoLoan.CAR_SEGMENT, CommonUtils.printFields(collect.get(0),null));
 					}
-                                        
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.TAKE_HOME_PAY)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.AutoLoan.TAKE_HOME_PAY, CommonUtils.printFields(collect.get(0),null));
+					}                   
 					scoreResponse.add(companyMap);
 					map.put("scoringResp", scoreResponse);
 			}catch (Exception e) {
@@ -844,6 +848,10 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 				if(!CommonUtils.isListNullOrEmpty(collect)) {
 					companyMap.put(Retail.AutoLoan.PERSONAL_RELATIONSHIP_WITH_BANK, CommonUtils.printFields(collect.get(0),null));
 				}
+				collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.TAKE_HOME_PAY)).collect(Collectors.toList());
+				if(!CommonUtils.isListNullOrEmpty(collect)) {
+					companyMap.put(Retail.AutoLoan.TAKE_HOME_PAY, CommonUtils.printFields(collect.get(0),null));
+				} 
 					scoreResponse.add(companyMap);
 					coAppScoringData.add(scoreResponse);
 			}
