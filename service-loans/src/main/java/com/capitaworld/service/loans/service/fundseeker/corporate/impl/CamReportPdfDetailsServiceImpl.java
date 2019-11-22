@@ -814,7 +814,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
                 //financialArrangementsDetailResponse.setLenderType(LenderType.getById(financialArrangementsDetailRequest.getLenderType()).getValue());
                 financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());
                 financialArrangementsDetailResponse.setLoanType(financialArrangementsDetailRequest.getLoanType());
-                financialArrangementsDetailResponse.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
+                financialArrangementsDetailResponse.setFinancialInstitutionName(StringEscapeUtils.escapeXml(financialArrangementsDetailRequest.getFinancialInstitutionName()));
+                //financialArrangementsDetailResponse.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
                 //financialArrangementsDetailResponse.setFacilityNature(NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
                 //financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
                 financialArrangementsDetailResponse.setLcbgStatus(!CommonUtils.isObjectNullOrEmpty(financialArrangementsDetailRequest.getLcBgStatus()) ? LCBG_Status_SBI.getById(financialArrangementsDetailRequest.getLcBgStatus()).getValue().toString() : "-");
@@ -2379,7 +2380,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
 				MasterResponse masterResponse = MultipleJSONObjectHelper
 						.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-				return masterResponse.getValue();
+			    return StringEscapeUtils.escapeXml(masterResponse.getValue());
+
 			}
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
