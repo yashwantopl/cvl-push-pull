@@ -818,6 +818,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 							: " ");
 			map.put("promotorsContribution",
 					CommonUtils.convertValueIndianCurrency(primaryCorporateRequest.getPromoterContribution()));
+			map.put("productDesc", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getProductServiceDescription()) ? StringEscapeUtils.escapeXml(primaryCorporateDetail.getProductServiceDescription()) : null);
 			map.put("totalAmtPer",
 					!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getTotalAmtPercentage())
 							? " (" + CommonUtils.convertValue(primaryCorporateRequest.getTotalAmtPercentage()) + "%)"
