@@ -1,10 +1,30 @@
 package com.capitaworld.service.loans.config;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Timer;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
+
+import com.capitaworld.service.loans.domain.fundseeker.IneligibleProposalDetails;
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
+import com.capitaworld.service.loans.repository.common.CommonRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
@@ -15,7 +35,12 @@ import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
-import com.capitaworld.service.matchengine.model.*;
+import com.capitaworld.service.matchengine.model.ConnectionResponse;
+import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
+import com.capitaworld.service.matchengine.model.MatchRequest;
+import com.capitaworld.service.matchengine.model.ProposalCountResponse;
+import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
+import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.mca.client.McaClient;
 import com.capitaworld.service.mca.exception.McaException;
 import com.capitaworld.service.mca.model.verifyApi.VerifyAPIRequest;
@@ -24,7 +49,9 @@ import com.capitaworld.service.notification.exceptions.NotificationException;
 import com.capitaworld.service.notification.model.Notification;
 import com.capitaworld.service.notification.model.NotificationRequest;
 import com.capitaworld.service.notification.utils.ContentType;
+import com.capitaworld.service.notification.utils.EmailSubjectAlias;
 import com.capitaworld.service.notification.utils.NotificationAlias;
+import com.capitaworld.service.notification.utils.NotificationConstants;
 import com.capitaworld.service.notification.utils.NotificationConstants.NotificationProperty.DomainValue;
 import com.capitaworld.service.notification.utils.NotificationType;
 import com.capitaworld.service.oneform.client.OneFormClient;
@@ -34,15 +61,6 @@ import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
 import com.ibm.icu.text.SimpleDateFormat;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Component;
-
-import java.io.IOException;
-import java.util.*;
 
 @Component
 public class AsyncComponent {
@@ -81,12 +99,23 @@ public class AsyncComponent {
 	@Autowired 
 	private McaClient mcaClient;
 	
+	@Autowired
+	private LoanApplicationRepository loanApplicationRepository;
+	
+    @Autowired
+    private CommonRepository commonRepo;
+    
+    @Autowired
+    private RetailApplicantDetailRepository retailApplicantDetailRepository;
 
 	private static final String EMAIL_ADDRESS_FROM = "com.capitaworld.mail.url";
 	private static final String PARAMETERS_TOTAL_MATCHES = "total_matches";
 
 	private static final String THROW_EXCEPTION_WHILE_SENDING_MAIL_PRIMARY_COMPLETE = "Throw exception while sending mail, Primary Complete : ";
 	private static final String ERROR_WHILE_GET_FUND_PROVIDER_NAME = "Error while get fund provider name : ";
+	
+	private static final String HOLD_REJECT_REASON_UNABLE_TO_CONTACT_THE_CLIENT = "Unable to Contact the Client";
+	private static final String ISDYNAMIC ="isDynamic";
 
 	/**
 	 * FS Mail Number :- 4 Send Mail when Fund seeker login first time in our system
@@ -912,6 +941,103 @@ public class AsyncComponent {
 			logger.error("Throw exception while sending final lock mail : ",e);
 		}
 
+	}
+	
+	public Boolean sendNotificationToFsWhenProposalIneligibleInRetail(IneligibleProposalDetails inProp) {
+        Boolean isSent=false;
+        try {
+            if((inProp != null) && (inProp.getStatus() == 4) && (inProp.getReason().equals(HOLD_REJECT_REASON_UNABLE_TO_CONTACT_THE_CLIENT))) {
+                Map<String, Object> notiParam=new HashMap<String, Object>();
+                LoanApplicationMaster lonaApplication = loanApplicationRepository.findOne(inProp.getApplicationId());
+                if(lonaApplication.getProductId() != null && (lonaApplication.getProductId() == LoanType.HOME_LOAN.getValue()
+                        || lonaApplication.getProductId() == LoanType.PERSONAL_LOAN.getValue()
+                        || lonaApplication.getProductId() == LoanType.AUTO_LOAN.getValue() )) {
+                    Long domainId = NotificationConstants.NotificationProperty.DomainValue.RETAIL.getId();
+                    UsersRequest fsRequest = getUserNameAndEmail(inProp.getCreatedBy());
+                   
+                    Object[] checkerName = commonRepo.getLastCheckerNameByBranchId(inProp.getBranchId());
+                    if(checkerName != null) {
+                        String chkName=checkerName[0] != null ?
+                                String.valueOf(checkerName[0]).concat(checkerName[1] != null ?" "+checkerName[1] :"")
+                                :"Sir/Madam";
+                        notiParam.put("fpName", chkName);       
+                    }else {
+                    	notiParam.put("fpName", "Sir/Madam");
+                    }
+                    
+                    String fsName= null;
+                    Object[] retailData = retailApplicantDetailRepository.getBasicDetailsByAppId(inProp.getApplicationId()); 
+                    Object[] fsNameData = retailData != null && retailData[0] != null ? (Object[])retailData[0] : null;
+                    if(fsNameData != null) {
+                    	fsName = (fsNameData[0] != null ? fsNameData[0].toString() : "Sir/Madam") + " " +(fsNameData[1] != null ? fsNameData[1].toString() : "");
+                    }else {
+                    	fsName = "Sir/Madam";
+                    }
+                    
+                    notiParam.put("fs_name", fsName);
+                   
+                    if(!CommonUtils.isObjectNullOrEmpty(fsRequest) && !CommonUtils.isObjectNullOrEmpty(fsRequest.getEmail())) {
+                        String to = fsRequest.getEmail();   
+                        if(to !=null) {
+                        	createNotificationForEmail(to, fsRequest.getUserId() != null ? fsRequest.getUserId().toString() : "123", notiParam, NotificationAlias.EMAIL_FS_WHEN_PROPOSAL_REJECT_HOLD_FOR_SPECIFIC_REASON,EmailSubjectAlias.UNABLE_TO_REACH_HOLD_AND_REJECT_MAIL.getSubjectId(), domainId, null);
+                            isSent = true;
+                        }else {
+                            logger.info("to and fpName is null");
+                        }
+                    }
+                    if(!CommonUtils.isObjectNullOrEmpty(fsRequest.getMobile())) {
+                        String to = "91"+fsRequest.getMobile();   
+//                        sendSMSNotification(lonaApplication.getUserId().toString(), notiParam, null, domainId, inProp.getUserOrgId(),lonaApplication.getProductId(),
+//                               NotificationMasterAlias.SMS_FS_REJECT_HOLD_FOR_UNABLE_CONTACT_CLIENT_REASEON.getMasterId(), to);
+                        isSent = true;
+                    }
+                    if(!CommonUtils.isObjectNullOrEmpty(lonaApplication.getUserId())) {
+//                        sendSYSNotification(inProp.getApplicationId(),lonaApplication.getUserId().toString(),
+//                            notiParam, NotificationAlias.SYS_FS_CHECKER_REJECTS_PROPOSAL, lonaApplication.getUserId().toString(), domainId,inProp.getUserOrgId(),lonaApplication.getProductId(),
+//                            NotificationMasterAlias.SYS_FS_REJECT_HOLD_FOR_UNABLE_CONTACT_CLIENT_REASEON.getMasterId(),lonaApplication.getId());
+                    }
+                   
+                   
+                }else {
+                    return null;
+                }
+            }
+        }catch (Exception e) {
+            logger.error("Exception in sending email {}",e);
+        }
+        return isSent;
+    }
+	
+	private void createNotificationForEmail(String toNo, String userId, Map<String, Object> mailParameters,
+			Long templateId, Object subjectId ,Long domainId,String[] cc) throws NotificationException {
+		logger.info("Inside send notification===>{}",toNo);
+		NotificationRequest notificationRequest = new NotificationRequest();
+		notificationRequest.setDomainId(domainId);
+		try{
+			notificationRequest.setIsDynamic(( (Boolean) mailParameters.get(ISDYNAMIC)).booleanValue());
+		}catch (Exception e) {
+			notificationRequest.setIsDynamic(false);
+		}
+		notificationRequest.setClientRefId(userId);
+		String[] to = { toNo };
+		Notification notification = new Notification();
+		notification.setContentType(ContentType.TEMPLATE);
+		notification.setTemplateId(templateId);
+		notification.setSubject(subjectId);
+		notification.setTo(to);
+		if(cc != null) {
+			notification.setCc(cc);
+		}
+		notification.setType(NotificationType.EMAIL);
+		notification.setFrom(EMAIL_ADDRESS_FROM);
+		notification.setParameters(mailParameters);
+		notification.setIsDynamic(notificationRequest.getIsDynamic());
+		notificationRequest.addNotification(notification);
+		logger.info("Outside send notification===>{} ==>  status{}",toNo,sendEmail(notificationRequest));
+	}
+	
+	private Long sendEmail(NotificationRequest notificationRequest) throws NotificationException {
+		return notificationClient.send(notificationRequest).getResponse_code();
 	}
 
 	/**

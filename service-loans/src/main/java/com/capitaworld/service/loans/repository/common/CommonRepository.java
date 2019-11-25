@@ -40,6 +40,8 @@ public interface CommonRepository {
 	
 	public BigInteger checkApplicationDisbursed(String pan);
 	
+	public Object[] getLastCheckerNameByBranchId(Long branchId) throws Exception;
+	
 	//Payment Common Properties
 	
 	public String getSidbiAmount();
