@@ -324,8 +324,10 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 		ineligibleProposalDetails.setModifiedBy(inEliProReq.getUserId());
 		ineligibleProposalDetails.setModifiedDate(new Date());
 		ineligibleProposalDetailsRepository.save(ineligibleProposalDetails);
+		
+		asyncComp.sendNotificationToFsWhenProposalIneligibleInRetail(ineligibleProposalDetails);
+		
 		return true;
-
 	}
 
 	@Override
