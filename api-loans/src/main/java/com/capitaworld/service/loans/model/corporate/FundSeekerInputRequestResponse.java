@@ -93,6 +93,7 @@ public class FundSeekerInputRequestResponse {
 
     private Integer sinceYear;
     private Integer sinceMonth;
+    private Integer numberOfEmployee;
 
     private Integer estYear;
 
@@ -716,7 +717,15 @@ public class FundSeekerInputRequestResponse {
         this.xmlResponseExternal = xmlResponseExternal;
     }
 
-	@Override
+    public Integer getNumberOfEmployee() {
+        return numberOfEmployee;
+    }
+
+    public void setNumberOfEmployee(Integer numberOfEmployee) {
+        this.numberOfEmployee = numberOfEmployee;
+    }
+
+    @Override
 	public String toString() {
 		return "FundSeekerInputRequestResponse [userId=" + userId + ", clientId=" + clientId + ", applicationId="
 				+ applicationId + ", businessTypeId=" + businessTypeId + ", keyVericalFunding=" + keyVericalFunding

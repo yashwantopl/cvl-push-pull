@@ -228,7 +228,10 @@ public class CorporateApplicantDetail implements Serializable {
     @Column(name="is_noneof_related_party_selected")
     private Boolean isNoneOfRelatedPartySelected;;
 
-    
+
+	@Column(name="number_of_employee")
+	private Integer numberOfEmployee;
+
     
 	/**
 	 * @return the isMultiGST
@@ -761,6 +764,12 @@ public class CorporateApplicantDetail implements Serializable {
 			Boolean isNoneOfRelatedPartySelected) {
 		this.isNoneOfRelatedPartySelected = isNoneOfRelatedPartySelected;
 	}
-	
-	
+
+	public Integer getNumberOfEmployee() {
+		return numberOfEmployee;
+	}
+
+	public void setNumberOfEmployee(Integer numberOfEmployee) {
+		this.numberOfEmployee = numberOfEmployee;
+	}
 }
