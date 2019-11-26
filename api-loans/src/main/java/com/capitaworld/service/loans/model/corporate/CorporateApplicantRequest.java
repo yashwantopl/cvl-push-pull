@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.model.corporate;
 
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import com.capitaworld.service.loans.model.Address;
@@ -84,6 +85,8 @@ public class CorporateApplicantRequest implements Serializable {
     
     
     private Boolean isMultiGST;
+    
+    private Date loanApplicationCreatedDate;
     
     
     
@@ -358,19 +361,32 @@ public class CorporateApplicantRequest implements Serializable {
 	public void setGrossSales(Double grossSales) {
 		this.grossSales = grossSales;
 	}
+	
+	public Date getLoanApplicationCreatedDate() {
+		return loanApplicationCreatedDate;
+	}
+	
+	public void setLoanApplicationCreatedDate(Date loanApplicationCreatedDate) {
+		this.loanApplicationCreatedDate = loanApplicationCreatedDate;
+	}
 
 	@Override
 	public String toString() {
 		return "CorporateApplicantRequest [id=" + id + ", clientId=" + clientId + ", applicationId=" + applicationId
-				+ ", constitutionId=" + constitutionId + ", establishmentMonth=" + establishmentMonth
-				+ ", establishmentYear=" + establishmentYear + ", keyVericalFunding=" + keyVericalFunding
-				+ ", latitude=" + latitude + ", longitude=" + longitude + ", firstAddress=" + firstAddress
-				+ ", websiteAddress=" + websiteAddress + ", landlineNo=" + landlineNo + ", industrylist=" + industrylist
-				+ ", sectorlist=" + sectorlist + ", subsectors=" + subsectors + ", isApplicantDetailsFilled="
-				+ isApplicantDetailsFilled + ", detailsFilledCount=" + detailsFilledCount + ", userId=" + userId
-				+ ", keyVerticalSector=" + keyVerticalSector + ", keyVerticalSubsector=" + keyVerticalSubsector
-				+ ", email=" + email + ", environmentalImpactId=" + environmentalImpactId + ", turnOverPrevFinYear="
-				+ turnOverPrevFinYear + ", turnOverCurrFinYearTillMonth=" + turnOverCurrFinYearTillMonth
-				+ ", profitCurrFinYear=" + profitCurrFinYear + ", grossSales=" + grossSales + "]";
+				+ ", panNo=" + panNo + ", constitutionId=" + constitutionId + ", establishmentMonth="
+				+ establishmentMonth + ", establishmentYear=" + establishmentYear + ", keyVericalFunding="
+				+ keyVericalFunding + ", latitude=" + latitude + ", longitude=" + longitude + ", organisationName="
+				+ organisationName + ", firstAddress=" + firstAddress + ", websiteAddress=" + websiteAddress
+				+ ", landlineNo=" + landlineNo + ", industrylist=" + industrylist + ", sectorlist=" + sectorlist
+				+ ", subsectors=" + subsectors + ", isApplicantDetailsFilled=" + isApplicantDetailsFilled
+				+ ", detailsFilledCount=" + detailsFilledCount + ", userId=" + userId + ", keyVerticalSector="
+				+ keyVerticalSector + ", keyVerticalSubsector=" + keyVerticalSubsector + ", gstIn=" + gstIn + ", email="
+				+ email + ", companyCIN=" + companyCIN + ", environmentalImpactId=" + environmentalImpactId
+				+ ", turnOverPrevFinYear=" + turnOverPrevFinYear + ", turnOverCurrFinYearTillMonth="
+				+ turnOverCurrFinYearTillMonth + ", profitCurrFinYear=" + profitCurrFinYear + ", grossSales="
+				+ grossSales + ", isMultiGST=" + isMultiGST + ", loanApplicationCreatedDate="
+				+ loanApplicationCreatedDate + "]";
 	}
+
+	
 }
