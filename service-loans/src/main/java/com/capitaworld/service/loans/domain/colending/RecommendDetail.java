@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.domain.colending;
 
 import javax.persistence.*;
+import java.util.Date;
 
 /**
  * Created by dhaval.panchal on 10-Sep-19.
@@ -28,8 +29,23 @@ public class RecommendDetail {
     @Column(name="roi")
     private Double roi;
 
+    @Column(name="processing_fee")
+    private Double processingFee;
+
     @Column(name="remark")
     private String remark;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="created_date")
+    private Date createdDate;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="modified_date")
+    private Date modifiedDate;
+
+    @Column(name="is_active")
+    private Boolean isActive;
+
 
     public Long getId() {
         return id;
@@ -71,11 +87,43 @@ public class RecommendDetail {
         this.roi = roi;
     }
 
+    public Double getProcessingFee() {
+        return processingFee;
+    }
+
+    public void setProcessingFee(Double processingFee) {
+        this.processingFee = processingFee;
+    }
+
     public String getRemark() {
         return remark;
     }
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    public Date getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public Date getModifiedDate() {
+        return modifiedDate;
+    }
+
+    public void setModifiedDate(Date modifiedDate) {
+        this.modifiedDate = modifiedDate;
+    }
+
+    public Boolean getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(Boolean active) {
+        isActive = active;
     }
 }

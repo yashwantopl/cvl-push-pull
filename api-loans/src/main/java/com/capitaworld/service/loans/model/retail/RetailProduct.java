@@ -205,6 +205,8 @@ public class RetailProduct extends ProductMasterRequest {
 	
 	private Integer basedOnType;
 	
+	private Integer bureauVersion;
+	
 	// Minimum Net Take Home Salary (Rs.): 
 	private Double minNetTakeHomeSalary;
 	private Boolean isMinNetTakeHomeSalaryDisplay = false;
@@ -996,5 +998,13 @@ public class RetailProduct extends ProductMasterRequest {
 
 	public void setBureauScoreIds(List<Integer> bureauScoreIds) {
 		this.bureauScoreIds = bureauScoreIds;
+	}
+
+	public Integer getBureauVersion() {
+		return bureauVersion;
+	}
+
+	public void setBureauVersion(Integer bureauVersion) {
+		this.bureauVersion = bureauVersion;
 	}
 }

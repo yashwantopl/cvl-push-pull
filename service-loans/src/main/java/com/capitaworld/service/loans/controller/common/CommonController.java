@@ -6,6 +6,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import com.capitaworld.service.loans.domain.common.MinMaxProductDetail;
+import com.capitaworld.service.loans.model.TutorialUploadManageRes;
 import com.capitaworld.service.loans.model.TutorialsViewAudits;
 import com.capitaworld.service.loans.model.api_model.LoantypeSelectionResponse;
 import com.capitaworld.service.loans.model.common.*;
@@ -285,7 +286,17 @@ public class CommonController {
 				logger.error("Throw exception while check email verified or not : ",e);
 			}
 		}
-		
+
+		UsersRequest usersRequestObj = applicationService.getUserDetailsForUrlSepration(userId);
+		if(!CommonUtils.isObjectNullOrEmpty(usersRequestObj)){
+			if(!CommonUtils.isObjectNullOrEmpty(usersRequestObj.getLastAccessBusinessTypeId())){
+				obj.put("lastAccessBusinessType",usersRequestObj.getLastAccessBusinessTypeId());
+			}
+			if(!CommonUtils.isObjectNullOrEmpty(usersRequestObj.getIsNbfcUser()) && usersRequestObj.getIsNbfcUser()){
+				obj.put("coOriginationUser",usersRequestObj.getIsNbfcUser());
+			}
+		}
+
 		CommonDocumentUtils.endHook(logger, "user_verification");
 		return new ResponseEntity<UserResponse>(new UserResponse(obj, CommonUtils.SUCCESSFULLY_GET_DATA, HttpStatus.OK.value()),
 				HttpStatus.OK);
@@ -463,6 +474,17 @@ public class CommonController {
 			return new ResponseEntity<>(new LoansResponse("Something went wrong !!",HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	@GetMapping(value = "/getTutorialsById/{id}")
+	public ResponseEntity<LoansResponse> getTutorialsById(@PathVariable("id") Long id) {
+		logger.info("Enter in getTutorialsById");
+		try {
+			TutorialUploadManageRes tutorialsById = applicationService.getTutorialsById(id);
+			return new ResponseEntity<>(new LoansResponse("Successfully get data !!",HttpStatus.OK.value(),tutorialsById), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.warn("Error while getTutorialsByRoleId",e);
+			return new ResponseEntity<>(new LoansResponse("Something went wrong !!",HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 
 //	@GetMapping(value = "/getTutorialsAudit")
 	@RequestMapping(value = "/getTutorialsAudit", method = RequestMethod.POST,consumes=MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -472,6 +494,22 @@ public class CommonController {
 			return new ResponseEntity<>(new LoansResponse("Successfully get data !!",HttpStatus.OK.value(),applicationService.getTutorialsAudit(tutorialsViewAudits)), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.warn("Error while getTutorialsAudit",e);
+			return new ResponseEntity<>(new LoansResponse("Something went wrong !!",HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@RequestMapping(value = "/getTutorialsAuditList", method = RequestMethod.POST,consumes=MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getTutorialsAuditList(@RequestBody TutorialsViewAudits tutorialsViewAudits, HttpServletRequest request) {
+		logger.info("Enter in getTutorialsAuditList");
+		
+		if (CommonUtils.isObjectNullOrEmpty(tutorialsViewAudits.getTutorialId())) {
+			logger.warn("TutorialId is null");
+			return new ResponseEntity<>(new LoansResponse("Bad request",HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		try {
+			return new ResponseEntity<>(new LoansResponse("Successfully get data !!",HttpStatus.OK.value(),applicationService.getTutorialsAuditList(tutorialsViewAudits)), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.warn("Error while getTutorialsAuditList",e);
 			return new ResponseEntity<>(new LoansResponse("Something went wrong !!",HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}

@@ -15,6 +15,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.capitaworld.service.dms.exception.DocumentException;
+import com.capitaworld.service.matchengine.exception.MatchException;
+import com.capitaworld.service.matchengine.model.*;
 import org.joda.time.DateTimeComparator;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
@@ -25,6 +28,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -82,14 +86,6 @@ import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
-import com.capitaworld.service.matchengine.model.ConnectionResponse;
-import com.capitaworld.service.matchengine.model.DisbursementDetailsModel;
-import com.capitaworld.service.matchengine.model.MatchDisplayObject;
-import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
-import com.capitaworld.service.matchengine.model.MatchRequest;
-import com.capitaworld.service.matchengine.model.ProposalCountResponse;
-import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
-import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.matchengine.utils.MatchConstant;
 import com.capitaworld.service.matchengine.utils.MatchConstant.ProposalStatus;
 import com.capitaworld.service.notification.model.SchedulerDataMultipleBankRequest;
@@ -108,6 +104,7 @@ import com.capitaworld.service.users.model.FundProviderDetailsRequest;
 import com.capitaworld.service.users.model.LocationMasterResponse;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Transactional
@@ -1517,49 +1514,53 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					(Map<String, Object>) response.getData(), ProposalMappingRequest.class);
 
 			ProposalDetails proposalDetails = proposalDetailRepository.getSanctionProposalByApplicationId(proposalMappingRequest.getApplicationId());
+			ProposalDetails proposalDetails1 = proposalDetailRepository.getByApplicationIdAndFPProductId(request.getApplicationId(), request.getFpProductId());
 
 			Boolean isButtonDisplay=true;
 			String messageOfButton=null;
+			Boolean isNBFCProposal = false;
 
-			if((!CommonUtils.isObjectNullOrEmpty(proposalDetails)) && (!CommonUtils.isObjectNullOrEmpty(proposalDetails.getNbfcFlow()))) {
-
-				ProposalDetails proposalDetail = proposalDetailRepository.getProposalByProposalId(proposalMappingRequest.getId());
-				if (proposalDetail.getNbfcFlow() == 2) {
-
-					ProposalDetails proposalSanctionDisbusedByNbfc = null;
-					String msg = "";
-
-					proposalSanctionDisbusedByNbfc = proposalDetailRepository.getSanctionProposalByApplicationNBFCFlow(proposalMappingRequest.getApplicationId());
-
-					if (!CommonUtils.isObjectNullOrEmpty(proposalSanctionDisbusedByNbfc)) {
-						if (proposalSanctionDisbusedByNbfc.getProposalStatusId().getId() == CommonUtils.ApplicationStatus.ASSIGNED) {
-							msg = "Sanction pending from NBFC";
-							isButtonDisplay = false;
-							messageOfButton = msg;
-							proposalMappingRequest.setMessageOfButton(messageOfButton);
-							proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
-						} else if (proposalSanctionDisbusedByNbfc.getProposalStatusId().getId() == CommonUtils.ApplicationStatus.APPROVED) {
-							msg = "Disbursement pending from NBFC";
-							isButtonDisplay = false;
-							messageOfButton = msg;
-							proposalMappingRequest.setMessageOfButton(messageOfButton);
-							proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+			proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+			ProposalDetails proposalSanctionDisbusedByNbfc = null;
+			if (proposalDetails1 != null && proposalDetails1.getNbfcFlow() != null) {
+				isNBFCProposal = true;
+				if (proposalDetails1.getNbfcFlow() == 2) {
+					proposalSanctionDisbusedByNbfc = proposalDetailRepository.getSanctionProposalByApplicationNBFCFlow(proposalMappingRequest.getApplicationId(), 1);
+					if (proposalSanctionDisbusedByNbfc.getProposalStatusId().getId() == CommonUtils.ApplicationStatus.ASSIGNED) {
+						proposalMappingRequest.setMessageOfButton("Sanction pending from NBFC");
+						proposalMappingRequest.setIsButtonDisplay(false);
+					} else if (proposalSanctionDisbusedByNbfc.getProposalStatusId().getId() == CommonUtils.ApplicationStatus.APPROVED) {
+						proposalSanctionDisbusedByNbfc = proposalDetailRepository.getSanctionProposalByApplicationNBFCFlow(proposalMappingRequest.getApplicationId(), 2);
+						if (proposalSanctionDisbusedByNbfc.getProposalStatusId().getId() == CommonUtils.ApplicationStatus.APPROVED) { // check only if bank sanctioned on not
+							proposalMappingRequest.setMessageOfButton("Disbursement pending from NBFC");
+							proposalMappingRequest.setIsButtonDisplay(false);
 						}
+					}
+				} else if (proposalDetails1.getNbfcFlow() == 1) {
+					ProposalDetails proposalSanctionDisbusedByBank = proposalDetailRepository.getSanctionProposalByApplicationBankFlow(proposalMappingRequest.getApplicationId(), 2);
+					proposalSanctionDisbusedByNbfc = proposalDetailRepository.getSanctionProposalByApplicationBankFlow(proposalMappingRequest.getApplicationId(), 1);
+					if (proposalSanctionDisbusedByNbfc != null && proposalSanctionDisbusedByBank == null) {
+						messageOfButton = "Sanction pending from bank";
+						isButtonDisplay = false;
+						proposalMappingRequest.setMessageOfButton(messageOfButton);
+						proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
 					}
 				}
 			}
 
-			if(!CommonUtils.isObjectNullOrEmpty(proposalDetails))
-			{
-				if((!proposalDetails.getUserOrgId().toString().equals(request.getUserOrgId().toString())) && CommonUtils.isObjectNullOrEmpty(proposalDetails.getNbfcFlow()))
+			if(!isNBFCProposal){
+				if(!CommonUtils.isObjectNullOrEmpty(proposalDetails))
 				{
-					if(ProposalStatus.APPROVED ==  proposalDetails.getProposalStatusId().getId())
-						messageOfButton="This proposal has been Sanctioned by Other Bank.";
-					else if(ProposalStatus.DISBURSED ==  proposalDetails.getProposalStatusId().getId())
-						messageOfButton="This proposal has been Disbursed by Other Bank.";
-					else if(ProposalStatus.PARTIALLY_DISBURSED ==  proposalDetails.getProposalStatusId().getId())
-						messageOfButton="This proposal has been Partially Disbursed by Other Bank.";
-					isButtonDisplay=false;
+					if((!proposalDetails.getUserOrgId().toString().equals(request.getUserOrgId().toString())) && CommonUtils.isObjectNullOrEmpty(proposalDetails.getNbfcFlow()))
+					{
+						if(ProposalStatus.APPROVED ==  proposalDetails.getProposalStatusId().getId())
+							messageOfButton="This proposal has been Sanctioned by Other Bank.";
+						else if(ProposalStatus.DISBURSED ==  proposalDetails.getProposalStatusId().getId())
+							messageOfButton="This proposal has been Disbursed by Other Bank.";
+						else if(ProposalStatus.PARTIALLY_DISBURSED ==  proposalDetails.getProposalStatusId().getId())
+							messageOfButton="This proposal has been Partially Disbursed by Other Bank.";
+						isButtonDisplay=false;
+
 
 					proposalMappingRequest.setMessageOfButton(messageOfButton);
 					proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
@@ -1581,14 +1582,16 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							messageOfButton="This proposal has been Sanctioned by Other Bank.";
 						isButtonDisplay=false;
 
-						proposalMappingRequest.setMessageOfButton(messageOfButton);
-						proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
-					}else{
-						proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+							proposalMappingRequest.setMessageOfButton(messageOfButton);
+							proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+						}else{
+							proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+						}
 					}
+					proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
 				}
-				proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
 			}
+
 			response.setData(proposalMappingRequest);
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
@@ -3318,5 +3321,101 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		}
 		return null;
 	}
+
+	@Override
+	public ProposalMappingResponse getDisbursementRequestDetails(DisbursementRequestModel request) {
+		logger.info("DISBURSEMENT request DETAILS IS ---------------------------------------------------> " + request.toString());
+		if (CommonUtils.isObjectNullOrEmpty(request)) {
+			return new ProposalMappingResponse("Invalid request",
+					HttpStatus.INTERNAL_SERVER_ERROR.value());
+		}
+		try {
+			return proposalDetailsClient.getDisbursementRequestDetails(request);
+		} catch (MatchException e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+		return null;
+	}
+
+	@Override
+	public ProposalMappingResponse saveDisbursementRequestDetails(MultipartFile[] multipartFiles, String userRequestString) {
+		logger.info("saving DISBURSEMENT request DETAILS IS ---------------------------------------------------> " + userRequestString.toString());
+
+		try {
+			if (CommonUtils.isObjectNullOrEmpty(userRequestString)) {
+				return new ProposalMappingResponse("Invalid request",
+						HttpStatus.INTERNAL_SERVER_ERROR.value());
+			}
+
+			DisbursementRequestModel disbursementRequestModel = MultipleJSONObjectHelper.getObjectFromString(userRequestString, DisbursementRequestModel.class);
+			if (com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(disbursementRequestModel) || com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(multipartFiles)) {
+				return new ProposalMappingResponse("Error while uploading documents", HttpStatus.BAD_REQUEST.value());
+			}
+
+			boolean allUploaded = true;
+			/*int count = 0;
+			for (MultipartFile uploadingFile : multipartFiles) {
+				String imageForMfi = uploadImageForMfi(uploadingFile, disbursementRequestModel.getApplicationId(), 605 + count);
+				if (com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(imageForMfi)) {
+					allUploaded = false;
+				}
+				count++;
+			}*/
+			if (allUploaded) {
+				try {
+					return proposalDetailsClient.saveRequestDisbursementDetails(disbursementRequestModel);
+				} catch (Exception e) {
+					logger.error(CommonUtils.EXCEPTION, e);
+				}
+			} else {
+				logger.error("Error while uploading documents");
+				return new ProposalMappingResponse("Error while uploading documents", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			}
+		}catch (Exception e){
+			logger.error("Error while saving disbursement request");
+		}
+		return null;
+	}
+
+	private String uploadImageForMfi(MultipartFile multipartFile, Long userId, Integer productDocMappingId) {
+		org.json.simple.JSONObject jsonObj = new org.json.simple.JSONObject();
+		jsonObj.put("applicationId", userId);
+		jsonObj.put("productDocumentMappingId", productDocMappingId);// this is productmappingid 593 for save in amazon
+		// s3
+		jsonObj.put("userType", DocumentAlias.UERT_TYPE_APPLICANT);
+		jsonObj.put("originalFileName", multipartFile.getOriginalFilename());
+		try {
+			DocumentResponse documentResponse = dmsClient.uploadFile(jsonObj.toString(), multipartFile);
+			logger.info("response {}", documentResponse.getStatus());
+			StorageDetailsResponse response = null;
+			Map<String, Object> list = (Map<String, Object>) documentResponse.getData();
+			if (!com.capitaworld.service.loans.utils.CommonUtils.isObjectListNull(list)) {
+				try {
+					response = com.capitaworld.service.scoring.utils.MultipleJSONObjectHelper.getObjectFromMap(list, StorageDetailsResponse.class);
+				} catch (IOException e) {
+					e.printStackTrace();
+					logger.error("IO exception while upload file on DMS");
+				}
+			}
+
+			if (response != null) {
+				logger.debug("upload pre disbursedment () :: response is not null");
+				if (!com.capitaworld.service.loans.utils.CommonUtils.isObjectNullOrEmpty(response.getFilePath())) {
+					return response.getId().toString();
+				} else {
+					logger.debug("uploadImageForMfi() :: error while upload Files response not 200");
+					return null;
+				}
+			} else {
+				logger.debug("uploadImageForMfi() :: response is null");
+				return null;
+			}
+		} catch (DocumentException e) {
+			e.printStackTrace();
+			logger.error("Document exception while upload file on DMS");
+			return null;
+		}
+	}
+
 }
 

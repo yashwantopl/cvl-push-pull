@@ -27,6 +27,7 @@ import com.capitaworld.service.notification.exceptions.NotificationException;
 import com.capitaworld.service.notification.model.Notification;
 import com.capitaworld.service.notification.model.NotificationRequest;
 import com.capitaworld.service.notification.utils.ContentType;
+import com.capitaworld.service.notification.utils.EmailSubjectAlias;
 import com.capitaworld.service.notification.utils.NotificationType;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
@@ -87,7 +88,7 @@ public class NotificationServiceImpl implements NotificationService{
 	}
 	
 	private Notification createEmailNotification(String[] toIds, Long fromId, Long fromUserTypeId, Long templateId,
-			Map<String, Object> parameters, Long applicationId, Long fpProductId,NotificationTemplate notificationTemplate,String fpName) {
+			Map<String, Object> parameters, Long applicationId, Long fpProductId,NotificationTemplate notificationTemplate,String fpName,Object subjectId) {
 		
         CommonDocumentUtils.startHook(logger, "create Email Notification");
         
@@ -119,7 +120,12 @@ public class NotificationServiceImpl implements NotificationService{
 		notification.setContentType(ContentType.TEMPLATE);
 		notification.setParameters(parameters);
 		notification.setFrom(environment.getRequiredProperty(EMAIL_ADDRESS_FROM));
-		notification.setSubject(NotificationTemplate.getSubjectName(notificationTemplate.getValue(), fpName));
+		if(subjectId == null) {
+			notification.setSubject(NotificationTemplate.getSubjectName(notificationTemplate.getValue(), fpName));
+		}else {
+			notification.setSubject(subjectId);
+		}
+		notification.setEmailSubjectId(EmailSubjectAlias.getFirstAliasByTemplateId(notificationTemplate.getValue()).getSubjectId());
 		CommonDocumentUtils.endHook(logger, "create Email Notification");
 		return notification;
 
@@ -128,7 +134,7 @@ public class NotificationServiceImpl implements NotificationService{
 
 	@Override
 	public void sendViewNotification(String toUserId, Long fromUserId, Long fromUserTypeId, Long notificationId,
-			Long applicationId, Long fpProductId,NotificationTemplate notificationTemplate,Long loginUserType) {
+			Long applicationId, Long fpProductId,NotificationTemplate notificationTemplate,Long loginUserType,Object subjectId) {
 
 		CommonDocumentUtils.startHook(logger, SEND_VIEW_NOTIFICATION);
 		
@@ -173,7 +179,7 @@ public class NotificationServiceImpl implements NotificationService{
 					logger.error(CommonUtils.EXCEPTION,e);
 					parameters.put(FP_PNAME_PARAMETERS, "NA");
 				}
-				request.addNotification(createEmailNotification(a, fromUserId, fromUserTypeId,notificationId, parameters, applicationId, fpProductId,notificationTemplate,fpName));
+				request.addNotification(createEmailNotification(a, fromUserId, fromUserTypeId,notificationId, parameters, applicationId, fpProductId,notificationTemplate,fpName,subjectId));
 			try {
 				notificationClient.send(request);
 				logger.info("Successfully sent notification and email for primary or final view");
@@ -190,7 +196,7 @@ public class NotificationServiceImpl implements NotificationService{
 			Map<String, Object> parameters, Long applicationId, Long fpProductId,NotificationTemplate notificationTemplate,String fpName){
 		NotificationRequest request = new NotificationRequest();
 		request.setClientRefId(fromUserId.toString());
-		request.addNotification(createEmailNotification(toIds, fromUserId, fromUserTypeId,templateId, parameters, applicationId, fpProductId,notificationTemplate,fpName));
+      		request.addNotification(createEmailNotification(toIds, fromUserId, fromUserTypeId,templateId, parameters, applicationId, fpProductId,notificationTemplate,fpName,null));
 		try {
 			notificationClient.send(request);
 			logger.info("Successfully sent notification and email for primary or final view");

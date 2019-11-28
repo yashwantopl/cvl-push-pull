@@ -26,6 +26,7 @@ List<LoanDisbursementRequest> loanDisbursementRequestList;
 private Double tenure;
 private Double roi;
 private Boolean isIneligibleProposal;
+private Integer nbfcFlow;
 
 
 
@@ -151,7 +152,12 @@ public void setFpOrganisationName(String fpOrganisationName) {
 	public void setProposalId(Long proposalId) {
 		this.proposalId = proposalId;
 	}
-	
-	
-	
+
+	public Integer getNbfcFlow() {
+		return nbfcFlow;
+	}
+
+	public void setNbfcFlow(Integer nbfcFlow) {
+		this.nbfcFlow = nbfcFlow;
+	}
 }

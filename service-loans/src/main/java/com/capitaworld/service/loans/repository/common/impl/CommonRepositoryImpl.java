@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.repository.common.impl;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -10,6 +11,7 @@ import javax.persistence.StoredProcedureQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import com.capitaworld.service.loans.repository.common.CommonRepository;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -113,6 +115,11 @@ public class CommonRepositoryImpl  implements CommonRepository {
 	public String getEmailIdFromUsers(Long userId) {
 		return (String) manager.createNativeQuery("SELECT u.email FROM users.users u WHERE u.user_id=:userId").setParameter("userId", userId).getSingleResult();
 	}
+	
+	@Override
+	public Object[] getEmailIdAndMobileForNBFCUser(Long userId) {
+		return (Object[]) manager.createNativeQuery("SELECT fsd.email , fsd.mobile FROM users.fund_seeker_details fsd WHERE fsd.user_id=:userId").setParameter("userId", userId).getSingleResult();
+	}
 
 	@Override
 	public Object[] getInEligibleByApplicationId(Long applicationId) {
@@ -123,6 +130,15 @@ public class CommonRepositoryImpl  implements CommonRepository {
 	public String getSidbiAmount() {
 		try {
 			return (String) manager.createNativeQuery("SELECT cp.value FROM payment_service.common_properties cp WHERE cp.name = 'paymentAmount' and cp.type= 'sidbiFees' and cp.is_active=true").getSingleResult();
+		}catch (Exception e) {
+			return null;
+		}
+	}
+	
+	@Override
+	public String getGatewayProvider() {
+		try {
+			return (String) manager.createNativeQuery("SELECT cp.value FROM payment_service.common_properties cp WHERE cp.name = 'gatewayProvider' and cp.type= 'Integration' and cp.is_active=true").getSingleResult();
 		}catch (Exception e) {
 			return null;
 		}
@@ -153,5 +169,44 @@ public class CommonRepositoryImpl  implements CommonRepository {
 		return (List<String>) manager.createNativeQuery("SELECT us.email FROM users.users us WHERE us.user_org_id=:orgId AND us.user_role_id=:roleId AND us.branch_id=:branchId")
 				.setParameter("orgId", orgId).setParameter("roleId", roleId).setParameter("branchId", branchId).getResultList();
 	}
+	
+	@Override
+	public Object getIsNBFCUser(Long applicationId) {
+		try {
+			return manager.createNativeQuery("SELECT COUNT(*) FROM connect.connect_log c WHERE c.application_id="+applicationId+" AND c.stage_id>=5 AND c.stage_id!=8 AND c.is_nbfc_user = true").getSingleResult();
+		}catch (Exception e) {
+			return 0;  
+		}
+	}
+	
+	@Override
+	public Object[] fetchALDetailsOfManufacturerAssetsSupplier(Long manufacturerId , Long assetModelId, Integer supplierId)  {
+		StoredProcedureQuery storedProcedureQuery = manager.createStoredProcedureQuery("fetch_auto_loan_details");
+		storedProcedureQuery.registerStoredProcedureParameter("manufacturerId",Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter("assetModelId",Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter("supplierId",Integer.class, ParameterMode.IN);
+		storedProcedureQuery.setParameter("manufacturerId",manufacturerId);
+		storedProcedureQuery.setParameter("assetModelId",assetModelId);
+		storedProcedureQuery.setParameter("supplierId",supplierId);
+		storedProcedureQuery.execute();
+		return (Object[]) storedProcedureQuery.getSingleResult();
+	}
+	
+	
+	@Override
+	public BigInteger checkApplicationDisbursed(String pan) {
+		return (BigInteger) manager.createNativeQuery("SELECT COUNT(*) FROM `connect`.`connect_log` cn\n" +
+				"INNER JOIN `loan_application`.`proposal_details` pd ON pd.application_id=cn.application_id AND pd.is_active=TRUE AND pd.proposal_status_id IN (11,13)\n" +
+				"WHERE (SUBSTR(cn.gstin,3,10) =:pan) AND\n" +
+				"((cn.stage_id IN (7,9) AND cn.status=3) OR (cn.stage_id=4 AND cn.status=6))").setParameter("pan", pan).getSingleResult();
+	}
+
+	@Override
+    public Object[] getLastCheckerNameByBranchId(Long branchId) throws Exception {
+         return (Object[]) manager.createNativeQuery("SELECT f.first_name,f.last_name " +
+                 "FROM users.users u " +
+                 "LEFT JOIN users.`fund_provider_details` f ON f.user_id=u.user_id " +
+                 "WHERE u.branch_id=:branchId AND u.user_role_id=9 ORDER BY u.user_id DESC Limit 1;").setParameter("branchId", branchId).getSingleResult();
+    }
 	
 }

@@ -36,4 +36,8 @@ public interface CoLendingService {
 	public JSONObject getFPProposalCount(NhbsApplicationRequest nhbsApplicationRequest, Long npOrgId);
 
 	public List<CoLendingProposalResponse> getListOfCheckerProposalsFP(NhbsApplicationRequest request);
+
+	public List<CoLendingRequest> getCoOriginationRatio(NhbsApplicationRequest nhbsApplicationRequest);
+
+	public List<CoLendingRequest> getCoOriginationAllRatio(NhbsApplicationRequest nhbsApplicationRequest);
 }

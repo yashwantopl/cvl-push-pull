@@ -85,7 +85,7 @@ public class CorporatePrimaryViewResponse {
     private Object buisnessRiskScoreWeight;
     private Object scoreInterpretation;
     private Object bankData;
-    private Long assesmentId;
+	private Long assesmentId;
     private Object itrXmlIsUploaded;
     private Object managementRiskMaxTotalScore;
     private Object financialRiskMaxTotalScore;
@@ -158,9 +158,19 @@ public class CorporatePrimaryViewResponse {
     private Object bankComparisionData;
     private List<CollateralSecurityDetailRequest> collateralSecurityDetails;
     Map<String, Object> gstRelatedParty;
-    
+    private CorporatePrimaryViewResponseNbfc nbfcData;
     private Object gstBankComp;
-   
+    
+    private List<Object> nbfcPANReport;
+	private List<Object> nbfcAddressProofReport;
+	private List<Object> nbfcProjectedFinancials;
+    
+	public CorporatePrimaryViewResponseNbfc getNbfcData() {
+		return nbfcData;
+	}
+	public void setNbfcData(CorporatePrimaryViewResponseNbfc nbfcData) {
+		this.nbfcData = nbfcData;
+	}
 	public List<Object> getCibilReport() {
 		return cibilReport;
 	}
@@ -1320,5 +1330,30 @@ public class CorporatePrimaryViewResponse {
 	public void setVerifyApiData(Object verifyApiData) {
 		this.verifyApiData = verifyApiData;
 	}
-    
+	public List<Object> getNbfcPANReport() {
+		return nbfcPANReport;
+	}
+	public void setNbfcPANReport(List<Object> nbfcPANReport) {
+		this.nbfcPANReport = nbfcPANReport;
+	}
+	public List<Object> getNbfcAddressProofReport() {
+		return nbfcAddressProofReport;
+	}
+	public void setNbfcAddressProofReport(List<Object> nbfcAddressProofReport) {
+		this.nbfcAddressProofReport = nbfcAddressProofReport;
+	}
+	public List<Object> getNbfcProjectedFinancials() {
+		return nbfcProjectedFinancials;
+	}
+	public void setNbfcProjectedFinancials(List<Object> nbfcProjectedFinancials) {
+		this.nbfcProjectedFinancials = nbfcProjectedFinancials;
+	}
+	
+	
+	/*
+	 * public List<CorporatePrimaryViewResponseNbfc> getNbfcListList() { return
+	 * nbfcListList; } public void
+	 * setNbfcListList(List<CorporatePrimaryViewResponseNbfc> nbfcListList) {
+	 * this.nbfcListList = nbfcListList; }
+	 */
 }

@@ -19,8 +19,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.cibil.api.model.CibilRequest;
+import com.capitaworld.cibil.api.model.CibilScoreLogRequest;
+import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.reports.ReportsClient;
 import com.capitaworld.connect.api.ConnectStage;
+import com.capitaworld.itr.api.model.ITRBasicDetailsResponse;
+import com.capitaworld.itr.api.model.ITRConnectionResponse;
+import com.capitaworld.itr.client.ITRClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
 import com.capitaworld.service.analyzer.model.common.Data;
@@ -36,6 +42,9 @@ import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
 import com.capitaworld.service.loans.model.retail.HLOneformPrimaryRes;
 import com.capitaworld.service.loans.model.retail.PLRetailApplicantRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
+import com.capitaworld.service.loans.repository.common.CommonRepository;
+import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.IneligibleProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.BankingRelationlRepository;
 import com.capitaworld.service.loans.service.common.PincodeDateService;
@@ -49,7 +58,10 @@ import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryHomeLoanSe
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantIncomeService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
+import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
+import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequestString;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.oneform.client.OneFormClient;
@@ -61,18 +73,23 @@ import com.capitaworld.service.oneform.enums.EmploymentWithPL;
 import com.capitaworld.service.oneform.enums.EmploymentWithRetail;
 import com.capitaworld.service.oneform.enums.Gender;
 import com.capitaworld.service.oneform.enums.HomeLoanPurpose;
+import com.capitaworld.service.oneform.enums.LoanPurposeQuestion;
 import com.capitaworld.service.oneform.enums.MaritalStatusMst;
 import com.capitaworld.service.oneform.enums.OccupationHL;
 import com.capitaworld.service.oneform.enums.OccupationNature;
 import com.capitaworld.service.oneform.enums.RelationshipTypeHL;
+import com.capitaworld.service.oneform.enums.ResidenceStatusRetailMst;
 import com.capitaworld.service.oneform.enums.ResidenceTypeHomeLoan;
 import com.capitaworld.service.oneform.enums.ResidentStatusMst;
+import com.capitaworld.service.oneform.enums.SalaryModeMst;
 import com.capitaworld.service.oneform.enums.SpouseEmploymentList;
 import com.capitaworld.service.oneform.enums.Title;
 import com.capitaworld.service.oneform.enums.WcRenewalType;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.oneform.model.SectorIndustryModel;
+import com.capitaworld.service.users.client.UsersClient;
+import com.capitaworld.service.users.model.UserResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
@@ -119,7 +136,25 @@ public class HLIneligibleCamReportServiceImpl implements HLIneligibleCamReportSe
 	private ReportsClient reportsClient;
 	
 	@Autowired
+	private CIBILClient cibilClient;
+	
+	@Autowired
+	private MatchEngineClient matchEngineClient;
+	
+	@Autowired
+	private ProposalDetailsRepository proposalDetailsRepository;
+	
+	@Autowired
 	private HLIneligibleCamReportService hlIneligibleCamReportService;
+	
+	@Autowired
+	private CommonRepository commonRepository;
+	
+	@Autowired
+	private UsersClient usersClient;
+	
+	@Autowired
+	private ITRClient itrClient;
 	
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -133,7 +168,22 @@ public class HLIneligibleCamReportServiceImpl implements HLIneligibleCamReportSe
 		
 		Long userId = loanApplicationRepository.getUserIdByApplicationId(applicationId);
      	LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
-     	
+     	try {
+			// ConnectResponse connectResponse =
+			// connectClient.getByAppStageBusinessTypeId(applicationId,
+			// ConnectStage.COMPLETE.getId(),
+			// com.capitaworld.service.loans.utils.CommonUtils.BusinessType.EXISTING_BUSINESS.getId());
+			Date InPrincipleDate = loanApplicationRepository.getInEligibleModifiedDate(applicationId,
+					ConnectStage.RETAIL_ONE_FORM_LOAN_DETAILS.getId(), 6);
+			if (!CommonUtils.isObjectNullOrEmpty(InPrincipleDate)) {
+				map.put("dateOfInEligible", 
+						!CommonUtils.isObjectNullOrEmpty(InPrincipleDate)
+								? CommonUtils.DATE_FORMAT.format(InPrincipleDate)
+								: "-");
+			}
+		} catch (Exception e2) {
+			logger.error(CommonUtils.EXCEPTION, e2);
+		}
      	if(loanApplicationMaster != null) {
      		map.put("applicationType", (loanApplicationMaster.getWcRenewalStatus() != null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue() : "New" ));
      		map.put("dateOfProposal", !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCreatedDate())? simpleDateFormat.format(loanApplicationMaster.getCreatedDate()):"-");
@@ -208,6 +258,55 @@ public class HLIneligibleCamReportServiceImpl implements HLIneligibleCamReportSe
 				operatingBusinessSince = (today.getYear() - operatingBusinessDiff.getYear()) + " years";
 			}
 			
+			//Fetch Bank Details
+			
+			
+			try {
+				map.put("bankDetails", fetchBankDetails(applicationId, userId, null));
+			}catch (Exception e) {
+				logger.error("Error/Exception while getting Bank Details Of ApplicationId==>{}  ..Error==>{}",applicationId ,e);
+			}
+			
+			ITRBasicDetailsResponse itrBasicDetailsResponse = null;
+			String nameAsPerItr = null;
+			try {
+				ITRConnectionResponse resNameAsPerITR = itrClient.getIsUploadAndYearDetails(applicationId);
+				if (resNameAsPerITR != null) {
+					itrBasicDetailsResponse = (ITRBasicDetailsResponse)MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)resNameAsPerITR.getData(), ITRBasicDetailsResponse.class);
+					nameAsPerItr = itrBasicDetailsResponse.getName();
+					map.put("nameFromItr", !CommonUtils.isObjectNullOrEmpty(nameAsPerItr) ? nameAsPerItr.replaceAll("null", "") : "-");
+					map.put("itrData" ,resNameAsPerITR.getData() != null ? resNameAsPerITR.getData() : null);
+				} else {
+					logger.warn("-----------:::::::::::::: ItrResponse is null ::::::::::::---------");
+				}
+			} catch (Exception e) {
+				logger.error(":::::::::::---------Error while fetching name as per itr----------:::::::::::",e);
+			}
+			
+			
+			//NEW MATCHES CODE INCLUDED
+			try {
+				MatchRequest matchRequest = new MatchRequest();
+				matchRequest.setApplicationId(applicationId);
+				//matchRequest.setProductId(productId);
+				matchRequest.setBusinessTypeId(loanApplicationMaster.getBusinessTypeId());
+				MatchDisplayResponse matchResponse= matchEngineClient.displayOfflineMatchesOfRetail(matchRequest);
+				logger.info("matchesResponse"+matchResponse);
+				map.put("matchesResponse", !CommonUtils.isObjectNullOrEmpty(matchResponse.getMatchDisplayObjectMap()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectMap(),null) : " ");
+			}
+			catch (Exception e) {
+				logger.error("Error while getting matches data : ",e);
+			}
+			
+
+			// for name is edited or not:
+			String fullName = (plRetailApplicantRequest.getFirstName() != null ? plRetailApplicantRequest.getFirstName() : "") +" "+ (plRetailApplicantRequest.getMiddleName() != null ? plRetailApplicantRequest.getMiddleName() : "") +" "+ (plRetailApplicantRequest.getLastName() != null ?  plRetailApplicantRequest.getLastName() : "");
+			if(!CommonUtils.isObjectNullOrEmpty(fullName) && fullName.equals(nameAsPerItr)){
+				map.put("nameEdited","-");
+			}else{
+				map.put("nameEdited",fullName);
+			}
+			
 			map.put("gender", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getGenderId()) ? Gender.getById(plRetailApplicantRequest.getGenderId()).getValue(): "-");
 			map.put("birthDate",!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBirthDate())? simpleDateFormat.format(plRetailApplicantRequest.getBirthDate()):"-");
 			
@@ -242,6 +341,27 @@ public class HLIneligibleCamReportServiceImpl implements HLIneligibleCamReportSe
 			map.put("applicantCategory", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getCategory()) ? CastCategory.getById(plRetailApplicantRequest.getCategory()).getValue() : "-");
 			map.put("experienceInPresentJob", (!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getCurrentJobYear()) ? plRetailApplicantRequest.getCurrentJobYear() + " years" :"")+" "+(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getCurrentJobMonth()) ? plRetailApplicantRequest.getCurrentJobMonth() +" months" : ""));
 			map.put("totalExperience", (!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getTotalExperienceYear()) ? plRetailApplicantRequest.getTotalExperienceYear() + " years" :"")+" "+(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getTotalExperienceMonth()) ? plRetailApplicantRequest.getTotalExperienceMonth() +" months" : ""));
+			map.put("salaryMode", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getSalaryMode()) ? SalaryModeMst.getById(plRetailApplicantRequest.getSalaryMode()).getValue() : "-");
+			map.put("loanPurposeType" ,!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getLoanPurposeQueType()) ? LoanPurposeQuestion.fromId(plRetailApplicantRequest.getLoanPurposeQueType()).getValue() : "-");
+			if(ResidenceStatusRetailMst.OWNED.getId() == plRetailApplicantRequest.getResidenceType()) {
+				map.put("mortgageInOwnedProperty", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getIsOwnedProp()) ? plRetailApplicantRequest.getIsOwnedProp() == true ? "Yes" : "No" : "-");
+			}else {
+				map.put("mortgageInOwnedProperty", "-");
+			}
+			//cibil score
+			try {
+				CibilRequest cibilReq=new CibilRequest();
+				cibilReq.setPan(plRetailApplicantRequest.getPan());
+				cibilReq.setApplicationId(applicationId);
+				CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
+				if (cibilScoreByPanCard != null) {
+					map.put("applicantV2Score", CommonUtils.getCibilV2ScoreRange(cibilScoreByPanCard.getActualScore()));
+					map.put("applicantCIBILScore", cibilScoreByPanCard != null && cibilScoreByPanCard.getActualScore() != null? cibilScoreByPanCard.getActualScore() : null);
+				}
+				
+			} catch (Exception e) {
+				logger.error("Error While calling Cibil Score By PanCard : ",e);
+			}
 			
 			//KEY VERTICAL FUNDING
 			List<Long> keyVerticalFundingId = new ArrayList<>();
@@ -267,16 +387,19 @@ public class HLIneligibleCamReportServiceImpl implements HLIneligibleCamReportSe
 			if (!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getKeyVerticalSector()))
 				keyVerticalSectorId.add(plRetailApplicantRequest.getKeyVerticalSector());
 			try {
-				OneFormResponse formResponse = oneFormClient.getIndustrySecByMappingId(plRetailApplicantRequest.getKeyVerticalSector());
-				SectorIndustryModel sectorIndustryModel = MultipleJSONObjectHelper.getObjectFromMap((Map) formResponse.getData(), SectorIndustryModel.class);
-				OneFormResponse oneFormResponse = oneFormClient.getSectorById(Arrays.asList(sectorIndustryModel.getSectorId()));
-				List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
-				if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-					MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-					map.put("keyVerticalSector", StringEscapeUtils.escapeXml(masterResponse.getValue()));
-				} else {
-					map.put("keyVerticalSector", "-");
+				if(plRetailApplicantRequest!= null && plRetailApplicantRequest.getKeyVerticalSector()!= null) {
+					OneFormResponse formResponse = oneFormClient.getIndustrySecByMappingId(plRetailApplicantRequest.getKeyVerticalSector());
+					SectorIndustryModel sectorIndustryModel = MultipleJSONObjectHelper.getObjectFromMap((Map) formResponse.getData(), SectorIndustryModel.class);
+					OneFormResponse oneFormResponse = oneFormClient.getSectorById(Arrays.asList(sectorIndustryModel.getSectorId()));
+					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
+					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+						MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+						map.put("keyVerticalSector", StringEscapeUtils.escapeXml(masterResponse.getValue()));
+					} else {
+						map.put("keyVerticalSector", "-");
+					}
 				}
+				
 			} catch (Exception e) {
 				logger.error(CommonUtils.EXCEPTION,e);
 			}
@@ -375,6 +498,37 @@ public class HLIneligibleCamReportServiceImpl implements HLIneligibleCamReportSe
 				}catch (Exception e) {
 					logger.error("Error/Exception while fetching data for CoApplicant Banking Relationship");
 				}
+				try {
+                    CibilRequest cibilReq=new CibilRequest();
+                    cibilReq.setPan(coApplicantDetail.getPan());
+                    cibilReq.setApplicationId(applicationId);
+                    CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
+                    if(cibilScoreByPanCard != null) {
+                    	coApp.put("coAppV2Score", CommonUtils.getCibilV2ScoreRange(cibilScoreByPanCard.getActualScore()));
+                    	coApp.put("coAppCibilScore", cibilScoreByPanCard);
+                    }
+                    
+                } catch (Exception e) {
+                    logger.error("Error While calling Cibil Score By PanCard : ",e);
+                }
+				
+				ITRBasicDetailsResponse itrBasicDetailsResponse = new ITRBasicDetailsResponse();
+				itrBasicDetailsResponse.setApplicationId(applicationId);
+				itrBasicDetailsResponse.setCoAppId(coApplicantDetail.getId());
+				try {
+					ITRBasicDetailsResponse itrResponse = itrClient.getAppOrCoAppBasicDetails(itrBasicDetailsResponse);
+					coApp.put("coAppNameAsPerItr" ,itrResponse != null && itrResponse.getName() != null ? itrResponse.getName() : "-");
+				
+					// for name is edited or not:
+					String fullName = (coApplicantDetail.getFirstName() != null ? coApplicantDetail.getFirstName() : "") +" "+ (coApplicantDetail.getMiddleName() != null ? coApplicantDetail.getMiddleName() : "") +" "+ (coApplicantDetail.getLastName() != null ?  coApplicantDetail.getLastName() : "");
+					if(!CommonUtils.isObjectNullOrEmpty(fullName) && !CommonUtils.isObjectNullOrEmpty(itrResponse) && fullName.equalsIgnoreCase(itrResponse.getName())){
+						coApp.put("nameEditedOfCoApp","-");
+					}else{
+						coApp.put("nameEditedOfCoApp",fullName);
+					}
+				} catch (Exception e) {
+					logger.error("Error while fetching itr data from itrClient fro CoApplicant",e);
+				}
 				
 				BeanUtils.copyProperties(coApplicantDetail, coApplicantRequest);
 				LocalDate today = LocalDate.now();
@@ -442,6 +596,13 @@ public class HLIneligibleCamReportServiceImpl implements HLIneligibleCamReportSe
 				coApp.put("experienceInPresentJob", (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentJobYear()) ? coApplicantDetail.getCurrentJobYear() + " years" :"")+" "+(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentJobMonth()) ? coApplicantDetail.getCurrentJobMonth() +" months" : ""));
 				coApp.put("totalExperience", (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getTotalExperienceYear()) ? coApplicantDetail.getTotalExperienceYear() + " years" :"")+" "+(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getTotalExperienceMonth()) ? coApplicantDetail.getTotalExperienceMonth() +" months" : ""));
 				coApp.put("retailCoApplicantProfile", CommonUtils.printFields(coApplicantRequest, null));
+				coApp.put("salaryMode", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getModeOfReceipt()) ? SalaryModeMst.getById(coApplicantDetail.getModeOfReceipt()).getValue() : "-");
+				
+				if(ResidenceStatusRetailMst.OWNED.getId() == coApplicantDetail.getResidenceType()) {
+					coApp.put("mortgageInOwnedProperty", !CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getIsOwnedProp()) ? coApplicantDetail.getIsOwnedProp() == true ? "Yes" : "No" : "-");
+				}else {
+					coApp.put("mortgageInOwnedProperty", "-");
+				}
 				listMap.add(coApp);		
 			}
 			map.put("retailCoApplicantDetails", !CommonUtils.isObjectListNull(listMap) ? CommonUtils.printFields(listMap, null) : null);
@@ -453,12 +614,12 @@ public class HLIneligibleCamReportServiceImpl implements HLIneligibleCamReportSe
 		try {
 			ObjectMapper mapper = new ObjectMapper();
 			ProposalMappingResponse proposalMappingResponse= proposalDetailsClient.getActiveProposalByApplicationID(applicationId);
-			
-			ProposalMappingRequestString proposalMappingRequestString = mapper.convertValue(proposalMappingResponse.getData(), ProposalMappingRequestString.class);
-			
-			map.put("proposalDate", simpleDateFormat.format(proposalMappingRequestString.getModifiedDate()));
-			map.put("proposalResponseEmi", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? CommonUtils.convertValueWithoutDecimal((Double)((LinkedHashMap<String, Object>)proposalMappingResponse.getData()).get("emi")) : "");
-			map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? proposalMappingResponse.getData() : " ");
+			if(proposalMappingResponse != null && proposalMappingResponse.getData()!= null ) {
+				ProposalMappingRequestString proposalMappingRequestString = mapper.convertValue(proposalMappingResponse.getData(), ProposalMappingRequestString.class);
+				map.put("proposalDate", simpleDateFormat.format(proposalMappingRequestString.getModifiedDate()));
+				map.put("proposalResponseEmi", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? CommonUtils.convertValueWithoutDecimal((Double)((LinkedHashMap<String, Object>)proposalMappingResponse.getData()).get("emi")) : "");
+				map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? proposalMappingResponse.getData() : " ");
+			}
 		}
 		catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
@@ -473,29 +634,32 @@ public class HLIneligibleCamReportServiceImpl implements HLIneligibleCamReportSe
 		}
 		
 		//Property Details
-		try {
-			Map<String ,Object> propertyDetails = new HashMap<String, Object>(); 
-			HLOneformPrimaryRes response = primaryHomeLoanService.getOneformPrimaryDetails(applicationId);
-			propertyDetails.put("propertyValue",response.getMarketValProp() != null ? CommonUtils.convertValueWithoutDecimal(response.getMarketValProp()) : "");
-			propertyDetails.put("propertyAge", response.getOldPropYear() != null ? response.getOldPropYear() : "");
-			propertyDetails.put("propertyPremise", !CommonUtils.isObjectNullOrEmpty(response.getPropPremiseName()) ? CommonUtils.printFields(response.getPropPremiseName(),null) + "," : "");
-			propertyDetails.put("propertyStreetName", !CommonUtils.isObjectNullOrEmpty(response.getPropStreetName()) ? CommonUtils.printFields(response.getPropStreetName(),null) + "," : "");
-			propertyDetails.put("propertyLandmark", !CommonUtils.isObjectNullOrEmpty(response.getPropLandmark()) ? CommonUtils.printFields(response.getPropLandmark(),null) + "," : "");
-			propertyDetails.put("propertyCountry", !CommonUtils.isObjectNullOrEmpty(response.getPropCountry()) ? StringEscapeUtils.escapeXml(getCountryName(response.getPropCountry().intValue())) : "");
-			propertyDetails.put("propertyState", !CommonUtils.isObjectNullOrEmpty(response.getPropState()) ? StringEscapeUtils.escapeXml(getStateName(response.getPropState().intValue())) : "");
-			propertyDetails.put("propertyCity", !CommonUtils.isObjectNullOrEmpty(response.getPropCity()) ? StringEscapeUtils.escapeXml(getCityName(response.getPropCity())) : "");
-			propertyDetails.put("propertyPincode", !CommonUtils.isObjectNullOrEmpty(response.getPropPincode()) ? response.getPropPincode() : "");
-			try {
-				if(!CommonUtils.isObjectNullOrEmpty(response.getPropdistrictMappingId())) {
-					propertyDetails.put("propertyAddress",CommonUtils.printFields(pincodeDateService.getById(response.getPropdistrictMappingId()),null));				
+				try {
+					Map<String ,Object> propertyDetails = new HashMap<String, Object>(); 
+					HLOneformPrimaryRes response = primaryHomeLoanService.getOneformPrimaryDetails(applicationId);
+					if(response != null) {
+						propertyDetails.put("costOfProperty", !CommonUtils.isObjectNullOrEmpty(response.getCostOfProp()) ? CommonUtils.convertValueWithoutDecimal(response.getCostOfProp()) : "-");
+						propertyDetails.put("propertyValue",!CommonUtils.isObjectNullOrEmpty(response.getMarketValProp()) ? CommonUtils.convertValueWithoutDecimal(response.getMarketValProp()) : "-");
+						propertyDetails.put("propertyAge", !CommonUtils.isObjectNullOrEmpty(response.getOldPropYear()) ? response.getOldPropYear() : "-");
+						propertyDetails.put("propertyPremise", !CommonUtils.isObjectNullOrEmpty(response.getPropPremiseName()) ? CommonUtils.printFields(response.getPropPremiseName(),null) + "," : "");
+						propertyDetails.put("propertyStreetName", !CommonUtils.isObjectNullOrEmpty(response.getPropStreetName()) ? CommonUtils.printFields(response.getPropStreetName(),null) + "," : "");
+						propertyDetails.put("propertyLandmark", !CommonUtils.isObjectNullOrEmpty(response.getPropLandmark()) ? CommonUtils.printFields(response.getPropLandmark(),null) + "," : "");
+						propertyDetails.put("propertyCountry", !CommonUtils.isObjectNullOrEmpty(response.getPropCountry()) ? StringEscapeUtils.escapeXml(getCountryName(response.getPropCountry().intValue())) : "");
+						propertyDetails.put("propertyState", !CommonUtils.isObjectNullOrEmpty(response.getPropState()) ? StringEscapeUtils.escapeXml(getStateName(response.getPropState().intValue())) : "");
+						propertyDetails.put("propertyCity", !CommonUtils.isObjectNullOrEmpty(response.getPropCity()) ? StringEscapeUtils.escapeXml(getCityName(response.getPropCity())) : "");
+						propertyDetails.put("propertyPincode", !CommonUtils.isObjectNullOrEmpty(response.getPropPincode()) ? response.getPropPincode() : "");
+						try {
+							if(!CommonUtils.isObjectNullOrEmpty(response.getPropdistrictMappingId())) {
+								propertyDetails.put("propertyAddress",CommonUtils.printFields(pincodeDateService.getById(response.getPropdistrictMappingId()),null));				
+							}
+						} catch (Exception e) {
+							logger.error(CommonUtils.EXCEPTION,e);
+						}
+					}
+					map.put("propertyDetails", !CommonUtils.isObjectNullOrEmpty(propertyDetails) ? propertyDetails : null);
+				} catch (Exception e) {
+					logger.error("Error while getting property Details : {}",e);
 				}
-			} catch (Exception e) {
-				logger.error(CommonUtils.EXCEPTION,e);
-			}
-			map.put("propertyDetails", propertyDetails);
-		} catch (Exception e) {
-			logger.error("Error while getting property Details : ",e);
-		}
 
 		//INCOME DETAILS - NET INCOME
 		try {
@@ -561,6 +725,8 @@ public class HLIneligibleCamReportServiceImpl implements HLIneligibleCamReportSe
             logger.error("Problem to get Data of Financial Arrangements Details {}", e);	
         }
 		
+		
+		
 		//PERFIOS API DATA (BANK STATEMENT ANALYSIS)
 		ReportRequest reportRequest = new ReportRequest();
 		reportRequest.setApplicationId(applicationId);
@@ -591,6 +757,47 @@ public class HLIneligibleCamReportServiceImpl implements HLIneligibleCamReportSe
 		
 		return map;
 	}
+	
+	
+	@Autowired
+	private IneligibleProposalDetailsRepository ineligibleProposalDetailsRepository;
+	//Fetch Bank Details
+		public Map<String ,Object> fetchBankDetails(Long applicationId ,Long userId ,Long proposalId){
+			Map<String, Object> bankData = new HashMap<String, Object>();
+			
+			Long orgId = null;
+			if(proposalId != null) {
+				orgId = proposalDetailsRepository.getOrgIdByProposalId(proposalId);
+			}else {
+				orgId = ineligibleProposalDetailsRepository.getOrgId(applicationId);
+			}
+			
+			List<Object[]> listBankData = commonRepository.getBankDetails(applicationId, orgId);
+			if(!CommonUtils.isListNullOrEmpty(listBankData) && !CommonUtils.isObjectNullOrEmpty(listBankData.get(0))) {
+				
+				String bankAddress = (listBankData.get(0)[5] != null ? listBankData.get(0)[5] : "") + (listBankData.get(0)[6] != null ? ", " + listBankData.get(0)[6] : "") 
+						+ (listBankData.get(0)[7] != null ? ", " +listBankData.get(0)[7] : "") + (listBankData.get(0)[8] != null ? " - " + listBankData.get(0)[8] : "");
+				bankData.put("currentBankAddress", !CommonUtils.isObjectNullOrEmpty(bankAddress) ? StringEscapeUtils.escapeXml(bankAddress) : "-");
+				bankData.put("bankName", listBankData.get(0)[9] != null ? listBankData.get(0)[9] : "-");
+				if(listBankData.size() > 1 && !CommonUtils.isObjectNullOrEmpty(listBankData.get(1))) {
+					String prevBankAddress = (listBankData.get(1)[5] != null ? listBankData.get(1)[5] : "") + (listBankData.get(1)[6] != null ? ", " + listBankData.get(1)[6] : "") 
+							+ (listBankData.get(1)[7] != null ? " ," +listBankData.get(1)[7] : "") + (listBankData.get(1)[8] != null ? " - " + listBankData.get(1)[8] : "");
+					bankData.put("previousBankAddress", !CommonUtils.isObjectNullOrEmpty(bankAddress) ? StringEscapeUtils.escapeXml(prevBankAddress) : "-");
+				}
+			}
+			
+			try {
+	            UserResponse campaignUser = usersClient.isExists(userId ,null);
+	            if(campaignUser != null && campaignUser.getData() != null && campaignUser.getData().equals(true)) {
+	                bankData.put("typeOfUser", "Bank Specific");
+	            }else {
+	            	bankData.put("typeOfUser", "Market Place");
+	            }
+	        } catch (Exception e2) {
+	            logger.info("error while campaign user check ==>" , e2);
+	        }
+			return !bankData.isEmpty() ? bankData : null;
+		}
 	
 	public static void copyAddressFromDomainToRequestOfCoApplicant(CoApplicantDetail from, CoApplicantRequest to) {
 	    Address address = new Address();

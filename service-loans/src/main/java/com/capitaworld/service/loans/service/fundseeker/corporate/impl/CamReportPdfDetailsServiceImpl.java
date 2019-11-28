@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -20,6 +21,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.capitaworld.api.eligibility.model.CLEligibilityRequest;
@@ -54,6 +57,7 @@ import com.capitaworld.service.gst.MomSales;
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.gst.model.CAMGSTData;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
+import com.capitaworld.service.loans.domain.fundprovider.NbfcProposalBlendedRate;
 import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WcTlParameter;
@@ -88,6 +92,8 @@ import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
 import com.capitaworld.service.loans.model.corporate.PrimaryCorporateRequest;
 import com.capitaworld.service.loans.model.corporate.TotalCostOfProjectRequest;
+import com.capitaworld.service.loans.repository.common.CommonRepository;
+import com.capitaworld.service.loans.repository.fundprovider.NbfcProposalBlendedRateRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
@@ -333,8 +339,12 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	@Autowired
 	CorporatePrimaryViewService corporatePrimaryViewService;
 	
-	@Value("${capitaworld.gstdata.enable}")
-	private Boolean gstDataEnable;
+	@Autowired
+	private CommonRepository commonRepository;
+	
+	
+	@Autowired
+	private NbfcProposalBlendedRateRepository nbfcProposalBlendedRateRepository;
 
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -346,8 +356,26 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	@Override
 	public Map<String, Object> getCamReportPrimaryDetails(Long applicationId, Long productId,Long proposalId, boolean isFinalView) {
 
+		Boolean nbfcUser = false;
 		ProposalMappingRequestString proposalMappingRequestString = null;
 		Map<String, Object> map = new HashMap<String, Object>();
+		
+		//fetch NBFC Details
+		try {
+			Integer isNbfcUser = ((BigInteger)commonRepository.getIsNBFCUser(applicationId)).intValue();
+			if(isNbfcUser != null && isNbfcUser > 0) {
+				/**ProposalDetails proposalDetailsForBank = proposalDetailsRepository.findFirstByApplicationIdAndIsActiveAndNbfcFlowOrderByIdDesc(applicationId, true, 2);
+				if(!CommonUtils.isObjectNullOrEmpty(proposalDetailsForBank)) {
+					productId = proposalDetailsForBank.getFpProductId();
+					proposalId = proposalDetailsForBank.getId();
+				}*/
+				nbfcUser = true;
+				logger.info("Start Fetching Cam Data For ApplicationId==>{}  with  ProductId==>{}  and  ProposalId==>{}" , applicationId , productId , proposalId);
+				map.put("nbfcDatas", corporatePrimaryViewService.getNbfcData(applicationId));
+			}
+		}catch (Exception e) {
+			logger.error("Error/Exception while fetching Details For NBFC by ApplicationId==>{}" , applicationId);
+		}
 
 		Long userOrgId = proposalDetailsRepository.getOrgIdByProposalId(proposalId);
 		ProposalDetails proposalDetails = proposalDetailsRepository.getSanctionProposalByApplicationIdAndUserOrgId(applicationId, userOrgId);
@@ -378,14 +406,38 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
             map.put("isMcqSkipped", applicationProposalMapping.getIsMcqSkipped() != null ? applicationProposalMapping.getIsMcqSkipped() : false);
         }
         
+   
+        //Bank Details for MSME added.
+        map.put("bankDetails", getBranchDetails(applicationId, userId, proposalId));
+		//Bank Details added.
+        
         CorporateApplicantRequest corporateApplicantRequest =corporateApplicantService.getCorporateApplicant(toApplicationId);
         UserResponse userResponse = usersClient.getEmailMobile(userId);
         if(userResponse != null) {
             LinkedHashMap<String, Object> lm = (LinkedHashMap<String, Object>)userResponse.getData();
             try {
                 UsersRequest request = MultipleJSONObjectHelper.getObjectFromMap(lm,UsersRequest.class);
-                map.put("mobile", request.getMobile());
-                map.put("email", StringEscapeUtils.escapeXml(request.getEmail()));
+                
+                if(nbfcUser) {
+                	Object[] str = commonRepository.getEmailIdAndMobileForNBFCUser(userId);
+                	map.put("mobile", str != null && str.length > 0 && str[0] != null ? str[0] : "-");
+	                map.put("email", str != null && str.length > 0 && str[1] != null ? StringEscapeUtils.escapeXml(String.valueOf(str[1])) : "-");
+                }else {
+	                map.put("mobile", request.getMobile());
+	                map.put("email", StringEscapeUtils.escapeXml(request.getEmail()));
+                }
+                
+                if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getPanNo())) {
+                	 BigInteger isEmailMobileFound = commonRepository.checkApplicationDisbursed(corporateApplicantRequest.getPanNo());
+         			String msg;
+         			if(Integer.parseInt(String.valueOf(isEmailMobileFound)) > 0){
+         				msg="SIDBI has already disbursed to this Customer from PSB59 Platform.";
+         			}else {
+         				msg="SIDBI has not disbursed any funds to this Customer from PSB59 Platform.";
+         			}
+         			map.put("messageFromUsers", msg);
+				}
+               
             } catch (IOException e1) {
                 logger.error("Error while getting registration details : ",e1);
             }
@@ -767,7 +819,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
                 //financialArrangementsDetailResponse.setLenderType(LenderType.getById(financialArrangementsDetailRequest.getLenderType()).getValue());
                 financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());
                 financialArrangementsDetailResponse.setLoanType(financialArrangementsDetailRequest.getLoanType());
-                financialArrangementsDetailResponse.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
+                financialArrangementsDetailResponse.setFinancialInstitutionName(StringEscapeUtils.escapeXml(financialArrangementsDetailRequest.getFinancialInstitutionName()));
+                //financialArrangementsDetailResponse.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
                 //financialArrangementsDetailResponse.setFacilityNature(NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
                 //financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
                 financialArrangementsDetailResponse.setLcbgStatus(!CommonUtils.isObjectNullOrEmpty(financialArrangementsDetailRequest.getLcBgStatus()) ? LCBG_Status_SBI.getById(financialArrangementsDetailRequest.getLcBgStatus()).getValue().toString() : "-");
@@ -944,6 +997,12 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					map.put("experienceInBusinessScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue() : "-");
 					manufacturing++;
 					continue;
+				case ScoreParameter.CMR_SCORE_MSME_RANKING: // New MSME
+					map.put("cmrScoreMsmeRankingActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
+					map.put("cmrScoreMsmeRankingScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
+					map.put("cmrScoreMsmeRankingScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
+					manufacturing++;
+					continue;	
 				case ScoreParameter.DEBT_EQUITY_RATIO:
 					map.put("debtEquityRatioActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
 					map.put("debtEquityRatioScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
@@ -1195,6 +1254,18 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					map.put("statutoryComplianceScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
 					map.put("statutoryComplianceScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
 					business++;
+					continue;
+				//NEW ADDITIONS 	
+				case ScoreParameter.ISO_CERTIFICATION: // New MSME
+					map.put("isoCertificationActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
+					map.put("isoCertificationScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
+					map.put("isoCertificationScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
+					continue;					
+				case ScoreParameter.TOTAL_NO_OF_INWARD_CHEQUE_BOUNCES_LAST_SIX_MONTHS: // New MSME
+					map.put("totalNoOfInwardChqBouncesLastSixMonthsActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
+					map.put("totalNoOfInwardChqBouncesLastSixMonthsScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
+					map.put("totalNoOfInwardChqBouncesLastSixMonthsScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
+					business++;
 					continue;	
 				default:
 					break;
@@ -1373,15 +1444,12 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 		
 		//gstRelatedParty Data Fetch
-		if(gstDataEnable != null && gstDataEnable) {
-			try {
-				Map<String , Object> gstRelatedPartyRequests = loanApplicationService.getGstRelatedPartyDetails(applicationId);
-				map.put("gstPartyRelatedData", gstRelatedPartyRequests != null && !gstRelatedPartyRequests.isEmpty() ? gstRelatedPartyRequests : null);
-			}catch (Exception e) {
-				logger.error("Error/Exception while fetching list of gst Related Party List Data of APplicationId==>{}  ... Error==>{}",applicationId ,e);
-			}
+		try {
+			Map<String , Object> gstRelatedPartyRequests = loanApplicationService.getGstRelatedPartyDetails(applicationId);
+			map.put("gstPartyRelatedData", gstRelatedPartyRequests != null && !gstRelatedPartyRequests.isEmpty() ? gstRelatedPartyRequests : null);
+		}catch (Exception e) {
+			logger.error("Error/Exception while fetching list of gst Related Party List Data of APplicationId==>{}  ... Error==>{}",applicationId ,e);
 		}
-
 
 		//PERFIOS API DATA (BANK STATEMENT ANALYSIS)
 		ReportRequest reportRequest = new ReportRequest();
@@ -1431,16 +1499,18 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		} catch (Exception e) {
 			logger.error("Error while getting perfios data : ",e);
 		}
-		map.put("gstEnable", gstDataEnable != null && gstDataEnable ? "true" : null);
+		map.put("gstEnable", "true");
+		
 		//GST Comparision by Maaz
-		if(gstDataEnable != null && gstDataEnable) {
-			try{
-				FinancialInputRequest finaForCam = finaForCam(applicationId,proposalId);
-				map.put("gstComparision", corporatePrimaryViewService.gstVsItrVsBsComparision(applicationId, finaForCam));
-			}catch (Exception e) {
-				logger.error("error in getting gst comparision data : {}",e);
-			}
+		try{
+			FinancialInputRequest finaForCam = finaForCam(applicationId,proposalId);
+			map.put("gstComparision", corporatePrimaryViewService.gstVsItrVsBsComparision(applicationId, finaForCam));
+		}catch (Exception e) {
+			logger.error("error in getting gst comparision data : {}",e);
 		}
+		
+		// get ngbc final data
+		
 
 		/**ReportRequest reportRequest = new ReportRequest();
 		reportRequest.setApplicationId(applicationId);
@@ -2315,7 +2385,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
 				MasterResponse masterResponse = MultipleJSONObjectHelper
 						.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-				return masterResponse.getValue();
+			    return StringEscapeUtils.escapeXml(masterResponse.getValue());
+
 			}
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
@@ -2344,6 +2415,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		return null;
 	}
 
+	@Override
 	public FinancialInputRequest finaForCam(Long aplicationId,Long proposalId) {
 		FinancialInputRequest financialInputRequest = new FinancialInputRequest();
 		OperatingStatementDetails operatingStatementDetails;
@@ -2351,7 +2423,11 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		int currentYear = scoringService.getFinYear(aplicationId);
 		List<Map<String, Object>> financialYearAndSalesAndPurchase = new ArrayList<>();
 		try {
+			if(proposalId != null) {
 				operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetailsByProposal(proposalId, currentYear-1+"");
+			}else {
+				operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetailsByAppIdAndFinYear(aplicationId, currentYear-1+"");
+			}
 				if(operatingStatementDetails != null) {
 					yearSalesPurchase.put("year",currentYear-1);
 					yearSalesPurchase.put("itrSales",(operatingStatementDetails.getDomesticSales()+operatingStatementDetails.getExportSales()));
@@ -2363,7 +2439,11 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 		try {
 			yearSalesPurchase = new HashMap<>();
-			operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetailsByProposal(proposalId, currentYear-2+"");
+			if(proposalId != null) {
+				operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetailsByProposal(proposalId, currentYear-2+"");
+			}else {
+				operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetailsByAppIdAndFinYear(aplicationId, currentYear-2+"");
+			}
 			if(operatingStatementDetails != null) {
 				yearSalesPurchase.put("year",currentYear-2);
 				yearSalesPurchase.put("itrSales",(operatingStatementDetails.getDomesticSales()+operatingStatementDetails.getExportSales()));
@@ -2376,7 +2456,11 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		try {
 			yearSalesPurchase = new HashMap<>();
-			operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetailsByProposal(proposalId, currentYear-3+"");
+			if(proposalId != null) {
+				operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetailsByProposal(proposalId, currentYear-3+"");
+			}else {
+				operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetailsByAppIdAndFinYear(aplicationId, currentYear-3+"");
+			}
 			if(operatingStatementDetails != null) {
 				yearSalesPurchase.put("year",currentYear-3);
 				yearSalesPurchase.put("itrSales",(operatingStatementDetails.getDomesticSales()+operatingStatementDetails.getExportSales()));
@@ -2389,5 +2473,48 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		financialInputRequest.setYearSalesPurchasList(financialYearAndSalesAndPurchase);
 		return financialInputRequest;
 	}
+	
+	public Map<String ,Object> getBranchDetails(Long applicationId ,Long userId ,Long proposalId){
+		//Fetch Bank Details
+		Map<String, Object> bankData = new HashMap<String, Object>();
+		try {
+			Long orgId = null;
+			if(proposalId != null) {
+				orgId = proposalDetailsRepository.getOrgIdByProposalId(proposalId);
+			}else {
+				orgId = ineligibleProposalDetailsRepository.getOrgId(applicationId);
+			}
+			List<Object[]> listBankData = commonRepository.getBankDetails(applicationId, orgId);
+			if(!CommonUtils.isListNullOrEmpty(listBankData) && !CommonUtils.isObjectNullOrEmpty(listBankData.get(0))) {
+				
+				String bankAddress = (listBankData.get(0)[5] != null ? listBankData.get(0)[5] : "") + (listBankData.get(0)[6] != null ? " ," + listBankData.get(0)[6] : "") 
+						+ (listBankData.get(0)[7] != null ? " ," +listBankData.get(0)[7] : "") + (listBankData.get(0)[8] != null ? " - " + listBankData.get(0)[8] : "");
+				bankData.put("currentBankAddress", !CommonUtils.isObjectNullOrEmpty(bankAddress) ? StringEscapeUtils.escapeXml(bankAddress) : "-");
+				bankData.put("bankName", listBankData.get(0)[9] != null ? listBankData.get(0)[9] : "-");
+				if(listBankData.size() > 1 && !CommonUtils.isObjectNullOrEmpty(listBankData.get(1))) {
+					String prevBankAddress = (listBankData.get(1)[5] != null ? listBankData.get(1)[5] : "") + (listBankData.get(1)[6] != null ? " ," + listBankData.get(1)[6] : "") 
+							+ (listBankData.get(1)[7] != null ? " ," +listBankData.get(1)[7] : "") + (listBankData.get(1)[8] != null ? " - " + listBankData.get(1)[8] : "");
+					bankData.put("previousBankAddress", !CommonUtils.isObjectNullOrEmpty(bankAddress) ? StringEscapeUtils.escapeXml(prevBankAddress) : "-");
+				}
+			}
+			
+			try {
+	            UserResponse campaignUser = usersClient.isExists(userId ,null);
+	            if(campaignUser != null && campaignUser.getData() != null && campaignUser.getData().equals(true)) {
+	                bankData.put("typeOfUser", "Bank Specific");
+	            }else {
+	            	bankData.put("typeOfUser", "Market Place");
+	            }
+	        } catch (Exception e2) {
+	            logger.info("error while campaign user check ==>" , e2);
+	        }
+			
+			return !bankData.isEmpty() ? bankData : null;
+		}catch (Exception e) {
+			logger.error("Error/Exception while getting Bank Details Of ApplicationId==>{}  ..Error==>{}",applicationId ,e);
+		}
+		return null;
+	}
+	
 	
 }

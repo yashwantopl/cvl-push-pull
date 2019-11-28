@@ -1,8 +1,8 @@
 package com.capitaworld.service.loans.repository.common;
 
+import java.math.BigInteger;
 import java.util.List;
 
-import com.capitaworld.service.loans.model.teaser.primaryview.CommonRequest;
 
 public interface CommonRepository {
 
@@ -22,15 +22,30 @@ public interface CommonRepository {
 	
 	public String getEmailIdFromUsers(Long userId);
 	
+	public Object[] getEmailIdAndMobileForNBFCUser(Long userId);
+	
 	public String getNoteForHLCam(Long applicationId);
 	
 	public Object[] getInEligibleByApplicationId(Long applicationId);
-	
-	public String getSidbiAmount();
 	
 	public List<Object[]> getBankDetails(Long applicationId, Long orgId);
 
 	public Object[] getUserDetailsByApplicationId(Long applicationId) throws Exception;
 	
 	public List<String> getUserDetailsByUserOrgIdAndUserRoleIdAndBranchId(Long orgId ,Long roleId ,Long branchId);
+	
+	public Object getIsNBFCUser(Long applicationId);
+	
+	public Object[] fetchALDetailsOfManufacturerAssetsSupplier(Long manufacturerId , Long assetModelId, Integer supplierId) ;
+	
+	public BigInteger checkApplicationDisbursed(String pan);
+	
+	public Object[] getLastCheckerNameByBranchId(Long branchId) throws Exception;
+	
+	//Payment Common Properties
+	
+	public String getSidbiAmount();
+	
+	public String getGatewayProvider();
+	
 }

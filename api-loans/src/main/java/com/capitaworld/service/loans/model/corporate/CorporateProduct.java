@@ -12,58 +12,58 @@ import com.capitaworld.service.loans.model.ProductMasterRequest;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CorporateProduct  extends  ProductMasterRequest implements Serializable {
+public class CorporateProduct extends ProductMasterRequest implements Serializable {
 	private Integer currency;
 
 	private Integer denomination;
 
-	private Boolean isCollateralDisplay=false;
+	private Boolean isCollateralDisplay = false;
 
-	private Boolean isCollateralMandatory=false;
+	private Boolean isCollateralMandatory = false;
 
-	private Boolean isCreditRatingDisplay=false;
+	private Boolean isCreditRatingDisplay = false;
 
-	private Boolean isCreditRatingMandatory=false;
+	private Boolean isCreditRatingMandatory = false;
 
-	private Boolean isDebtEquityDisplay=false;
+	private Boolean isDebtEquityDisplay = false;
 
-	private Boolean isDebtEquityMandatory=false;
+	private Boolean isDebtEquityMandatory = false;
 
-	private Boolean isEstablishmentDisplay=false;
+	private Boolean isEstablishmentDisplay = false;
 
-	private Boolean isEstablishmentMandatory=false;
+	private Boolean isEstablishmentMandatory = false;
 
-	private Boolean isGeographicalDisplay=false;
+	private Boolean isGeographicalDisplay = false;
 
-	private Boolean isGeographicalMandatory=false;
+	private Boolean isGeographicalMandatory = false;
 
-	private Boolean isIndustrySectorDisplay=false;
+	private Boolean isIndustrySectorDisplay = false;
 
-	private Boolean isIndustrySectorMandatory=false;
+	private Boolean isIndustrySectorMandatory = false;
 
-	private Boolean isInvestmentSizeDisplay=false;
+	private Boolean isInvestmentSizeDisplay = false;
 
-	private Boolean isInvestmentSizeMandatory=false;
+	private Boolean isInvestmentSizeMandatory = false;
 
-	private Boolean isNetworthDisplay=false;
+	private Boolean isNetworthDisplay = false;
 
-	private Boolean isNetworthMandatory=false;
+	private Boolean isNetworthMandatory = false;
 
-	private Boolean isPastYearTurnoverDisplay=false;
+	private Boolean isPastYearTurnoverDisplay = false;
 
-	private Boolean isPastYearTurnoverMandatory=false;
+	private Boolean isPastYearTurnoverMandatory = false;
 
-	private Boolean isProfitabilityHistoryDisplay=false;
+	private Boolean isProfitabilityHistoryDisplay = false;
 
-	private Boolean isProfitabilityHistoryMandatory=false;
+	private Boolean isProfitabilityHistoryMandatory = false;
 
-	private Boolean isTenureDisplay=false;
+	private Boolean isTenureDisplay = false;
 
-	private Boolean isTenureMandatory=false;
-	
-	private Boolean isUnInterestedIndustryDisplay=false;
+	private Boolean isTenureMandatory = false;
 
-	private Boolean isUnInterestedIndustryMandatory=false;
+	private Boolean isUnInterestedIndustryDisplay = false;
+
+	private Boolean isUnInterestedIndustryMandatory = false;
 
 	private Integer LongTermCreditRating;
 
@@ -94,15 +94,15 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 	private BigDecimal minPastTurnover;
 
 	private BigDecimal minTenure;
-	
+
 	private BigDecimal minTenureNtb;
-	
+
 	private BigDecimal maxTenureNtb;
 
 	private Integer profitabilityHistory;
 
 	private Integer shortTermCreditRating;
-	
+
 	private Long uninterestedIndustry;
 
 	private BigDecimal minCurrentRatio;
@@ -151,7 +151,7 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 
 	private Boolean isCustomerConcentrationDisplay = false;
 
-	private Boolean isCustomerConcentrationMandatory =false;
+	private Boolean isCustomerConcentrationMandatory = false;
 
 	private Integer minRiskModelScore;
 
@@ -194,9 +194,9 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 	private Boolean isCommercialCibilMandatory = false;
 
 	private Integer appstage;
-	//-----------------------added eligibility method for product
+	// -----------------------added eligibility method for product
 	private Integer assessmentMethodId;
-	
+
 	private Long userOrgId;
 
 	private BigDecimal minCgtmseCoverage;
@@ -206,53 +206,53 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 	private Boolean isMsmeFundingDisplay = false;
 	private Boolean isMsmeFundingMandatory = false;
 	private List<Integer> msmeFundingIds;
-	
+
 	private List<Long> nbfcRatioIds;
-	
+
 	private Integer cgtmseCoverage;
-	
+
 	private Integer cashMargin;
-	
+
 	private BigDecimal dscr;
-	
+
 	private Integer paybackPeriod;
-	
+
 	private BigDecimal promotorContri;
-	
+
 	private BigDecimal manufacturing;
 	private BigDecimal service;
 	private BigDecimal trading;
-	
-/*ntb*/
-	
+
+	/* ntb */
+
 	private BigDecimal minAvrgAge;
 
 	private BigDecimal maxAvrgAge;
-	
+
 	private BigDecimal minAvrgYearlyIncome;
-	
+
 	private BigDecimal maxAvrgYearlyIncome;
 
 	private BigDecimal mincgtmse;
-	
+
 	private BigDecimal maxcgtmse;
 
 	private BigDecimal minLoanToAsset;
-	
+
 	private BigDecimal maxLoanToAsset;
-	
+
 	private BigDecimal minAvgWorkExp;
-	
+
 	private BigDecimal maxAvgWorkExp;
-	
+
 	private BigDecimal minCurrentFoir;
-	
+
 	private BigDecimal maxCurrentFoir;
-	
+
 	private Boolean isAvrgAgeDisplay = false;
 
 	private Boolean isAvrgAgeMandatory = false;
-	
+
 	private Boolean isAvrgYearlyIncomeDisplay = false;
 
 	private Boolean isAvrgYearlyIncomeMandatory = false;
@@ -260,7 +260,7 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 	private Boolean iscgtmseDisplay = false;
 
 	private Boolean iscgtmseMandatory = false;
-	
+
 	private Boolean isLoanToAssetDisplay = false;
 
 	private Boolean isLoanToAssetMandatory = false;
@@ -268,11 +268,11 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 	private Boolean isAvgWorkExpDisplay = false;
 
 	private Boolean isAvgWorkExpMandatory = false;
-	
+
 	private Boolean isCurrentFoirDisplay = false;
 
 	private Boolean isCurrentFoirMandatory = false;
-	
+
 	private Integer userCreditRating;
 
 	private BigDecimal maxDropInTurnover;
@@ -312,15 +312,15 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 	private Boolean isNewCollateralCoverageCheck = false;
 
 	private Boolean isNewTolTnwCheck = false;
-	
+
 	private Boolean wcReqCheck = false;
 
-	private Integer kotakSubParameter ;
-	
-	private Boolean isNewDscrCheck=false;
-	
+	private Integer kotakSubParameter;
+
+	private Boolean isNewDscrCheck = false;
+
 	private BigDecimal newDscrCheck;
-	
+
 	// projected sales
 	private Boolean isNewHistoricSales = false;
 
@@ -331,42 +331,42 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 	private BigDecimal newHistoricGrowth;
 	// ends
 
-	//total limits
+	// total limits
 	private List<Integer> loanArrangementIds;
-	
+
 	private BigDecimal minAdditionalLoan;
 
 	private BigDecimal maxAdditionalLoan;
-	
+
 	private BigDecimal minTotalLoan;
 
-	private BigDecimal maxTotalLoan;	
-	
-	private Boolean isConservativeRatioDisplay=false;
+	private BigDecimal maxTotalLoan;
 
-	private Boolean isConservativeRatioMandatory=false;
-	
+	private Boolean isConservativeRatioDisplay = false;
+
+	private Boolean isConservativeRatioMandatory = false;
+
 	private BigDecimal maxConservativeRatio;
-	
+
 	private BigDecimal minConservativeRatio;
-	
+
 	private Integer mainIndividualCibil;
 
 	private Boolean isMainIndividualCibilDisplay = false;
 
 	private Boolean isMainIndividualCibilMandatory = false;
 
-    private Integer commercialCibilFor3Month;
+	private Integer commercialCibilFor3Month;
 
-    private Boolean isCommercialCibilFor3MonthDisplay = false;
+	private Boolean isCommercialCibilFor3MonthDisplay = false;
 
-    private Boolean isCommercialCibilFor3MonthMandatory = false;
+	private Boolean isCommercialCibilFor3MonthMandatory = false;
 
 	// mfi parameter
 
-	private Boolean isLoanAmountDisplay=false;
+	private Boolean isLoanAmountDisplay = false;
 
-	private Boolean isLoanAmountMandatory=false;
+	private Boolean isLoanAmountMandatory = false;
 
 	private Double minLoanAmount;
 
@@ -374,9 +374,9 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 
 	// yearly income
 
-	private Boolean isYearlyIncomeRangeDisplay=false;
+	private Boolean isYearlyIncomeRangeDisplay = false;
 
-	private Boolean isYearlyIncomeRangeMandatory=false;
+	private Boolean isYearlyIncomeRangeMandatory = false;
 
 	private Double minYearlyIncomeRange;
 
@@ -384,9 +384,9 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 
 	// age of applicant
 
-	private Boolean isAgeApplicantDisplay=false;
+	private Boolean isAgeApplicantDisplay = false;
 
-	private Boolean isAgeApplicantMandatory=false;
+	private Boolean isAgeApplicantMandatory = false;
 
 	private Double minApplicantAge;
 
@@ -394,24 +394,23 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 
 	// bureau score
 
-	private Boolean isBureauScoreDisplay=false;
+	private Boolean isBureauScoreDisplay = false;
 
-	private Boolean isBureauScoreMandatory=false;
+	private Boolean isBureauScoreMandatory = false;
 
 	private Double minBureauScore;
 
-	//Less Than 6 month of Credit History
+	// Less Than 6 month of Credit History
 	private Integer minBureauScoreLessThan6Month;
 
-	//No Credit History
+	// No Credit History
 	private Boolean noBureauCreditHistory = true;
-
 
 	// activity experience
 
-	private Boolean isActivityExperienceDisplay=false;
+	private Boolean isActivityExperienceDisplay = false;
 
-	private Boolean isActivityExperienceMandatory=false;
+	private Boolean isActivityExperienceMandatory = false;
 
 	private Double minActivityExperience;
 
@@ -419,9 +418,64 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 
 	// geo graphical location
 
-	private Boolean isGeographicalDisplayMFI=false;
+	private Boolean isGeographicalDisplayMFI = false;
 
-	private Boolean isGeographicalMandatoryMFI=false;
+	private Boolean isGeographicalMandatoryMFI = false;
+
+	// co-origination new parameter
+	private Boolean isMinNoCreditTransactionDisplay = false;
+
+	private Boolean isMinNoCreditTransactionMandatory = false;
+
+	private BigDecimal maxNoCreditTransaction;
+
+	private BigDecimal minNoCreditTransaction;
+
+	private Boolean isMinNoOverallTransactionDisplay = false;
+
+	private Boolean isMinNoOverallTransactionMandatory = false;
+
+	private BigDecimal maxNoOverallTransaction;
+
+	private BigDecimal minNoOverallTransaction;
+
+	private Boolean isMinSalesGrowthDisplay = false;
+
+	private Boolean isMinSalesGrowthMandatory = false;
+
+	private BigDecimal maxSalesGrowth;
+
+	private BigDecimal minSalesGrowth;
+
+	private Boolean isMinCashProfitGrowthDisplay = false;
+
+	private Boolean isMinCashProfitGrowthMandatory = false;
+
+	private BigDecimal maxCashProfitGrowth;
+
+	private BigDecimal minCashProfitGrowth;
+
+	private Boolean isMinMonthlyAvgBalDisplay = false;
+
+	private Boolean isMinMonthlyAvgBalMandatory = false;
+
+	private BigDecimal maxMonthlyAvgBal;
+
+	private BigDecimal minMonthlyAvgBal;
+
+	private Boolean isMinNoDebitTransactionDisplay = false;
+
+	private Boolean isMinNoDebitTransactionMandatory = false;
+
+	private BigDecimal maxNoDebitTransaction;
+
+	private BigDecimal minNoDebitTransaction;
+
+	private List<Integer> constitutionIds;
+	
+	private Boolean isConstitutionDisplay = false;
+
+	private Boolean isConstitutionMandatory = false;
 
 	public Boolean getIsGeographicalDisplayMFI() {
 		return isGeographicalDisplayMFI;
@@ -606,6 +660,7 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 	public void setMaxActivityExperience(Double maxActivityExperience) {
 		this.maxActivityExperience = maxActivityExperience;
 	}
+
 	public Integer getIndividualCibil() {
 		return individualCibil;
 	}
@@ -967,7 +1022,7 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 	private List<DataRequest> stateList = Collections.emptyList();
 
 	private List<DataRequest> cityList = Collections.emptyList();
-	
+
 	private List<DataRequest> unInterestedIndustrylist = Collections.emptyList();
 
 	public Integer getCurrency() {
@@ -1410,7 +1465,6 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 		this.maxCgtmseCoverage = maxCgtmseCoverage;
 	}
 
-
 	public List<Integer> getMsmeFundingIds() {
 		return msmeFundingIds;
 	}
@@ -1451,7 +1505,6 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 		this.isMsmeFundingMandatory = isMsmeFundingMandatory;
 	}
 
-
 	public BigDecimal getMinAvrgAge() {
 		return minAvrgAge;
 	}
@@ -1467,8 +1520,6 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 	public void setMaxAvrgAge(BigDecimal maxAvrgAge) {
 		this.maxAvrgAge = maxAvrgAge;
 	}
-
-
 
 	public BigDecimal getMinAvrgYearlyIncome() {
 		return minAvrgYearlyIncome;
@@ -1486,8 +1537,6 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 		this.maxAvrgYearlyIncome = maxAvrgYearlyIncome;
 	}
 
-
-
 	public BigDecimal getMincgtmse() {
 		return mincgtmse;
 	}
@@ -1496,7 +1545,6 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 		this.mincgtmse = mincgtmse;
 	}
 
-	
 	public BigDecimal getMaxcgtmse() {
 		return maxcgtmse;
 	}
@@ -1553,7 +1601,6 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 		this.maxCurrentFoir = maxCurrentFoir;
 	}
 
-
 	public Boolean getIsAvrgAgeDisplay() {
 		return isAvrgAgeDisplay;
 	}
@@ -1569,8 +1616,6 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 	public void setIsAvrgAgeMandatory(Boolean isAvrgAgeMandatory) {
 		this.isAvrgAgeMandatory = isAvrgAgeMandatory;
 	}
-
-
 
 	public Boolean getIsAvrgYearlyIncomeDisplay() {
 		return isAvrgYearlyIncomeDisplay;
@@ -1588,8 +1633,6 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 		this.isAvrgYearlyIncomeMandatory = isAvrgYearlyIncomeMandatory;
 	}
 
-	
-	
 	public Boolean getIscgtmseDisplay() {
 		return iscgtmseDisplay;
 	}
@@ -1910,7 +1953,6 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 		this.wcReqCheck = wcReqCheck;
 	}
 
-	
 	public Boolean getIsNewDscrCheck() {
 		return isNewDscrCheck;
 	}
@@ -2090,12 +2132,223 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 	public void setMaxLoanAmount(Double maxLoanAmount) {
 		this.maxLoanAmount = maxLoanAmount;
 	}
+
+	public Boolean getIsMinNoCreditTransactionDisplay() {
+		return isMinNoCreditTransactionDisplay;
+	}
+
+	public void setIsMinNoCreditTransactionDisplay(Boolean isMinNoCreditTransactionDisplay) {
+		this.isMinNoCreditTransactionDisplay = isMinNoCreditTransactionDisplay;
+	}
+
+	public Boolean getIsMinNoCreditTransactionMandatory() {
+		return isMinNoCreditTransactionMandatory;
+	}
+
+	public void setIsMinNoCreditTransactionMandatory(Boolean isMinNoCreditTransactionMandatory) {
+		this.isMinNoCreditTransactionMandatory = isMinNoCreditTransactionMandatory;
+	}
+
+	public BigDecimal getMaxNoCreditTransaction() {
+		return maxNoCreditTransaction;
+	}
+
+	public void setMaxNoCreditTransaction(BigDecimal maxNoCreditTransaction) {
+		this.maxNoCreditTransaction = maxNoCreditTransaction;
+	}
+
+	public BigDecimal getMinNoCreditTransaction() {
+		return minNoCreditTransaction;
+	}
+
+	public void setMinNoCreditTransaction(BigDecimal minNoCreditTransaction) {
+		this.minNoCreditTransaction = minNoCreditTransaction;
+	}
+
+	public Boolean getIsMinNoOverallTransactionDisplay() {
+		return isMinNoOverallTransactionDisplay;
+	}
+
+	public void setIsMinNoOverallTransactionDisplay(Boolean isMinNoOverallTransactionDisplay) {
+		this.isMinNoOverallTransactionDisplay = isMinNoOverallTransactionDisplay;
+	}
+
+	public Boolean getIsMinNoOverallTransactionMandatory() {
+		return isMinNoOverallTransactionMandatory;
+	}
+
+	public void setIsMinNoOverallTransactionMandatory(Boolean isMinNoOverallTransactionMandatory) {
+		this.isMinNoOverallTransactionMandatory = isMinNoOverallTransactionMandatory;
+	}
+
+	public BigDecimal getMaxNoOverallTransaction() {
+		return maxNoOverallTransaction;
+	}
+
+	public void setMaxNoOverallTransaction(BigDecimal maxNoOverallTransaction) {
+		this.maxNoOverallTransaction = maxNoOverallTransaction;
+	}
+
+	public BigDecimal getMinNoOverallTransaction() {
+		return minNoOverallTransaction;
+	}
+
+	public void setMinNoOverallTransaction(BigDecimal minNoOverallTransaction) {
+		this.minNoOverallTransaction = minNoOverallTransaction;
+	}
+
+	public Boolean getIsMinSalesGrowthDisplay() {
+		return isMinSalesGrowthDisplay;
+	}
+
+	public void setIsMinSalesGrowthDisplay(Boolean isMinSalesGrowthDisplay) {
+		this.isMinSalesGrowthDisplay = isMinSalesGrowthDisplay;
+	}
+
+	public Boolean getIsMinSalesGrowthMandatory() {
+		return isMinSalesGrowthMandatory;
+	}
+
+	public void setIsMinSalesGrowthMandatory(Boolean isMinSalesGrowthMandatory) {
+		this.isMinSalesGrowthMandatory = isMinSalesGrowthMandatory;
+	}
+
+	public BigDecimal getMaxSalesGrowth() {
+		return maxSalesGrowth;
+	}
+
+	public void setMaxSalesGrowth(BigDecimal maxSalesGrowth) {
+		this.maxSalesGrowth = maxSalesGrowth;
+	}
+
+	public BigDecimal getMinSalesGrowth() {
+		return minSalesGrowth;
+	}
+
+	public void setMinSalesGrowth(BigDecimal minSalesGrowth) {
+		this.minSalesGrowth = minSalesGrowth;
+	}
+
+	public Boolean getIsMinCashProfitGrowthDisplay() {
+		return isMinCashProfitGrowthDisplay;
+	}
+
+	public void setIsMinCashProfitGrowthDisplay(Boolean isMinCashProfitGrowthDisplay) {
+		this.isMinCashProfitGrowthDisplay = isMinCashProfitGrowthDisplay;
+	}
+
+	public Boolean getIsMinCashProfitGrowthMandatory() {
+		return isMinCashProfitGrowthMandatory;
+	}
+
+	public void setIsMinCashProfitGrowthMandatory(Boolean isMinCashProfitGrowthMandatory) {
+		this.isMinCashProfitGrowthMandatory = isMinCashProfitGrowthMandatory;
+	}
+
+	public BigDecimal getMaxCashProfitGrowth() {
+		return maxCashProfitGrowth;
+	}
+
+	public void setMaxCashProfitGrowth(BigDecimal maxCashProfitGrowth) {
+		this.maxCashProfitGrowth = maxCashProfitGrowth;
+	}
+
+	public BigDecimal getMinCashProfitGrowth() {
+		return minCashProfitGrowth;
+	}
+
+	public void setMinCashProfitGrowth(BigDecimal minCashProfitGrowth) {
+		this.minCashProfitGrowth = minCashProfitGrowth;
+	}
+
+	public Boolean getIsMinMonthlyAvgBalDisplay() {
+		return isMinMonthlyAvgBalDisplay;
+	}
+
+	public void setIsMinMonthlyAvgBalDisplay(Boolean isMinMonthlyAvgBalDisplay) {
+		this.isMinMonthlyAvgBalDisplay = isMinMonthlyAvgBalDisplay;
+	}
+
+	public Boolean getIsMinMonthlyAvgBalMandatory() {
+		return isMinMonthlyAvgBalMandatory;
+	}
+
+	public void setIsMinMonthlyAvgBalMandatory(Boolean isMinMonthlyAvgBalMandatory) {
+		this.isMinMonthlyAvgBalMandatory = isMinMonthlyAvgBalMandatory;
+	}
+
+	public BigDecimal getMaxMonthlyAvgBal() {
+		return maxMonthlyAvgBal;
+	}
+
+	public void setMaxMonthlyAvgBal(BigDecimal maxMonthlyAvgBal) {
+		this.maxMonthlyAvgBal = maxMonthlyAvgBal;
+	}
+
+	public BigDecimal getMinMonthlyAvgBal() {
+		return minMonthlyAvgBal;
+	}
+
+	public void setMinMonthlyAvgBal(BigDecimal minMonthlyAvgBal) {
+		this.minMonthlyAvgBal = minMonthlyAvgBal;
+	}
+
+	public Boolean getIsMinNoDebitTransactionDisplay() {
+		return isMinNoDebitTransactionDisplay;
+	}
+
+	public void setIsMinNoDebitTransactionDisplay(Boolean isMinNoDebitTransactionDisplay) {
+		this.isMinNoDebitTransactionDisplay = isMinNoDebitTransactionDisplay;
+	}
+
+	public Boolean getIsMinNoDebitTransactionMandatory() {
+		return isMinNoDebitTransactionMandatory;
+	}
+
+	public void setIsMinNoDebitTransactionMandatory(Boolean isMinNoDebitTransactionMandatory) {
+		this.isMinNoDebitTransactionMandatory = isMinNoDebitTransactionMandatory;
+	}
+
+	public BigDecimal getMaxNoDebitTransaction() {
+		return maxNoDebitTransaction;
+	}
+
+	public void setMaxNoDebitTransaction(BigDecimal maxNoDebitTransaction) {
+		this.maxNoDebitTransaction = maxNoDebitTransaction;
+	}
+
+	public BigDecimal getMinNoDebitTransaction() {
+		return minNoDebitTransaction;
+	}
+
+	public void setMinNoDebitTransaction(BigDecimal minNoDebitTransaction) {
+		this.minNoDebitTransaction = minNoDebitTransaction;
+	}
+
+	public List<Integer> getConstitutionIds() {
+		return constitutionIds;
+	}
+
+	public void setConstitutionIds(List<Integer> constitutionIds) {
+		this.constitutionIds = constitutionIds;
+	}
+
+	public Boolean getIsConstitutionDisplay() {
+		return isConstitutionDisplay;
+	}
+
+	public void setIsConstitutionDisplay(Boolean isConstitutionDisplay) {
+		this.isConstitutionDisplay = isConstitutionDisplay;
+	}
+
+	public Boolean getIsConstitutionMandatory() {
+		return isConstitutionMandatory;
+	}
+
+	public void setIsConstitutionMandatory(Boolean isConstitutionMandatory) {
+		this.isConstitutionMandatory = isConstitutionMandatory;
+	}
 	
 	
 
-	
-	
-	
-	
-	
 }

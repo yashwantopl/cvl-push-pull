@@ -27,6 +27,7 @@ import com.capitaworld.cibil.api.model.CibilRequest;
 import com.capitaworld.cibil.api.model.CibilScoreLogRequest;
 import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
+import com.capitaworld.connect.api.ConnectStage;
 import com.capitaworld.itr.api.model.ITRBasicDetailsResponse;
 import com.capitaworld.itr.api.model.ITRConnectionResponse;
 import com.capitaworld.itr.client.ITRClient;
@@ -87,6 +88,7 @@ import com.capitaworld.service.loans.service.fundseeker.retail.OtherIncomeDetail
 import com.capitaworld.service.loans.service.fundseeker.retail.PlRetailApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryAutoLoanService;
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantIncomeService;
+import com.capitaworld.service.loans.utils.BanksEnumForReports;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.MatchEngineClient;
@@ -111,6 +113,7 @@ import com.capitaworld.service.oneform.enums.GetStringFromIdForMasterData;
 import com.capitaworld.service.oneform.enums.MaritalStatusMst;
 import com.capitaworld.service.oneform.enums.OccupationHL;
 import com.capitaworld.service.oneform.enums.OccupationNature;
+import com.capitaworld.service.oneform.enums.OccupationNatureNTB;
 import com.capitaworld.service.oneform.enums.RelationshipTypeHL;
 import com.capitaworld.service.oneform.enums.ReligionRetailMst;
 import com.capitaworld.service.oneform.enums.ResidenceStatusRetailMst;
@@ -289,25 +292,7 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 		
 		//Fetching Loan Details
 		try {
-			if(userId != null) {
-				Map<String ,Object> loanDetails = new HashMap<String, Object>();
-                                ALOneformPrimaryRes autoDetails = primaryAutoloanService.getOneformPrimaryDetails(applicationId);
-				PrimaryAutoLoanDetail primaryAutoLoanDetail = primaryAutoLoanDetailRepository.getByApplicationAndUserId(applicationId, userId);
-				if(!CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetail)) {
-                                    
-					PrimaryAutoLoanDetailRequest primaryAutoLoanDetailRequest = new PrimaryAutoLoanDetailRequest();
-					BeanUtils.copyProperties(primaryAutoLoanDetail, primaryAutoLoanDetailRequest);
-					loanDetails.put("primaryLoanDetails", primaryAutoLoanDetailRequest);
-                                        loanDetails.put("borrowersConstribution", !CommonUtils.isObjectNullOrEmpty(autoDetails.getBorrowerContribution()) ? autoDetails.getBorrowerContribution() : "-" );
-					loanDetails.put("vehicleSegment", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getVehicleSegment()) ? VehicleSegment.getById(primaryAutoLoanDetailRequest.getVehicleSegment()).getValue() : "-");
-					loanDetails.put("vehicleEngineVolume", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getVehicleEngineVolume()) ? VehicleEngineVolume.getById(primaryAutoLoanDetailRequest.getVehicleEngineVolume()).getValue() : "-");
-					loanDetails.put("vehicleUse", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getVehicleUse()) ? VehicleUse.getById(primaryAutoLoanDetailRequest.getVehicleUse()).getValue() : "-");
-					loanDetails.put("vehicleShowroomPrice", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getVehicleExShowRoomPrice()) ? CommonUtils.convertValueWithoutDecimal(Double.valueOf(primaryAutoLoanDetailRequest.getVehicleExShowRoomPrice())) : "-");
-					loanDetails.put("vehicleOnRoadPrice", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getVehicleOnRoadPrice()) ? CommonUtils.convertValueWithoutDecimal(Double.valueOf(primaryAutoLoanDetailRequest.getVehicleOnRoadPrice())) : "-");
-					loanDetails.put("isVehicleHypothecation", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getIsVehicleHypothecation()) && primaryAutoLoanDetailRequest.getIsVehicleHypothecation() ? "Yes" : "No");
-				}
-				map.put("loanDetails", loanDetails);
-			}
+			map.put("loanDetails", getLoanDetails(applicationId, userId));
 		}catch (Exception e) {
 			logger.error("Error/Exception while fetching loan Details for Auto Loan By applicationId==>{} with error==>{}",applicationId ,e);
 		}
@@ -391,15 +376,6 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 		}
 		catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
-		}
-		
-		//PRIMARY DATA (LOAN DETAILS)
-		try {
-			PLRetailApplicantRequest plRetailApplicantRequest = plRetailApplicantService.getPrimaryByProposalId(userId, applicationId, proposalId);
-			map.put("loanPurpose", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest) && !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getLoanPurpose()) ? StringEscapeUtils.escapeXml(AutoLoanPurposeType.getById(plRetailApplicantRequest.getLoanPurpose()).getValue()): "-");
-			map.put("retailApplicantPrimaryDetails", plRetailApplicantRequest);
-		} catch (Exception e) {
-			logger.error("Error while getting primary Details : ",e);
 		}
 		
 		//INCOME DETAILS - NET INCOME
@@ -631,16 +607,18 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
 						companyMap.put(Retail.AutoLoan.PERSONAL_RELATIONSHIP_WITH_BANK, CommonUtils.printFields(collect.get(0),null));
 					}
-                                        collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.IS_ADHAAR_CARD)).collect(Collectors.toList());
+                    collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.IS_ADHAAR_CARD)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
 						companyMap.put(Retail.AutoLoan.IS_ADHAAR_CARD, CommonUtils.printFields(collect.get(0),null));
 					}
-                                        collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.CAR_SEGMENT)).collect(Collectors.toList());
+                    collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.CAR_SEGMENT)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
 						companyMap.put(Retail.AutoLoan.CAR_SEGMENT, CommonUtils.printFields(collect.get(0),null));
 					}
-                                        
-					
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.TAKE_HOME_PAY)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.AutoLoan.TAKE_HOME_PAY, CommonUtils.printFields(collect.get(0),null));
+					}                   
 					scoreResponse.add(companyMap);
 					map.put("scoringResp", scoreResponse);
 			}catch (Exception e) {
@@ -870,6 +848,10 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 				if(!CommonUtils.isListNullOrEmpty(collect)) {
 					companyMap.put(Retail.AutoLoan.PERSONAL_RELATIONSHIP_WITH_BANK, CommonUtils.printFields(collect.get(0),null));
 				}
+				collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.TAKE_HOME_PAY)).collect(Collectors.toList());
+				if(!CommonUtils.isListNullOrEmpty(collect)) {
+					companyMap.put(Retail.AutoLoan.TAKE_HOME_PAY, CommonUtils.printFields(collect.get(0),null));
+				} 
 					scoreResponse.add(companyMap);
 					coAppScoringData.add(scoreResponse);
 			}
@@ -881,7 +863,7 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 		}
 		
 		//PERFIOS API DATA (BANK STATEMENT ANALYSIS)
-		map.put("bankRelatedData" , getBankDetails(applicationId, userId));
+		map.put("bankRelatedData" , getBankRelatedData(applicationId, userId));
 
 		//ELIGIBILITY DATA (ASSESSMENT TO LIMITS)
 		try{
@@ -1176,7 +1158,6 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 			
 			map.put("salutation", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getTitleId()) ? StringEscapeUtils.escapeXml(Title.getById(plRetailApplicantRequest.getTitleId()).getValue()):"");
 			if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest)) {
-                                map.put("isUserHaveAadhar", plRetailApplicantRequest.getIsUserHaveAadhar() != null ? (plRetailApplicantRequest.getIsUserHaveAadhar() ? "Yes" : "No") :  "-");
 				map.put("registeredAddPremise", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getAddressPremiseName()) ? CommonUtils.printFields(plRetailApplicantRequest.getAddressPremiseName(),null) + "," : "");
 				map.put("registeredAddStreetName", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getAddressStreetName()) ? CommonUtils.printFields(plRetailApplicantRequest.getAddressStreetName(),null) + "," : "");
 				map.put("registeredAddLandmark", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getAddressLandmark()) ? CommonUtils.printFields(plRetailApplicantRequest.getAddressLandmark(),null) + "," : "");
@@ -1191,9 +1172,63 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 				} catch (Exception e) {
 					logger.error(CommonUtils.EXCEPTION,e);
 				}
+				
+				if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getOfficeAddress())) {
+					map.put("officeAddPremise", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getOfficeAddress().getPremiseNumber()) ? CommonUtils.printFields(plRetailApplicantRequest.getOfficeAddress().getPremiseNumber(),null) + "," : "");
+					map.put("officeAddStreetName", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getOfficeAddress().getStreetName()) ? CommonUtils.printFields(plRetailApplicantRequest.getOfficeAddress().getStreetName(),null) + "," : "");
+					map.put("officeAddLandmark", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getOfficeAddress().getLandMark()) ? CommonUtils.printFields(plRetailApplicantRequest.getOfficeAddress().getLandMark(),null) + "," : "");
+					map.put("officeAddCountry", StringEscapeUtils.escapeXml(getCountryName(plRetailApplicantRequest.getOfficeAddress().getCountryId())));
+					map.put("officeAddState", StringEscapeUtils.escapeXml(getStateName(plRetailApplicantRequest.getOfficeAddress().getStateId())));
+					map.put("officeAddCity", StringEscapeUtils.escapeXml(getCityName(plRetailApplicantRequest.getOfficeAddress().getCityId())));
+					map.put("officeAddPincode", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getOfficeAddress().getPincode())?plRetailApplicantRequest.getOfficeAddress().getPincode() : "");
+					try {
+						if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getOfficeAddress().getDistrictMappingId())) {
+							map.put("officeAddressData",CommonUtils.printFields(pincodeDateService.getById(plRetailApplicantRequest.getOfficeAddress().getDistrictMappingId()),null));				
+						}
+					} catch (Exception e) {
+						logger.error(CommonUtils.EXCEPTION,e);
+					}
+				}
+				
+				map.put("isUserHaveAadhar", plRetailApplicantRequest.getIsUserHaveAadhar() != null ? (plRetailApplicantRequest.getIsUserHaveAadhar() ? "Yes" : "No") :  "-");
+				map.put("loanPurpose", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest) && !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getLoanPurpose()) ? StringEscapeUtils.escapeXml(AutoLoanPurposeType.getById(plRetailApplicantRequest.getLoanPurpose()).getValue()): "-");
+				map.put("loanPurposeType" ,!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getLoanPurposeQueType()) ? StringEscapeUtils.escapeXml(AutoDetailPurposeofLoan.getById(plRetailApplicantRequest.getLoanPurposeQueType()).getValue()) : "-");
+				map.put("loanPurposeValue", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getLoanPurposeQueValue()) ? plRetailApplicantRequest.getLoanPurposeQueValue() : "-");
+				
+				
+				//Will your organization/company Pay EMI directly from your Salary Account
+				Boolean isCheckOffDirectPayEmi = plRetailApplicantRequest.getIsCheckOffDirectPayEmi();
+				map.put("isCheckOffDirectPayEmi1", isCheckOffDirectPayEmi == null ? "-" : isCheckOffDirectPayEmi ? "Yes" : "No");
+				
+				//Will your organization/company agree to pay loan outstanding from your terminal payments in event you leave your employer
+				Boolean isCheckOffAgreeToPayOutstanding = plRetailApplicantRequest.getIsCheckOffAgreeToPayOutstanding();
+				map.put("isCheckOffAgreeToPayOutstanding1", isCheckOffAgreeToPayOutstanding == null ? "-" : isCheckOffAgreeToPayOutstanding ? "Yes" : "No");
+				
+				//Will your organization/company Pay salary only in your salary account. Take Confirmation (NOC) from bank before shifting your salary account
+				Boolean isCheckOffShiftSalAcc = plRetailApplicantRequest.getIsCheckOffShiftSalAcc();
+				map.put("isCheckOffShiftSalAcc1", isCheckOffShiftSalAcc == null ? "-" : isCheckOffShiftSalAcc ? "Yes" : "No");
+				
+				//Whether you (Employee/Borrower) will Issue letter to your employer, to pay loan outstanding from your terminal payments in event you leave your employer
+				Boolean isCheckOffPayOutstndAmount = plRetailApplicantRequest.getIsCheckOffPayOutstndAmount();
+				map.put("isCheckOffPayOutstndAmount1", isCheckOffPayOutstndAmount == null ? "-" : isCheckOffPayOutstndAmount ? "Yes" : "No");
+				
+				//Whether you (Employee/Borrower) will Issue Letter to your employer to not change your salary account and if need to change then take confirmation (NOC) from bank
+				Boolean isCheckOffNotChangeSalAcc = plRetailApplicantRequest.getIsCheckOffNotChangeSalAcc();
+				map.put("isCheckOffNotChangeSalAcc1", isCheckOffNotChangeSalAcc == null ? "-" : isCheckOffNotChangeSalAcc ? "Yes" : "No");
 			}
 			
-			
+			//PRIMARY DATA (LOAN DETAILS)
+			try {
+				PLRetailApplicantRequest plRetailApplicantRequestForPrimary = null;
+				if(proposalId != null) {
+					plRetailApplicantRequestForPrimary = plRetailApplicantService.getPrimaryByProposalId(userId, applicationId, proposalId);
+				}else {
+					plRetailApplicantRequestForPrimary = plRetailApplicantService.getPrimary(userId, applicationId);
+				}
+				map.put("retailApplicantPrimaryDetails", plRetailApplicantRequestForPrimary);
+			} catch (Exception e) {
+				logger.error("Error while getting primary Details : ",e);
+			}
 			
 			//cibil score
 			try {
@@ -1203,27 +1238,10 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 				CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
 				if (cibilScoreByPanCard != null) {
 					map.put("applicantV2Score", CommonUtils.getCibilV2ScoreRange(cibilScoreByPanCard.getActualScore()));
+					map.put("applicantCIBILScore", cibilScoreByPanCard);
 				}
-				map.put("applicantCIBILScore", cibilScoreByPanCard);
 			} catch (Exception e) {
 				logger.error("Error While calling Cibil Score By PanCard : ",e);
-			}
-			
-			if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getOfficeAddress())) {
-				map.put("officeAddPremise", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getOfficeAddress().getPremiseNumber()) ? CommonUtils.printFields(plRetailApplicantRequest.getOfficeAddress().getPremiseNumber(),null) + "," : "");
-				map.put("officeAddStreetName", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getOfficeAddress().getStreetName()) ? CommonUtils.printFields(plRetailApplicantRequest.getOfficeAddress().getStreetName(),null) + "," : "");
-				map.put("officeAddLandmark", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getOfficeAddress().getLandMark()) ? CommonUtils.printFields(plRetailApplicantRequest.getOfficeAddress().getLandMark(),null) + "," : "");
-				map.put("officeAddCountry", StringEscapeUtils.escapeXml(getCountryName(plRetailApplicantRequest.getOfficeAddress().getCountryId())));
-				map.put("officeAddState", StringEscapeUtils.escapeXml(getStateName(plRetailApplicantRequest.getOfficeAddress().getStateId())));
-				map.put("officeAddCity", StringEscapeUtils.escapeXml(getCityName(plRetailApplicantRequest.getOfficeAddress().getCityId())));
-				map.put("officeAddPincode", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getOfficeAddress().getPincode())?plRetailApplicantRequest.getOfficeAddress().getPincode() : "");
-				try {
-					if(!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getOfficeAddress().getDistrictMappingId())) {
-						map.put("officeAddressData",CommonUtils.printFields(pincodeDateService.getById(plRetailApplicantRequest.getOfficeAddress().getDistrictMappingId()),null));				
-					}
-				} catch (Exception e) {
-					logger.error(CommonUtils.EXCEPTION,e);
-				}
 			}
 			
 			LocalDate today = LocalDate.now();
@@ -1278,7 +1296,6 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 				map.put("nameEdited",fullName);
 			}
 			
-			
 			String operatingBusinessSince = null;
 			if(plRetailApplicantRequest.getBusinessStartDate() != null ) {
 				LocalDate operatingBusinessDiff = LocalDate.parse(new SimpleDateFormat("yyyy-MM-dd").format(plRetailApplicantRequest.getBusinessStartDate()));
@@ -1286,12 +1303,7 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 				LocalDate now = LocalDate.now();
 				Period sinceWhen = Period.between(since, now);
 				operatingBusinessSince = (sinceWhen.getYears()) + " years" + " " +(!CommonUtils.isObjectNullOrEmpty(sinceWhen.getMonths()) ? sinceWhen.getMonths() + " months" : "");
-			}
-			
-			map.put("loanPurposeType" ,!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getLoanPurposeQueType()) ? StringEscapeUtils.escapeXml(AutoDetailPurposeofLoan.getById(plRetailApplicantRequest.getLoanPurposeQueType()).getValue()) : "-");
-			map.put("loanPurposeValue", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getLoanPurposeQueValue()) ? plRetailApplicantRequest.getLoanPurposeQueValue() : "-");
-			
-                        
+			}    
                         
 			map.put("gender", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getGenderId()) ? Gender.getById(plRetailApplicantRequest.getGenderId()).getValue(): "-");
 			map.put("birthDate",!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBirthDate())? simpleDateFormat.format(plRetailApplicantRequest.getBirthDate()):"-");
@@ -1376,12 +1388,14 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 			map.put("netMonthlyIncome", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getMonthlyIncome()) ? CommonUtils.convertValueWithoutDecimal(plRetailApplicantRequest.getMonthlyIncome()) : null);
 			map.put("applicantCategory", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getCategory()) ? CastCategory.getById(plRetailApplicantRequest.getCategory()).getValue() : "-");
 			map.put("experienceInPresentJob", !CommonUtils.isObjectNullOrEmpty(experienceInPresentJob) ? experienceInPresentJob : "-");
+			map.put("fathersName", !CommonUtils.isObjectNullOrEmptyOrDash(plRetailApplicantRequest.getFatherName()) ? plRetailApplicantRequest.getFatherName() :"-" );
 			map.put("salaryMode", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getSalaryMode()) ? SalaryModeMst.getById(plRetailApplicantRequest.getSalaryMode()).getValue() : "-");
 			if(ResidenceStatusRetailMst.OWNED.getId() == plRetailApplicantRequest.getResidenceType()) {
 				map.put("mortgageInOwnedProperty", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getIsOwnedProp()) ? plRetailApplicantRequest.getIsOwnedProp() == true ? "Yes" : "No" : "-");
 			}else {
 				map.put("mortgageInOwnedProperty", "-");
 			}
+	
 			//KEY VERTICAL FUNDING
 			List<Long> keyVerticalFundingId = new ArrayList<>();
 			if (!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getKeyVerticalFunding()))
@@ -1507,17 +1521,17 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 				}
 				
 				 try {
-	                    CibilRequest cibilReq=new CibilRequest();
-	                    cibilReq.setPan(coApplicantDetail.getPan());
-	                    cibilReq.setApplicationId(applicationId);
-	                    CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
-	                    if(cibilScoreByPanCard != null) {
-	                    	coApp.put("coAppV2Score", CommonUtils.getCibilV2ScoreRange(cibilScoreByPanCard.getActualScore()));
-	                    }
-	                    coApp.put("coAppCibilScore", cibilScoreByPanCard);
-	                } catch (Exception e) {
-	                    logger.error("Error While calling Cibil Score By PanCard : ",e);
-	                }
+                    CibilRequest cibilReq=new CibilRequest();
+                    cibilReq.setPan(coApplicantDetail.getPan());
+                    cibilReq.setApplicationId(applicationId);
+                    CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
+                    if(cibilScoreByPanCard != null) {
+                    	coApp.put("coAppV2Score", CommonUtils.getCibilV2ScoreRange(cibilScoreByPanCard.getActualScore()));
+                    	coApp.put("coAppCibilScore", cibilScoreByPanCard);
+                    }
+                } catch (Exception e) {
+                    logger.error("Error While calling Cibil Score By PanCard : ",e);
+                }
 				
 				try {
 					List<BankRelationshipRequest> bankRelationshipRequests = new ArrayList<>();
@@ -1860,7 +1874,7 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 		return null;
 	}
 	
-	public Object getBankDetails(Long applicationId , Long userId){
+	public Object getBankRelatedData(Long applicationId , Long userId){
 		ReportRequest reportRequest = new ReportRequest();
 		reportRequest.setApplicationId(applicationId);
 		reportRequest.setUserId(userId);
@@ -1875,7 +1889,7 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 					Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
 					datas.add(data);
 				}
-				return datas != null && !datas.isEmpty() ? CommonUtils.printFields(datas, null)  : null;
+				return !datas.isEmpty() ? CommonUtils.printFields(datas, null)  : null;
 				//map.put("bankRelatedData" , CommonUtils.printFields(datas, null));
 			}
 		} catch (Exception e) {
@@ -1926,6 +1940,46 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 		return !bankData.isEmpty() ? bankData : null;
 	}
 	
+	public Map<String ,Object> getLoanDetails(Long applicationId , Long userId){
+		 try {
+	    	if(userId != null) {
+		        Map<String ,Object> loanDetails = new HashMap<String, Object>();
+		        ALOneformPrimaryRes autoDetails = primaryAutoloanService.getOneformPrimaryDetails(applicationId);
+		        PrimaryAutoLoanDetail primaryAutoLoanDetail = primaryAutoLoanDetailRepository.getByApplicationAndUserId(applicationId, userId);
+		        if(!CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetail)) {
+		              PrimaryAutoLoanDetailRequest primaryAutoLoanDetailRequest = new PrimaryAutoLoanDetailRequest();
+		              BeanUtils.copyProperties(primaryAutoLoanDetail, primaryAutoLoanDetailRequest);
+		              loanDetails.put("primaryLoanDetails", primaryAutoLoanDetailRequest);
+		              loanDetails.put("borrowersConstribution", !CommonUtils.isObjectNullOrEmpty(autoDetails.getBorrowerContribution()) ? autoDetails.getBorrowerContribution() : "-" );
+		              loanDetails.put("vehicleSegment", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getVehicleSegment()) ? VehicleSegment.getById(primaryAutoLoanDetailRequest.getVehicleSegment()).getValue() : "-");
+		              loanDetails.put("vehicleEngineVolume", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getVehicleEngineVolume()) ? VehicleEngineVolume.getById(primaryAutoLoanDetailRequest.getVehicleEngineVolume()).getValue() : "-");
+		              loanDetails.put("vehicleUse", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getVehicleUse()) ? VehicleUse.getById(primaryAutoLoanDetailRequest.getVehicleUse()).getValue() : "-");
+		              loanDetails.put("vehicleShowroomPrice", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getVehicleExShowRoomPrice()) ? CommonUtils.convertValueWithoutDecimal(Double.valueOf(primaryAutoLoanDetailRequest.getVehicleExShowRoomPrice())) : "-");
+		              loanDetails.put("vehicleOnRoadPrice", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getVehicleOnRoadPrice()) ? CommonUtils.convertValueWithoutDecimal(Double.valueOf(primaryAutoLoanDetailRequest.getVehicleOnRoadPrice())) : "-");
+		              loanDetails.put("isVehicleHypothecation", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getIsVehicleHypothecation()) && primaryAutoLoanDetailRequest.getIsVehicleHypothecation() ? "Yes" : "No");
+		              loanDetails.put("assetMake", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getAssetMake()) ? primaryAutoLoanDetailRequest.getAssetMake() : "-");
+		              
+		              Object[] autoLoanDetails = commonRepository.fetchALDetailsOfManufacturerAssetsSupplier(primaryAutoLoanDetailRequest.getManufacturerId() != null ? primaryAutoLoanDetailRequest.getManufacturerId() : 0, 
+		            		  primaryAutoLoanDetailRequest.getAssetModelId() != null ? primaryAutoLoanDetailRequest.getAssetModelId() : 0, primaryAutoLoanDetailRequest.getSupplierId() != null ? primaryAutoLoanDetailRequest.getSupplierId().intValue() : 0);
+		              if (!CommonUtils.isObjectNullOrEmpty(autoLoanDetails)) {
+						loanDetails.put("manufacturerName", autoLoanDetails[0] != null ? StringEscapeUtils.escapeXml(String.valueOf(autoLoanDetails[0])) : "-");
+						loanDetails.put("assetModelNo", autoLoanDetails[1] != null ? autoLoanDetails[1] : "-");
+						loanDetails.put("supplierName", autoLoanDetails[2] != null ? StringEscapeUtils.escapeXml(String.valueOf(autoLoanDetails[2])) : "-");
+						loanDetails.put("supplierCity", autoLoanDetails[3] != null ? autoLoanDetails[3] : "-");
+						loanDetails.put("supplierState", autoLoanDetails[4] != null ? autoLoanDetails[4] : "-");
+					}
+		              
+ 		        }
+		        
+		        return !loanDetails.isEmpty() ? loanDetails : null;
+	    	}
+        }catch (Exception e) {
+              logger.error("Error/Exception while fetching loan Details for Auto Loan By applicationId==>{} with error==>{}",applicationId ,e);
+        }
+		 return null;
+	}
+	
+	
 	@Override
 	public Map<String, Object> getHLBankStatementAnalysisReport(Long applicationId, Long productId) {
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -1940,7 +1994,7 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 		}
 		
 		//PERFIOS API DATA (BANK STATEMENT ANALYSIS)
-		map.put("bankRelatedData" , getBankDetails(applicationId, userId));
+		map.put("bankRelatedData" , getBankRelatedData(applicationId, userId));
 		
 		return map;
 	}
@@ -1949,12 +2003,27 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 	public Map<String ,Object> getIneligibleDataForCam(Long applicationId){
 		Map<String, Object> map = new HashMap<String, Object>();
 		
+		
 		Long userId = loanApplicationRepository.getUserIdByApplicationId(applicationId);
 		
 		try {
 			map.putAll(bindDataOfRetailApplicant(applicationId, userId, null));
 		}catch (Exception e) {
 			logger.error("Error/Exception while fetching Data For Primary Detail for AL Ineligible Cam with ApplicationId==>{} and UserId==>{}",applicationId, userId);
+		}
+		
+		//NEW MATCHES CODE INCLUDED
+		try {
+			MatchRequest matchRequest = new MatchRequest();
+			matchRequest.setApplicationId(applicationId);
+			//matchRequest.setProductId(productId);
+			//matchRequest.setBusinessTypeId(loanApplicationMaster.getBusinessTypeId());
+			MatchDisplayResponse matchResponse= matchEngineClient.displayOfflineMatchesOfRetail(matchRequest);
+			logger.info("matchesResponse"+matchResponse);
+			map.put("matchesResponse", !CommonUtils.isObjectNullOrEmpty(matchResponse.getMatchDisplayObjectMap()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectMap(),null) : " ");
+		}
+		catch (Exception e) {
+			logger.error("Error while getting matches data : ",e);
 		}
 		
 		//INCOME DETAILS - NET INCOME
@@ -1981,47 +2050,40 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 		// ENDS HERE===================>
 		
 		//CHANGES FOR DATE OF PROPOSAL IN CAM REPORTS (NEW CODE)
-        try {
-              Date inPrincipleDate = loanApplicationRepository.getInPrincipleDate(applicationId);
-              if(!CommonUtils.isObjectNullOrEmpty(inPrincipleDate)) {
-                    map.put("dateOfInPrincipalApproval",!CommonUtils.isObjectNullOrEmpty(inPrincipleDate)? simpleDateFormat.format(inPrincipleDate):"-");
-                    map.put("dateOfInEligible", 
-    						!CommonUtils.isObjectNullOrEmpty(inPrincipleDate)
-    								? CommonUtils.DATE_FORMAT.format(inPrincipleDate)
-    								: "-");
-              }
-        } catch (Exception e2) {
-              logger.error(CommonUtils.EXCEPTION,e2);
-        }
+		try {
+			Date InPrincipleDate = loanApplicationRepository.getInEligibleModifiedDate(applicationId,ConnectStage.RETAIL_ONE_FORM_LOAN_DETAILS.getId(), 6);
+				map.put("dateOfInEligible",!CommonUtils.isObjectNullOrEmpty(InPrincipleDate)? CommonUtils.DATE_FORMAT.format(InPrincipleDate): "-");
+		} catch (Exception e2) {
+			logger.error(CommonUtils.EXCEPTION, e2);
+		}
         
         // ENDS HERE===================>
         
         //Fetch All CoApplicant Related Data of Each CoApplicant
         try {
-              
-              map.put("retailCoApplicantDetails", bindDataOfRetailCoApplicant(applicationId, null, false));
+             map.put("retailCoApplicantDetails", bindDataOfRetailCoApplicant(applicationId, null, false));
         } catch (Exception e) {
-              logger.error("Error while getting profile Details for CoApplicants in ApplicationForm : ",e);
+             logger.error("Error while getting profile Details for CoApplicants in ApplicationForm : ",e);
         }
         
         //Fetch Bank Details
         try {
-              map.put("bankDetails", fetchBankDetails(applicationId, userId, null));
+             map.put("bankDetails", fetchBankDetails(applicationId, userId, null));
         }catch (Exception e) {
-              logger.error("Error/Exception while getting Bank Details Of ApplicationId==>{}  ..Error==>{}",applicationId ,e);
+             logger.error("Error/Exception while getting Bank Details Of ApplicationId==>{}  ..Error==>{}",applicationId ,e);
         }
         
         //PROPOSAL RESPONSE
         try {
-              ObjectMapper mapper = new ObjectMapper();
-              ProposalMappingResponse proposalMappingResponse= proposalDetailsClient.getActiveProposalByApplicationID(applicationId);
-              
-              ProposalMappingRequestString proposalMappingRequestString = mapper.convertValue(proposalMappingResponse.getData(), ProposalMappingRequestString.class);
-              if(proposalMappingRequestString != null) {
-                    map.put("proposalDate", simpleDateFormat.format(proposalMappingRequestString.getModifiedDate()));
-                    map.put("proposalResponseEmi", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? CommonUtils.convertValueWithoutDecimal((Double)((LinkedHashMap<String, Object>)proposalMappingResponse.getData()).get("emi")) : "");
-                    map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? proposalMappingResponse.getData() : " ");
-              }
+	          ObjectMapper mapper = new ObjectMapper();
+	          ProposalMappingResponse proposalMappingResponse= proposalDetailsClient.getActiveProposalByApplicationID(applicationId);
+	          
+	          ProposalMappingRequestString proposalMappingRequestString = mapper.convertValue(proposalMappingResponse.getData(), ProposalMappingRequestString.class);
+	          if(proposalMappingRequestString != null) {
+	                map.put("proposalDate", simpleDateFormat.format(proposalMappingRequestString.getModifiedDate()));
+	                map.put("proposalResponseEmi", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? CommonUtils.convertValueWithoutDecimal((Double)((LinkedHashMap<String, Object>)proposalMappingResponse.getData()).get("emi")) : "");
+	                map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? proposalMappingResponse.getData() : " ");
+	          }
         }
         catch (Exception e) {
               logger.error(CommonUtils.EXCEPTION,e);
@@ -2035,41 +2097,11 @@ public class ALCamReportServiceImpl implements ALCamReportService {
         }
         /* co-APP SECTION */
         
-        
         //Fetching Loan Details
         try {
-              if(userId != null) {
-                    Map<String ,Object> loanDetails = new HashMap<String, Object>();
-                            ALOneformPrimaryRes autoDetails = primaryAutoloanService.getOneformPrimaryDetails(applicationId);
-                    PrimaryAutoLoanDetail primaryAutoLoanDetail = primaryAutoLoanDetailRepository.getByApplicationAndUserId(applicationId, userId);
-                    if(!CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetail)) {
-                                
-                          PrimaryAutoLoanDetailRequest primaryAutoLoanDetailRequest = new PrimaryAutoLoanDetailRequest();
-                          BeanUtils.copyProperties(primaryAutoLoanDetail, primaryAutoLoanDetailRequest);
-                          loanDetails.put("primaryLoanDetails", primaryAutoLoanDetailRequest);
-                                    loanDetails.put("borrowersConstribution", !CommonUtils.isObjectNullOrEmpty(autoDetails.getBorrowerContribution()) ? autoDetails.getBorrowerContribution() : "-" );
-                          loanDetails.put("vehicleSegment", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getVehicleSegment()) ? VehicleSegment.getById(primaryAutoLoanDetailRequest.getVehicleSegment()).getValue() : "-");
-                          loanDetails.put("vehicleEngineVolume", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getVehicleEngineVolume()) ? VehicleEngineVolume.getById(primaryAutoLoanDetailRequest.getVehicleEngineVolume()).getValue() : "-");
-                          loanDetails.put("vehicleUse", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getVehicleUse()) ? VehicleUse.getById(primaryAutoLoanDetailRequest.getVehicleUse()).getValue() : "-");
-                          loanDetails.put("vehicleShowroomPrice", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getVehicleExShowRoomPrice()) ? CommonUtils.convertValueWithoutDecimal(Double.valueOf(primaryAutoLoanDetailRequest.getVehicleExShowRoomPrice())) : "-");
-                          loanDetails.put("vehicleOnRoadPrice", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getVehicleOnRoadPrice()) ? CommonUtils.convertValueWithoutDecimal(Double.valueOf(primaryAutoLoanDetailRequest.getVehicleOnRoadPrice())) : "-");
-                          loanDetails.put("isVehicleHypothecation", !CommonUtils.isObjectNullOrEmpty(primaryAutoLoanDetailRequest.getIsVehicleHypothecation()) && primaryAutoLoanDetailRequest.getIsVehicleHypothecation() ? "Yes" : "No");
-                    }
-                    map.put("loanDetails", loanDetails);
-              }
+        	map.put("loanDetails", getLoanDetails(applicationId, userId));
         }catch (Exception e) {
-              logger.error("Error/Exception while fetching loan Details for Auto Loan By applicationId==>{} with error==>{}",applicationId ,e);
-        }
-        
-        
-        //PRIMARY DATA (LOAN DETAILS)
-        try {
-              PLRetailApplicantRequest plRetailApplicantRequest = plRetailApplicantService.getPrimary(userId, applicationId);
-              map.put("loanPurpose", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getLoanPurpose()) ? StringEscapeUtils.escapeXml(AutoLoanPurposeType.getById(plRetailApplicantRequest.getLoanPurpose()).getValue()): "");
-              map.put("retailApplicantPrimaryDetails", plRetailApplicantRequest);
-              
-        } catch (Exception e) {
-              logger.error("Error while getting primary Details : ",e);
+            logger.error("Error/Exception while fetching loan Details for Auto Loan By applicationId==>{} with error==>{}",applicationId ,e);
         }
         
         //Fetch FinancialArrangementData For All CoApplicant
@@ -2080,24 +2112,92 @@ public class ALCamReportServiceImpl implements ALCamReportService {
         }
                            
         //PERFIOS API DATA (BANK STATEMENT ANALYSIS)
-        ReportRequest reportRequest = new ReportRequest();
-        reportRequest.setApplicationId(applicationId);
-        reportRequest.setUserId(userId);
-        List<Data> datas = new ArrayList<>();
-
+        map.put("bankRelatedData" , getBankRelatedData(applicationId, userId));
+		
+		return map;
+	}
+	
+	@Override
+	public Map<String ,Object> getDataForApplicationForm(Long applicationId, Long productId, Long proposalId){
+		
+		ApplicationProposalMapping applicationProposalMapping = applicationMappingRepository.getByApplicationIdAndProposalId(applicationId, proposalId);
+		
+		Map<String , Object> map = new HashMap<String, Object>();
+		
+		Long userId = loanApplicationRepository.getUserIdByApplicationId(applicationId);
+		
 		try {
-			AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
-			List<HashMap<String, Object>> listhashMap = (List<HashMap<String, Object>>) analyzerResponse.getData();
-			if (!CommonUtils.isListNullOrEmpty(listhashMap)) {	
-				for (HashMap<String, Object> rec : listhashMap) {
-					Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
-					datas.add(data);
-				}
-				map.put("bankRelatedData" , CommonUtils.printFields(datas, null));
-			}
-		} catch (Exception e) {
-			logger.error("Error while getting perfios data : ",e);
+			map.putAll(bindDataOfRetailApplicant(applicationId, userId, proposalId));
+		}catch (Exception e) {
+			logger.error("Error/Exception while fetching Data For PL Applicant Request Primary Detail with ApplicationId==>{} ,UserId==>{} and ProposalId==>{}",applicationId, userId, proposalId);
 		}
+		
+		//Fetching Loan Details
+		try {
+			map.put("loanDetails", getLoanDetails(applicationId, userId));
+		}catch (Exception e) {
+			logger.error("Error/Exception while fetching loan Details for Auto Loan By applicationId==>{} with error==>{}",applicationId ,e);
+		}
+		
+		//INCOME DETAILS - NET INCOME
+		try {
+			List<RetailApplicantIncomeRequest> retailApplicantIncomeDetail = retailApplicantIncomeService.getAllByProposalId(applicationId, proposalId);
+			map.put("incomeDetails", !CommonUtils.isListNullOrEmpty(retailApplicantIncomeDetail) ? retailApplicantIncomeDetail : null);
+		} catch (Exception e) {
+			logger.error("Error while getting income details : ",e);
+		}
+		
+		try {
+			//Fetch All CoApplicant Related Data of Each CoApplicant
+			map.put("retailCoApplicantDetails", bindDataOfRetailCoApplicant(applicationId, proposalId, false));
+		} catch (Exception e) {
+			logger.error("Error while getting profile Details for CoApplicants in ApplicationForm : ",e);
+		}
+		
+		//Fetch FinancialArrangementData For All CoApplicant
+		try {
+			map.put("financialArrangmentsofCoApplicant" ,bindDataOfFinancialArrangementOfCoApplicant(applicationId));
+		}catch (Exception e) {
+			logger.error("Error while getting Financial Arrangement Data for CoApplicants in ApplicationForm : ",e);
+		}
+		
+		//Fetch Perfios Data Of Bank
+		try {
+			map.put("bankRelatedData", getBankRelatedData(applicationId, userId));
+		}catch (Exception e) {
+			logger.error("Error/Exception while getting Bank Related Data of Perfios");
+		}
+		
+		map.put("bankDetails", fetchBankDetails(applicationId, userId, proposalId));
+		Long orgId = null;
+		if(proposalId != null) {
+			orgId = proposalDetailsRepository.getOrgIdByProposalId(proposalId);
+		}else {
+			orgId = ineligibleProposalDetailsRepository.getOrgId(applicationId);
+		}
+		
+		if(orgId != null) {
+			String[] str = BanksEnumForReports.getBankNameAndUrl(orgId);
+			
+			map.put("bankName", str != null && str.length > 0 && str[0] != null ? str[0] : "" );
+			map.put("bankUrl", str != null && str.length > 1 && str[1] != null ? str[1] : null);
+			map.put("bankFullName", str != null && str.length > 2 && str[2] != null ? str[2] : "");
+		}
+		
+		//MATCHES RESPONSE
+				try {
+					MatchRequest matchRequest = new MatchRequest();
+					matchRequest.setApplicationId(applicationId);
+					matchRequest.setProductId(productId);
+					matchRequest.setBusinessTypeId(applicationProposalMapping.getBusinessTypeId());
+					MatchDisplayResponse matchResponse= matchEngineClient.displayMatchesOfRetail(matchRequest);
+					logger.info("matchesResponse ==>{}", matchResponse);
+					map.put("matchesResponse", !CommonUtils.isObjectNullOrEmpty(matchResponse.getMatchDisplayObjectMap()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectMap(),null) : null);
+				}
+				catch (Exception e) {
+					logger.error("Error while getting matches data : ",e);
+				}
+		
 		
 		return map;
 	}

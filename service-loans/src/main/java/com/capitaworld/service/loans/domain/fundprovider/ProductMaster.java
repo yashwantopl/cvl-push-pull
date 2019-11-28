@@ -114,6 +114,14 @@ public abstract class ProductMaster implements Serializable {
 	@Column(name="nbfc_product_type")
 	private Integer productType;
 	
+	@Column(name = "bureau_version")
+	private Integer bureauVersion;
+
+	@Column(name = "min_roi")
+	private Double minRoi;
+
+	@Column(name = "max_roi")
+	private Double maxRoi;
 	
 
 	public ProductMaster() {
@@ -346,6 +354,28 @@ public abstract class ProductMaster implements Serializable {
 	public void setProductType(Integer productType) {
 		this.productType = productType;
 	}
-	
-	
+
+	public Integer getBureauVersion() {
+		return bureauVersion;
+	}
+
+	public void setBureauVersion(Integer bureauVersion) {
+		this.bureauVersion = bureauVersion;
+	}
+
+	public Double getMinRoi() {
+		return minRoi;
+	}
+
+	public void setMinRoi(Double minRoi) {
+		this.minRoi = minRoi;
+	}
+
+	public Double getMaxRoi() {
+		return maxRoi;
+	}
+
+	public void setMaxRoi(Double maxRoi) {
+		this.maxRoi = maxRoi;
+	}
 }

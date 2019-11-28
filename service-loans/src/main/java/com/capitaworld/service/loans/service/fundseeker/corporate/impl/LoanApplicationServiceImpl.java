@@ -6062,7 +6062,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						disbursementRequest.setFpImage(imagePath);
 					}
 					//For Fetching Sanctioned amount
-					LoanSanctionDomain loanSanctionDomain =loanSanctionRepository.findByAppliationId(disbursementRequest.getApplicationId());
+					LoanSanctionDomain loanSanctionDomain =loanSanctionRepository.findByApplicationIdAndNbfcFlowAndIsActive(disbursementRequest.getApplicationId(),disbursementRequest.getNbfcFlow(),true);
 					if(!CommonUtils.isObjectNullOrEmpty(loanSanctionDomain) ){
 						disbursementRequest.setSenctionedAmount(loanSanctionDomain.getSanctionAmount());
 						disbursementRequest.setTenure(loanSanctionDomain.getTenure());
@@ -6290,7 +6290,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 		if(!CommonUtils.isObjectNullOrEmpty(productDetails)){
 			List<ApplicationProposalMapping> applicationProposalMappingList = applicationProposalMappingRepository.getListByApplicationIdAndOrgId(proposalDetails.getApplicationId(),loanApplicationRequest.getNpOrgId());
-			if(!CommonUtils.isObjectNullOrEmpty(applicationProposalMappingList)){
+			if(!CommonUtils.isObjectNullOrEmpty(applicationProposalMappingList) && CommonUtils.isObjectNullOrEmpty(proposalDetails.getNbfcFlow())){
 				Integer deleteApplicationData = applicationProposalMappingRepository.deleteByApplicationIdAndOrgId(proposalDetails.getApplicationId(),loanApplicationRequest.getNpOrgId());
 				if(!CommonUtils.isObjectNullOrEmpty(deleteApplicationData) && deleteApplicationData>0){
 					logger.info("Data deleted for applicationId:"+proposalDetails.getApplicationId()+" and for fpProductId:"+proposalDetails.getFpProductId()+" deleted data count:"+deleteApplicationData);
@@ -8475,12 +8475,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						gstRelatedPartyRequest.setPurchase(" - ");
 						
 						if(gstRelatedPartyRequest.getTransactionType() != null && "Sales".equals(gstRelatedPartyRequest.getTransactionType()) && gstRelatedPartyRequest.getInvoiceValue() != null ) {
-							gstRelatedPartyRequest.setSales(String.valueOf(CommonUtils.convertValueIndianCurrency(gstRelatedPartyRequest.getInvoiceValue().toString())));
+							gstRelatedPartyRequest.setSales(gstRelatedPartyRequest.getInvoiceValue() != null ? CommonUtils.convertValue(gstRelatedPartyRequest.getInvoiceValue()) : "0");
 							grandTotalOfSales=gstRelatedPartyRequest.getGrandTotal();
 							if(gstRelatedPartyRequest.getInvoiceValue() != null)
 								totalOfSales+=gstRelatedPartyRequest.getInvoiceValue();
 						}else if(gstRelatedPartyRequest.getTransactionType() != null && "Purchase".equals(gstRelatedPartyRequest.getTransactionType()) && gstRelatedPartyRequest.getInvoiceValue() != null) {
-							gstRelatedPartyRequest.setPurchase(String.valueOf(CommonUtils.convertValueIndianCurrency(gstRelatedPartyRequest.getInvoiceValue().toString())));
+							gstRelatedPartyRequest.setPurchase(gstRelatedPartyRequest.getInvoiceValue() != null ? CommonUtils.convertValue(gstRelatedPartyRequest.getInvoiceValue()) : "0");
 							grandTotalOfPurchase=gstRelatedPartyRequest.getGrandTotal();
 							if(gstRelatedPartyRequest.getInvoiceValue() != null)
 								totalOfPurchase+=gstRelatedPartyRequest.getInvoiceValue();
@@ -8539,9 +8539,22 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
                 return mapper.readValue(tutorials, new org.codehaus.jackson.type.TypeReference<List<TutorialUploadManageRes>>() {});
             }
 		} catch (IOException e) {
-			logger.info("error while string to list convert in getTutorialsByRoleId");
+			logger.info("error while string to list convert in getTutorialsByRoleId",e);
 		}
 		return Collections.emptyList();
+	}
+	@Override
+	public TutorialUploadManageRes getTutorialsById(Long id) {
+		try {
+			String tutorials = loanRepository.getTutorialsById(id);
+			if(!CommonUtils.isObjectNullOrEmpty(tutorials)) {
+
+                return MultipleJSONObjectHelper.getObjectFromString(tutorials,TutorialUploadManageRes.class);
+            }
+		} catch (IOException e) {
+			logger.info("error while string to list convert in getTutorialsByRoleId",e);
+		}
+		return null;
 	}
 	@Override
 	public boolean saveTutorialsAudit(TutorialsViewAudits longLatrequest) {
@@ -8613,5 +8626,26 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	
 	public String convertValue(Double value) {
 		return !CommonUtils.isObjectNullOrEmpty(value) ? decim.format(value) : "0";
+	}
+
+	@Override
+	public String getTutorialsAuditList(TutorialsViewAudits request) {
+		return  mfiTutorialsViewAuditsRepository.getTutorialAuditList(request.getTutorialId());
+	}
+
+	@Override
+	public UsersRequest getUserDetailsForUrlSepration(Long userId){
+		Object userDetails[] = loanRepository.getUserDetails(userId);
+		if(!CommonUtils.isObjectNullOrEmpty(userDetails)){
+			UsersRequest usersRequest = new UsersRequest();
+			if(!CommonUtils.isObjectNullOrEmpty(userDetails[0])){
+				usersRequest.setLastAccessBusinessTypeId(Long.valueOf(userDetails[0].toString()));
+			}
+			if(!CommonUtils.isObjectNullOrEmpty(userDetails[1])){
+				usersRequest.setIsNbfcUser(Boolean.valueOf(userDetails[1].toString()));
+			}
+			return usersRequest;
+		}
+		return null;
 	}
 }

@@ -106,7 +106,6 @@ import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.enums.DesignationList;
 import com.capitaworld.service.oneform.enums.DisabilityType;
 import com.capitaworld.service.oneform.enums.EducationStatusRetailMst;
-import com.capitaworld.service.oneform.enums.EmploymentCategory;
 import com.capitaworld.service.oneform.enums.EmploymentStatusRetailMst;
 import com.capitaworld.service.oneform.enums.EmploymentWithPL;
 import com.capitaworld.service.oneform.enums.EmploymentWithRetail;
@@ -266,6 +265,7 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 	
 	@Autowired
 	private CoApplicantIncomeService coApplicantIncomeService;
+	
 
 
 	@Override
@@ -289,6 +289,7 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 		logger.info("applicationProposalMapping  ==>{}",applicationProposalMapping);
 		Long userid = applicationProposalMapping.getUserId();
 		alTeaserViewResponse.setLoanType(applicationProposalMapping.getProductId() != null ? LoanType.getById(applicationProposalMapping.getProductId()).getValue().toString() : "");
+		alTeaserViewResponse.setProductId(applicationProposalMapping.getProductId());
 		alTeaserViewResponse.setLoanAmount(applicationProposalMapping.getLoanAmount().longValue());
 		alTeaserViewResponse.setTenure(applicationProposalMapping.getTenure()!=null ? ((applicationProposalMapping.getTenure()).toString()) + " Years":" - ");
 		alTeaserViewResponse.setCurrencyDenomination(applicationProposalMapping.getCurrencyId() != null ? Currency.getById(applicationProposalMapping.getCurrencyId()).getValue().toString() : "-");
@@ -626,6 +627,18 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 		alTeaserViewResponse.setIsVehicleHypothecation(autoDetails.getIsVehicleHypothecation()); 
 		alTeaserViewResponse.setBorrowerContribution(autoDetails.getBorrowerContribution());
 		
+		// Supplier info
+        alTeaserViewResponse.setAssetMake(autoDetails.getAssetMake());
+         Object[] autoManuFactureInfo = commonRepo.fetchALDetailsOfManufacturerAssetsSupplier(autoDetails.getManufacturerId() != null ? autoDetails.getManufacturerId() : 0,  autoDetails.getAssetModelId() != null ? autoDetails.getAssetModelId() : 0, autoDetails.getSupplierId() != null ? autoDetails.getSupplierId().intValue() : 0);
+         if (!CommonUtils.isObjectNullOrEmpty(autoManuFactureInfo)) {
+        	 alTeaserViewResponse.setManufacturerName((String)(autoManuFactureInfo[0]));
+        	 alTeaserViewResponse.setAssetModelNo((String)(autoManuFactureInfo[1]));
+        	 alTeaserViewResponse.setSupplierName((String)(autoManuFactureInfo[2]));
+        	 alTeaserViewResponse.setSupplierCity((String)(autoManuFactureInfo[3]));
+        	 alTeaserViewResponse.setSupplierState((String)(autoManuFactureInfo[4]));
+         }
+		
+		
 		// final details
 //		List<PurchasePropertyDetails> purchasePropertyDetails = purchasePropertyDetailsRepository.getListByApplicationId(toApplicationId);
 //		FinalHomeLoanDetail finalHomeLoanDetail = finalHomeLoanDetailRepository.getByApplicationAndProposalId(toApplicationId, proposalId);
@@ -868,38 +881,38 @@ public class AlTeaserViewServiceImpl implements AlTeaserViewService  {
 					
 					
 					try {
-						/*for(ReferencesRetailDetail referencesRetailDetail : referencesRetailDetails) {
-							hlTeaserViewResponse.setRefNo(referencesRetailDetail.getId());
-							hlTeaserViewResponse.setRefName(referencesRetailDetail.getName());
-							hlTeaserViewResponse.setRefAddress(referencesRetailDetail.getAddress());
-							hlTeaserViewResponse.setRefEmail(referencesRetailDetail.getEmail());
-							hlTeaserViewResponse.setRefMobile(referencesRetailDetail.getMobile());
-							hlTeaserViewResponse.setRefTel(referencesRetailDetail.getTelephone());
-						}*/
+	/*					for(ReferencesRetailDetail referencesRetailDetail : referencesRetailDetails) {
+							alTeaserViewResponse.setRefNo(referencesRetailDetail.getId());
+							alTeaserViewResponse.setRefName(referencesRetailDetail.getName());
+							alTeaserViewResponse.setRefAddress(referencesRetailDetail.getAddress());
+							alTeaserViewResponse.setRefEmail(referencesRetailDetail.getEmail());
+							alTeaserViewResponse.setRefMobile(referencesRetailDetail.getMobile());
+							alTeaserViewResponse.setRefTel(referencesRetailDetail.getTelephone());
+						}
 
-//						for(PurchasePropertyDetails purchasePropertyDetail : purchasePropertyDetails) {
-//							alTeaserViewResponse.setPropCity(CommonDocumentUtils.getCity(purchasePropertyDetail.getCity().longValue(), oneFormClient));
-//							alTeaserViewResponse.setPropState(CommonDocumentUtils.getState(purchasePropertyDetail.getState().longValue(), oneFormClient));
-//							alTeaserViewResponse.setPropertyName(purchasePropertyDetail.getPropertyName());
-//							alTeaserViewResponse.setTotalPriceOfProperty(purchasePropertyDetail.getTotalPriceOfProperty());
-//							alTeaserViewResponse.setBuildUpArea(purchasePropertyDetail.getBuildUpArea());
-//							alTeaserViewResponse.setSuperBuildUpArea(purchasePropertyDetail.getSuperBuildUpArea());
-//							alTeaserViewResponse.setCarpetArea(purchasePropertyDetail.getCarpetArea());
-//						}
+							for(PurchasePropertyDetails purchasePropertyDetail : purchasePropertyDetails) {
+							alTeaserViewResponse.setPropCity(CommonDocumentUtils.getCity(purchasePropertyDetail.getCity().longValue(), oneFormClient));
+							alTeaserViewResponse.setPropState(CommonDocumentUtils.getState(purchasePropertyDetail.getState().longValue(), oneFormClient));
+							alTeaserViewResponse.setPropertyName(purchasePropertyDetail.getPropertyName());
+							alTeaserViewResponse.setTotalPriceOfProperty(purchasePropertyDetail.getTotalPriceOfProperty());
+							alTeaserViewResponse.setBuildUpArea(purchasePropertyDetail.getBuildUpArea());
+							alTeaserViewResponse.setSuperBuildUpArea(purchasePropertyDetail.getSuperBuildUpArea());
+							alTeaserViewResponse.setCarpetArea(purchasePropertyDetail.getCarpetArea());
+						}
 
-//						alTeaserViewResponse.setLandPlotCost(primaryHlDetail.getLandPlotCost());
-//						alTeaserViewResponse.setConstructionCost(primaryHlDetail.getConstructionCost());
-//						alTeaserViewResponse.setCompletionTimeInYear(primaryHlDetail.getCompletionTimeInYear());
-//						alTeaserViewResponse.setRenovationType(primaryHlDetail.getRenovationType() != null ? PropertySubType.getById(primaryHlDetail.getRenovationType()).getValue().toString() : "-");
-//						alTeaserViewResponse.setRenovationCost(primaryHlDetail.getRenovationCost());
-//						alTeaserViewResponse.setRenovationCompletionTimeInYear(primaryHlDetail.getRenovationCompletionTimeInYear());
-//						alTeaserViewResponse.setDateOfLoanTaken(primaryHlDetail.getDateOfLoanTaken());
-//						alTeaserViewResponse.setOriginalValProp(primaryHlDetail.getOriginalValProp());
-//						alTeaserViewResponse.setSellerName(finalHomeLoanDetail.getSellerName());
-//						alTeaserViewResponse.setSellerAddress(finalHomeLoanDetail.getSellerAddress());
-//						alTeaserViewResponse.setSellerCity(CommonDocumentUtils.getCity(finalHomeLoanDetail.getSellerCity().longValue(), oneFormClient));
-//						alTeaserViewResponse.setSellerState(CommonDocumentUtils.getState(finalHomeLoanDetail.getSellerState().longValue(), oneFormClient));
-//						alTeaserViewResponse.setSellerPincode(finalHomeLoanDetail.getSellerPincode());
+						alTeaserViewResponse.setLandPlotCost(primaryHlDetail.getLandPlotCost());
+						alTeaserViewResponse.setConstructionCost(primaryHlDetail.getConstructionCost());
+						alTeaserViewResponse.setCompletionTimeInYear(primaryHlDetail.getCompletionTimeInYear());
+						alTeaserViewResponse.setRenovationType(primaryHlDetail.getRenovationType() != null ? PropertySubType.getById(primaryHlDetail.getRenovationType()).getValue().toString() : "-");
+						alTeaserViewResponse.setRenovationCost(primaryHlDetail.getRenovationCost());
+						alTeaserViewResponse.setRenovationCompletionTimeInYear(primaryHlDetail.getRenovationCompletionTimeInYear());
+						alTeaserViewResponse.setDateOfLoanTaken(primaryHlDetail.getDateOfLoanTaken());
+						alTeaserViewResponse.setOriginalValProp(primaryHlDetail.getOriginalValProp());
+						alTeaserViewResponse.setSellerName(finalHomeLoanDetail.getSellerName());
+						alTeaserViewResponse.setSellerAddress(finalHomeLoanDetail.getSellerAddress());
+						alTeaserViewResponse.setSellerCity(CommonDocumentUtils.getCity(finalHomeLoanDetail.getSellerCity().longValue(), oneFormClient));
+						alTeaserViewResponse.setSellerState(CommonDocumentUtils.getState(finalHomeLoanDetail.getSellerState().longValue(), oneFormClient));
+						alTeaserViewResponse.setSellerPincode(finalHomeLoanDetail.getSellerPincode());*/
 					}catch (Exception e){
 						logger.error("Exception while fetching property details",e);
 					}

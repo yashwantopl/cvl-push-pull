@@ -1,16 +1,20 @@
 package com.capitaworld.service.loans.service.colending.impl;
 
+import com.capitaworld.service.loans.domain.colending.RecommendDetail;
 import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
 import com.capitaworld.service.loans.domain.fundprovider.ProposalDetailsAuditNbfc;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.ClientListingCoLending;
 import com.capitaworld.service.loans.repository.colending.CoLendingFlowRepository;
+import com.capitaworld.service.loans.repository.colending.RecommendDetailRepository;
 import com.capitaworld.service.loans.repository.fundprovider.NbfcProposalBlendedRateRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsAuditNbfcRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.service.colending.CoLendingFlowService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.loans.utils.RATE;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.model.MasterResponse;
@@ -57,6 +61,16 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 	@Autowired
 	private NbfcProposalBlendedRateRepository nbfcProposalBlendedRateRepository;
 
+	@Autowired
+	private RecommendDetailRepository recommendDetailRepository;
+
+	@Autowired
+	private ApplicationProposalMappingRepository applicationProposalMappingRepository;
+
+	final DecimalFormat df1 = new DecimalFormat("#");
+
+	final DecimalFormat df = new DecimalFormat("#.##");
+
 	private static final String ERROR_WHILE_GETTING_CLIENT_LIST = "Error while getting client list.";
 	private static final String ERROR_WHILE_GETTING_NBFC_CLIENT_COUNT = "Error while getting NBFC client count.";
 
@@ -74,6 +88,8 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 				clientDetailCoLending.setClientEmail(clientResponse.getClientEmail());
 				clientDetailCoLending.setClientMobile(clientResponse.getClientMobile());
 				clientDetailCoLending.setLastAccessId(clientResponse.getLastAccessId());
+				clientDetailCoLending.setOriginalEmailId(clientResponse.getOriginalEmailId());
+				clientDetailCoLending.setPan(clientResponse.getPan());
 				//get city name
 				if (!CommonUtils.isObjectNullOrEmpty(clientResponse.getClientCity()) && clientResponse.getClientCity() != 0) {
 					List<Long> cityList = new ArrayList<>();
@@ -152,31 +168,64 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 				ProposalDetails proposalDetailsOne = proposalDetailsList.get(0);
 				ProposalDetails proposalDetailsTwo = proposalDetailsList.get(1);
 				ProposalDetails minLoanAmtProposalObj = new ProposalDetails();
-				if(proposalDetailsTwo.getElAmount() == proposalDetailsOne.getElAmount()){
-					if(proposalDetailsTwo.getElTenure() == proposalDetailsOne.getElTenure()){
-						if(proposalDetailsTwo.getNbfcFlow() == NBFC_BANK_FLOW){
+				ProposalMappingRequest recomReq = new ProposalMappingRequest();
+				RecommendDetail recommendDetail = recommendDetailRepository.getByApplicationIdOrderByIdDescLimit1(applicationId);
+				if(!CommonUtils.isObjectNullOrEmpty(recommendDetail) && !CommonUtils.isObjectNullOrEmpty(recommendDetail.getValue())){
+					if(proposalDetailsOne.getNbfcFlow() == NBFC_FLOW){
+						BeanUtils.copyProperties(proposalDetailsOne,recomReq,"additionalLoanAmount","existingLoanAmount");
+					}else if(proposalDetailsTwo.getNbfcFlow() == NBFC_BANK_FLOW){
+						BeanUtils.copyProperties(proposalDetailsTwo,recomReq,"additionalLoanAmount","existingLoanAmount");
+					}
+					recomReq.setElAmount(recommendDetail.getValue());
+					recomReq.setElTenure(recommendDetail.getTenure());
+					recomReq.setElRoi(recommendDetail.getRoi());
+					recomReq.setProcessingFee(recommendDetail.getProcessingFee());
+				}
+
+				if(!CommonUtils.isObjectNullOrEmpty(recomReq)
+						&& !CommonUtils.isObjectNullOrEmpty(recomReq.getElAmount())
+						&& !CommonUtils.isObjectNullOrEmpty(recomReq.getElTenure())){ // set reco values
+					if(proposalDetailsTwo.getElAmount() == recomReq.getElAmount()){
+						if(proposalDetailsTwo.getElTenure() == recomReq.getElTenure()){
+							if(proposalDetailsTwo.getNbfcFlow() == NBFC_BANK_FLOW){
+								minLoanAmtProposalObj = proposalDetailsTwo;
+							}else {
+								BeanUtils.copyProperties(recomReq,minLoanAmtProposalObj);
+							}
+						}else if(proposalDetailsTwo.getElTenure() < recomReq.getElTenure()){
+							minLoanAmtProposalObj = proposalDetailsTwo;
+						}else {
+							BeanUtils.copyProperties(recomReq,minLoanAmtProposalObj);
+						}
+					}else if(proposalDetailsTwo.getElAmount() < recomReq.getElAmount()){
+						minLoanAmtProposalObj = proposalDetailsTwo;
+					}else {
+						BeanUtils.copyProperties(recomReq,minLoanAmtProposalObj);
+					}
+				}else{// set normal values
+					if(proposalDetailsTwo.getElAmount() == proposalDetailsOne.getElAmount()){
+						if(proposalDetailsTwo.getElTenure() == proposalDetailsOne.getElTenure()){
+							if(proposalDetailsTwo.getNbfcFlow() == NBFC_BANK_FLOW){
+								minLoanAmtProposalObj = proposalDetailsTwo;
+							}else {
+								minLoanAmtProposalObj = proposalDetailsOne;
+							}
+						}else if(proposalDetailsTwo.getElTenure() < proposalDetailsOne.getElTenure()){
 							minLoanAmtProposalObj = proposalDetailsTwo;
 						}else {
 							minLoanAmtProposalObj = proposalDetailsOne;
 						}
-					}else if(proposalDetailsTwo.getElTenure() < proposalDetailsOne.getElTenure()){
+					}else if(proposalDetailsTwo.getElAmount() < proposalDetailsOne.getElAmount()){
 						minLoanAmtProposalObj = proposalDetailsTwo;
 					}else {
 						minLoanAmtProposalObj = proposalDetailsOne;
 					}
-				}else if(proposalDetailsTwo.getElAmount() < proposalDetailsOne.getElAmount()){
-					minLoanAmtProposalObj = proposalDetailsTwo;
-				}else {
-					minLoanAmtProposalObj = proposalDetailsOne;
 				}
-				/*ProposalDetails minLoanAmtProposalObj = proposalDetailsList
-						.stream()
-						.min(Comparator.comparing(ProposalDetails::getElAmount))
-						.orElseThrow(NoSuchElementException::new);*/
+
 				ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
 				BeanUtils.copyProperties(minLoanAmtProposalObj,proposalMappingRequest);
 				Object[] ratioValues = coLendingFlowRepository.getRatioNbfcBankProduct(applicationId);
-				Double tenure = 0d,nbfcRatio = 0d,bankRatio = 0d;
+				Double tenure = 0d,nbfcRatio = 0d,bankRatio = 0d,loanAmount=0d;
 				if(!CommonUtils.isObjectNullOrEmpty(ratioValues)){
 					if(!CommonUtils.isObjectNullOrEmpty(ratioValues[1])){
 						tenure = Double.valueOf(ratioValues[1].toString());
@@ -188,27 +237,60 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 						bankRatio = Double.valueOf(ratioValues[3].toString());
 					}
 				}
-				Object[] blendedVal = new Object[2];
+				Object[] blendedVal = new Object[4];
 				Long nbfcOrgId = null,bankOrgId = null;
-				Double blRoi = 0d,blEmi = 0d;
+				Double blRoi = 0d,blEmi = 0d,blProcessingFee = 0d,nbfcAmt = 0d,bankAmt = 0d,nbfcPf = 0d,bankPf = 0d;
 				for (ProposalDetails proposalDetails : proposalDetailsList) {
 					if(!CommonUtils.isObjectNullOrEmpty(proposalDetails.getNbfcFlow())){
 						Double ratioVal = 0d;
 						if(proposalDetails.getNbfcFlow() == NBFC_FLOW){
 							ratioVal = nbfcRatio;
 							nbfcOrgId = proposalDetails.getUserOrgId();
+							proposalMappingRequest.setElRoi(recomReq.getElRoi());
+							proposalMappingRequest.setProcessingFee(recomReq.getProcessingFee());
 						}else if(proposalDetails.getNbfcFlow() == NBFC_BANK_FLOW){
 							ratioVal = bankRatio;
 							bankOrgId = proposalDetails.getUserOrgId();
 						}
 						calcAndSaveBlednedRate(proposalDetails,tenure,ratioVal,proposalMappingRequest,blendedVal);
+
+						if(proposalDetails.getNbfcFlow() == NBFC_FLOW){
+							nbfcAmt = proposalDetails.getElAmount();
+							nbfcPf = proposalDetails.getProcessingFee();
+						}else if(proposalDetails.getNbfcFlow() == NBFC_BANK_FLOW){
+							bankAmt = proposalDetails.getElAmount();
+							bankPf = proposalDetails.getProcessingFee();
+						}
 					}
 				}
 				if(!CommonUtils.isObjectNullOrEmpty(blendedVal)){
-					blRoi = Double.valueOf(blendedVal[0].toString());
 					blEmi = Double.valueOf(blendedVal[1].toString());
+					loanAmount = Double.valueOf(blendedVal[2].toString());
+					blRoi = Double.valueOf(df.format(RATE.simpleCalculateRate(Double.valueOf(blendedVal[3].toString()),blEmi,-loanAmount)));
+
+					Double pf = 0d;
+					if((CommonUtils.isObjectNullOrEmpty(nbfcPf) || nbfcPf == 0) || (CommonUtils.isObjectNullOrEmpty(nbfcPf) && nbfcPf == 0)){
+						if(!CommonUtils.isObjectNullOrEmpty(nbfcPf) && nbfcPf != 0){
+							pf = (nbfcPf * 100) / nbfcRatio;
+							pf = ((Double.valueOf(df.format(pf))) * nbfcAmt) / 100;
+							blProcessingFee =  ((Double.valueOf(df.format(pf))) * 100) / loanAmount;
+						}else if(!CommonUtils.isObjectNullOrEmpty(bankPf) && bankPf != 0){
+							pf = (bankPf * 100) / bankRatio;
+							pf = ((Double.valueOf(df.format(pf))) * bankAmt) / 100;
+							blProcessingFee =  ((Double.valueOf(df.format(pf))) * 100) / loanAmount;
+						}
+					}else {
+						Double calcNbfcPf = (nbfcPf * nbfcAmt) / 100;
+						Double calcBankPf = (bankPf * bankAmt) / 100;
+
+						pf = ((calcNbfcPf + calcBankPf) / loanAmount) * 100 ;
+						blProcessingFee = Double.valueOf(df.format(pf));
+					}
 				}
-				Integer isDataSaved = coLendingFlowRepository.saveBlendedValues(applicationId,nbfcOrgId,bankOrgId,blRoi,blEmi);
+				Integer isDataSaved = coLendingFlowRepository.saveBlendedValues(applicationId,nbfcOrgId,bankOrgId,blRoi,blEmi,blProcessingFee);
+				int isUpdated = applicationProposalMappingRepository.updateLoanAmount(loanAmount,applicationId);
+				logger.info("Loan Amount updated: ",(isUpdated>0));
+
 				if(isDataSaved == 0){
 					logger.error("Blended rate Data not saved");
 					throw new LoansException("Blended rate Data not saved for co-origination flow");
@@ -224,13 +306,21 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 
 	private void calcAndSaveBlednedRate(ProposalDetails proposalDetails,Double tenure,Double ratioVal,ProposalMappingRequest minLoanAmtProposalObj,Object[] blendedVal){
 		try {
-			Double calcTenure = 0d,roi = 0d,calcProcessingFee = 0d,monthlyRate = 0d,calcEmi = 0d;
+			Double calcTenure = 0d,roi = 0d,processingFee = 0d,calcProcessingFee = 0d,monthlyRate = 0d,calcEmi = 0d;
 			Double loanAmount = minLoanAmtProposalObj.getElAmount(),existingAmt = minLoanAmtProposalObj.getExistingLoanAmount(),additionalAmt = minLoanAmtProposalObj.getAdditionalLoanAmount();
 			Double blRoi = 0d,blEmi = 0d;
-			roi = proposalDetails.getElRoi();
+			if(proposalDetails.getNbfcFlow() == NBFC_FLOW ){//&& proposalDetails.getId() == minLoanAmtProposalObj.getId()){
+				roi = minLoanAmtProposalObj.getElRoi();
+				processingFee = minLoanAmtProposalObj.getProcessingFee();
+			}else {
+				roi = proposalDetails.getElRoi();
+				processingFee = proposalDetails.getProcessingFee();
+			}
 			calcTenure = minLoanAmtProposalObj.getElTenure();
 			blRoi = (ratioVal * roi) / 100;
-			calcProcessingFee = (ratioVal * proposalDetails.getProcessingFee()) / 100;
+			if(!CommonUtils.isObjectNullOrEmpty(processingFee)){
+				calcProcessingFee = processingFee;//(ratioVal * processingFee) / 100;
+			}
 
 			if(!CommonUtils.isObjectNullOrEmpty(additionalAmt) && additionalAmt!=0){
 				additionalAmt = (ratioVal * additionalAmt) / 100;
@@ -246,11 +336,11 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 			Double mTenure = calcTenure*12;
 			calcEmi= getPMTCalculationByLoanAmt(monthlyRate,mTenure,loanAmount);
 
-			DecimalFormat df = new DecimalFormat("#.##");
+
 			blRoi = Double.valueOf(df.format(blRoi));
 			calcProcessingFee = Double.valueOf(df.format(calcProcessingFee));
 
-			DecimalFormat df1 = new DecimalFormat("#");
+
 			calcEmi = Double.valueOf(df1.format(calcEmi));
 
 
@@ -258,16 +348,21 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 				if(!CommonUtils.isObjectNullOrEmpty(blendedVal[0])){
 					blRoi+= Double.valueOf(blendedVal[0].toString());
 
-					monthlyRate = (blRoi/100) / 12;
-					blEmi= getPMTCalculationByLoanAmt(monthlyRate,mTenure,minLoanAmtProposalObj.getElAmount());
-					blEmi = Double.valueOf(df1.format(blEmi));
 					blRoi = Double.valueOf(df.format(blRoi));
 					blendedVal[0] = blRoi;
-					blendedVal[1] = blEmi;
+					blendedVal[1] = Double.valueOf(blendedVal[1].toString()) + calcEmi;
 				}else {
 					blendedVal[0] = blRoi;
+					blendedVal[1] = calcEmi;
 				}
 			}
+			if(!CommonUtils.isObjectNullOrEmpty(blendedVal[2])){
+				blendedVal[2] = Double.valueOf(blendedVal[2].toString()) + loanAmount;
+			}else {
+				blendedVal[2] = loanAmount;
+			}
+
+			blendedVal[3] = mTenure;
 
 			ProposalDetailsAuditNbfc proposalDetailsAuditNbfc = new ProposalDetailsAuditNbfc();
 			BeanUtils.copyProperties(proposalDetails,proposalDetailsAuditNbfc);
@@ -275,12 +370,13 @@ public class CoLendingFlowServiceFlowServiceImpl implements CoLendingFlowService
 			proposalDetailsAuditNbfc.setModifiedDate(new Date());
 			proposalDetailsAudiNbfcRepository.save(proposalDetailsAuditNbfc);
 
+
 			proposalDetails.setElAmount(loanAmount);
 			proposalDetails.setAdditionalLoanAmount(additionalAmt);
 			proposalDetails.setExistingLoanAmount(existingAmt);
 			proposalDetails.setEmi(calcEmi);
 			proposalDetails.setProcessingFee(calcProcessingFee);
-			//proposalDetails.setElRoi(calcRoi);
+			proposalDetails.setElRoi(roi);
 			proposalDetails.setElTenure(calcTenure);
 			proposalDetails.setModifiedDate(new Date());
 

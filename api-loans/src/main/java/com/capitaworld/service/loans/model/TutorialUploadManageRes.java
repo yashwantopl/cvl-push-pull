@@ -22,6 +22,8 @@ public class TutorialUploadManageRes implements Serializable {
     private String urlTutorial;
 
     private String description;
+    private String urlThumbnail;
+    private String fileType;
 
     private Integer type;
 
@@ -32,6 +34,8 @@ public class TutorialUploadManageRes implements Serializable {
     private Date createdDate;
     
     private Long viewCount;
+
+    private String externalLink;
 
     public Long getId() {
         return id;
@@ -112,6 +116,28 @@ public class TutorialUploadManageRes implements Serializable {
 	public void setViewCount(Long viewCount) {
 		this.viewCount = viewCount;
 	}
-    
-    
+
+    public String getUrlThumbnail() {
+        return urlThumbnail;
+    }
+
+    public void setUrlThumbnail(String urlThumbnail) {
+        this.urlThumbnail = urlThumbnail;
+    }
+
+    public String getFileType() {
+        return fileType;
+    }
+
+    public void setFileType(String fileType) {
+        this.fileType = fileType;
+    }
+
+    public String getExternalLink() {
+        return externalLink;
+    }
+
+    public void setExternalLink(String externalLink) {
+        this.externalLink = externalLink;
+    }
 }

@@ -6,7 +6,10 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.PathParam;
 
+import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.matchengine.model.*;
 import com.capitaworld.service.notification.model.SchedulerDataMultipleBankRequest;
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +27,8 @@ import com.capitaworld.service.loans.model.common.ReportRequest;
 import com.capitaworld.service.loans.service.ProposalService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.matchengine.model.DisbursementDetailsModel;
-import com.capitaworld.service.matchengine.model.ProposalCountResponse;
-import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
-import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.users.model.UsersRequest;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @RestController
@@ -556,6 +556,48 @@ public class ProposalController {
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 			return new ResponseEntity<LoansResponse>(new LoansResponse(e.getMessage()) , HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@RequestMapping(value = "/getDisbursementRequestDetails", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ProposalMappingResponse> getDisbursementRequestDetails(@RequestBody DisbursementRequestModel request, HttpServletRequest httpRequest, @RequestParam(value = "clientId", required = false) Long clientId) {
+
+		// request must not be null
+		Long userId = null;
+		if (CommonDocumentUtils.isThisClientApplication(httpRequest) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
+			userId = clientId;
+		} else {
+			userId = (Long) httpRequest.getAttribute(CommonUtils.USER_ID);
+		}
+		request.setUserId(userId);
+		return new ResponseEntity<ProposalMappingResponse>(proposalService.getDisbursementRequestDetails(request),HttpStatus.OK);
+
+	}
+
+	/*@RequestPart("uploadRequest") String uploadRequestString,
+														@RequestPart("file") MultipartFile[] multipartFiles, HttpServletRequest request)*/
+
+	@RequestMapping(value = "/saveDisbursementRequestDetails", method = RequestMethod.POST)
+	public ResponseEntity<ProposalMappingResponse> saveDisbursementRequestDetails(@RequestPart("uploadRequest") String uploadRequestString,
+																				  @RequestPart("file") MultipartFile[] multipartFiles, HttpServletRequest httpRequest) {
+	//public ResponseEntity<ProposalMappingResponse> saveDisbursementRequestDetails(@RequestBody DisbursementRequestModel request, HttpServletRequest httpRequest, @RequestParam(value = "clientId", required = false) Long clientId) {
+
+		try {
+			for (MultipartFile multipartFile : multipartFiles) {
+
+				String extension = FilenameUtils.getExtension(multipartFile.getOriginalFilename());
+
+				if (!"pdf".equalsIgnoreCase(extension)) {
+					logger.warn("File format is not PDF...!");
+					return new ResponseEntity<ProposalMappingResponse>(new ProposalMappingResponse(CommonUtils.WRONG_FILE_FORMAT, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+				}
+			}
+			ProposalMappingResponse saved = proposalService.saveDisbursementRequestDetails(multipartFiles, uploadRequestString);
+			CommonDocumentUtils.endHook(logger, "save");
+			return new ResponseEntity<ProposalMappingResponse>(saved, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.warn("File format is not PDF...!");
+			return new ResponseEntity<ProposalMappingResponse>(new ProposalMappingResponse(CommonUtils.WRONG_FILE_FORMAT, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 	}
 }

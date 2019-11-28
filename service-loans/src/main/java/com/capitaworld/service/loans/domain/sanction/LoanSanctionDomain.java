@@ -86,6 +86,15 @@ public class LoanSanctionDomain implements Serializable {
 	@Column(name = "is_partially_disbursed_offline")
 	private Boolean isPartiallyDisbursedOffline;
 
+	@Column(name = "nbfc_flow")
+	private Integer nbfcFlow;
+
+	@Column(name = "cif_number")
+	private String cifNumber;
+
+	@Column(name = "is_kyc_verified")
+	private Boolean isKycVerified;
+
 	public Long getId() {
 		return id;
 	}
@@ -259,6 +268,30 @@ public class LoanSanctionDomain implements Serializable {
 
 	public void setIsPartiallyDisbursedOffline(Boolean isPartiallyDisbursedOffline) {
 		this.isPartiallyDisbursedOffline = isPartiallyDisbursedOffline;
+	}
+
+	public Integer getNbfcFlow() {
+		return nbfcFlow;
+	}
+
+	public void setNbfcFlow(Integer nbfcFlow) {
+		this.nbfcFlow = nbfcFlow;
+	}
+
+	public String getCifNumber() {
+		return cifNumber;
+	}
+
+	public void setCifNumber(String cifNumber) {
+		this.cifNumber = cifNumber;
+	}
+
+	public Boolean getKycVerified() {
+		return isKycVerified;
+	}
+
+	public void setKycVerified(Boolean kycVerified) {
+		isKycVerified = kycVerified;
 	}
 
 	@Override

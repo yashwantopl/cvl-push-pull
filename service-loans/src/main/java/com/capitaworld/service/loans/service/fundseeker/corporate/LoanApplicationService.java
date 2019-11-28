@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.users.model.UsersRequest;
 import org.json.simple.JSONObject;
 
 import com.capitaworld.service.loans.exceptions.LoansException;
@@ -271,9 +272,13 @@ public interface LoanApplicationService {
 
 	public List<TutorialUploadManageRes> getTutorialsByRoleId(Long userRoleId,Integer loanType);
 
+	public TutorialUploadManageRes getTutorialsById(Long id);
+
 	public boolean saveTutorialsAudit(TutorialsViewAudits longLatrequest);
 
 	public JSONObject getTutorialsAudit(TutorialsViewAudits request);
+	
+	public String getTutorialsAuditList(TutorialsViewAudits request);
 
 	public String getPrefillProfileStatus(Long fromLoanId, Long toLoanId);
 	
@@ -286,4 +291,7 @@ public interface LoanApplicationService {
 	public Map<String, Object> getGstRelatedPartyDetails(Long applicationId);
 	
 	public String getApplicationCampaignCode(Long applicationId);
+
+	public UsersRequest getUserDetailsForUrlSepration(Long userId);
+
 }

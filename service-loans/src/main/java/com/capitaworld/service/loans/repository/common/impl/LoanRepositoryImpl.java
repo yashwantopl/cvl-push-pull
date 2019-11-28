@@ -404,6 +404,13 @@ public class LoanRepositoryImpl implements LoanRepository {
 		List<String> tutorials = storedProcedureQuery.getResultList();
 		return !CommonUtils.isListNullOrEmpty(tutorials) ? !CommonUtils.isObjectNullOrEmpty(tutorials.get(0)) ? tutorials.get(0) : null :null;
 	}
+
+	public String getTutorialsById(Long id){
+		String tutorials = (String) entityManager.createNativeQuery("select CAST(JSON_OBJECT('id',tu.id,'nameTutorial',tu.name_tutorial,'title',tu.title,'description',tu.description,'urlTutorial',tu.url_tutorial,'type',tu.type,'createdDate',tu.created_date,'urlThumbnail',tu.url_thumb,'externalLink',tu.external_link,'fileType',tu.extension,'viewCount',(SELECT COUNT(va.id) FROM loan_application.`tutorial_view_audit` va WHERE va.tutorial_id = tu.id)) AS CHAR) from loan_application.tutorial_upload_manage tu where tu.is_active = TRUE and tu.id =:tutorialId")
+				.setParameter("tutorialId", id)
+				.getSingleResult();
+		return  !CommonUtils.isObjectNullOrEmpty(tutorials) ? tutorials : null;
+	}
 	
 	@Override
 	public String getPrefillProfileStatus(Long fromLoanId,Long toLoanId) {
@@ -539,5 +546,50 @@ public class LoanRepositoryImpl implements LoanRepository {
 			return CommonUtils.isListNullOrEmpty(tutorialViewAudit) ? null : CommonUtils.isObjectNullOrEmpty(tutorialViewAudit.get(0)) ? null : tutorialViewAudit.get(0);
 	}
 
+	public List<Object[]> getCoLendingRatio(Long fpProductId){
+		List<Object[]> ratioList = (List<Object[]>)entityManager.createNativeQuery("SELECT m.ratio_id,fc.nbfc_ratio,fc.bank_ratio,fc.tenure " +
+								"FROM nbfc_ratio_mapping m " +
+								"INNER JOIN fp_co_lending_ratio fc ON fc.id=m.ratio_id AND fc.is_proposal_active=TRUE AND fc.is_active=TRUE " +
+								"WHERE m.fp_product_id=:fpProductId AND m.is_active=TRUE")
+								.setParameter("fpProductId",fpProductId).getResultList();
+		return ratioList;
+	}
 
+	@Override
+	public Object [] getBureauVersionIdById(Long scoringModelId) {
+		Object [] object = null;
+		try {
+			object = (Object[]) entityManager.createNativeQuery("select md.cibil_bureau_version_concession,md.cibil_bureau_grad_version FROM scoring_sidbi.scoring_model md where md.id =:id")
+					.setParameter("id", scoringModelId)
+					.getSingleResult();	
+		}catch(Exception e) {
+			object = new Object[2];
+			object[0] = 1;
+			object[1] = 2;
+			logger.error("Error while getting version from Scoring Model Id = >{}",scoringModelId);
+		}
+		return object;
+	}
+
+	@Override
+	public Object[] getUserDetails(Long userId){
+		try {
+			Object[] obj = (Object[]) entityManager.createNativeQuery("select u.last_access_business_type_id,u.is_nbfc_user FROM users.users u where u.user_id =:userId")
+					.setParameter("userId", userId)
+					.getSingleResult();
+			return obj;
+		}catch (Exception e){
+			logger.error("Data not found for userId:",userId);
+		}
+		return null;
+	}
+
+	public List<Object[]> getCoLendingAllRatio(Long applicationId){
+		List<Object[]> ratioList = (List<Object[]>)entityManager.createNativeQuery("SELECT m.ratio_id,fc.nbfc_ratio,fc.bank_ratio,fc.tenure,m.fp_product_id,fc.bank_id FROM nbfc_ratio_mapping m " +
+				"INNER JOIN fp_co_lending_ratio fc ON fc.id=m.ratio_id AND fc.is_proposal_active=TRUE AND fc.is_active=TRUE " +
+				"WHERE m.fp_product_id IN (SELECT fp_product_id FROM fp_product_master WHERE nbfc_product_type =2 AND user_org_id IN (SELECT bank_org_id FROM fs_co_lending_application_bank_mapping WHERE application_id=:applicationId)) " +
+				"AND m.is_active=TRUE group by m.ratio_id")
+				.setParameter("applicationId",applicationId).getResultList();
+		return ratioList;
+	}
 }

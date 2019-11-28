@@ -62,6 +62,7 @@ import com.capitaworld.service.notification.model.Notification;
 import com.capitaworld.service.notification.model.NotificationRequest;
 import com.capitaworld.service.notification.model.NotificationResponse;
 import com.capitaworld.service.notification.utils.ContentType;
+import com.capitaworld.service.notification.utils.EmailSubjectAlias;
 import com.capitaworld.service.notification.utils.NotificationAlias;
 import com.capitaworld.service.notification.utils.NotificationConstants.NotificationProperty.DomainValue;
 import com.capitaworld.service.notification.utils.NotificationType;
@@ -1088,7 +1089,7 @@ public class FPAsyncComponent {
 			parameters.put("url", URL_WWW_PSBLOANS_COM);
 
 			// ====================Sending Mail to Maker who accepts Proposal=====================
-			String subject = "Intimation: Proposal #Accepted=" + assignedMakerName + "#ApplicationId="+ applicationRequest.getApplicationCode();
+//			String subject = "Intimation: Proposal Accepted" + assignedMakerName + "ApplicationId"+ applicationRequest.getApplicationCode();
 			
 			UserResponse allBranchUsers = userClient.getAllBranchUsers(branchId);
 			List<String> ccList=new ArrayList<>();
@@ -1130,7 +1131,8 @@ public class FPAsyncComponent {
 							String toIds = assignedMaker.getEmail();
 							logger.info("Email Sending TO MAKER when Maker accepts Proposal===to==>{}" , toIds);
 							parameters.put(CommonUtils.PARAMETERS_IS_DYNAMIC, true);
-							createNotificationForEmail(toIds, request.getUserId().toString(), parameters,NotificationAlias.EMAIL_MAKER_ACCEPT_PROPOSAL_OF_FS, subject,domainId,cc);
+							createNotificationForEmail(toIds, request.getUserId().toString(), parameters,NotificationAlias.EMAIL_MAKER_ACCEPT_PROPOSAL_OF_FS,
+								EmailSubjectAlias.EMAIL_MAKER_ACCEPT_PROPOSAL_OF_FS.getSubjectId(),domainId,cc);
 						}
 					if (!CommonUtils.isObjectNullOrEmpty(assignedMaker.getMobile())) {
 						String to = "91" + assignedMaker.getMobile();
@@ -1466,22 +1468,24 @@ public class FPAsyncComponent {
 		String mobile = signUpUser.getMobile();
 		mailParameter.put("mobile_number", mobile != null ? mobile : "NA");
 		mailParameter.put(CommonUtils.PARAMETERS_ADDRESS, address);
-		String emailSubject = "";
+//		String emailSubject = "";
+		Object subjectId = EmailSubjectAlias.EMAIL_FS_ACCEPTED_BY_MAKER.getSubjectId();
 		if (applicationRequest.getBusinessTypeId() == CommonUtils.BusinessType.EXISTING_BUSINESS.getId()) {
-			emailSubject = "Maker Assigned - For Quick Business Loan Approval ";
+//			emailSubject = "Maker Assigned - For Quick Business Loan Approval ";
 		}else if (applicationRequest.getProductId() == CommonUtils.LoanType.PERSONAL_LOAN.getValue() || applicationRequest.getProductId() == CommonUtils.LoanType.HOME_LOAN.getValue() 
 					|| applicationRequest.getProductId() == CommonUtils.LoanType.AUTO_LOAN.getValue()){
-			emailSubject = "Maker Assigned - For Quick "+proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE).toString()+" Approval ";			
+//			emailSubject = "Maker Assigned - For Quick "+proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE).toString()+" Approval ";
+			subjectId = EmailSubjectAlias.PL_EMAIL_TO_FS_WHEN_MAKKER_ACCEPT_PROPOSAL.getSubjectId();
 		}
 		try {
 			if(fsName!=null&& address!=null&&mobile!=null&&assignedMakerName!=null&&applicationRequest.getId()!=null) {
 				mailParameter.put(CommonUtils.PARAMETERS_IS_DYNAMIC, false);
 				createNotificationForEmail(signUpUser.getEmail(), applicationRequest.getUserId().toString(),
-						mailParameter, notificationAliasId, emailSubject,domainId,null);
+						mailParameter, notificationAliasId, subjectId,domainId,null);
 				logger.info("Email send to fs when maker accepted porposal");
 			}else {
-				logger.error("Email is not sent becouse of required values are null:signUpUser.getEmail:{} applicationRequest.getUserId: {} mailParameter: {} NotificationAliasId {} emailSubject {}"
-						,signUpUser.getEmail(),applicationRequest.getUserId(),mailParameter,notificationAliasId,emailSubject);
+				logger.error("Email is not sent becouse of required values are null:signUpUser.getEmail:{} applicationRequest.getUserId: {} mailParameter: {} NotificationAliasId {} subjectId {}"
+						,signUpUser.getEmail(),applicationRequest.getUserId(),mailParameter,notificationAliasId,subjectId);
 			}
 		} catch (Exception e) {
 			logger.error("Error in sending email to fs when porposal asigned to maker :{}" , e);
@@ -1616,7 +1620,8 @@ public class FPAsyncComponent {
 				parameters.put(PARAMETERS_MOBILE_NO, mobile != null ? mobile : "NA");
 
 			}
-			String subject = "Intimation: Assigned - #ApplicationId=" + applicationRequest.getApplicationCode();
+			parameters.put("application_code", applicationRequest.getApplicationCode());
+//			String subject = "Intimation: Assigned - #ApplicationId=" + applicationRequest.getApplicationCode();
 			if (!CommonUtils.isObjectNullOrEmpty(assignedChecker) && !CommonUtils.isObjectNullOrEmpty(assignedChecker.getEmail())) {
 
 				String toIds = assignedChecker.getEmail();
@@ -1653,7 +1658,8 @@ public class FPAsyncComponent {
 				}
 				if (!CommonUtils.isObjectNullOrEmpty(applicationRequest) && !CommonUtils.isObjectNullOrEmpty(applicationRequest.getBusinessTypeId()) 
 						&& !applicationRequest.getBusinessTypeId().equals(CommonUtils.BusinessType.ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS.getId())) {
-					createNotificationForEmail(toIds, request.getNpUserId().toString(), parameters, NotificationAlias.EMAIL_CHECKER_MAKER_ASSIGN_APPLICATION_TO_CHECKER, subject,domainId,cc);
+					createNotificationForEmail(toIds, request.getNpUserId().toString(), parameters, NotificationAlias.EMAIL_CHECKER_MAKER_ASSIGN_APPLICATION_TO_CHECKER,
+							EmailSubjectAlias.EMAIL_CHECKER_MAKER_ASSIGN_APPLICATION_TO_CHECKER.getSubjectId(),domainId,cc);
 				}
 			/** sms notification for checker*/
 			if (!CommonUtils.isObjectNullOrEmpty(assignedChecker.getMobile())) {
@@ -1925,8 +1931,9 @@ public class FPAsyncComponent {
 				address = applicationRequest.getAddress();
 			}
 			parameters.put(CommonUtils.PARAMETERS_ADDRESS, address != null ? address : "NA");
+			parameters.put("application_code", applicationRequest.getApplicationCode());
 
-			String subjcet = "Intimation : Sent Back - #ApplicationId=" + applicationRequest.getApplicationCode();
+//			String subjcet = "Intimation : Sent Back - #ApplicationId=" + applicationRequest.getApplicationCode();
 			// ====================== MAIL TO CHECKER ======================
 			if (!CommonUtils.isObjectNullOrEmpty(assignedChecker) && !CommonUtils.isObjectNullOrEmpty(assignedChecker.getEmail())) {
 				String toIds = assignedChecker.getEmail();
@@ -1962,7 +1969,8 @@ public class FPAsyncComponent {
 					cc = Arrays.copyOf(ccList.toArray(), ccList.size(),String[].class);
 				}
 				parameters.put(CommonUtils.PARAMETERS_IS_DYNAMIC, true);
-				createNotificationForEmail(toIds, request.getNpUserId().toString(), parameters,NotificationAlias.EMAIL_CHECKER_MAKER_REASSIGN_TO_CHECKER, subjcet,domainId ,cc);
+				createNotificationForEmail(toIds, request.getNpUserId().toString(), parameters,NotificationAlias.EMAIL_CHECKER_MAKER_REASSIGN_TO_CHECKER, 
+						EmailSubjectAlias.EMAIL_CHECKER_MAKER_REASSIGN_TO_CHECKER.getSubjectId(),domainId ,cc);
 				parameters.put(CommonUtils.PARAMETERS_IS_DYNAMIC, false);
 			}
 			parameters.put("url", URL_WWW_PSBLOANS_COM);
@@ -2118,7 +2126,7 @@ public class FPAsyncComponent {
 		try {
 			Long domainId=DomainValue.MSME.getId();
 			logger.info("Into sending Mail to Checker when Admin Maker send product for Approval ");
-			String subject = "Intimation: New Product - " + productMasterTemp.getName()+" for "+productType;
+//			String subject = "Intimation: New Product - " + productMasterTemp.getName()+" for "+productType;
 			Map<String, Object> mailParameters = new HashMap<String, Object>();
 			mailParameters.put(PARAMETERS_PRODUCT_NAME,productMasterTemp.getName() != null ? productMasterTemp.getName() : "NA");
 			mailParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "NA");
@@ -2213,7 +2221,8 @@ public class FPAsyncComponent {
 						mailParameters.put(PARAMETERS_ADMIN_CHECKER, firstAdminChecker.getName() != null ? firstAdminChecker.getName() : PARAMETERS_SIR_MADAM);
 					}
 
-					createNotificationForEmail(firstAdminChecker.getEmail(), userId.toString(), mailParameters, NotificationAlias.EMAIL_ADMIN_CHECKER_ADMIN_MAKER_CREATES_PRODUCT, subject,domainId,cc);
+					createNotificationForEmail(firstAdminChecker.getEmail(), userId.toString(), mailParameters, NotificationAlias.EMAIL_ADMIN_CHECKER_ADMIN_MAKER_CREATES_PRODUCT, 
+							EmailSubjectAlias.EMAIL_ADMIN_CHECKER_ADMIN_MAKER_CREATES_PRODUCT.getSubjectId(),domainId,cc);
 				}
 
 
@@ -2233,9 +2242,10 @@ public class FPAsyncComponent {
 		try {
 			Long domainId=DomainValue.MSME.getId();
 			logger.info("Into sending Mail to Checker when Admin Maker resend product for Approval");
-			String subject = "Intimation: Re-sent Product - " + productMasterTemp.getName()+" for "+productType;
+//			String subject = "Intimation: Re-sent Product - " + productMasterTemp.getName()+" for "+productType;
 			Map<String, Object> mailParameters = new HashMap<>();
 			mailParameters.put(PARAMETERS_PRODUCT_NAME,productMasterTemp.getName() != null ? productMasterTemp.getName() : "NA");
+			mailParameters.put("product_type",productType != null ? productType : "NA");
 			mailParameters.put("date",productMasterTemp.getModifiedDate() != null ? productMasterTemp.getModifiedDate() : "NA");
 			UsersRequest adminForMaker = new UsersRequest();
 			adminForMaker.setId(userId);
@@ -2333,7 +2343,8 @@ public class FPAsyncComponent {
 						tocc.remove(tocc.indexOf(to));
 					}	
 					cc = Arrays.copyOf(tocc.toArray(), tocc.size(),String[].class);
-					createNotificationForEmail(to, userId.toString(), mailParameters, NotificationAlias.EMAIL_ADMIN_CHECKER_ADMIN_MAKER_RESENDS_PRODUCT, subject,domainId,cc);
+					createNotificationForEmail(to, userId.toString(), mailParameters, NotificationAlias.EMAIL_ADMIN_CHECKER_ADMIN_MAKER_RESENDS_PRODUCT, 
+							EmailSubjectAlias.EMAIL_ADMIN_CHECKER_ADMIN_MAKER_RESENDS_PRODUCT.getSubjectId(),domainId,cc);
 			  }else {
 				logger.info("No Admin Checker found=================>");
 			  }
@@ -2350,7 +2361,8 @@ public class FPAsyncComponent {
 			Map<String, Object> mailParameters = new HashMap<String, Object>();
 			mailParameters.put(PARAMETERS_PRODUCT_NAME,productMasterTemp.getName() != null ? productMasterTemp.getName() : "NA");
 			mailParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "NA");
-			String subject = "Intimation " + "New Product: "+ productMasterTemp.getName() + " Approved - "+"Product ID: "+productMasterTemp.getProductCode();
+			mailParameters.put("product_code", productMasterTemp.getProductCode() != null ? productMasterTemp.getProductCode() : "");
+//			String subject = "Intimation  New Product: "+ productMasterTemp.getName() + " Approved - "+"Product ID: "+productMasterTemp.getProductCode();
 			UsersRequest adminForChecker = new UsersRequest();
 			adminForChecker.setId(userId);
 			String adminCheckerName = null;
@@ -2403,7 +2415,15 @@ public class FPAsyncComponent {
 					productMasterTemp.getProductId() == LoanType.HOME_LOAN.getValue())) {
 				domainId = DomainValue.RETAIL.getId();
 			}
-			
+			ArrayList<String>ccList=new ArrayList<>();
+			UserResponse userResponse = userClient.getUserDetailByOrgRoleId(productMasterTemp.getUserOrgId(),
+					com.capitaworld.service.users.utils.CommonUtils.UserRoles.ADMIN_MAKER);
+			List<Map<String, Object>> usersRespList = (List<Map<String, Object>>) userResponse.getListData();
+			for (Object obj: userResponse.getListData()) {
+				UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap((Map) obj,Object.class);
+				ccList.add(userObj.getEmail());
+			}
+			String[] cc= (String[]) ccList.toArray();
 			String to = null;
 			if (!CommonUtils.isObjectNullOrEmpty(assignedMaker.getEmail())) {
 				to = assignedMaker.getEmail();
@@ -2412,7 +2432,8 @@ public class FPAsyncComponent {
 				} else {
 					mailParameters.put(PARAMETERS_ADMIN_MAKER, makerName != null ? makerName : PARAMETERS_SIR_MADAM);
 				}
-				createNotificationForEmail(to, userId.toString(), mailParameters,NotificationAlias.EMAIL_ADMIN_MAKER_PRODUCT_APPROVED_BY_CHECKER, subject,domainId,null);
+				createNotificationForEmail(to, userId.toString(), mailParameters,NotificationAlias.EMAIL_ADMIN_MAKER_PRODUCT_APPROVED_BY_CHECKER,
+						EmailSubjectAlias.EMAIL_ADMIN_MAKER_PRODUCT_APPROVED_BY_CHECKER.getSubjectId(),domainId,cc);
 			}
 
 			if (!CommonUtils.isObjectNullOrEmpty(assignedMaker.getMobile())) {
@@ -2517,7 +2538,7 @@ public class FPAsyncComponent {
 		try {
 			Long domainId=DomainValue.MSME.getId();
 			logger.info("Into sending Mail to Maker when Admin Checker reverted product");
-			String subject = "Intimation :Re-Sent Product - " + productMasterTemp.getName() + " - Modification";
+//			String subject = "Intimation :Re-Sent Product - " + productMasterTemp.getName() + " - Modification";
 			Map<String, Object> mailParameters = new HashMap<String, Object>();
 			mailParameters.put(PARAMETERS_PRODUCT_NAME,
 					productMasterTemp.getName() != null ? productMasterTemp.getName() : "NA");
@@ -2593,7 +2614,8 @@ public class FPAsyncComponent {
 				} else {
 					mailParameters.put(PARAMETERS_ADMIN_MAKER, makerName != null ? makerName : PARAMETERS_SIR_MADAM);
 				}
-				createNotificationForEmail(to, userId.toString(), mailParameters,NotificationAlias.EMAIL_ADMIN_MAKER_PRODUCT_REVERTED_BY_CHECKER, subject,domainId,null);
+				createNotificationForEmail(to, userId.toString(), mailParameters,NotificationAlias.EMAIL_ADMIN_MAKER_PRODUCT_REVERTED_BY_CHECKER, 
+						EmailSubjectAlias.EMAIL_ADMIN_MAKER_PRODUCT_REVERTED_BY_CHECKER.getSubjectId(),domainId,null);
 			}
 			if (!CommonUtils.isObjectNullOrEmpty(assignedMaker.getMobile())) {
 				Map<String, Object> smsParameters = new HashMap<String, Object>();
@@ -2693,24 +2715,22 @@ public class FPAsyncComponent {
 		}
 
 	}
+	@SuppressWarnings("unchecked")
 	@Async
 	public void sendEmailToMakerHOBOWhenCheckerSanctionLoan(LoanSanctionDomain loanSanctionDomainOld) {
 		try {
 			Long domainId=DomainValue.MSME.getId();
 			logger.info("Into sending Mail to Maker/HO/BO when Checker sanction loan ");
-			String subject = "Intimation: Sanction - #ApplicationId=" + loanSanctionDomainOld.getApplicationId();
+//			String subject = "Intimation: Sanction - #ApplicationId=" + loanSanctionDomainOld.getApplicationId();
 			Map<String, Object> mailParameters = new HashMap<>();
 			ProposalMappingResponse proposal = proposalDetailsClient.getProposalByApplicationIdAndUserOrgId(loanSanctionDomainOld.getOrgId(),loanSanctionDomainOld.getApplicationId());
 			ProposalMappingRequest prpo= MultipleJSONObjectHelper.getObjectFromMap((Map)proposal.getData(), ProposalMappingRequest.class);
 			LoanApplicationRequest applicationRequest = loanApplicationService.getFromClient(prpo.getId());
 			
-			ProposalMappingResponse proposalResponse = null;
 			Map<String, Object> proposalresp = null;
 			try {
 				logger.info("Calling Proposal details client {}" , loanSanctionDomainOld.getApplicationId());
-//				proposalResponse = proposalDetailsClient.getInPricipleById(loanSanctionDomainOld.getApplicationId());
 				GatewayResponse inpData = gatewayClient.getInPrincipleByApplicationId(loanSanctionDomainOld.getApplicationId());
-//				proposalresp = MultipleJSONObjectHelper.getObjectFromMap((Map<String, Object>) inpData.getData(), Map.class);
 				proposalresp=(Map<String, Object>) inpData.getData();
 			} catch (Exception e) {
 				logger.info("Error calling Proposal Details Client {}" , loanSanctionDomainOld.getApplicationId());
@@ -2761,18 +2781,7 @@ public class FPAsyncComponent {
 				checkerForName.setId(Long.valueOf(loanSanctionDomainOld.getModifiedBy()));
 				logger.info(MSG_INTO_GETTING_FP_NAME , checkerForName);
 			}
-
-/*			UserResponse makerResponse = null;
-			try {
-				makerResponse = userClient.getEmailMobile(applicationRequest.getFpMakerId());
-			} catch (Exception e) {
-				logger.error(SOMETHING_WENT_WRONG_WHILE_CALLING_USERS_CLIENT,e);
-			}
-			UsersRequest maker = null;
-			if (!CommonUtils.isObjectNullOrEmpty(makerResponse)) {
-				maker = MultipleJSONObjectHelper.getObjectFromMap((Map<String, Object>) makerResponse.getData(),
-						UsersRequest.class);
-			}*/
+ 
 			UsersRequest makerForName = new UsersRequest();
 			makerForName.setId(applicationRequest.getFpMakerId());
 			String makerName = null;
@@ -2862,7 +2871,8 @@ public class FPAsyncComponent {
 					logger.info("Email Sending TO MAKER when Checker sanction loan===to==>{}", toIds);
 					mailParameters.put(CommonUtils.PARAMETERS_IS_DYNAMIC, true);
 					createNotificationForEmail(toIds, applicationRequest.getFpMakerId().toString(), mailParameters,
-							NotificationAlias.EMAIL_MAKER_AFTER_CHECKER_SUBMIT_SANCTION_POPUP, subject,domainId,cc);
+							NotificationAlias.EMAIL_MAKER_AFTER_CHECKER_SUBMIT_SANCTION_POPUP, 
+							EmailSubjectAlias.EMAIL_MAKER_AFTER_CHECKER_SUBMIT_SANCTION_POPUP.getSubjectId(),domainId,cc);
 				}
 				/** sending system notification to maker user*/
 				if (!CommonUtils.isObjectNullOrEmpty(applicationRequest.getFpMakerId())) {
@@ -3020,7 +3030,8 @@ public class FPAsyncComponent {
 		try {
 			Long domainId = DomainValue.MSME.getId();
 			logger.info("Into sending Mail to FS when Checker sanction loan for :{}",loanSanctionDomainOld.getApplicationId());
-			String subject = "Congratulations - Your Loan Has Been Sanctioned!!!";
+//			String subject = "Congratulations - Your Loan Has Been Sanctioned!!!";
+			Object subjectId=EmailSubjectAlias.EMAIL_FS_CHECKER_SANCTIONED.getSubjectId();
 			Map<String, Object> mailParameters = new HashMap<>();
 			ProposalMappingResponse proposal = proposalDetailsClient.getProposalByApplicationIdAndUserOrgId(loanSanctionDomainOld.getOrgId(),loanSanctionDomainOld.getApplicationId());
 			ProposalMappingRequest prpo= MultipleJSONObjectHelper.getObjectFromMap((Map)proposal.getData(), ProposalMappingRequest.class);
@@ -3059,7 +3070,8 @@ public class FPAsyncComponent {
 			//============================================================
 			if(!CommonUtils.isObjectNullOrEmpty(loanSanctionDomainOld.getIsSanctionedFrom()) 
 					&& loanSanctionDomainOld.getIsSanctionedFrom().equals(CommonUtils.sanctionedFrom.INELIGIBLE_USERS_OFFLINE_APPLICATION)){
-				subject = "Congratulations - Your Loan for Manual Application Has Been Sanctioned!!!";
+//				subject = "Congratulations - Your Loan for Manual Application Has Been Sanctioned!!!";
+				subjectId=EmailSubjectAlias.EMAIL_FS_CHECKER_SANCTIONED_OFFLINE.getSubjectId();
 			}
 			mailParameters.put(CommonUtils.PARAMETERS_FP_NAME, fpName != null ? fpName : "");
 			mailParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "");
@@ -3104,7 +3116,7 @@ public class FPAsyncComponent {
 				// ====================== MAIL TO MAKER by new code ======================
 				mailParameters.put(CommonUtils.PARAMETERS_IS_DYNAMIC, false);
 				createNotificationForEmail(toIds, applicationRequest.getUserId().toString(), mailParameters,
-						NotificationAlias.EMAIL_FS_CHECKER_SANCTIONED, subject,domainId,null);
+						NotificationAlias.EMAIL_FS_CHECKER_SANCTIONED, subjectId,domainId,null);
 
 			}
 			if (fs != null && !CommonUtils.isObjectNullOrEmpty(fs.getMobile())) {
@@ -3206,7 +3218,7 @@ public class FPAsyncComponent {
 				}else { 
 					 param.put(LOAN_TYPE, "Retail Loan");
 				} 
-				 String subject = "";
+//				 String subject = "";
 				/** Mail to Admin Makers	when purpose of loan approved or reverted	 */				 
 				 List<String> ccUserList=new ArrayList<>();
 				 String[] cc= {};
@@ -3231,8 +3243,9 @@ public class FPAsyncComponent {
 						 String fpName = toUser.getFirstName()!=null?String.valueOf(toUser.getFirstName())+" "+toUser.getLastName():SIR_MADAM;
 						 param.put(USER_NAME, fpName);
 						 if(workFlowAction == WorkflowUtils.Action.APPROVED) {
-							 subject = "New purpose of loan model "+modelName+" Approved";
-							 createNotificationForEmail(toUser.getEmail(), String.valueOf(makerUserId), param, NotificationAlias.EMAIL_ADMIN_MAKER_WHEN_PURPOSE_OF_LOAN_APPROVED, subject,domainId,cc);
+//							 subject = "New purpose of loan model "+modelName+" Approved";
+							 createNotificationForEmail(toUser.getEmail(), String.valueOf(makerUserId), param, NotificationAlias.EMAIL_ADMIN_MAKER_WHEN_PURPOSE_OF_LOAN_APPROVED,
+									 EmailSubjectAlias.EMAIL_ADMIN_MAKER_WHEN_PURPOSE_OF_LOAN_APPROVED.getSubjectId(),domainId,cc);
 							 /** sending sms to all user*/
 							 adminMakerList.stream().forEach(usersRequest ->{
 								 try {
@@ -3242,8 +3255,8 @@ public class FPAsyncComponent {
 								}
 							 });
 						 }else if(workFlowAction == WorkflowUtils.Action.SEND_BACK){
-							 subject = "Intimation: Re-Sent Purpose of loan Model - "+modelName+" – For Modification";
-							 createNotificationForEmail(toUser.getEmail(), String.valueOf(makerUserId), param, NotificationAlias.EMAIL_ADMIN_MAKER_WHEN_PURPOSE_OF_LOAN_REVERTED, subject,domainId,cc);
+//							 subject = "Intimation: Re-Sent Purpose of loan Model - "+modelName+" – For Modification";
+							 createNotificationForEmail(toUser.getEmail(), String.valueOf(makerUserId), param, NotificationAlias.EMAIL_ADMIN_MAKER_WHEN_PURPOSE_OF_LOAN_REVERTED, EmailSubjectAlias.EMAIL_ADMIN_MAKER_WHEN_PURPOSE_OF_LOAN_REVERTED.getSubjectId(),domainId,cc);
 							 /** sending sms to all user*/
 							 adminMakerList.stream().forEach(usersRequest ->{
 								 try {
@@ -3281,8 +3294,9 @@ public class FPAsyncComponent {
 						 param.put(USER_NAME, fpName);
 						
 						if(workFlowAction == WorkflowUtils.Action.PENDING) {
-							 subject = "Intimation: New Purpose of Loan module - "+modelName;
-							 createNotificationForEmail(toUser.getEmail(), String.valueOf(makerUserId), param, NotificationAlias.EMAIL_ADMIN_CHECKER_PURPOSE_OF_LOAN_CREATED, subject,domainId,cc);
+//							 subject = "Intimation: New Purpose of Loan module - "+modelName;
+							 createNotificationForEmail(toUser.getEmail(), String.valueOf(makerUserId), param, NotificationAlias.EMAIL_ADMIN_CHECKER_PURPOSE_OF_LOAN_CREATED, 
+									 EmailSubjectAlias.EMAIL_ADMIN_CHECKER_PURPOSE_OF_LOAN_CREATED.getSubjectId(),domainId,cc);
 							/** sending sms to all user*/
 							 adminMakerList.stream().forEach(usersRequest -> {
 								 try {
@@ -3292,8 +3306,9 @@ public class FPAsyncComponent {
 								}
 							 });
 						 }else if(workFlowAction == WorkflowUtils.Action.SEND_FOR_APPROVAL){
-							 subject = "Intimation: Re-sent Purpose of loan module  - "+modelName;
-							 createNotificationForEmail(toUser.getEmail(), String.valueOf(makerUserId), param, NotificationAlias.EMAIL_ADMINCHECKER_PURPOSE_OF_LOAN_RE_APPROVAL, subject,domainId,cc);
+//							 subject = "Intimation: Re-sent Purpose of loan module  - "+modelName;
+							 createNotificationForEmail(toUser.getEmail(), String.valueOf(makerUserId), param, NotificationAlias.EMAIL_ADMINCHECKER_PURPOSE_OF_LOAN_RE_APPROVAL, 
+									 EmailSubjectAlias.EMAIL_ADMINCHECKER_PURPOSE_OF_LOAN_RE_APPROVAL.getSubjectId(),domainId,cc);
 							/** sending sms to all user*/
 							 adminMakerList.stream().forEach(usersRequest -> {
 								 try {
@@ -3331,7 +3346,7 @@ public class FPAsyncComponent {
 	}
 
 	private void createNotificationForEmail(String toNo, String userId, Map<String, Object> mailParameters,
-											Long templateId, String emailSubject,Long domainId,String[] cc) throws NotificationException {
+											Long templateId, Object emailSubject,Long domainId,String[] cc) throws NotificationException {
 		logger.info("Inside send notification===>{}" , toNo);
 
 		NotificationRequest notificationRequest = new NotificationRequest();

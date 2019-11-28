@@ -11,6 +11,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.matchengine.ProposalDetailsClient;
+import com.capitaworld.service.matchengine.exception.MatchException;
+import com.capitaworld.service.matchengine.model.DisbursementRequestModel;
+import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -331,6 +335,9 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 	@Value("${capitaworld.gstdata.enable}")
 	private Boolean gstCompRelFlag;
 
+	@Autowired
+	private ProposalDetailsClient proposalDetailsClient;
+
 	DecimalFormat decim = new DecimalFormat("#,###.00");
 
 	@SuppressWarnings("unchecked")
@@ -339,6 +346,21 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 
 
 		CorporateFinalViewResponse corporateFinalViewResponse = new CorporateFinalViewResponse();
+
+		DisbursementRequestModel request = new DisbursementRequestModel();
+		request.setApplicationId(toapplicationId);
+		request.setProposalId(proposalMapId);
+		request.setUserId(fundProviderUserId);
+		try {
+			ProposalMappingResponse s = proposalDetailsClient.getDisbursementRequestDetails(request);
+			corporateFinalViewResponse.setIsNBFCApplication(false);
+			if(s !=null && s.getData() !=null){
+				corporateFinalViewResponse.setIsNBFCApplication(true);
+			}
+			corporateFinalViewResponse.setDisbursementRequestDetails(s.getData());
+		} catch (MatchException e) {
+			logger.error("Error while geting disbursedment details",e);
+		}
 
 		ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalMapId);
 
@@ -1926,6 +1948,104 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		} catch (DocumentException e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
+
+		/*documentRequest.setProductDocumentMappingId(DocumentAlias.NBFC_PAN_UPLOAD);
+		try {
+			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+			corporateFinalViewResponse.setNbfcPANReport(documentResponse.getDataList());
+		} catch (DocumentException e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+		documentRequest.setProductDocumentMappingId(DocumentAlias.NBFC_ADDRESS_PROOF);
+		try {
+			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+			corporateFinalViewResponse.setNbfcAddressProofReport(documentResponse.getDataList());
+		} catch (DocumentException e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}*/
+		documentRequest.setProductDocumentMappingId(DocumentAlias.NBFC_TRIPARTITE_AGREEMENT);
+		try {
+			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+			corporateFinalViewResponse.setNbfcTripartiteAgreement(documentResponse.getDataList());
+		} catch (DocumentException e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+		documentRequest.setProductDocumentMappingId(DocumentAlias.NBFC_SANCTION_LETTER);
+		try {
+			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+			corporateFinalViewResponse.setNbfcSanctionLetterOfNBFC(documentResponse.getDataList());
+		} catch (DocumentException e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+		documentRequest.setProductDocumentMappingId(DocumentAlias.NBFC_PROMISSONRY_NOTE);
+		try {
+			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+			corporateFinalViewResponse.setNbfcDemandPromissonryNote(documentResponse.getDataList());
+		} catch (DocumentException e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+		documentRequest.setProductDocumentMappingId(DocumentAlias.NBFC_lETTER_OF_INTENT);
+		try {
+			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+			corporateFinalViewResponse.setNbfcLetterOfIntent(documentResponse.getDataList());
+		} catch (DocumentException e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+		documentRequest.setProductDocumentMappingId(DocumentAlias.NBFC_OTHER);
+		try {
+			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+			corporateFinalViewResponse.setNbfcOther(documentResponse.getDataList());
+		} catch (DocumentException e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+		/*documentRequest.setProductDocumentMappingId(DocumentAlias.NBFC_PROJECTED_FINANCIALS);
+		try {
+			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+			corporateFinalViewResponse.setNbfcProjectedFinancials(documentResponse.getDataList());
+		} catch (DocumentException e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}*/
+		documentRequest.setProductDocumentMappingId(DocumentAlias.AGE_PROOF_DOCUMENT);
+		try {
+			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+			corporateFinalViewResponse.setAgeProofDocument(documentResponse.getDataList());
+		} catch (DocumentException e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+
+		documentRequest.setProductDocumentMappingId(DocumentAlias.ID_PROOF_DOCUMENT);
+		try {
+			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+			corporateFinalViewResponse.setIdProofDocument(documentResponse.getDataList());
+		} catch (DocumentException e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+
+		documentRequest.setProductDocumentMappingId(DocumentAlias.ADDRESS_PROOF_DOCUMENT);
+		try {
+			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+			corporateFinalViewResponse.setAddressProofDocument(documentResponse.getDataList());
+		} catch (DocumentException e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+
+		documentRequest.setProductDocumentMappingId(DocumentAlias.APPLICATION_FORM);
+		try {
+			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+			corporateFinalViewResponse.setApplicationForm(documentResponse.getDataList());
+		} catch (DocumentException e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+
+		documentRequest.setProductDocumentMappingId(DocumentAlias.DETAILED_ASSESSMENT_NOTE);
+		try {
+			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+			corporateFinalViewResponse.setDetailedAssessmentNote(documentResponse.getDataList());
+		} catch (DocumentException e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+
+
 		/*DocumentRequest documentRequestForMCAZip = new DocumentRequest();
 		documentRequestForMCAZip.setApplicationId(Long.valueOf(loanApplicationMaster.getMcaCompanyId()));
 		documentRequestForMCAZip.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);

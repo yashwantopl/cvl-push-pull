@@ -10,10 +10,13 @@ import com.capitaworld.connect.api.ConnectRequest;
 import com.capitaworld.connect.api.ConnectResponse;
 import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.service.loans.domain.fundprovider.CoLendingRatio;
+import com.capitaworld.service.loans.domain.fundprovider.DisbursementDetails;
 import com.capitaworld.service.loans.domain.fundprovider.FpCoLendingBanks;
 import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
+import com.capitaworld.service.loans.domain.sanction.LoanDisbursementDomain;
+import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.NhbsApplicationRequest;
@@ -21,12 +24,15 @@ import com.capitaworld.service.loans.model.WorkflowData;
 import com.capitaworld.service.loans.model.colending.CoLendingProposalResponse;
 import com.capitaworld.service.loans.model.corporate.CoLendingRequest;
 import com.capitaworld.service.loans.repository.colending.CoLendingFlowRepository;
+import com.capitaworld.service.loans.repository.common.LoanRepository;
 import com.capitaworld.service.loans.repository.fundprovider.CoLendingRatioRepository;
 import com.capitaworld.service.loans.repository.fundprovider.FpCoLendingBanksRepository;
 import com.capitaworld.service.loans.repository.fundprovider.NbfcRatioMappingTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
+import com.capitaworld.service.loans.repository.sanction.LoanDisbursementRepository;
+import com.capitaworld.service.loans.repository.sanction.LoanSanctionRepository;
 import com.capitaworld.service.loans.service.fundprovider.CoLendingService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -89,6 +95,16 @@ public class CoLendingServiceImpl implements CoLendingService {
 	
 	@Autowired
 	private NbfcRatioMappingTempRepository nbfcRatioMappingTempRepository;
+
+	@Autowired
+	private LoanRepository loanRepository;
+
+	@Autowired
+	private LoanSanctionRepository sanctionRepository;
+
+	@Autowired
+	private LoanDisbursementRepository loanDisbursementRepository;
+
 
 	DecimalFormat df = new DecimalFormat("#");
 
@@ -785,13 +801,54 @@ public class CoLendingServiceImpl implements CoLendingService {
 						try {
 							ConnectRequest connectRequest = null;
 							ConnectResponse connectResponse = connectClient.getApplicationList(proposalMapping.getApplicationId());
-							if (!CommonUtils.isObjectNullOrEmpty(connectResponse) && !CommonUtils.isListNullOrEmpty(connectResponse.getDataList())) {
-								List<LinkedHashMap<String, Object>> list = (List<LinkedHashMap<String, Object>>) connectResponse.getDataList();
-								for (LinkedHashMap<String, Object> mp : list) {
-									connectRequest = com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap(mp, ConnectRequest.class);
-									if (response.getProposalId().equals(proposalId)) {
-										Date inPrincipleDate = connectRequest.getModifiedDate();
-										response.setInPrincipleDate(!CommonUtils.isObjectNullOrEmpty(inPrincipleDate) ? CommonUtils.DATE_FORMAT.format(inPrincipleDate) : "-");
+							if(request.getDdrStatusId() != MatchConstant.ProposalStatus.ACCEPT){
+
+								Integer nbfcFlow = null;
+								try {
+									if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.NBFC_FP_MAKER == request.getUserRoleId().intValue() ||
+											com.capitaworld.service.users.utils.CommonUtils.UserRoles.NBFC_FP_CHECKER == request.getUserRoleId().intValue() ||
+											com.capitaworld.service.users.utils.CommonUtils.UserRoles.NBFC_ASSISTED_USER == request.getUserRoleId().intValue() ||
+											com.capitaworld.service.users.utils.CommonUtils.UserRoles.NBFC_HO == request.getUserRoleId().intValue()) {
+										nbfcFlow = 1;
+									}else {
+										nbfcFlow = 2;
+									}
+
+									if(request.getDdrStatusId() == MatchConstant.ProposalStatus.DISBURSED || request.getDdrStatusId() == MatchConstant.ProposalStatus.DISBURSED_BY_NBFC){
+										LoanDisbursementDomain loanDisbursementDomain = loanDisbursementRepository.findByAppliationIdAndNBFCFlow(proposalMapping.getApplicationId(),nbfcFlow);
+										if(loanDisbursementDomain != null){
+											if(loanDisbursementDomain.getDisbursementDate() != null){
+												response.setInPrincipleDate(!CommonUtils.isObjectNullOrEmpty(loanDisbursementDomain.getDisbursementDate()) ? CommonUtils.DATE_FORMAT.format(loanDisbursementDomain.getDisbursementDate()) : "-");
+											}else if(loanDisbursementDomain.getModifiedDate() !=null){
+												response.setInPrincipleDate(!CommonUtils.isObjectNullOrEmpty(loanDisbursementDomain.getModifiedDate()) ? CommonUtils.DATE_FORMAT.format(loanDisbursementDomain.getModifiedDate()) : "-");
+											}else{
+												response.setInPrincipleDate(!CommonUtils.isObjectNullOrEmpty(loanDisbursementDomain.getCreatedDate()) ? CommonUtils.DATE_FORMAT.format(loanDisbursementDomain.getCreatedDate()) : "-");
+											}
+										}
+									}else if(request.getDdrStatusId() == MatchConstant.ProposalStatus.APPROVED || request.getDdrStatusId() == MatchConstant.ProposalStatus.APPROVED_BY_NBFC){
+										LoanSanctionDomain loanSanctionDomain = sanctionRepository.findByAppliationIdAndNBFCFlow(proposalMapping.getApplicationId(),nbfcFlow);
+										if(loanSanctionDomain != null){
+											response.setInPrincipleDate(!CommonUtils.isObjectNullOrEmpty(loanSanctionDomain.getSanctionDate()) ? CommonUtils.DATE_FORMAT.format(loanSanctionDomain.getSanctionDate()) : "-");
+										}
+									}else {
+										ProposalDetails proposalDetails = proposalDetailsRepository.getProposalByProposalId(proposalId.longValue());
+										if(proposalDetails != null){
+											response.setInPrincipleDate(!CommonUtils.isObjectNullOrEmpty(proposalDetails.getModifiedDate()) ? CommonUtils.DATE_FORMAT.format(proposalDetails.getModifiedDate()) : "-");
+										}
+									}
+								} catch (Exception e) {
+									logger.error("Error while formatting sanction date",e);
+								}
+							}else {
+								if (!CommonUtils.isObjectNullOrEmpty(connectResponse) && !CommonUtils.isListNullOrEmpty(connectResponse.getDataList())) {
+									List<LinkedHashMap<String, Object>> list = (List<LinkedHashMap<String, Object>>) connectResponse.getDataList();
+									for (LinkedHashMap<String, Object> mp : list) {
+										connectRequest = com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap(mp, ConnectRequest.class);
+										response.setInPrincipleDate("-");
+										if (response.getProposalId().longValue() == proposalId.longValue()) {
+											Date inPrincipleDate = connectRequest.getModifiedDate();
+											response.setInPrincipleDate(!CommonUtils.isObjectNullOrEmpty(inPrincipleDate) ? CommonUtils.DATE_FORMAT.format(inPrincipleDate) : "-");
+										}
 									}
 								}
 							}
@@ -809,4 +866,61 @@ public class CoLendingServiceImpl implements CoLendingService {
 		return responseList;
 	}
 
+	@Override
+	public List<CoLendingRequest> getCoOriginationRatio(NhbsApplicationRequest nhbsApplicationRequest){
+		try {
+			if(!CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest.getFpProductId())){
+				List<Object[]> coLendingRatioLis = loanRepository.getCoLendingRatio(nhbsApplicationRequest.getFpProductId());
+				if(!CommonUtils.isListNullOrEmpty(coLendingRatioLis)){
+					List<CoLendingRequest> coLendingRequestList = new ArrayList<CoLendingRequest>();
+					for (Object[] objects:coLendingRatioLis) {
+						CoLendingRequest coLendingRequest = new CoLendingRequest();
+						if(!CommonUtils.isObjectNullOrEmpty(objects[0])
+								|| !CommonUtils.isObjectNullOrEmpty(objects[1])
+								|| !CommonUtils.isObjectNullOrEmpty(objects[2])
+								|| !CommonUtils.isObjectNullOrEmpty(objects[3])){
+							coLendingRequest.setId(Long.valueOf(objects[0].toString()));
+							coLendingRequest.setNbfcRatio(Double.valueOf(objects[1].toString()));
+							coLendingRequest.setBankRatio(Double.valueOf(objects[2].toString()));
+							coLendingRequest.setTenure(Double.valueOf(objects[3].toString()));
+							coLendingRequestList.add(coLendingRequest);
+						}
+					}
+					return coLendingRequestList;
+				}
+			}
+		}catch (Exception e){
+			logger.error("something went wrong in getCoOriginationRatio() : ",e.getMessage());
+		}
+		return null;
+	}
+
+	@Override
+	public List<CoLendingRequest> getCoOriginationAllRatio(NhbsApplicationRequest nhbsApplicationRequest) {
+		try {
+			if(!CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest.getApplicationId())){
+				List<Object[]> coLendingRatioLis = loanRepository.getCoLendingAllRatio(nhbsApplicationRequest.getApplicationId());
+				if(!CommonUtils.isListNullOrEmpty(coLendingRatioLis)){
+					List<CoLendingRequest> coLendingRequestList = new ArrayList<CoLendingRequest>();
+					for (Object[] objects:coLendingRatioLis) {
+						CoLendingRequest coLendingRequest = new CoLendingRequest();
+						if(!CommonUtils.isObjectNullOrEmpty(objects[0])
+								|| !CommonUtils.isObjectNullOrEmpty(objects[1])
+								|| !CommonUtils.isObjectNullOrEmpty(objects[2])
+								|| !CommonUtils.isObjectNullOrEmpty(objects[3])){
+							coLendingRequest.setId(Long.valueOf(objects[0].toString()));
+							coLendingRequest.setNbfcRatio(Double.valueOf(objects[1].toString()));
+							coLendingRequest.setBankRatio(Double.valueOf(objects[2].toString()));
+							coLendingRequest.setTenure(Double.valueOf(objects[3].toString()));
+							coLendingRequestList.add(coLendingRequest);
+						}
+					}
+					return coLendingRequestList;
+				}
+			}
+		}catch (Exception e){
+			logger.error("something went wrong in getCoOriginationAllRatio() : ",e.getMessage());
+		}
+		return null;
+	}
 }

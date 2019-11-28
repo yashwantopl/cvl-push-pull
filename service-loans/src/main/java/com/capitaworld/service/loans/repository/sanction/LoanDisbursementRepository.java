@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.repository.sanction;
 import java.util.Date;
 import java.util.List;
 
+import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -31,4 +32,7 @@ public interface LoanDisbursementRepository extends JpaRepository<LoanDisburseme
 	
 	@Query(value="SELECT SUM(disbursed_amount) AS disbursed_amount, MAX(DATE_FORMAT(disbursement_date, '%d/%m/%Y')) AS disbursement_date FROM loan_application.disbursement_detail WHERE application_id =:applicationId AND is_active = TRUE", nativeQuery = true)
 	public List<Object[]> getDisbursmentData(@Param("applicationId") Long applicationId );
+
+	@Query(value = "SELECT * FROM disbursement_detail lsd where lsd.application_id =:applicationId AND lsd.nbfc_flow=:nbfcFlow AND lsd.is_active = true order by id desc limit 1",nativeQuery = true)
+	public LoanDisbursementDomain findByAppliationIdAndNBFCFlow(@Param("applicationId") Long applicationId, @Param("nbfcFlow") Integer nbfcFlow);
 }

@@ -110,6 +110,9 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 
 	@Query("from LoanApplicationMaster lm where lm.id =:id and lm.isActive = true order by lm.id")
 	public LoanApplicationMaster getById(@Param("id") Long id);
+	
+	@Query("select lm.createdDate from LoanApplicationMaster lm where lm.id =:id and lm.isActive = true")
+	public Date getCreatedDateById(@Param("id") Long id);
 
 	@Query("select new com.capitaworld.service.loans.model.LoanApplicationDetailsForSp(lm.id,lm.productId,lm.amount,lm.currencyId,lm.denominationId)  from LoanApplicationMaster lm where lm.userId=:userId and lm.isActive = true")
 	public List<LoanApplicationDetailsForSp> getListByUserId(@Param("userId") Long userId);
@@ -402,7 +405,7 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 
 	/*For select on on Loan Type*/
 	@Modifying
-	@Query(value = "UPDATE connect.connect_log SET loan_type_id =:loanType where application_id=:applicationId", nativeQuery = true)
+	@Query(value = "UPDATE connect.connect_log SET loan_type_id =:loanType, is_coapp_page = false where application_id=:applicationId", nativeQuery = true)
 	public int updateLoanType(@Param("applicationId")  Long applicationId,@Param("loanType") Long loanType);
 
 	@Modifying

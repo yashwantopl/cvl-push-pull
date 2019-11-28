@@ -10,6 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.model.colending.FpProductRoiResponse;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1861,5 +1862,17 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		}
 	}
 
+	@Override
+	public FpProductRoiResponse getMinMaxRoiFromFpProductId(Long fpProductId) {
+		FpProductRoiResponse response = new FpProductRoiResponse();
+		ProductMaster productMaster = productMasterRepository.getById(fpProductId);
+		if (!CommonUtils.isObjectNullOrEmpty(productMaster)) {
+			response.setMaxRoi(productMaster.getMaxRoi());
+			response.setMinRoi(productMaster.getMinRoi());
+			return response;
+		}else{
+			return null;
+		}
+	}
 }
 

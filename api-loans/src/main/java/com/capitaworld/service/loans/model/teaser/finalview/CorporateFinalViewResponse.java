@@ -63,6 +63,7 @@ public class CorporateFinalViewResponse implements Serializable {
 	private String collateralSecurityAmount;
 	private List<Object> profilePic;
 	private Integer productId;
+	private Object disbursementRequestDetails;
 
 	private String purposeOfLoan;
 	private String businessAssetAmount;
@@ -149,6 +150,20 @@ public class CorporateFinalViewResponse implements Serializable {
 	private List<Object> bankStatement;
 	private List<Object> cmaList;
 	private List<Object> irtPdfReport;
+	private List<Object> nbfcPANReport;
+	private List<Object> nbfcAddressProofReport;
+	private List<Object> nbfcTripartiteAgreement;
+	private List<Object> nbfcSanctionLetterOfNBFC;
+	private List<Object> nbfcLetterOfIntent;
+	private List<Object> nbfcDemandPromissonryNote;
+	private List<Object> ageProofDocument;
+	private List<Object> idProofDocument;
+	private List<Object> addressProofDocument;
+	private List<Object> applicationForm;
+	private List<Object> detailedAssessmentNote;
+	private List<Object> nbfcOther;
+	private Boolean isNBFCApplication;
+	private List<Object> nbfcProjectedFinancials;
 	private List<OwnershipDetailResponse> ownershipDetailResponseList;
 	private List<TotalCostOfProjectResponse> totalCostOfProjectResponseList;
 	private List<FinanceMeansDetailResponse> financeMeansDetailResponseList;
@@ -2298,10 +2313,124 @@ public class CorporateFinalViewResponse implements Serializable {
 	public void setBankComparisionData(Object bankComparisionData) {
 		this.bankComparisionData = bankComparisionData;
 	}
-	
-	
 
+	public List<Object> getNbfcPANReport() {
+		return nbfcPANReport;
+	}
 
+	public void setNbfcPANReport(List<Object> nbfcPANReport) {
+		this.nbfcPANReport = nbfcPANReport;
+	}
 
+	public List<Object> getNbfcAddressProofReport() {
+		return nbfcAddressProofReport;
+	}
 
+	public void setNbfcAddressProofReport(List<Object> nbfcAddressProofReport) {
+		this.nbfcAddressProofReport = nbfcAddressProofReport;
+	}
+
+	public List<Object> getNbfcTripartiteAgreement() {
+		return nbfcTripartiteAgreement;
+	}
+
+	public void setNbfcTripartiteAgreement(List<Object> nbfcTripartiteAgreement) {
+		this.nbfcTripartiteAgreement = nbfcTripartiteAgreement;
+	}
+
+	public List<Object> getNbfcSanctionLetterOfNBFC() {
+		return nbfcSanctionLetterOfNBFC;
+	}
+
+	public void setNbfcSanctionLetterOfNBFC(List<Object> nbfcSanctionLetterOfNBFC) {
+		this.nbfcSanctionLetterOfNBFC = nbfcSanctionLetterOfNBFC;
+	}
+
+	public List<Object> getNbfcLetterOfIntent() {
+		return nbfcLetterOfIntent;
+	}
+
+	public void setNbfcLetterOfIntent(List<Object> nbfcLetterOfIntent) {
+		this.nbfcLetterOfIntent = nbfcLetterOfIntent;
+	}
+
+	public List<Object> getNbfcDemandPromissonryNote() {
+		return nbfcDemandPromissonryNote;
+	}
+
+	public void setNbfcDemandPromissonryNote(List<Object> nbfcDemandPromissonryNote) {
+		this.nbfcDemandPromissonryNote = nbfcDemandPromissonryNote;
+	}
+
+	public List<Object> getNbfcOther() {
+		return nbfcOther;
+	}
+
+	public void setNbfcOther(List<Object> nbfcOther) {
+		this.nbfcOther = nbfcOther;
+	}
+
+	public Object getDisbursementRequestDetails() {
+		return disbursementRequestDetails;
+	}
+
+	public void setDisbursementRequestDetails(Object disbursementRequestDetails) {
+		this.disbursementRequestDetails = disbursementRequestDetails;
+	}
+
+	public Boolean getIsNBFCApplication() {
+		return isNBFCApplication;
+	}
+
+	public void setIsNBFCApplication(Boolean NBFCApplication) {
+		isNBFCApplication = NBFCApplication;
+	}
+
+	public List<Object> getAgeProofDocument() {
+		return ageProofDocument;
+	}
+
+	public void setAgeProofDocument(List<Object> ageProofDocument) {
+		this.ageProofDocument = ageProofDocument;
+	}
+
+	public List<Object> getIdProofDocument() {
+		return idProofDocument;
+	}
+
+	public void setIdProofDocument(List<Object> idProofDocument) {
+		this.idProofDocument = idProofDocument;
+	}
+
+	public List<Object> getAddressProofDocument() {
+		return addressProofDocument;
+	}
+
+	public void setAddressProofDocument(List<Object> addressProofDocument) {
+		this.addressProofDocument = addressProofDocument;
+	}
+
+	public List<Object> getApplicationForm() {
+		return applicationForm;
+	}
+
+	public void setApplicationForm(List<Object> applicationForm) {
+		this.applicationForm = applicationForm;
+	}
+
+	public List<Object> getDetailedAssessmentNote() {
+		return detailedAssessmentNote;
+	}
+
+	public void setDetailedAssessmentNote(List<Object> detailedAssessmentNote) {
+		this.detailedAssessmentNote = detailedAssessmentNote;
+	}
+
+	public List<Object> getNbfcProjectedFinancials() {
+		return nbfcProjectedFinancials;
+	}
+
+	public void setNbfcProjectedFinancials(List<Object> nbfcProjectedFinancials) {
+		this.nbfcProjectedFinancials = nbfcProjectedFinancials;
+	}
 }

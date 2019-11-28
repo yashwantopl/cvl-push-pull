@@ -9,6 +9,7 @@ public class RecommendDetailRequest {
     private Double value;
     private Double tenure;
     private Double roi;
+    private Double processingFee;
     private String remark;
 
     //getter setter
@@ -42,6 +43,14 @@ public class RecommendDetailRequest {
 
     public void setRoi(Double roi) {
         this.roi = roi;
+    }
+
+    public Double getProcessingFee() {
+        return processingFee;
+    }
+
+    public void setProcessingFee(Double processingFee) {
+        this.processingFee = processingFee;
     }
 
     public String getRemark() {

@@ -8,6 +8,7 @@ public class ClientListingCoLending implements Serializable {
 
     private Long clientId;
     private String clientEmail;
+    private String originalEmailId;
     private String clientName;
     private String clientCountry;
     private String clientState;
@@ -16,6 +17,7 @@ public class ClientListingCoLending implements Serializable {
     private Long lastAccessId;
     private String clientMobile;
     private String clientStatus;
+    private String pan;
     private List<?> listData = Collections.emptyList();
 
     //constructor
@@ -110,5 +112,21 @@ public class ClientListingCoLending implements Serializable {
 
     public void setListData(List<?> listData) {
         this.listData = listData;
+    }
+
+    public String getOriginalEmailId() {
+        return originalEmailId;
+    }
+
+    public void setOriginalEmailId(String originalEmailId) {
+        this.originalEmailId = originalEmailId;
+    }
+
+    public String getPan() {
+        return pan;
+    }
+
+    public void setPan(String pan) {
+        this.pan = pan;
     }
 }
