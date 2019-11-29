@@ -15,6 +15,7 @@ import com.capitaworld.service.loans.domain.colending.RecommendDetail;
 import com.capitaworld.service.loans.domain.sanction.LoanDisbursementDomain;
 import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
 import com.capitaworld.service.loans.repository.colending.RecommendDetailRepository;
+import com.capitaworld.service.loans.repository.common.CommonRepository;
 import com.capitaworld.service.loans.repository.sanction.LoanDisbursementRepository;
 import com.capitaworld.service.loans.repository.sanction.LoanSanctionRepository;
 import org.slf4j.Logger;
@@ -244,6 +245,9 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 
 	@Autowired
     private LoanSanctionRepository loanSanctionRepository;
+	
+	@Autowired
+	private CommonRepository commonRepository;
 
 	@Autowired
 	private LoanDisbursementRepository loanDisbursementRepository;
@@ -276,7 +280,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		//Long userId = loanApplicationMaster.getUserId(); // previous
 
 		//corporatePrimaryViewResponse.setProductId(loanApplicationMaster.getProductId()); //  previous
-		corporatePrimaryViewResponse.setProductId(applicationProposalMapping.getProductId()); // new
+		
 		corporatePrimaryViewResponse.setApplicationType(loanApplicationMaster.getWcRenewalStatus() != null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New" );
 		/* ========= Matches Data ========== */
 		if (userType != null && CommonUtils.UserType.FUND_SEEKER != userType ) {
@@ -315,6 +319,14 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				.getByApplicationAndProposalIdAndUserId(toUserId,toApplicationId,proposalId); //NEW BASED ON PROPOSAL MAPPING ID=======>
 		
 		 
+		//NOTE OF BORROWER FOR MSME
+				try {
+					String note = commonRepository.getNoteForHLCam(toApplicationId);
+					corporatePrimaryViewResponse.setNoteOfBorrower(!CommonUtils.isObjectNullOrEmpty(note) ? note : null);
+				}catch (Exception e) {
+					logger.error("Error/Exception while getting note of borrower....Error==>{}", e);
+				}
+		
 		// set value to response
 		if (corporateApplicantDetail != null) {
 			BeanUtils.copyProperties(corporateApplicantDetail, corporatePrimaryViewResponse);
@@ -491,7 +503,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			/*corporatePrimaryViewResponse.setLoanType(primaryCorporateDetail.getProductId() != null
 					? LoanType.getById(primaryCorporateDetail.getProductId()).getValue()
 					: null);*/ // PREVIOUS
-
+			corporatePrimaryViewResponse.setProductId(applicationProposalMapping.getProductId()); // new
 			corporatePrimaryViewResponse.setLoanType(applicationProposalMapping.getProductId() != null
 					? LoanType.getById(applicationProposalMapping.getProductId()).getValue()
 					: null); // NEW BASED ON PROPOSAL MAPPING DATABASE
