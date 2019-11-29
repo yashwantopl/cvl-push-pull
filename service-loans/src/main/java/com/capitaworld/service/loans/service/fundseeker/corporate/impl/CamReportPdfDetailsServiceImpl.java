@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -12,6 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.Map.Entry;
 
 import javax.transaction.Transactional;
 
@@ -2151,7 +2153,11 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 						map.put("totalMomSales", df.format(totalSales));
 //					resp.setTotalMomSales(totalSales);
 					}
-				}						
+				}		
+				
+				List<LinkedHashMap<String, Object>> dataMapList =  (List<LinkedHashMap<String, Object>>) response.getData();
+				convertExpVal(dataMapList);
+				
 				map.put("gstDetailedResp", (List<LinkedHashMap<String, Object>>) response.getData());
 			}else {
 				logger.info("Gst Data Null for==>"+applicationId);
@@ -2531,6 +2537,22 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			    
 				return map;
 		}
+	
+	
+	private void convertExpVal(List<LinkedHashMap<String, Object>> dataMapList) {
+		for (LinkedHashMap<String, Object> dataMap : dataMapList) {
+			Map gstNotApplicatbleMap = (Map) dataMap.get("gstNotApplicable");
+			Map<String, Map<String,Object>> momSalesMap = (Map<String, Map<String,Object>>) gstNotApplicatbleMap.get("momSales");
+			
+			for (Map<String,Object> momSalesMapValuesMap : momSalesMap.values()) {
+				for (Entry<String,Object> entry : momSalesMapValuesMap.entrySet()) {
+					Double value = (Double) entry.getValue();
+					BigDecimal convertedVal = BigDecimal.valueOf(value).setScale(2);
+					entry.setValue(convertedVal.toString());
+				}
+			}
+		}
+	}
 	
 	public Map<String,Object> getBankStatementDetails(Long applicationId ,Long userId){
 		//PERFIOS API DATA (BANK STATEMENT ANALYSIS)
