@@ -34,4 +34,8 @@ public interface IneligibleProposalDetailsService {
 	public Integer getBusinessTypeIdFromApplicationId(Long applicationId);
 
 	public String sendInEligibleForSidbi(Long applicationId);
+
+	public boolean updateApplicationStatus(InEligibleProposalDetailsRequest inEliProReq);
+
+	public boolean updateSanctionStatus(InEligibleProposalDetailsRequest inEliProReq);
 }

@@ -206,7 +206,7 @@ public class CommonRepositoryImpl  implements CommonRepository {
          return (Object[]) manager.createNativeQuery("SELECT f.first_name,f.last_name " +
                  "FROM users.users u " +
                  "LEFT JOIN users.`fund_provider_details` f ON f.user_id=u.user_id " +
-                 "WHERE u.branch_id=:branchId AND u.user_role_id=9 ORDER BY u.user_id DESC;").setParameter("branchId", branchId).getSingleResult();
+                 "WHERE u.branch_id=:branchId AND u.user_role_id=9 ORDER BY u.user_id DESC Limit 1;").setParameter("branchId", branchId).getSingleResult();
     }
 	
 }
