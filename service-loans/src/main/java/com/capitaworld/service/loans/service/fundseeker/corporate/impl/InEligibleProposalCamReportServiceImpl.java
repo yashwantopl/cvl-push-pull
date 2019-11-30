@@ -4,19 +4,24 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TreeMap;
 
 import javax.transaction.Transactional;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,6 +121,10 @@ import com.capitaworld.service.rating.model.FinancialInputRequest;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 /**
  * @author nilay.darji
@@ -438,6 +447,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 
 			DecimalFormat df = new DecimalFormat(".##");
 			if (!CommonUtils.isObjectNullOrEmpty(response)) {
+				System.out.println(response.getData().getClass().getName());
 				for (LinkedHashMap<String, Object> data : (List<LinkedHashMap<String, Object>>) response.getData()) {
 					resp = MultipleJSONObjectHelper.getObjectFromMap(data, CAMGSTData.class);
 					Double totalSales = 0.0d;
@@ -451,7 +461,11 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 //							resp.setTotalMomSales(totalSales);
 					}
 				}
-
+				
+//				List<LinkedHashMap<String, Object>> jsonString = response.getData().toString();
+			List<LinkedHashMap<String, Object>> dataMapList =  (List<LinkedHashMap<String, Object>>) response.getData();
+			convertExpVal(dataMapList);
+				
 				map.put("gstDetailedResp", ((List<LinkedHashMap<String, Object>>) response.getData()));
 			}
 
@@ -972,6 +986,21 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 
 		return map;
 
+	}
+
+	private void convertExpVal(List<LinkedHashMap<String, Object>> dataMapList) {
+		for (LinkedHashMap<String, Object> dataMap : dataMapList) {
+			Map gstNotApplicatbleMap = (Map) dataMap.get("gstNotApplicable");
+			Map<String, Map<String,Object>> momSalesMap = (Map<String, Map<String,Object>>) gstNotApplicatbleMap.get("momSales");
+			
+			for (Map<String,Object> momSalesMapValuesMap : momSalesMap.values()) {
+				for (Entry<String,Object> entry : momSalesMapValuesMap.entrySet()) {
+					Double value = (Double) entry.getValue();
+					BigDecimal convertedVal = BigDecimal.valueOf(value).setScale(2);
+					entry.setValue(convertedVal.toString());
+				}
+			}
+		}
 	}
 
 	@SuppressWarnings("unchecked")

@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -12,6 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.Map.Entry;
 
 import javax.transaction.Transactional;
 
@@ -130,6 +132,7 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.TotalCostOfPro
 import com.capitaworld.service.loans.service.irr.IrrService;
 import com.capitaworld.service.loans.service.scoring.ScoringService;
 import com.capitaworld.service.loans.service.teaser.primaryview.CorporatePrimaryViewService;
+import com.capitaworld.service.loans.utils.BanksEnumForReports;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.MatchEngineClient;
@@ -388,7 +391,13 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		DecimalFormat decim = new DecimalFormat("####");
 
         // CHANGES FOR NEW MULTIPLE BANKS----->
-        ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.getByApplicationIdAndProposalId(proposalId);
+        ApplicationProposalMapping applicationProposalMapping = null;
+        if(proposalId != null) {
+        	applicationProposalMapping = applicationProposalMappingRepository.getByApplicationIdAndProposalId(applicationId, proposalId);
+        }else {
+        	applicationProposalMapping = applicationProposalMappingRepository.getByApplicationId(applicationId);
+		}
+       
         Long toApplicationId = applicationProposalMapping.getApplicationId();
         Long userId     =  applicationProposalMapping.getUserId();
 
@@ -443,51 +452,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
             }
         }
 
-		CorporateFinalInfoRequest corporateFinalInfoRequest;
-		try {
-			//corporateFinalInfoRequest = corporateFinalInfoService.get(userId, applicationId);  PREVIOIS
-			corporateFinalInfoRequest = corporateFinalInfoService.getByProposalId(userId, proposalId);//NEW
-
-			//ADMIN OFFICE ADDRESS
-			if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress())){
-				map.put("adminAddPremise", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getPremiseNumber()) ? CommonUtils.printFields(corporateFinalInfoRequest.getSecondAddress().getPremiseNumber(),null) + "," : "");
-				map.put("adminAddStreetName", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getStreetName()) ? CommonUtils.printFields(corporateFinalInfoRequest.getSecondAddress().getStreetName(),null) + " " : "");
-				map.put("adminAddLandmark", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getLandMark()) ? CommonUtils.printFields(corporateFinalInfoRequest.getSecondAddress().getLandMark(),null) + " " : "");
-				map.put("adminAddCountry", StringEscapeUtils.escapeXml(getCountryName(corporateFinalInfoRequest.getSecondAddress().getCountryId())));
-				map.put("adminAddState", StringEscapeUtils.escapeXml(getStateName(corporateFinalInfoRequest.getSecondAddress().getStateId())));
-				map.put("adminAddCity", StringEscapeUtils.escapeXml(getCityName(corporateFinalInfoRequest.getSecondAddress().getCityId())));
-				map.put("adminAddPincode", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getPincode())?corporateFinalInfoRequest.getSecondAddress().getPincode() : "");
-				try {
-					if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getDistrictMappingId())) {
-						map.put("adminAddressData",CommonUtils.printFields(pincodeDateService.getById(corporateFinalInfoRequest.getSecondAddress().getDistrictMappingId()),null));				
-					}
-				} catch (Exception e) {
-					logger.error(CommonUtils.EXCEPTION,e);
-				}
-			}
-			
-			//REGISTERED OFFICE ADDRESS
-			if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress())) {
-				map.put("registeredAddPremise", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress().getPremiseNumber()) ? CommonUtils.printFields(corporateFinalInfoRequest.getFirstAddress().getPremiseNumber(),null) + "," : "");
-				map.put("registeredAddStreetName", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress().getStreetName()) ? CommonUtils.printFields(corporateFinalInfoRequest.getFirstAddress().getStreetName(),null) + " " : "");
-				map.put("registeredAddLandmark", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress().getLandMark()) ? CommonUtils.printFields(corporateFinalInfoRequest.getFirstAddress().getLandMark(),null) + " " : "");
-				map.put("registeredAddCountry", StringEscapeUtils.escapeXml(getCountryName(corporateFinalInfoRequest.getFirstAddress().getCountryId())));
-				map.put("registeredAddState", StringEscapeUtils.escapeXml(getStateName(corporateFinalInfoRequest.getFirstAddress().getStateId())));
-				map.put("registeredAddCity", StringEscapeUtils.escapeXml(getCityName(corporateFinalInfoRequest.getFirstAddress().getCityId())));
-				map.put("registeredAddPincode", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress().getPincode())?corporateFinalInfoRequest.getFirstAddress().getPincode() : "");
-				try {
-					if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress().getDistrictMappingId())) {
-						map.put("registeredAddressData",CommonUtils.printFields(pincodeDateService.getById(corporateFinalInfoRequest.getFirstAddress().getDistrictMappingId()),null));				
-					}
-				} catch (Exception e) {
-					logger.error(CommonUtils.EXCEPTION,e);
-				}
-			}
-			map.put("corporateApplicantFinal",corporateFinalInfoRequest);
-			map.put("aboutUs", StringEscapeUtils.escapeXml(corporateFinalInfoRequest.getAboutUs()));
-		} catch (Exception e1) {
-			logger.error(CommonUtils.EXCEPTION,e1);
-		}
+		
 		
 		// Product Name
 		if(productId != null) {
@@ -553,311 +518,13 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			logger.error(CommonUtils.EXCEPTION,e2);
 		}*/
 		
-		//GST DATA
-		try {
-			GSTR1Request gstr1Request = new GSTR1Request();
-			gstr1Request.setApplicationId(toApplicationId);
-			gstr1Request.setUserId(userId);
-			gstr1Request.setGstin(corporateApplicantRequest.getGstIn());
-			GstResponse response = gstClient.getCalculations(gstr1Request);
-			GstCalculation gstData = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)response.getData(),GstCalculation.class);
-			int noOfCustomer = gstData.getNoOfCustomer().intValue();
-			map.put("noOfCustomer", noOfCustomer);
-			map.put("projectedSales", CommonUtils.convertValueIndianCurrency(gstData.getProjectedSales()));
-			map.put("customerConcentration", CommonUtils.convertValue(gstData.getConcentration()));
-		}catch(Exception e) {
-			logger.error(CommonUtils.EXCEPTION,e);
-		}
+		//COMMON GST DATA		
+		map.putAll(getGstDetails(applicationId, userId));		
 		
-		try {
-			GSTR1Request req= new GSTR1Request();
-			req.setApplicationId(toApplicationId);
-			req.setUserId(userId);
-			req.setGstin(corporateApplicantRequest.getGstIn());	
-			CAMGSTData resp =null;
-			GstResponse response = gstClient.detailCalculation(req);
-			
-			DecimalFormat df = new DecimalFormat(".##");
-			if (!CommonUtils.isObjectNullOrEmpty(response) && response.getData() != null) {
-				for (LinkedHashMap<String, Object> data : (List<LinkedHashMap<String, Object>>) response.getData()) {
-					resp = MultipleJSONObjectHelper.getObjectFromMap(data,CAMGSTData.class);
-					if(resp.getMomSales() != null) {
-                        List<MomSales> momSalesResp1 = resp.getMomSales();
-                        List<MomSales> responseMom= new ArrayList<>();
-                        
-                        for (MomSales sales1 : momSalesResp1) {
-                        	StringBuilder str = new StringBuilder(sales1.getMonth());
-                        	sales1.setMonth(str.insert(2, '-').toString());
-                        	sales1.setValue((String)CommonUtils.convertValueIndianCurrency(Double.valueOf(sales1.getValue())));
-                        	sales1.setIsManualEntry(sales1.getIsManualEntry());
-                            responseMom.add(sales1);
-                        }
-                        data.put("monthWiseMomSales", responseMom);
-                    }
-					Double totalSales =0.0d;
-					if(resp.getMomSales() != null) {
-						List<MomSales> momSalesResp = resp.getMomSales();
-						for (MomSales sales : momSalesResp) {
-							
-							totalSales += Double.valueOf(CommonUtils.convertStringCurrencyToDouble(sales.getValue()));
-						}
-						map.put("totalMomSales", df.format(totalSales));
-//					resp.setTotalMomSales(totalSales);
-					}
-				}
-				
-				
-				map.put("gstDetailedResp", (List<LinkedHashMap<String, Object>>) response.getData());
-			}else {
-				logger.info("Gst Data Null for==>"+applicationId);
-			}
+		//COMMON ONE-FORM DATA
+		map.putAll(getOneFormData(applicationId,proposalId,userId));
 		
-		}catch(Exception e) {
-			logger.error(CommonUtils.EXCEPTION,e);
-		}
-		
-		PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateRepository.getByApplicationAndUserId(toApplicationId, userId);
-		if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)) {
-			map.put("loanAmtApplied", primaryCorporateDetail.getLoanAmount()!= null ? CommonUtils.convertValueIndianCurrency(primaryCorporateDetail.getLoanAmount()) : 0);
-			map.put("comercialOpDate",!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCommercialOperationDate())? CommonUtils.DATE_FORMAT.format(primaryCorporateDetail.getCommercialOperationDate()):"-");
-			map.put("factoryPremise", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getFactoryPremise())? StringEscapeUtils.escapeXml(FactoryPremiseMst.getById(primaryCorporateDetail.getFactoryPremise()).getValue()) : "-");
-			map.put("knowHow", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getKnowHow())? StringEscapeUtils.escapeXml(KnowHowMst.getById(primaryCorporateDetail.getKnowHow()).getValue()) : "-");
-			map.put("competition", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCompetition())? StringEscapeUtils.escapeXml(CompetitionMst_SBI.getById(primaryCorporateDetail.getCompetition()).getValue()) : "-");
-			map.put("productDesc", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getProductServiceDescription()) ? StringEscapeUtils.escapeXml(primaryCorporateDetail.getProductServiceDescription()) : null);
-		}
-		
-		//ONE-FORM DATA
-		try {
-    		map.put("corporateApplicant", corporateApplicantRequest);
-			map.put("orgName", CommonUtils.printFields(corporateApplicantRequest.getOrganisationName(),null));
-			map.put("constitution", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getConstitutionId()) ? StringEscapeUtils.escapeXml(Constitution.getById(corporateApplicantRequest.getConstitutionId()).getValue()) : " ");
-			
-			String establishMentYear = !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getEstablishmentMonth()) ? EstablishmentMonths.getById(corporateApplicantRequest.getEstablishmentMonth()).getValue() : "";
-			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getEstablishmentYear())) {
-				try {
-					OneFormResponse establishmentYearResponse = oneFormClient.getYearByYearId(CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getEstablishmentYear()) ? null : corporateApplicantRequest.getEstablishmentYear().longValue());
-					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) establishmentYearResponse.getListData();
-					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-						MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-						establishMentYear += " "+ masterResponse.getValue();
-					} 
-				} catch (Exception e) {
-					logger.error("Error in getting establishment year : ",e);
-				}
-			}
-			map.put("establishmentYr",!CommonUtils.isObjectNullOrEmpty(establishMentYear) ? CommonUtils.printFields(establishMentYear,null) : " ");
-			
-			//INDUSTRY DATA
-			Integer industry = corporateApplicantRequest.getKeyVericalFunding().intValue();
-			map.put("keyVerticalFunding", !CommonUtils.isObjectNullOrEmpty(industry) ? CommonUtils.printFields(Industry.getById(industry).getValue(),null) : " ");
-		}catch (Exception e) {
-			logger.error(CommonUtils.EXCEPTION,e);
-		}
-			
-		//DIRECTOR'S BACKGROUND
-		try {
-			List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList = backgroundDetailsService.getDirectorBackgroundDetailList(toApplicationId, userId);
-			List<DirectorBackgroundDetailResponseString> directorBackgroundDetailResponseList = new ArrayList<>();
-			for (DirectorBackgroundDetailRequest directorBackgroundDetailRequest : directorBackgroundDetailRequestList) {
-				DirectorBackgroundDetailResponseString directorBackgroundDetailResponse = new DirectorBackgroundDetailResponseString();
-				//directorBackgroundDetailResponse.setAchivements(directorBackgroundDetailRequest.getAchivements());
-				directorBackgroundDetailResponse.setAddress(directorBackgroundDetailRequest.getAddress());
-				//directorBackgroundDetailResponse.setAge(directorBackgroundDetailRequest.getAge());
-				directorBackgroundDetailResponse.setDirectorsName((directorBackgroundDetailRequest.getSalutationId() != null ? Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue() : null )+ " " + directorBackgroundDetailRequest.getDirectorsName());
-				if(directorBackgroundDetailRequest.getPanNo() != null) {
-					directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo().toUpperCase());
-				}
-				
-				String directorName = "";
-				if (directorBackgroundDetailRequest.getSalutationId() != null){
-					directorName = Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue();
-				}
-				directorName += " "+directorBackgroundDetailRequest.getDirectorsName();
-				directorBackgroundDetailResponse.setDirectorsName(directorName);
-				//directorBackgroundDetailResponse.setQualification(directorBackgroundDetailRequest.getQualification());
-				directorBackgroundDetailResponse.setTotalExperience(CommonUtils.convertValueWithoutDecimal(directorBackgroundDetailRequest.getTotalExperience()));
-				directorBackgroundDetailResponse.setNetworth(CommonUtils.convertValueIndianCurrency(directorBackgroundDetailRequest.getNetworth()).toString());
-				directorBackgroundDetailResponse.setDesignation(directorBackgroundDetailRequest.getDesignation());
-				directorBackgroundDetailResponse.setAppointmentDate(directorBackgroundDetailRequest.getAppointmentDate());
-				directorBackgroundDetailResponse.setDin(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDin())?decim.format(directorBackgroundDetailRequest.getDin()).toString() : "");
-				directorBackgroundDetailResponse.setMobile(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getMobile())?directorBackgroundDetailRequest.getMobile(): " ");
-				directorBackgroundDetailResponse.setDob(directorBackgroundDetailRequest.getDob());
-				
-				if(directorBackgroundDetailRequest.getPanNo().charAt(3) == 'H' ||directorBackgroundDetailRequest.getPanNo().charAt(3) == 'h') {
-					directorBackgroundDetailResponse.setCibilScore("HUF");
-				}else {
-					try {
-						CibilRequest cibilRequest = new CibilRequest();
-						cibilRequest.setPan(directorBackgroundDetailRequest.getPanNo());
-						cibilRequest.setApplicationId(toApplicationId);
-
-						List<CibilScoreLogRequest> response = cibilClient.getMultipleProviderScoreByApplicationIdAndPan(cibilRequest);
-						if(!CommonUtils.isListNullOrEmpty(response)) {
-							for(CibilScoreLogRequest cibilScoreLogRequest : response) {
-								String score = cibilScoreLogRequest.getActualScore();
-								if("000-1".equalsIgnoreCase(cibilScoreLogRequest.getActualScore())) {
-									score = "-1";
-								}else {
-									score = Integer.valueOf(cibilScoreLogRequest.getActualScore()).toString();								
-								}
-								if(cibilScoreLogRequest.getScoreName() != null && cibilScoreLogRequest.getScoreName().contains("CIBIL")) {
-									directorBackgroundDetailResponse.setCibilScore(score);								
-								}else if(cibilScoreLogRequest.getScoreName().contains("Experian")) {
-									directorBackgroundDetailResponse.setExperianScore(score);								
-								}else if(cibilScoreLogRequest.getScoreName().contains("HIGHMARK")) {
-									directorBackgroundDetailResponse.setHighmarkScore(score);								
-								}
-								
-							}
-						}
-					}catch(Exception e) {
-						logger.error("Error while getting cibil details : ",e);
-					}
-				}
-				
-				Double loanObligation = financialArrangementDetailsService.getTotalOfEmiByApplicationIdAndDirectorId(applicationId , directorBackgroundDetailRequest.getId());
-				directorBackgroundDetailResponse.setLoanObligation(!CommonUtils.isObjectNullOrEmpty(loanObligation) ? loanObligation : 0);
-				
-				directorBackgroundDetailResponse.setPincode(directorBackgroundDetailRequest.getPincode());
-				directorBackgroundDetailResponse.setPersonalId(directorBackgroundDetailRequest.getPersonalId());
-				
-				try {
-					if (!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDistrictMappingId())) {
-						directorBackgroundDetailResponse.setPinData(pincodeDateService.getById(directorBackgroundDetailRequest.getDistrictMappingId()));
-					}
-				} catch (Exception e) {
-					logger.error(CommonUtils.EXCEPTION,e);
-				}
-				
-				directorBackgroundDetailResponse.setStateCode(directorBackgroundDetailRequest.getStateCode());
-				directorBackgroundDetailResponse.setCity(directorBackgroundDetailRequest.getCity());
-				directorBackgroundDetailResponse.setGender((!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getGender()) ? Gender.getById(directorBackgroundDetailRequest.getGender()).getValue() : " "));
-				directorBackgroundDetailResponse.setRelationshipType((!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getRelationshipType())  ? StringEscapeUtils.escapeXml(DirectorRelationshipType.getById(directorBackgroundDetailRequest.getRelationshipType()).getValue()) : " "));
-				directorBackgroundDetailResponse.setIsMainDirector(directorBackgroundDetailRequest.getIsMainDirector());
-				directorBackgroundDetailResponse.setAadhar(directorBackgroundDetailRequest.getAadhar());
-				directorBackgroundDetailResponse.setFatherName(directorBackgroundDetailRequest.getFatherName());
-				directorBackgroundDetailResponse.setEducationalStatus(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getEducationalStatus()) ? StringEscapeUtils.escapeXml(EducationalStatusMst.getById(directorBackgroundDetailRequest.getEducationalStatus()).getValue().toString()) : "-");
-				directorBackgroundDetailResponse.setVisuallyImpaired(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getVisuallyImpaired()) ? StringEscapeUtils.escapeXml(VisuallyImpairedMst.getById(directorBackgroundDetailRequest.getVisuallyImpaired()).getValue().toString()) : "-");
-				directorBackgroundDetailResponse.setResidentStatus(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getResidentStatus()) ? StringEscapeUtils.escapeXml(ResidentStatusMst.getById(directorBackgroundDetailRequest.getResidentStatus()).getValue().toString()) : "-");
-				directorBackgroundDetailResponse.setDirectorPersonalInfo(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest()) ? directorBackgroundDetailRequest.getDirectorPersonalDetailRequest() : " " );
-				
-				//NATIONALITY
-				List<Long> countryList = new ArrayList<>();
-				if (!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getNationality()))
-					countryList.add(Long.valueOf(directorBackgroundDetailRequest.getNationality()));
-				if (!CommonUtils.isListNullOrEmpty(countryList)) {
-					try {
-						OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
-						List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
-						if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-							MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-							map.put("dirCountry", StringEscapeUtils.escapeXml(masterResponse.getValue()));
-							map.put("dirRegOfficeCountry", StringEscapeUtils.escapeXml(masterResponse.getValue()));
-							directorBackgroundDetailResponse.setNationality(masterResponse.getValue());
-						} else {
-							directorBackgroundDetailResponse.setNationality("NA");
-						}
-					} catch (Exception e) {
-						logger.error(CommonUtils.EXCEPTION,e);
-					}
-				}
-				
-				try {
-					if(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getIsMainDirector()) && directorBackgroundDetailRequest.getIsMainDirector() == true) {
-						DirectorPersonalDetailResponse directorPersonalDetailResponse= new DirectorPersonalDetailResponse();
-						if(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest())) {	
-							directorPersonalDetailResponse.setMaritalStatus(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getMaritalStatus()) ? StringEscapeUtils.escapeXml(MaritalStatusMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getMaritalStatus()).getValue().toString()) : "-");
-							directorPersonalDetailResponse.setSpouseName(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getSpouseName()) ? StringEscapeUtils.escapeXml(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getSpouseName()) : "-" );
-							directorPersonalDetailResponse.setSpouseDetail(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getSpouseDetail()) ? StringEscapeUtils.escapeXml(SpouseDetailMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getSpouseDetail()).getValue().toString()) : "-");
-							directorPersonalDetailResponse.setAssessedForIt(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getAssessedForIt()) ? StringEscapeUtils.escapeXml(AssessedForITMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getAssessedForIt()).getValue().toString()) : "-");
-							directorPersonalDetailResponse.setOwningHouse(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOwningHouse()) ? StringEscapeUtils.escapeXml(OwningHouseMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOwningHouse()).getValue().toString()) : "-");
-							directorPersonalDetailResponse.setNoOfChildren(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getNoOfChildren()) ? directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getNoOfChildren() : 0 );
-							directorPersonalDetailResponse.setHaveLiPolicy(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveLiPolicy()) ? StringEscapeUtils.escapeXml(HaveLIMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveLiPolicy()).getValue().toString()) : "-");
-							
-							directorBackgroundDetailResponse.setDirectorPersonalInfo(directorPersonalDetailResponse);
-						}
-					}
-				}catch(Exception e) {
-					logger.error("error while getting main directors details : ",e);
-				}
-				directorBackgroundDetailResponseList.add(directorBackgroundDetailResponse);
-			}
-			map.put("dirBackground", !CommonUtils.isListNullOrEmpty(directorBackgroundDetailResponseList) ? CommonUtils.printFields(directorBackgroundDetailResponseList,null) : " ");
-		}
-		catch (Exception e) {
-			logger.error("Error in getting directors background details : ",e);
-		}
-		
-		/* cmr details cibil */
-		
-		try {
-			String cmrScore= cibilClient.getCMRScore(applicationId);
-			
-			if (cmrScore != null && cmrScore.contains("EXP")) {
-				map.put("msmeRankingTitle", "Experian");
-			}else if (cmrScore != null && cmrScore.contains("CIBIL")) {
-				map.put("msmeRankingTitle", "Cibil");
-			}else {
-				map.put("msmeRankingTitle", "MSME Ranking");
-			}
-			map.put("cibilCmrScore", cmrScore != null ? cmrScore : "Not Found");
-		} catch (Exception e) {
-			
-			logger.error("error while getting cmr score : ",e);
-		}
-			
-		//FINANCIAL ARRANGEMENTS
-		try {
-			List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService.getFinancialArrangementDetailsList(toApplicationId, userId);
-            List<FinancialArrangementDetailResponseString> financialArrangementsDetailResponseList = new ArrayList<>();
-            for (FinancialArrangementsDetailRequest financialArrangementsDetailRequest : financialArrangementsDetailRequestList) {
-            	FinancialArrangementDetailResponseString financialArrangementsDetailResponse = new FinancialArrangementDetailResponseString();
-     			//financialArrangementsDetailResponse.setRelationshipSince(financialArrangementsDetailRequest.getRelationshipSince());
-                financialArrangementsDetailResponse.setOutstandingAmount(CommonUtils.convertValueIndianCurrency(financialArrangementsDetailRequest.getOutstandingAmount()).toString());
-                financialArrangementsDetailResponse.setSecurityDetails(financialArrangementsDetailRequest.getSecurityDetails());
-                financialArrangementsDetailResponse.setAmount(financialArrangementsDetailRequest.getAmount() != null ? CommonUtils.convertValueIndianCurrency(financialArrangementsDetailRequest.getAmount()).toString() : "-");
-                //financialArrangementsDetailResponse.setLenderType(LenderType.getById(financialArrangementsDetailRequest.getLenderType()).getValue());
-                financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());
-                financialArrangementsDetailResponse.setLoanType(financialArrangementsDetailRequest.getLoanType());
-                financialArrangementsDetailResponse.setFinancialInstitutionName(StringEscapeUtils.escapeXml(financialArrangementsDetailRequest.getFinancialInstitutionName()));
-                //financialArrangementsDetailResponse.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
-                //financialArrangementsDetailResponse.setFacilityNature(NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
-                //financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
-                financialArrangementsDetailResponse.setLcbgStatus(!CommonUtils.isObjectNullOrEmpty(financialArrangementsDetailRequest.getLcBgStatus()) ? LCBG_Status_SBI.getById(financialArrangementsDetailRequest.getLcBgStatus()).getValue().toString() : "-");
-                financialArrangementsDetailResponse.setEmi(financialArrangementsDetailRequest.getEmi() != null ? CommonUtils.convertValueIndianCurrency(financialArrangementsDetailRequest.getEmi()).toString() : "-");
-				financialArrangementsDetailResponse.setBuerauOutStandingStr(financialArrangementsDetailRequest.getBureauOutstandingAmount() != null ? CommonUtils.convertValueIndianCurrency(financialArrangementsDetailRequest.getBureauOutstandingAmount()).toString() : "-");
-				financialArrangementsDetailResponse.setCollateralAmtStr(financialArrangementsDetailRequest.getCollateralSecurityAmount() != null ? CommonUtils.convertValueIndianCurrency(financialArrangementsDetailRequest.getCollateralSecurityAmount()).toString() : "-");
-                financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
-             }
-             map.put("financialArrangments",!CommonUtils.isListNullOrEmpty(financialArrangementsDetailResponseList) ? financialArrangementsDetailResponseList : " ");
-		} catch (Exception e) {
-             logger.error("Problem to get Data of Financial Arrangements Details {}", e);
-        }
-			
-		/*get loan obligation of dir*/
-		Double loanObligation=financialArrangementDetailsService.getTotalEmiOfAllDirByApplicationId(applicationId);
-		map.put("loanObligation", loanObligation != null ? CommonUtils.CurrencyFormat(loanObligation.toString()) : 0);
-
-		try {
-			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(toApplicationId, userId);
-			map.put("loanAmt", applicationProposalMapping.getLoanAmount() != null ? CommonUtils.convertValueIndianCurrency(applicationProposalMapping.getLoanAmount()) : "-");
-			map.put("enhancementAmount", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getEnhancementAmount()) ? CommonUtils.convertValueIndianCurrency(primaryCorporateRequest.getEnhancementAmount()) : " ");
-			//map.put("loanType", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getProductId()) ? CommonUtils.LoanType.getType(primaryCorporateRequest.getProductId()).getName() : " ");
-			map.put("promotorsContribution", CommonUtils.convertValueIndianCurrency(primaryCorporateRequest.getPromoterContribution()));
-			map.put("totalAmtPer", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getTotalAmtPercentage()) ? " ("+CommonUtils.convertValue(primaryCorporateRequest.getTotalAmtPercentage())+"%)" : null);
-			if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getPurposeOfLoanId())) {
-				map.put("purpose", StringEscapeUtils.escapeXml(PurposeOfLoan.getById(primaryCorporateRequest.getPurposeOfLoanId()).getValue()));
-			}else {
-				map.put("purpose", "");
-			}
-
-			if(primaryCorporateRequest.getHaveCollateralSecurity()) {
-				map.put("collateralSecurityList", collateralSecurityDetailService.getData(applicationId));
-				map.put("amtOfSecurity",!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getCollateralSecurityAmount()) ? CommonUtils.convertValueIndianCurrency(primaryCorporateRequest.getCollateralSecurityAmount()) : " ");
-			}
-		}catch (Exception e) {
-			logger.error(CommonUtils.EXCEPTION,e);
-		}
+		map.putAll(getMatchesAndEligiblityDetails(applicationId,productId,proposalId));
 		
 		//FINANCIALS AND NOTES TO ACCOUNTS
 		try {
@@ -898,18 +565,15 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		
-		//MATCHES RESPONSE
-		try {
-			MatchRequest matchRequest = new MatchRequest();
-			matchRequest.setApplicationId(toApplicationId);
-			matchRequest.setProductId(productId);
-			MatchDisplayResponse matchResponse= matchEngineClient.displayMatchesOfCorporate(matchRequest);
-			map.put("matchesResponse", !CommonUtils.isListNullOrEmpty(matchResponse.getMatchDisplayObjectList()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectList(),null) : " ");
-		}
-		catch (Exception e) {
-			logger.error(CommonUtils.EXCEPTION,e);
-		}
 		
+		//NOTE OF BORROWER FOR MSME
+		try {
+			String note = commonRepository.getNoteForHLCam(toApplicationId);
+			map.put("noteOfBorrower", !CommonUtils.isObjectNullOrEmpty(note) ? note : null);
+		}catch (Exception e) {
+			logger.error("Error/Exception while getting note of borrower....Error==>{}", e);
+		}
+
 		//PROPOSAL RESPONSE
 		try {
 				ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
@@ -1277,16 +941,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 			catch (Exception e) {
 				logger.error("Error while getting scoring data : ",e);
-			}
-		
-		//NAME AS PER ITR
-		try{
-			ITRConnectionResponse itrResponse = itrClient.getITRBasicDetails(toApplicationId);
-			logger.info("ITR RESPONSE===========>{}",itrResponse);
-			map.put("nameAsPerItr", CommonUtils.printFields(itrResponse.getData(),null));
-		}catch(Exception e) {
-			logger.error(CommonUtils.EXCEPTION,e);
-		}
+			}		
 		
 		try {
 			VerifyAPIRequest verifyAPIRequest = new VerifyAPIRequest();
@@ -1386,33 +1041,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 
 		/* eligibility financialCalculation year */
-		map.put("eligibilityFinancialYear",CommonUtils.getFinancialYear());
-
-		//MCA DATA
-		try {
-			// CURRENTLY PENDING DATA-ID NOT EXISTS IN application_proposal_mapping-->applicationProposalMapping
-			String companyId = loanApplicationMaster.getMcaCompanyId();
-			
-			if(companyId != null) {
-				McaResponse mcaStatusResponse = mcaClient.mcaStatusCheck(String.valueOf(toApplicationId), companyId);
-				if (mcaStatusResponse!= null && mcaStatusResponse.getData()!= null && mcaStatusResponse.getData().equals(true)) {
-					McaResponse mcaResponse = mcaClient.getCompanyDetailedData(companyId);
-					if(!CommonUtils.isObjectNullOrEmpty(mcaResponse.getData())) {
-						map.put("mcaData", CommonUtils.printFields(mcaResponse.getData(),null));
-					}
-					McaResponse mcaFinancialAndDetailsRes=mcaClient.getCompanyFinancialCalcAndDetails(toApplicationId, companyId);
-					if(mcaFinancialAndDetailsRes.getData()!=null){
-						map.put("financialDetailResp", mcaFinancialAndDetailsRes.getData());
-					}
-				}
-				map.put("mcaCheckStatus",mcaStatusResponse.getData()!= null ?  mcaStatusResponse.getData() : null);
-				
-			}else {
-				map.put("mcaNotApplicable",true);
-			}
-		}catch(Exception e) {
-			logger.error(CommonUtils.EXCEPTION,e);
-		}
+		map.put("eligibilityFinancialYear",CommonUtils.getFinancialYear());		
 		
 		//HUNTER API ANALYSIS
 		
@@ -1450,55 +1079,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}catch (Exception e) {
 			logger.error("Error/Exception while fetching list of gst Related Party List Data of APplicationId==>{}  ... Error==>{}",applicationId ,e);
 		}
-
-		//PERFIOS API DATA (BANK STATEMENT ANALYSIS)
-		ReportRequest reportRequest = new ReportRequest();
-		reportRequest.setApplicationId(toApplicationId);
-		reportRequest.setUserId(userId);
-
-		List<Data> datas = new ArrayList<>();
-		//List<Object> bankStatement = new ArrayList<Object>();
-		List<Object> monthlyDetails = new ArrayList<Object>();
-		List<Object> top5FundReceived = new ArrayList<Object>();
-		List<Object> top5FundTransfered = new ArrayList<Object>();
-		List<Object> bouncedChequeList = new ArrayList<Object>();
-		List<Object> customerInfo = new ArrayList<Object>();
-		List<Object> summaryInfo = new ArrayList<Object>();
-
-		try {
-			AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
-			if(analyzerResponse.getData()!=null){
-			List<HashMap<String, Object>> hashMap = (List<HashMap<String, Object>>) analyzerResponse.getData();
-
-			if (!CommonUtils.isListNullOrEmpty(hashMap)) {
-				for (HashMap<String, Object> rec : hashMap) {
-					Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
-					datas.add(data);
-
-					//bankStatement.add(!CommonUtils.isObjectNullOrEmpty(data.getXns()) ? CommonUtils.printFields(data.getXns().getXn(),null) : " ");
-					monthlyDetails.add(!CommonUtils.isObjectNullOrEmpty(data.getMonthlyDetailList()) ? CommonUtils.printFields(data.getMonthlyDetailList(),null) : "");
-					top5FundReceived.add(!CommonUtils.isObjectNullOrEmpty(data.getTop5FundReceivedList().getItem()) ? CommonUtils.printFields(data.getTop5FundReceivedList().getItem(),null) : "");
-					top5FundTransfered.add(!CommonUtils.isObjectNullOrEmpty(data.getTop5FundTransferedList().getItem()) ? CommonUtils.printFields(data.getTop5FundTransferedList().getItem(),null) : "");
-					bouncedChequeList.add(!CommonUtils.isObjectNullOrEmpty(data.getBouncedOrPenalXnList()) ? CommonUtils.printFields(data.getBouncedOrPenalXnList().getBouncedOrPenalXns(),null) : " ");
-					customerInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getCustomerInfo()) ? CommonUtils.printFields(data.getCustomerInfo(),null) : " ");
-					summaryInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getSummaryInfo()) ?CommonUtils.printFields(data.getSummaryInfo(),null) : " ");
-
-				}
-
-				//map.put("bankStatement", bankStatement);
-				map.put("monthlyDetails", monthlyDetails);
-				map.put("top5FundReceived", top5FundReceived);
-				map.put("top5FundTransfered", top5FundTransfered);
-				map.put("bouncedChequeList", bouncedChequeList);
-				map.put("customerInfo", !CommonUtils.isObjectListNull(customerInfo) ? customerInfo : null);
-				map.put("summaryInfo", summaryInfo);
-				map.put("bankStatementAnalysis", CommonUtils.printFields(datas, null));
-
-			}
-		 }
-		} catch (Exception e) {
-			logger.error("Error while getting perfios data : ",e);
-		}
+		
 		map.put("gstEnable", "true");
 		
 		//GST Comparision by Maaz
@@ -1507,6 +1088,13 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			map.put("gstComparision", corporatePrimaryViewService.gstVsItrVsBsComparision(applicationId, finaForCam));
 		}catch (Exception e) {
 			logger.error("error in getting gst comparision data : {}",e);
+		}
+		
+		//Get BankStatement
+		try {
+			map.putAll(getBankStatementDetails(toApplicationId, userId));
+		}catch (Exception e) {
+			logger.error("Error in getting Bank Statemnt from Perfios in MSME Cam Report with applicationId==>{}",applicationId);
 		}
 		
 		// get ngbc final data
@@ -1725,63 +1313,6 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 		return map;
 	}
-	
-	/*@Override
-	public Map<String, Object> getBankStatementAnalysisReport(Long applicationId, Long productId) {
-		Map<String, Object> map = new HashMap<String, Object>();
-		Long userId = loanApplicationRepository.getUserIdByApplicationId(applicationId);
-		CorporateApplicantRequest corporateApplicantRequest =corporateApplicantService.getCorporateApplicant(applicationId);
-		try {
-			map.put("orgName", CommonUtils.printFields(corporateApplicantRequest.getOrganisationName(),null));
-		} catch (Exception e1) {
-			logger.error(CommonUtils.EXCEPTION,e1);
-		}
-		//PERFIOS API DATA (BANK STATEMENT ANALYSIS)
-			ReportRequest reportRequest = new ReportRequest();
-				reportRequest.setApplicationId(applicationId);
-				reportRequest.setUserId(userId);
-				List<Data> datas=new ArrayList<>();
-				try {
-					AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
-					List<HashMap<String, Object>> hashMap=(List<HashMap<String, Object>>) analyzerResponse.getData();
-					if(!CommonUtils.isListNullOrEmpty(hashMap))
-					{
-						for(HashMap<String,Object> rec:hashMap)
-						{
-							Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
-							datas.add(data);
-							List<Object> bankStatement = new ArrayList<Object>();
-							List<Object> monthlyDetails = new ArrayList<Object>();
-							List<Object> top5FundReceived = new ArrayList<Object>();
-							List<Object> top5FundTransfered = new ArrayList<Object>();
-							List<Object> bouncedChequeList = new ArrayList<Object>();
-							List<Object> customerInfo = new ArrayList<Object>();
-							List<Object> summaryInfo = new ArrayList<Object>();
-							for(int i =0; i<hashMap.size(); i++) {
-								bankStatement.add(!CommonUtils.isObjectNullOrEmpty(data.getXns()) ? CommonUtils.printFields(data.getXns().getXn(),null) : " ");
-								monthlyDetails.add(!CommonUtils.isObjectNullOrEmpty(data.getMonthlyDetailList()) ? CommonUtils.printFields(data.getMonthlyDetailList(),null) : "");
-								top5FundReceived.add(!CommonUtils.isObjectNullOrEmpty(data.getTop5FundReceivedList().getItem()) ? CommonUtils.printFields(data.getTop5FundReceivedList().getItem(),null) : "");
-								top5FundTransfered.add(!CommonUtils.isObjectNullOrEmpty(data.getTop5FundTransferedList().getItem()) ? CommonUtils.printFields(data.getTop5FundTransferedList().getItem(),null) : "");
-								bouncedChequeList.add(!CommonUtils.isObjectNullOrEmpty(data.getBouncedOrPenalXnList()) ? CommonUtils.printFields(data.getBouncedOrPenalXnList().getBouncedOrPenalXns(),null) : " ");
-								customerInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getCustomerInfo()) ? CommonUtils.printFields(data.getCustomerInfo(),null) : " ");
-								summaryInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getSummaryInfo()) ?CommonUtils.printFields(data.getSummaryInfo(),null) : " ");
-							}
-							map.put("bankStatement" , bankStatement);
-							map.put("monthlyDetails" , monthlyDetails);
-							map.put("top5FundReceived" , top5FundReceived);
-							map.put("top5FundTransfered" , top5FundTransfered);
-							map.put("bouncedChequeList" , bouncedChequeList);
-							map.put("customerInfo" , customerInfo);
-							map.put("summaryInfo" , summaryInfo);
-							map.put("bankStatementAnalysis", CommonUtils.printFields(datas,null));
-						}
-					}
-				}catch (Exception e) {
-					logger.error("Error while getting perfios data : ",e);
-				}
-
-		return map;
-	}*/
 
 	@Override
 	public Map<String ,Object> getGstReportData(String panNo){
@@ -1884,7 +1415,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				map.put("bouncedChequeList", bouncedChequeList);
 				map.put("customerInfo", customerInfo);
 				map.put("summaryInfo", summaryInfo);
-				map.put("bankStatementAnalysis", CommonUtils.printFields(datas, null));
+				map.put("bankStatementAnalysis", datas != null && !datas.isEmpty() ? CommonUtils.printFields(datas, null) : null);
 
 				ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 				ow.writeValueAsString(monthlyDetails);
@@ -2515,6 +2046,618 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 		return null;
 	}
+	
+	//MATCHES COMMON METHOD
+	public Map<String ,Object> getMatchesAndEligiblityDetails(Long applicationId ,Long productId, Long proposalId){
+		//Fetch Matches Details
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		if (proposalId != null) {
+			//MATCHES RESPONSE FOR ONLINE CAM
+			try {
+				MatchRequest matchRequest = new MatchRequest();
+				matchRequest.setApplicationId(applicationId);
+				matchRequest.setProductId(productId);
+				MatchDisplayResponse matchResponse= matchEngineClient.displayMatchesOfCorporate(matchRequest);
+				map.put("matchesResponse", !CommonUtils.isListNullOrEmpty(matchResponse.getMatchDisplayObjectList()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectList(),null) : " ");
+
+						EligibililityRequest eligibilityReq=new EligibililityRequest();
+						eligibilityReq.setApplicationId(applicationId);
+						eligibilityReq.setFpProductMappingId(productId);
+						EligibilityResponse eligibilityResp= eligibilityClient.corporateLoanData(eligibilityReq);
+						
+						if(!CommonUtils.isObjectListNull(eligibilityResp.getData())){
+							CLEligibilityRequest req= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), CLEligibilityRequest.class);
+							
+							map.put("elProSales", req.getProjectedSales() != null ? CommonUtils.convertValueIndianCurrency(req.getProjectedSales())  : "-");
+							map.put("defaultHisSales", req.getDefaultHistoricSales() != null ? CommonUtils.convertValueIndianCurrency(req.getDefaultHistoricSales())  : "-");
+							map.put("assLimits",CommonUtils.convertToDoubleForXmlIndianCurr(req, new HashMap<>()));
+						}
+			}
+			catch (Exception e) {
+				logger.error(CommonUtils.EXCEPTION,e);
+			}			
+		} else {
+			// MATCHES RESPONSE FOR OFFLINE CAM
+			try {
+				MatchRequest matchRequest = new MatchRequest();
+				matchRequest.setApplicationId(applicationId);
+				/* matchRequest.setProductId(productId); */
+				MatchDisplayResponse matchResponse = matchEngineClient.displayMatchesOfCorporate(matchRequest);
+				map.put("matchesResponse",
+						!CommonUtils.isListNullOrEmpty(matchResponse.getMatchDisplayObjectList())
+								? CommonUtils.printFields(matchResponse.getMatchDisplayObjectList(), null)
+								: " ");
+			} catch (Exception e) {
+				logger.error(CommonUtils.EXCEPTION, e);
+			}
+		}	
+		return map;
+	}
+	
+	
+	//GST COMMON METHOD
+	public Map<String ,Object> getGstDetails(Long applicationId ,Long userId){
+		//Fetch Bank Details
+		Map<String, Object> map = new HashMap<String, Object>();
+		//GST DATA
+		
+		CorporateApplicantRequest corporateApplicantRequest = corporateApplicantService.getCorporateApplicant(applicationId);
+		try {
+			GSTR1Request gstr1Request = new GSTR1Request();
+			gstr1Request.setApplicationId(applicationId);
+			gstr1Request.setUserId(userId);
+			gstr1Request.setGstin(corporateApplicantRequest.getGstIn());
+			GstResponse response = gstClient.getCalculations(gstr1Request);
+			GstCalculation gstData = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)response.getData(),GstCalculation.class);
+			int noOfCustomer = gstData.getNoOfCustomer().intValue();
+			map.put("noOfCustomer", noOfCustomer);
+			map.put("projectedSales", CommonUtils.convertValueIndianCurrency(gstData.getProjectedSales()));
+			map.put("customerConcentration", CommonUtils.convertValue(gstData.getConcentration()));
+		}catch(Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+		
+		try {
+			GSTR1Request req= new GSTR1Request();
+			req.setApplicationId(applicationId);
+			req.setUserId(userId);
+			req.setGstin(corporateApplicantRequest.getGstIn());	
+			CAMGSTData resp =null;
+			GstResponse response = gstClient.detailCalculation(req);
+			
+			DecimalFormat df = new DecimalFormat(".##");
+			if (!CommonUtils.isObjectNullOrEmpty(response) && response.getData() != null) {
+				for (LinkedHashMap<String, Object> data : (List<LinkedHashMap<String, Object>>) response.getData()) {
+					resp = MultipleJSONObjectHelper.getObjectFromMap(data,CAMGSTData.class);
+					if(resp.getMomSales() != null) {
+                        List<MomSales> momSalesResp1 = resp.getMomSales();
+                        List<MomSales> responseMom= new ArrayList<>();
+                        
+                        for (MomSales sales1 : momSalesResp1) {
+                        	StringBuilder str = new StringBuilder(sales1.getMonth());
+                        	sales1.setMonth(str.insert(2, '-').toString());
+                        	sales1.setValue((String)CommonUtils.convertValueIndianCurrency(Double.valueOf(sales1.getValue())));
+                        	sales1.setIsManualEntry(sales1.getIsManualEntry());
+                            responseMom.add(sales1);
+                        }
+                        data.put("monthWiseMomSales", responseMom);
+                    }
+					Double totalSales =0.0d;
+					if(resp.getMomSales() != null) {
+						List<MomSales> momSalesResp = resp.getMomSales();
+						for (MomSales sales : momSalesResp) {
+							
+							totalSales += Double.valueOf(CommonUtils.convertStringCurrencyToDouble(sales.getValue()));
+						}
+						map.put("totalMomSales", df.format(totalSales));
+//					resp.setTotalMomSales(totalSales);
+					}
+				}		
+				
+				List<LinkedHashMap<String, Object>> dataMapList =  (List<LinkedHashMap<String, Object>>) response.getData();
+				convertExpVal(dataMapList);
+				
+				map.put("gstDetailedResp", (List<LinkedHashMap<String, Object>>) response.getData());
+			}else {
+				logger.info("Gst Data Null for==>"+applicationId);
+			}		
+		}catch(Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+		return map;
+	}
+	
+	//ONE_FORM COMMON
+	public Map<String ,Object> getOneFormData(Long applicationId, Long proposalId,Long userId){
+		
+		
+		ApplicationProposalMapping applicationProposalMapping = null;
+        if(proposalId != null) {
+        	applicationProposalMapping = applicationProposalMappingRepository.getByApplicationIdAndProposalId(applicationId, proposalId);
+        }else {
+        	applicationProposalMapping = applicationProposalMappingRepository.getByApplicationId(applicationId);
+		}
+		
+		
+		//Fetch Bank Details
+		Map<String, Object> map = new HashMap<String, Object>();
+		CorporateApplicantRequest corporateApplicantRequest = corporateApplicantService.getCorporateApplicant(applicationId);
+		DecimalFormat decim = new DecimalFormat("####");
+		
+		/*
+		 * Long userId =
+		 * loanApplicationRepository.getUserIdByApplicationId(applicationId);
+		 */
+		
+		PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateRepository.getByApplicationAndUserId(applicationId, userId);
+		if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)) {
+			map.put("loanAmtApplied", primaryCorporateDetail.getLoanAmount()!= null ? CommonUtils.convertValueIndianCurrency(primaryCorporateDetail.getLoanAmount()) : 0);
+			map.put("comercialOpDate",!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCommercialOperationDate())? CommonUtils.DATE_FORMAT.format(primaryCorporateDetail.getCommercialOperationDate()):"-");
+			map.put("factoryPremise", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getFactoryPremise())? StringEscapeUtils.escapeXml(FactoryPremiseMst.getById(primaryCorporateDetail.getFactoryPremise()).getValue()) : "-");
+			map.put("knowHow", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getKnowHow())? StringEscapeUtils.escapeXml(KnowHowMst.getById(primaryCorporateDetail.getKnowHow()).getValue()) : "-");
+			map.put("competition", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCompetition())? StringEscapeUtils.escapeXml(CompetitionMst_SBI.getById(primaryCorporateDetail.getCompetition()).getValue()) : "-");
+			map.put("productDesc", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getProductServiceDescription()) ? StringEscapeUtils.escapeXml(primaryCorporateDetail.getProductServiceDescription()) : null);
+
+			Boolean isHaveCollateralSecu =  primaryCorporateDetail.getHaveCollateralSecurity();
+			map.put("isHaveCollateralSecu", isHaveCollateralSecu == null ? "-" : isHaveCollateralSecu ? "Yes" : "No");
+			
+			Boolean isAllowSwitchExistingLender = primaryCorporateDetail.getIsAllowSwitchExistingLender();
+			map.put("isAllowSwitchExistingLender", isAllowSwitchExistingLender == null ? "-" : isAllowSwitchExistingLender ? "Yes" : "No");
+			
+			if (proposalId != null) {
+				map.put("loanType", !CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getProductId()) ? CommonUtils.LoanType.getType(applicationProposalMapping.getProductId()).getName() : " ");	
+			} else {
+				map.put("loanType", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getPurposeOfLoanId())
+						? PurposeOfLoan.getById(primaryCorporateDetail.getPurposeOfLoanId()).getValue().toString()
+						: " ");
+			}
+		}
+		
+		//ONE-FORM DATA
+		try {
+    		map.put("corporateApplicant", corporateApplicantRequest);
+			map.put("orgName", CommonUtils.printFields(corporateApplicantRequest.getOrganisationName(),null));
+			map.put("constitution", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getConstitutionId()) ? StringEscapeUtils.escapeXml(Constitution.getById(corporateApplicantRequest.getConstitutionId()).getValue()) : " ");
+			
+			String establishMentYear = !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getEstablishmentMonth()) ? EstablishmentMonths.getById(corporateApplicantRequest.getEstablishmentMonth()).getValue() : "";
+			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getEstablishmentYear())) {
+				try {
+					OneFormResponse establishmentYearResponse = oneFormClient.getYearByYearId(CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getEstablishmentYear()) ? null : corporateApplicantRequest.getEstablishmentYear().longValue());
+					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) establishmentYearResponse.getListData();
+					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+						MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+						establishMentYear += " "+ masterResponse.getValue();
+					} 
+				} catch (Exception e) {
+					logger.error("Error in getting establishment year : ",e);
+				}
+			}
+			map.put("establishmentYr",!CommonUtils.isObjectNullOrEmpty(establishMentYear) ? CommonUtils.printFields(establishMentYear,null) : " ");
+			
+			//INDUSTRY DATA
+			Integer industry = corporateApplicantRequest.getKeyVericalFunding().intValue();
+			map.put("keyVerticalFunding", !CommonUtils.isObjectNullOrEmpty(industry) ? CommonUtils.printFields(Industry.getById(industry).getValue(),null) : " ");
+		}catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+			}
+		
+		//DIRECTOR'S BACKGROUND
+				try {
+					List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList = backgroundDetailsService.getDirectorBackgroundDetailList(applicationId, userId);
+					List<DirectorBackgroundDetailResponseString> directorBackgroundDetailResponseList = new ArrayList<>();
+					for (DirectorBackgroundDetailRequest directorBackgroundDetailRequest : directorBackgroundDetailRequestList) {
+						DirectorBackgroundDetailResponseString directorBackgroundDetailResponse = new DirectorBackgroundDetailResponseString();
+						//directorBackgroundDetailResponse.setAchivements(directorBackgroundDetailRequest.getAchivements());
+						directorBackgroundDetailResponse.setAddress(directorBackgroundDetailRequest.getAddress());
+						//directorBackgroundDetailResponse.setAge(directorBackgroundDetailRequest.getAge());
+						directorBackgroundDetailResponse.setDirectorsName((directorBackgroundDetailRequest.getSalutationId() != null ? Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue() : null )+ " " + directorBackgroundDetailRequest.getDirectorsName());
+						if(directorBackgroundDetailRequest.getPanNo() != null) {
+							directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo().toUpperCase());
+						}
+						
+						String directorName = "";
+						if (directorBackgroundDetailRequest.getSalutationId() != null){
+							directorName = Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue();
+						}
+						directorName += " "+directorBackgroundDetailRequest.getDirectorsName();
+						directorBackgroundDetailResponse.setDirectorsName(directorName);
+						//directorBackgroundDetailResponse.setQualification(directorBackgroundDetailRequest.getQualification());
+						directorBackgroundDetailResponse.setTotalExperience(CommonUtils.convertValueWithoutDecimal(directorBackgroundDetailRequest.getTotalExperience()));
+						directorBackgroundDetailResponse.setNetworth(CommonUtils.convertValueIndianCurrency(directorBackgroundDetailRequest.getNetworth()).toString());
+						directorBackgroundDetailResponse.setDesignation(directorBackgroundDetailRequest.getDesignation());
+						directorBackgroundDetailResponse.setAppointmentDate(directorBackgroundDetailRequest.getAppointmentDate());
+						directorBackgroundDetailResponse.setDin(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDin())?decim.format(directorBackgroundDetailRequest.getDin()).toString() : "");
+						directorBackgroundDetailResponse.setMobile(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getMobile())?directorBackgroundDetailRequest.getMobile(): " ");
+						directorBackgroundDetailResponse.setDob(directorBackgroundDetailRequest.getDob());
+						
+						if(directorBackgroundDetailRequest.getPanNo().charAt(3) == 'H' ||directorBackgroundDetailRequest.getPanNo().charAt(3) == 'h') {
+							directorBackgroundDetailResponse.setCibilScore("HUF");
+						}else {
+							try {
+								CibilRequest cibilRequest = new CibilRequest();
+								cibilRequest.setPan(directorBackgroundDetailRequest.getPanNo());
+								cibilRequest.setApplicationId(applicationId);
+
+								List<CibilScoreLogRequest> response = cibilClient.getMultipleProviderScoreByApplicationIdAndPan(cibilRequest);
+								if(!CommonUtils.isListNullOrEmpty(response)) {
+									for(CibilScoreLogRequest cibilScoreLogRequest : response) {
+										String score = cibilScoreLogRequest.getActualScore();
+										if("000-1".equalsIgnoreCase(cibilScoreLogRequest.getActualScore())) {
+											score = "-1";
+										}else {
+											score = Integer.valueOf(cibilScoreLogRequest.getActualScore()).toString();								
+										}
+										if(cibilScoreLogRequest.getScoreName() != null && cibilScoreLogRequest.getScoreName().contains("CIBIL")) {
+											directorBackgroundDetailResponse.setCibilScore(score);								
+										}else if(cibilScoreLogRequest.getScoreName().contains("Experian")) {
+											directorBackgroundDetailResponse.setExperianScore(score);								
+										}else if(cibilScoreLogRequest.getScoreName().contains("HIGHMARK")) {
+											directorBackgroundDetailResponse.setHighmarkScore(score);								
+										}
+										
+									}
+								}
+							}catch(Exception e) {
+								logger.error("Error while getting cibil details : ",e);
+							}
+						}
+						
+						Double loanObligation = financialArrangementDetailsService.getTotalOfEmiByApplicationIdAndDirectorId(applicationId , directorBackgroundDetailRequest.getId());
+						directorBackgroundDetailResponse.setLoanObligation(!CommonUtils.isObjectNullOrEmpty(loanObligation) ? loanObligation : 0);
+						
+						directorBackgroundDetailResponse.setPincode(directorBackgroundDetailRequest.getPincode());
+						directorBackgroundDetailResponse.setPersonalId(directorBackgroundDetailRequest.getPersonalId());
+						
+						try {
+							if (!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDistrictMappingId())) {
+								directorBackgroundDetailResponse.setPinData(pincodeDateService.getById(directorBackgroundDetailRequest.getDistrictMappingId()));
+							}
+						} catch (Exception e) {
+							logger.error(CommonUtils.EXCEPTION,e);
+						}
+						
+						directorBackgroundDetailResponse.setStateCode(directorBackgroundDetailRequest.getStateCode());
+						directorBackgroundDetailResponse.setCity(directorBackgroundDetailRequest.getCity());
+						directorBackgroundDetailResponse.setGender((!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getGender()) ? Gender.getById(directorBackgroundDetailRequest.getGender()).getValue() : " "));
+						directorBackgroundDetailResponse.setRelationshipType((!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getRelationshipType())  ? StringEscapeUtils.escapeXml(DirectorRelationshipType.getById(directorBackgroundDetailRequest.getRelationshipType()).getValue()) : " "));
+						directorBackgroundDetailResponse.setIsMainDirector(directorBackgroundDetailRequest.getIsMainDirector());
+						directorBackgroundDetailResponse.setAadhar(directorBackgroundDetailRequest.getAadhar());
+						directorBackgroundDetailResponse.setFatherName(directorBackgroundDetailRequest.getFatherName());
+						directorBackgroundDetailResponse.setEducationalStatus(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getEducationalStatus()) ? StringEscapeUtils.escapeXml(EducationalStatusMst.getById(directorBackgroundDetailRequest.getEducationalStatus()).getValue().toString()) : "-");
+						directorBackgroundDetailResponse.setVisuallyImpaired(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getVisuallyImpaired()) ? StringEscapeUtils.escapeXml(VisuallyImpairedMst.getById(directorBackgroundDetailRequest.getVisuallyImpaired()).getValue().toString()) : "-");
+						directorBackgroundDetailResponse.setResidentStatus(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getResidentStatus()) ? StringEscapeUtils.escapeXml(ResidentStatusMst.getById(directorBackgroundDetailRequest.getResidentStatus()).getValue().toString()) : "-");
+						directorBackgroundDetailResponse.setDirectorPersonalInfo(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest()) ? directorBackgroundDetailRequest.getDirectorPersonalDetailRequest() : " " );
+						
+						//NATIONALITY
+						List<Long> countryList = new ArrayList<>();
+						if (!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getNationality()))
+							countryList.add(Long.valueOf(directorBackgroundDetailRequest.getNationality()));
+						if (!CommonUtils.isListNullOrEmpty(countryList)) {
+							try {
+								OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
+								List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
+								if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+									MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+									map.put("dirCountry", StringEscapeUtils.escapeXml(masterResponse.getValue()));
+									map.put("dirRegOfficeCountry", StringEscapeUtils.escapeXml(masterResponse.getValue()));
+									directorBackgroundDetailResponse.setNationality(masterResponse.getValue());
+								} else {
+									directorBackgroundDetailResponse.setNationality("NA");
+								}
+							} catch (Exception e) {
+								logger.error(CommonUtils.EXCEPTION,e);
+							}
+						}
+						
+						try {
+							if(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getIsMainDirector()) && directorBackgroundDetailRequest.getIsMainDirector() == true) {
+								DirectorPersonalDetailResponse directorPersonalDetailResponse= new DirectorPersonalDetailResponse();
+								if(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest())) {	
+									directorPersonalDetailResponse.setMaritalStatus(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getMaritalStatus()) ? StringEscapeUtils.escapeXml(MaritalStatusMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getMaritalStatus()).getValue().toString()) : "-");
+									directorPersonalDetailResponse.setSpouseName(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getSpouseName()) ? StringEscapeUtils.escapeXml(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getSpouseName()) : "-" );
+									directorPersonalDetailResponse.setSpouseDetail(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getSpouseDetail()) ? StringEscapeUtils.escapeXml(SpouseDetailMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getSpouseDetail()).getValue().toString()) : "-");
+									directorPersonalDetailResponse.setAssessedForIt(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getAssessedForIt()) ? StringEscapeUtils.escapeXml(AssessedForITMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getAssessedForIt()).getValue().toString()) : "-");
+									directorPersonalDetailResponse.setOwningHouse(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOwningHouse()) ? StringEscapeUtils.escapeXml(OwningHouseMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOwningHouse()).getValue().toString()) : "-");
+									directorPersonalDetailResponse.setNoOfChildren(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getNoOfChildren()) ? directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getNoOfChildren() : 0 );
+									directorPersonalDetailResponse.setHaveLiPolicy(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveLiPolicy()) ? StringEscapeUtils.escapeXml(HaveLIMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveLiPolicy()).getValue().toString()) : "-");
+									
+									directorBackgroundDetailResponse.setDirectorPersonalInfo(directorPersonalDetailResponse);
+								}
+							}
+						}catch(Exception e) {
+							logger.error("error while getting main directors details : ",e);
+						}
+						directorBackgroundDetailResponseList.add(directorBackgroundDetailResponse);
+					}
+					map.put("dirBackground", !CommonUtils.isListNullOrEmpty(directorBackgroundDetailResponseList) ? CommonUtils.printFields(directorBackgroundDetailResponseList,null) : " ");
+				}
+				catch (Exception e) {
+					logger.error("Error in getting directors background details : ",e);
+				}
+				
+				/* cmr details cibil */
+				
+				try {
+					String cmrScore= cibilClient.getCMRScore(applicationId);
+					
+					if (cmrScore != null && cmrScore.contains("EXP")) {
+						map.put("msmeRankingTitle", "Experian");
+					}else if (cmrScore != null && cmrScore.contains("CIBIL")) {
+						map.put("msmeRankingTitle", "Cibil");
+					}else {
+						map.put("msmeRankingTitle", "MSME Ranking");
+					}
+					map.put("cibilCmrScore", cmrScore != null ? cmrScore : "Not Found");
+				} catch (Exception e) {
+					
+					logger.error("error while getting cmr score : ",e);
+				}
+					
+				//FINANCIAL ARRANGEMENTS
+				try {
+					List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService.getFinancialArrangementDetailsList(applicationId, userId);
+		            List<FinancialArrangementDetailResponseString> financialArrangementsDetailResponseList = new ArrayList<>();
+		            for (FinancialArrangementsDetailRequest financialArrangementsDetailRequest : financialArrangementsDetailRequestList) {
+		            	FinancialArrangementDetailResponseString financialArrangementsDetailResponse = new FinancialArrangementDetailResponseString();
+		     			//financialArrangementsDetailResponse.setRelationshipSince(financialArrangementsDetailRequest.getRelationshipSince());
+		                financialArrangementsDetailResponse.setOutstandingAmount(CommonUtils.convertValueIndianCurrency(financialArrangementsDetailRequest.getOutstandingAmount()).toString());
+		                financialArrangementsDetailResponse.setSecurityDetails(financialArrangementsDetailRequest.getSecurityDetails());
+		                financialArrangementsDetailResponse.setAmount(financialArrangementsDetailRequest.getAmount() != null ? CommonUtils.convertValueIndianCurrency(financialArrangementsDetailRequest.getAmount()).toString() : "-");
+		                //financialArrangementsDetailResponse.setLenderType(LenderType.getById(financialArrangementsDetailRequest.getLenderType()).getValue());
+		                financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());
+		                financialArrangementsDetailResponse.setLoanType(financialArrangementsDetailRequest.getLoanType());
+		                financialArrangementsDetailResponse.setFinancialInstitutionName(StringEscapeUtils.escapeXml(financialArrangementsDetailRequest.getFinancialInstitutionName()));
+		                //financialArrangementsDetailResponse.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
+		                //financialArrangementsDetailResponse.setFacilityNature(NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
+		                //financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
+		                financialArrangementsDetailResponse.setLcbgStatus(!CommonUtils.isObjectNullOrEmpty(financialArrangementsDetailRequest.getLcBgStatus()) ? LCBG_Status_SBI.getById(financialArrangementsDetailRequest.getLcBgStatus()).getValue().toString() : "-");
+		                financialArrangementsDetailResponse.setEmi(financialArrangementsDetailRequest.getEmi() != null ? CommonUtils.convertValueIndianCurrency(financialArrangementsDetailRequest.getEmi()).toString() : "-");
+						financialArrangementsDetailResponse.setBuerauOutStandingStr(financialArrangementsDetailRequest.getBureauOutstandingAmount() != null ? CommonUtils.convertValueIndianCurrency(financialArrangementsDetailRequest.getBureauOutstandingAmount()).toString() : "-");
+						financialArrangementsDetailResponse.setCollateralAmtStr(financialArrangementsDetailRequest.getCollateralSecurityAmount() != null ? CommonUtils.convertValueIndianCurrency(financialArrangementsDetailRequest.getCollateralSecurityAmount()).toString() : "-");
+		                financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
+		             }
+		             map.put("financialArrangments",!CommonUtils.isListNullOrEmpty(financialArrangementsDetailResponseList) ? financialArrangementsDetailResponseList : " ");
+				} catch (Exception e) {
+		             logger.error("Problem to get Data of Financial Arrangements Details {}", e);
+		        }
+					
+				/*get loan obligation of dir*/
+				Double loanObligation=financialArrangementDetailsService.getTotalEmiOfAllDirByApplicationId(applicationId);
+				map.put("loanObligation", loanObligation != null ? CommonUtils.CurrencyFormat(loanObligation.toString()) : 0);
+
+				try {
+					PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
+					map.put("loanAmt", applicationProposalMapping.getLoanAmount() != null ? CommonUtils.convertValueIndianCurrency(applicationProposalMapping.getLoanAmount()) : "-");
+					
+					map.put("enhancementAmount", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getEnhancementAmount()) ? CommonUtils.convertValueIndianCurrency(primaryCorporateRequest.getEnhancementAmount()) : " ");
+					//map.put("loanType", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getProductId()) ? CommonUtils.LoanType.getType(primaryCorporateRequest.getProductId()).getName() : " ");
+					map.put("promotorsContribution", CommonUtils.convertValueIndianCurrency(primaryCorporateRequest.getPromoterContribution()));
+					map.put("totalAmtPer", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getTotalAmtPercentage()) ? " ("+CommonUtils.convertValue(primaryCorporateRequest.getTotalAmtPercentage())+"%)" : null);
+					if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getPurposeOfLoanId())) {
+						map.put("purpose", StringEscapeUtils.escapeXml(PurposeOfLoan.getById(primaryCorporateRequest.getPurposeOfLoanId()).getValue()));
+					}else {
+						map.put("purpose", "");
+					}
+
+					if(primaryCorporateRequest.getHaveCollateralSecurity()) {
+						map.put("collateralSecurityList", collateralSecurityDetailService.getData(applicationId));
+						map.put("amtOfSecurity",!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getCollateralSecurityAmount()) ? CommonUtils.convertValueIndianCurrency(primaryCorporateRequest.getCollateralSecurityAmount()) : " ");
+					}
+				}catch (Exception e) {
+					logger.error(CommonUtils.EXCEPTION,e);
+				}
+				
+				//NAME AS PER ITR
+				try{
+					ITRConnectionResponse itrResponse = itrClient.getITRBasicDetails(applicationId);
+					logger.info("ITR RESPONSE===========>{}",itrResponse);
+					map.put("nameAsPerItr", CommonUtils.printFields(itrResponse.getData(),null));
+				}catch(Exception e) {
+					logger.error(CommonUtils.EXCEPTION,e);
+				}
+			    			   
+				
+			    CorporateFinalInfoRequest corporateFinalInfoRequest;
+				try {
+					//corporateFinalInfoRequest = corporateFinalInfoService.get(userId, applicationId);  PREVIOIS
+					corporateFinalInfoRequest = corporateFinalInfoService.getByProposalId(userId, proposalId);//NEW
+
+					//ADMIN OFFICE ADDRESS
+					if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress())){
+						map.put("adminAddPremise", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getPremiseNumber()) ? CommonUtils.printFields(corporateFinalInfoRequest.getSecondAddress().getPremiseNumber(),null) + "," : "");
+						map.put("adminAddStreetName", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getStreetName()) ? CommonUtils.printFields(corporateFinalInfoRequest.getSecondAddress().getStreetName(),null) + " " : "");
+						map.put("adminAddLandmark", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getLandMark()) ? CommonUtils.printFields(corporateFinalInfoRequest.getSecondAddress().getLandMark(),null) + " " : "");
+						map.put("adminAddCountry", StringEscapeUtils.escapeXml(getCountryName(corporateFinalInfoRequest.getSecondAddress().getCountryId())));
+						map.put("adminAddState", StringEscapeUtils.escapeXml(getStateName(corporateFinalInfoRequest.getSecondAddress().getStateId())));
+						map.put("adminAddCity", StringEscapeUtils.escapeXml(getCityName(corporateFinalInfoRequest.getSecondAddress().getCityId())));
+						map.put("adminAddPincode", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getPincode())?corporateFinalInfoRequest.getSecondAddress().getPincode() : "");			
+						try {
+							if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getDistrictMappingId())) {
+								map.put("adminAddressData",CommonUtils.printFields(pincodeDateService.getById(corporateFinalInfoRequest.getSecondAddress().getDistrictMappingId()),null));				
+							}
+						} catch (Exception e) {
+							logger.error(CommonUtils.EXCEPTION,e);
+						}
+					}
+					
+					//REGISTERED OFFICE ADDRESS
+					if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress())) {
+						map.put("registeredAddPremise", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress().getPremiseNumber()) ? CommonUtils.printFields(corporateFinalInfoRequest.getFirstAddress().getPremiseNumber(),null) + "," : "");
+						map.put("registeredAddStreetName", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress().getStreetName()) ? CommonUtils.printFields(corporateFinalInfoRequest.getFirstAddress().getStreetName(),null) + " " : "");
+						map.put("registeredAddLandmark", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress().getLandMark()) ? CommonUtils.printFields(corporateFinalInfoRequest.getFirstAddress().getLandMark(),null) + " " : "");
+						map.put("registeredAddCountry", StringEscapeUtils.escapeXml(getCountryName(corporateFinalInfoRequest.getFirstAddress().getCountryId())));
+						map.put("registeredAddState", StringEscapeUtils.escapeXml(getStateName(corporateFinalInfoRequest.getFirstAddress().getStateId())));
+						map.put("registeredAddCity", StringEscapeUtils.escapeXml(getCityName(corporateFinalInfoRequest.getFirstAddress().getCityId())));
+						map.put("registeredAddPincode", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress().getPincode())?corporateFinalInfoRequest.getFirstAddress().getPincode() : "");
+						try {
+							if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress().getDistrictMappingId())) {
+								map.put("registeredAddressData",CommonUtils.printFields(pincodeDateService.getById(corporateFinalInfoRequest.getFirstAddress().getDistrictMappingId()),null));				
+							}
+						} catch (Exception e) {
+							logger.error(CommonUtils.EXCEPTION,e);
+						}
+					}
+					map.put("corporateApplicantFinal",corporateFinalInfoRequest);
+					map.put("aboutUs", StringEscapeUtils.escapeXml(corporateFinalInfoRequest.getAboutUs()));
+				} catch (Exception e1) {
+					logger.error(CommonUtils.EXCEPTION,e1);
+				}
+				
+				
+				LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
+				map.put("applicationType", (loanApplicationMaster.getWcRenewalStatus() != null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue() : "New" ));
+				//MCA DATA
+				try {
+					// CURRENTLY PENDING DATA-ID NOT EXISTS IN application_proposal_mapping-->applicationProposalMapping
+					String companyId = loanApplicationMaster.getMcaCompanyId();
+					
+					if(companyId != null) {
+						McaResponse mcaStatusResponse = mcaClient.mcaStatusCheck(String.valueOf(applicationId), companyId);
+						if (mcaStatusResponse!= null && mcaStatusResponse.getData()!= null && mcaStatusResponse.getData().equals(true)) {
+							McaResponse mcaResponse = mcaClient.getCompanyDetailedData(companyId);
+							if(!CommonUtils.isObjectNullOrEmpty(mcaResponse.getData())) {
+								map.put("mcaData", CommonUtils.printFields(mcaResponse.getData(),null));
+							}
+							McaResponse mcaFinancialAndDetailsRes=mcaClient.getCompanyFinancialCalcAndDetails(applicationId, companyId);
+							if(mcaFinancialAndDetailsRes.getData()!=null){
+								map.put("financialDetailResp", mcaFinancialAndDetailsRes.getData());
+							}
+						}
+						map.put("mcaCheckStatus",mcaStatusResponse.getData()!= null ?  mcaStatusResponse.getData() : null);
+						
+					}else {
+						map.put("mcaNotApplicable",true);
+					}
+				}catch(Exception e) {
+					logger.error(CommonUtils.EXCEPTION,e);
+				}
+				
+				
+			    
+				return map;
+		}
+	
+	
+	private void convertExpVal(List<LinkedHashMap<String, Object>> dataMapList) {
+		for (LinkedHashMap<String, Object> dataMap : dataMapList) {
+			Map gstNotApplicatbleMap = (Map) dataMap.get("gstNotApplicable");
+			Map<String, Map<String,Object>> momSalesMap = (Map<String, Map<String,Object>>) gstNotApplicatbleMap.get("momSales");
+			
+			for (Map<String,Object> momSalesMapValuesMap : momSalesMap.values()) {
+				for (Entry<String,Object> entry : momSalesMapValuesMap.entrySet()) {
+					Double value = (Double) entry.getValue();
+					BigDecimal convertedVal = BigDecimal.valueOf(value).setScale(2);
+					entry.setValue(convertedVal.toString());
+				}
+			}
+		}
+	}
+	
+	public Map<String,Object> getBankStatementDetails(Long applicationId ,Long userId){
+		//PERFIOS API DATA (BANK STATEMENT ANALYSIS)
+		ReportRequest reportRequest = new ReportRequest();
+		reportRequest.setApplicationId(applicationId);
+		reportRequest.setUserId(userId);
+
+		Map<String,Object> bankStatement = new HashMap<String, Object>();  
+		
+		List<Data> datas = new ArrayList<>();
+		//List<Object> bankStatement = new ArrayList<Object>();
+		List<Object> monthlyDetails = new ArrayList<Object>();
+		List<Object> top5FundReceived = new ArrayList<Object>();
+		List<Object> top5FundTransfered = new ArrayList<Object>();
+		List<Object> bouncedChequeList = new ArrayList<Object>();
+		List<Object> customerInfo = new ArrayList<Object>();
+		List<Object> summaryInfo = new ArrayList<Object>();
+
+		try {
+			AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
+			if(analyzerResponse.getData()!=null){
+			List<HashMap<String, Object>> hashMap = (List<HashMap<String, Object>>) analyzerResponse.getData();
+
+			if (!CommonUtils.isListNullOrEmpty(hashMap)) {
+				for (HashMap<String, Object> rec : hashMap) {
+					Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
+					datas.add(data);
+
+					//bankStatement.add(!CommonUtils.isObjectNullOrEmpty(data.getXns()) ? CommonUtils.printFields(data.getXns().getXn(),null) : " ");
+					monthlyDetails.add(!CommonUtils.isObjectNullOrEmpty(data.getMonthlyDetailList()) ? CommonUtils.printFields(data.getMonthlyDetailList(),null) : "");
+					top5FundReceived.add(!CommonUtils.isObjectNullOrEmpty(data.getTop5FundReceivedList().getItem()) ? CommonUtils.printFields(data.getTop5FundReceivedList().getItem(),null) : "");
+					top5FundTransfered.add(!CommonUtils.isObjectNullOrEmpty(data.getTop5FundTransferedList().getItem()) ? CommonUtils.printFields(data.getTop5FundTransferedList().getItem(),null) : "");
+					bouncedChequeList.add(!CommonUtils.isObjectNullOrEmpty(data.getBouncedOrPenalXnList()) ? CommonUtils.printFields(data.getBouncedOrPenalXnList().getBouncedOrPenalXns(),null) : " ");
+					customerInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getCustomerInfo()) ? CommonUtils.printFields(data.getCustomerInfo(),null) : " ");
+					summaryInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getSummaryInfo()) ?CommonUtils.printFields(data.getSummaryInfo(),null) : " ");
+
+				}
+
+				//map.put("bankStatement", bankStatement);
+				bankStatement.put("monthlyDetails", monthlyDetails);
+				bankStatement.put("top5FundReceived", top5FundReceived);
+				bankStatement.put("top5FundTransfered", top5FundTransfered);
+				bankStatement.put("bouncedChequeList", bouncedChequeList);
+				bankStatement.put("customerInfo", !CommonUtils.isObjectListNull(customerInfo) ? customerInfo : null);
+				bankStatement.put("summaryInfo", summaryInfo);
+				bankStatement.put("bankStatementAnalysis", datas != null && !datas.isEmpty() ? CommonUtils.printFields(datas, null) : null);
+			}
+			
+		 }
+			return bankStatement;
+		} catch (Exception e) {
+			logger.error("Error while getting perfios data : ",e);
+			return null;
+		}
+		
+	}
+	
+	
+	//For application Form
+	@Override
+	public Map < String, Object > getDetailsForApplicationForm(Long applicationId, Long productId, Long proposalId) {
+
+	    Map < String, Object > map = new HashMap < String, Object > ();
+	    DecimalFormat decim = new DecimalFormat("####");
+	    //CGTMSE DATA
+	
+	    
+	    Long userId = null;
+	    if (proposalId != null) {
+	    	ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.getByApplicationIdAndProposalId(applicationId, proposalId);
+		    userId = applicationProposalMapping.getUserId();
+		} else {
+			userId = loanApplicationRepository.getUserIdByApplicationId(applicationId);
+		}	    
+	    
+	    //GST COMMON DATA
+	    map.putAll(getGstDetails(applicationId, userId));
+	        
+	    CorporateApplicantRequest corporateApplicantRequest = corporateApplicantService.getCorporateApplicant(applicationId);
+	    map.put("panNo", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getPanNo()) ? corporateApplicantRequest.getPanNo() : " ");
+	    
+	    map.put("bankDetails", getBranchDetails(applicationId, userId, proposalId));
+		Long orgId = null;
+		if(proposalId != null) {
+			orgId = proposalDetailsRepository.getOrgIdByProposalId(proposalId);
+		}else {
+			orgId = ineligibleProposalDetailsRepository.getOrgId(applicationId);
+		}
+		
+		String[] str = BanksEnumForReports.getBankNameAndUrl(orgId);
+		
+		map.put("bankName", str != null && str.length > 0 && str[0] != null ? str[0] : " ");
+		map.put("bankUrl", str != null && str.length > 1 && str[1] != null ? str[1] : null);
+		map.put("bankFullName", str != null && str.length > 2 && str[2] != null ? str[2] : " ");
+		
+		map.putAll(getOneFormData(applicationId,proposalId,userId));
+		
+		//matches common
+		map.putAll(getMatchesAndEligiblityDetails(applicationId,productId,proposalId));
+
+	    return map;
+	}
+	
+	
+	
 	
 	
 }

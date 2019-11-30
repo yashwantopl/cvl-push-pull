@@ -1350,8 +1350,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
                                 + applicationProposalMapping);
             }
             applicationProposalMapping.setIsFinalLocked(flag);
-            applicationProposalMapping
-                    .setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.SUBMITTED));
+            
+            if(applicationProposalMapping.getApplicationStatusMaster() != null && 
+            		(applicationProposalMapping.getApplicationStatusMaster().getId() == CommonUtils.ApplicationStatus.OPEN ||
+            		applicationProposalMapping.getApplicationStatusMaster().getId() == CommonUtils.ApplicationStatus.ASSIGNED)){
+            	
+            	applicationProposalMapping.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.SUBMITTED));
+            }
+            
             applicationProposalMappingRepository.save(applicationProposalMapping);
 
             // send FP notification

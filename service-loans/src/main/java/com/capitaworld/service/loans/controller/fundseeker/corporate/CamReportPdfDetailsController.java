@@ -830,11 +830,18 @@ public class CamReportPdfDetailsController {
 			loanTypeId = 1l;
 		}
 		
-		Map<String, Object> response = new HashMap<String, Object>();
-		
+		Map<String, Object> response = new HashMap<String, Object>();		
 		try {
 			ReportRequest reportRequest = null;
-			if(loanTypeId == LoanType.PERSONAL_LOAN.getValue()) {
+			
+			if(loanTypeId == LoanType.WORKING_CAPITAL.getValue() || loanTypeId == LoanType.TERM_LOAN.getValue() || loanTypeId == LoanType.WCTL_LOAN.getValue()) {
+				logger.info("Fetching Data of Personal Loan by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}" ,applicationId ,productId, proposalId);
+				response = camReportPdfDetailsService.getDetailsForApplicationForm(applicationId, productId, proposalId);
+				reportRequest = new ReportRequest();
+				reportRequest.setParams(response);
+				reportRequest.setTemplate("MSMEAPPLICATIONFORM");
+				reportRequest.setType("MSMEAPPLICATIONFORM");
+			}else if(loanTypeId == LoanType.PERSONAL_LOAN.getValue()) {
 				logger.info("Fetching Data of Personal Loan by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}" ,applicationId ,productId, proposalId);
 				response = plCamService.getDataForApplicationForm(applicationId, productId, proposalId);
 				reportRequest = new ReportRequest();
