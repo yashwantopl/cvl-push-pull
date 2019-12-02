@@ -9,12 +9,6 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import com.capitaworld.service.loans.utils.CommonDocumentUtils;
-import com.capitaworld.service.mca.model.cubictree.api.CubictreeJobRegistrationRequest;
-import com.capitaworld.service.mca.model.cubictree.api.Filter;
-import com.capitaworld.service.mca.model.cubictree.api.JobRegistrationPayload;
-import com.capitaworld.service.mca.model.cubictree.api.MatchTableIndividual;
-import com.capitaworld.service.oneform.client.OneFormClient;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,13 +73,19 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgr
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FundSeekerInputRequestService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.mca.client.McaClient;
+import com.capitaworld.service.mca.model.cubictree.api.CubictreeJobRegistrationRequest;
+import com.capitaworld.service.mca.model.cubictree.api.Filter;
+import com.capitaworld.service.mca.model.cubictree.api.JobRegistrationPayload;
+import com.capitaworld.service.mca.model.cubictree.api.MatchTableIndividual;
 import com.capitaworld.service.mca.model.verifyApi.VerifyAPIDINPAN;
 import com.capitaworld.service.mca.model.verifyApi.VerifyAPIDINPANRequest;
 import com.capitaworld.service.mca.model.verifyApi.VerifyAPIPara;
 import com.capitaworld.service.mca.model.verifyApi.VerifyAPIRequest;
+import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.Constitution;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserOrganisationRequest;
@@ -386,7 +386,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 					}
 
 					/** calling cubictree*/
-					CubictreeJobRegistrationRequest jobReg=new CubictreeJobRegistrationRequest();
+					/*CubictreeJobRegistrationRequest jobReg=new CubictreeJobRegistrationRequest();
 					jobReg.setJobRegPayload(new JobRegistrationPayload());
 					jobReg.getJobRegPayload().setFilter(new Filter());
 					jobReg.getJobRegPayload().setMatchTableIndividual(new MatchTableIndividual());
@@ -401,7 +401,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 						jobReg.getJobRegPayload().getFilter().setCity(CommonDocumentUtils.getCity(Long.valueOf(reqObj.getCityId()),oneFormClient));
 					}
 
-					/** setting cubictree job reg for api call for directors*/
+					*//** setting cubictree job reg for api call for directors*//*
 					jobReg.setApplicationId(fundSeekerInputRequest.getApplicationId());
 					jobReg.setUserId(fundSeekerInputRequest.getUserId());
 					jobReg.getJobRegPayload().setIndividual(Boolean.TRUE);
@@ -411,7 +411,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 					jobReg.getJobRegPayload().getMatchTableIndividual().setDistrict(reqObj.getDistrict());
 					jobReg.getJobRegPayload().getMatchTableIndividual().setPan(reqObj.getPanNo());
 					jobReg.getJobRegPayload().getMatchTableIndividual().setMobile(reqObj.getMobile());
-					jobReg.getJobRegPayload().getMatchTableIndividual().setPin(reqObj.getPincode());
+					jobReg.getJobRegPayload().getMatchTableIndividual().setPin(reqObj.getPincode());*/
 
 
 					/*set Pan No for Verify Api*/
@@ -423,10 +423,10 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 						verifyApiReq.getVerifyAPIDINPANRequest().getPara().getVerifyAPIDINPANs().add(new VerifyAPIDINPAN(sb.toString(), reqObj.getPanNo()));
 
 						/** setting name for Cubictree api*/
-						List<String> key= new ArrayList<String>();
+						/*List<String> key= new ArrayList<String>();
 						key.add(sb.toString());
 						jobReg.getJobRegPayload().setKeywords(key);
-						jobReg.getJobRegPayload().getMatchTableIndividual().setName(sb.toString());
+						jobReg.getJobRegPayload().getMatchTableIndividual().setName(sb.toString());*/
 					}
 					if(!CommonUtils.isObjectNullOrEmpty(reqObj.getIsMainDirector()) && (reqObj.getIsMainDirector())){
 						DirectorPersonalDetailRequest directorPersonalDetailRequest = reqObj.getDirectorPersonalDetailRequest();
@@ -451,7 +451,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 					dobOfProprietor = reqObj.getDob();
 					directorBackgroundDetailsRepository.save(saveDirObj);
 
-					asyncComp.callCubictreeApi(jobReg);
+					/*asyncComp.callCubictreeApi(jobReg);*/
 				}
 				//call place for verify api async
 				asyncComp.callVerify(verifyApiReq);
