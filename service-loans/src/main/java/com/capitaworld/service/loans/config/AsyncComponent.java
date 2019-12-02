@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 
-import com.capitaworld.service.mca.model.cubictree.api.CubictreeJobRegistrationRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -636,7 +635,7 @@ public class AsyncComponent {
 		
 	}
 
-	@Async
+	/*@Async
 	public void callCubictreeApi(CubictreeJobRegistrationRequest request){
 		if(request != null){
 			try {
@@ -646,7 +645,7 @@ public class AsyncComponent {
 				logger.error("Exception in calling cubictree api :{}",e);
 			}
 		}
-	}
+	}*/
 
 	private UsersRequest getEmailMobile(Long userId) throws IOException {
 		if (CommonUtils.isObjectNullOrEmpty(userId)) {
