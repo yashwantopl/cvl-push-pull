@@ -2052,46 +2052,41 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		//Fetch Matches Details
 		Map<String, Object> map = new HashMap<String, Object>();
 		
-		if (proposalId != null) {
-			//MATCHES RESPONSE FOR ONLINE CAM
-			try {
-				MatchRequest matchRequest = new MatchRequest();
-				matchRequest.setApplicationId(applicationId);
+		//MATCHES RESPONSE FOR ONLINE CAM
+		try {
+			MatchRequest matchRequest = new MatchRequest();
+			matchRequest.setApplicationId(applicationId);
+			if (proposalId != null) {
 				matchRequest.setProductId(productId);
-				MatchDisplayResponse matchResponse= matchEngineClient.displayMatchesOfCorporate(matchRequest);
-				map.put("matchesResponse", !CommonUtils.isListNullOrEmpty(matchResponse.getMatchDisplayObjectList()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectList(),null) : " ");
+			}
+			MatchDisplayResponse matchResponse= matchEngineClient.displayMatchesOfCorporate(matchRequest);
+			map.put("matchesResponse", !CommonUtils.isListNullOrEmpty(matchResponse.getMatchDisplayObjectList()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectList(),null) : " ");
 
-						EligibililityRequest eligibilityReq=new EligibililityRequest();
-						eligibilityReq.setApplicationId(applicationId);
-						eligibilityReq.setFpProductMappingId(productId);
-						EligibilityResponse eligibilityResp= eligibilityClient.corporateLoanData(eligibilityReq);
-						
-						if(!CommonUtils.isObjectListNull(eligibilityResp.getData())){
-							CLEligibilityRequest req= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), CLEligibilityRequest.class);
-							
-							map.put("elProSales", req.getProjectedSales() != null ? CommonUtils.convertValueIndianCurrency(req.getProjectedSales())  : "-");
-							map.put("defaultHisSales", req.getDefaultHistoricSales() != null ? CommonUtils.convertValueIndianCurrency(req.getDefaultHistoricSales())  : "-");
-							map.put("assLimits",CommonUtils.convertToDoubleForXmlIndianCurr(req, new HashMap<>()));
-						}
+		}
+		catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+		
+		try {
+			if(proposalId != null) {
+				EligibililityRequest eligibilityReq=new EligibililityRequest();
+				eligibilityReq.setApplicationId(applicationId);
+				eligibilityReq.setFpProductMappingId(productId);
+				EligibilityResponse eligibilityResp= eligibilityClient.corporateLoanData(eligibilityReq);
+			
+				if(!CommonUtils.isObjectListNull(eligibilityResp.getData())){
+					CLEligibilityRequest req= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), CLEligibilityRequest.class);
+					
+					map.put("elProSales", req.getProjectedSales() != null ? CommonUtils.convertValueIndianCurrency(req.getProjectedSales())  : "-");
+					map.put("defaultHisSales", req.getDefaultHistoricSales() != null ? CommonUtils.convertValueIndianCurrency(req.getDefaultHistoricSales())  : "-");
+					map.put("assLimits",CommonUtils.convertToDoubleForXmlIndianCurr(req, new HashMap<>()));
+				}
 			}
-			catch (Exception e) {
-				logger.error(CommonUtils.EXCEPTION,e);
-			}			
-		} else {
-			// MATCHES RESPONSE FOR OFFLINE CAM
-			try {
-				MatchRequest matchRequest = new MatchRequest();
-				matchRequest.setApplicationId(applicationId);
-				/* matchRequest.setProductId(productId); */
-				MatchDisplayResponse matchResponse = matchEngineClient.displayMatchesOfCorporate(matchRequest);
-				map.put("matchesResponse",
-						!CommonUtils.isListNullOrEmpty(matchResponse.getMatchDisplayObjectList())
-								? CommonUtils.printFields(matchResponse.getMatchDisplayObjectList(), null)
-								: " ");
-			} catch (Exception e) {
-				logger.error(CommonUtils.EXCEPTION, e);
-			}
-		}	
+		} catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION, e);
+		}
+		
+		
 		return map;
 	}
 	
@@ -2103,68 +2098,71 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		//GST DATA
 		
 		CorporateApplicantRequest corporateApplicantRequest = corporateApplicantService.getCorporateApplicant(applicationId);
-		try {
-			GSTR1Request gstr1Request = new GSTR1Request();
-			gstr1Request.setApplicationId(applicationId);
-			gstr1Request.setUserId(userId);
-			gstr1Request.setGstin(corporateApplicantRequest.getGstIn());
-			GstResponse response = gstClient.getCalculations(gstr1Request);
-			GstCalculation gstData = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)response.getData(),GstCalculation.class);
-			int noOfCustomer = gstData.getNoOfCustomer().intValue();
-			map.put("noOfCustomer", noOfCustomer);
-			map.put("projectedSales", CommonUtils.convertValueIndianCurrency(gstData.getProjectedSales()));
-			map.put("customerConcentration", CommonUtils.convertValue(gstData.getConcentration()));
-		}catch(Exception e) {
-			logger.error(CommonUtils.EXCEPTION,e);
+		if (corporateApplicantRequest != null) {
+			try {
+				GSTR1Request gstr1Request = new GSTR1Request();
+				gstr1Request.setApplicationId(applicationId);
+				gstr1Request.setUserId(userId);
+				gstr1Request.setGstin(corporateApplicantRequest.getGstIn());
+				GstResponse response = gstClient.getCalculations(gstr1Request);
+				GstCalculation gstData = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)response.getData(),GstCalculation.class);
+				int noOfCustomer = gstData.getNoOfCustomer().intValue();
+				map.put("noOfCustomer", noOfCustomer);
+				map.put("projectedSales", CommonUtils.convertValueIndianCurrency(gstData.getProjectedSales()));
+				map.put("customerConcentration", CommonUtils.convertValue(gstData.getConcentration()));
+			}catch(Exception e) {
+				logger.error(CommonUtils.EXCEPTION,e);
+			}
+			
+			try {
+				GSTR1Request req= new GSTR1Request();
+				req.setApplicationId(applicationId);
+				req.setUserId(userId);
+				req.setGstin(corporateApplicantRequest.getGstIn());	
+				CAMGSTData resp =null;
+				GstResponse response = gstClient.detailCalculation(req);
+				
+				DecimalFormat df = new DecimalFormat(".##");
+				if (!CommonUtils.isObjectNullOrEmpty(response) && response.getData() != null) {
+					for (LinkedHashMap<String, Object> data : (List<LinkedHashMap<String, Object>>) response.getData()) {
+						resp = MultipleJSONObjectHelper.getObjectFromMap(data,CAMGSTData.class);
+						if(resp.getMomSales() != null) {
+	                        List<MomSales> momSalesResp1 = resp.getMomSales();
+	                        List<MomSales> responseMom= new ArrayList<>();
+	                        
+	                        for (MomSales sales1 : momSalesResp1) {
+	                        	StringBuilder str = new StringBuilder(sales1.getMonth());
+	                        	sales1.setMonth(str.insert(2, '-').toString());
+	                        	sales1.setValue((String)CommonUtils.convertValueIndianCurrency(Double.valueOf(sales1.getValue())));
+	                        	sales1.setIsManualEntry(sales1.getIsManualEntry());
+	                            responseMom.add(sales1);
+	                        }
+	                        data.put("monthWiseMomSales", responseMom);
+	                    }
+						Double totalSales =0.0d;
+						if(resp.getMomSales() != null) {
+							List<MomSales> momSalesResp = resp.getMomSales();
+							for (MomSales sales : momSalesResp) {
+								
+								totalSales += Double.valueOf(CommonUtils.convertStringCurrencyToDouble(sales.getValue()));
+							}
+							map.put("totalMomSales", df.format(totalSales));
+//						resp.setTotalMomSales(totalSales);
+						}
+					}		
+					
+					List<LinkedHashMap<String, Object>> dataMapList =  (List<LinkedHashMap<String, Object>>) response.getData();
+					convertExpVal(dataMapList);
+					
+					map.put("gstDetailedResp", (List<LinkedHashMap<String, Object>>) response.getData());
+				}else {
+					logger.info("Gst Data Null for==>"+applicationId);
+				}		
+			}catch(Exception e) {
+				logger.error(CommonUtils.EXCEPTION,e);
+			}
 		}
 		
-		try {
-			GSTR1Request req= new GSTR1Request();
-			req.setApplicationId(applicationId);
-			req.setUserId(userId);
-			req.setGstin(corporateApplicantRequest.getGstIn());	
-			CAMGSTData resp =null;
-			GstResponse response = gstClient.detailCalculation(req);
-			
-			DecimalFormat df = new DecimalFormat(".##");
-			if (!CommonUtils.isObjectNullOrEmpty(response) && response.getData() != null) {
-				for (LinkedHashMap<String, Object> data : (List<LinkedHashMap<String, Object>>) response.getData()) {
-					resp = MultipleJSONObjectHelper.getObjectFromMap(data,CAMGSTData.class);
-					if(resp.getMomSales() != null) {
-                        List<MomSales> momSalesResp1 = resp.getMomSales();
-                        List<MomSales> responseMom= new ArrayList<>();
-                        
-                        for (MomSales sales1 : momSalesResp1) {
-                        	StringBuilder str = new StringBuilder(sales1.getMonth());
-                        	sales1.setMonth(str.insert(2, '-').toString());
-                        	sales1.setValue((String)CommonUtils.convertValueIndianCurrency(Double.valueOf(sales1.getValue())));
-                        	sales1.setIsManualEntry(sales1.getIsManualEntry());
-                            responseMom.add(sales1);
-                        }
-                        data.put("monthWiseMomSales", responseMom);
-                    }
-					Double totalSales =0.0d;
-					if(resp.getMomSales() != null) {
-						List<MomSales> momSalesResp = resp.getMomSales();
-						for (MomSales sales : momSalesResp) {
-							
-							totalSales += Double.valueOf(CommonUtils.convertStringCurrencyToDouble(sales.getValue()));
-						}
-						map.put("totalMomSales", df.format(totalSales));
-//					resp.setTotalMomSales(totalSales);
-					}
-				}		
-				
-				List<LinkedHashMap<String, Object>> dataMapList =  (List<LinkedHashMap<String, Object>>) response.getData();
-				convertExpVal(dataMapList);
-				
-				map.put("gstDetailedResp", (List<LinkedHashMap<String, Object>>) response.getData());
-			}else {
-				logger.info("Gst Data Null for==>"+applicationId);
-			}		
-		}catch(Exception e) {
-			logger.error(CommonUtils.EXCEPTION,e);
-		}
 		return map;
 	}
 	
@@ -2214,34 +2212,36 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			}
 		}
 		
-		//ONE-FORM DATA
-		try {
-    		map.put("corporateApplicant", corporateApplicantRequest);
-			map.put("orgName", CommonUtils.printFields(corporateApplicantRequest.getOrganisationName(),null));
-			map.put("constitution", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getConstitutionId()) ? StringEscapeUtils.escapeXml(Constitution.getById(corporateApplicantRequest.getConstitutionId()).getValue()) : " ");
-			
-			String establishMentYear = !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getEstablishmentMonth()) ? EstablishmentMonths.getById(corporateApplicantRequest.getEstablishmentMonth()).getValue() : "";
-			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getEstablishmentYear())) {
-				try {
-					OneFormResponse establishmentYearResponse = oneFormClient.getYearByYearId(CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getEstablishmentYear()) ? null : corporateApplicantRequest.getEstablishmentYear().longValue());
-					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) establishmentYearResponse.getListData();
-					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-						MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-						establishMentYear += " "+ masterResponse.getValue();
-					} 
-				} catch (Exception e) {
-					logger.error("Error in getting establishment year : ",e);
+		//ONE-FORM DATA			
+		if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest)) {
+			try {
+	    		map.put("corporateApplicant", corporateApplicantRequest);
+				map.put("orgName", CommonUtils.printFields(corporateApplicantRequest.getOrganisationName(),null));
+				map.put("constitution", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getConstitutionId()) ? StringEscapeUtils.escapeXml(Constitution.getById(corporateApplicantRequest.getConstitutionId()).getValue()) : " ");
+				
+				String establishMentYear = !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getEstablishmentMonth()) ? EstablishmentMonths.getById(corporateApplicantRequest.getEstablishmentMonth()).getValue() : "";
+				if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getEstablishmentYear())) {
+					try {
+						OneFormResponse establishmentYearResponse = oneFormClient.getYearByYearId(CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getEstablishmentYear()) ? null : corporateApplicantRequest.getEstablishmentYear().longValue());
+						List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) establishmentYearResponse.getListData();
+						if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+							MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+							establishMentYear += " "+ masterResponse.getValue();
+						} 
+					} catch (Exception e) {
+						logger.error("Error in getting establishment year : ",e);
+					}
 				}
-			}
-			map.put("establishmentYr",!CommonUtils.isObjectNullOrEmpty(establishMentYear) ? CommonUtils.printFields(establishMentYear,null) : " ");
-			
-			//INDUSTRY DATA
-			Integer industry = corporateApplicantRequest.getKeyVericalFunding().intValue();
-			map.put("keyVerticalFunding", !CommonUtils.isObjectNullOrEmpty(industry) ? CommonUtils.printFields(Industry.getById(industry).getValue(),null) : " ");
-		}catch (Exception e) {
-			logger.error(CommonUtils.EXCEPTION,e);
-			}
-		
+				map.put("establishmentYr",!CommonUtils.isObjectNullOrEmpty(establishMentYear) ? CommonUtils.printFields(establishMentYear,null) : " ");
+				
+				//INDUSTRY DATA
+				Integer industry = corporateApplicantRequest.getKeyVericalFunding().intValue();
+				map.put("keyVerticalFunding", !CommonUtils.isObjectNullOrEmpty(industry) ? CommonUtils.printFields(Industry.getById(industry).getValue(),null) : " ");
+			}catch (Exception e) {
+				logger.error(CommonUtils.EXCEPTION,e);
+				}
+		}
+				
 		//DIRECTOR'S BACKGROUND
 				try {
 					List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList = backgroundDetailsService.getDirectorBackgroundDetailList(applicationId, userId);
@@ -2428,7 +2428,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 
 				try {
 					PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
-					map.put("loanAmt", applicationProposalMapping.getLoanAmount() != null ? CommonUtils.convertValueIndianCurrency(applicationProposalMapping.getLoanAmount()) : "-");
+					map.put("loanAmt", applicationProposalMapping != null && applicationProposalMapping.getLoanAmount() != null ? CommonUtils.convertValueIndianCurrency(applicationProposalMapping.getLoanAmount()) : "-");
 					
 					map.put("enhancementAmount", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getEnhancementAmount()) ? CommonUtils.convertValueIndianCurrency(primaryCorporateRequest.getEnhancementAmount()) : " ");
 					//map.put("loanType", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getProductId()) ? CommonUtils.LoanType.getType(primaryCorporateRequest.getProductId()).getName() : " ");
@@ -2458,52 +2458,56 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				}
 			    			   
 				
-			    CorporateFinalInfoRequest corporateFinalInfoRequest;
-				try {
-					//corporateFinalInfoRequest = corporateFinalInfoService.get(userId, applicationId);  PREVIOIS
-					corporateFinalInfoRequest = corporateFinalInfoService.getByProposalId(userId, proposalId);//NEW
-
-					//ADMIN OFFICE ADDRESS
-					if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress())){
-						map.put("adminAddPremise", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getPremiseNumber()) ? CommonUtils.printFields(corporateFinalInfoRequest.getSecondAddress().getPremiseNumber(),null) + "," : "");
-						map.put("adminAddStreetName", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getStreetName()) ? CommonUtils.printFields(corporateFinalInfoRequest.getSecondAddress().getStreetName(),null) + " " : "");
-						map.put("adminAddLandmark", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getLandMark()) ? CommonUtils.printFields(corporateFinalInfoRequest.getSecondAddress().getLandMark(),null) + " " : "");
-						map.put("adminAddCountry", StringEscapeUtils.escapeXml(getCountryName(corporateFinalInfoRequest.getSecondAddress().getCountryId())));
-						map.put("adminAddState", StringEscapeUtils.escapeXml(getStateName(corporateFinalInfoRequest.getSecondAddress().getStateId())));
-						map.put("adminAddCity", StringEscapeUtils.escapeXml(getCityName(corporateFinalInfoRequest.getSecondAddress().getCityId())));
-						map.put("adminAddPincode", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getPincode())?corporateFinalInfoRequest.getSecondAddress().getPincode() : "");			
-						try {
-							if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getDistrictMappingId())) {
-								map.put("adminAddressData",CommonUtils.printFields(pincodeDateService.getById(corporateFinalInfoRequest.getSecondAddress().getDistrictMappingId()),null));				
-							}
-						} catch (Exception e) {
-							logger.error(CommonUtils.EXCEPTION,e);
-						}
-					}
-					
-					//REGISTERED OFFICE ADDRESS
-					if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress())) {
-						map.put("registeredAddPremise", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress().getPremiseNumber()) ? CommonUtils.printFields(corporateFinalInfoRequest.getFirstAddress().getPremiseNumber(),null) + "," : "");
-						map.put("registeredAddStreetName", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress().getStreetName()) ? CommonUtils.printFields(corporateFinalInfoRequest.getFirstAddress().getStreetName(),null) + " " : "");
-						map.put("registeredAddLandmark", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress().getLandMark()) ? CommonUtils.printFields(corporateFinalInfoRequest.getFirstAddress().getLandMark(),null) + " " : "");
-						map.put("registeredAddCountry", StringEscapeUtils.escapeXml(getCountryName(corporateFinalInfoRequest.getFirstAddress().getCountryId())));
-						map.put("registeredAddState", StringEscapeUtils.escapeXml(getStateName(corporateFinalInfoRequest.getFirstAddress().getStateId())));
-						map.put("registeredAddCity", StringEscapeUtils.escapeXml(getCityName(corporateFinalInfoRequest.getFirstAddress().getCityId())));
-						map.put("registeredAddPincode", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress().getPincode())?corporateFinalInfoRequest.getFirstAddress().getPincode() : "");
-						try {
-							if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress().getDistrictMappingId())) {
-								map.put("registeredAddressData",CommonUtils.printFields(pincodeDateService.getById(corporateFinalInfoRequest.getFirstAddress().getDistrictMappingId()),null));				
-							}
-						} catch (Exception e) {
-							logger.error(CommonUtils.EXCEPTION,e);
-						}
-					}
-					map.put("corporateApplicantFinal",corporateFinalInfoRequest);
-					map.put("aboutUs", StringEscapeUtils.escapeXml(corporateFinalInfoRequest.getAboutUs()));
-				} catch (Exception e1) {
-					logger.error(CommonUtils.EXCEPTION,e1);
-				}
 				
+				if (proposalId != null) {
+					CorporateFinalInfoRequest corporateFinalInfoRequest;
+					try {
+						//corporateFinalInfoRequest = corporateFinalInfoService.get(userId, applicationId);  PREVIOIS
+						corporateFinalInfoRequest = corporateFinalInfoService.getByProposalId(userId, proposalId);//NEW
+
+						if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest)) {
+							//ADMIN OFFICE ADDRESS
+							if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress())){
+								map.put("adminAddPremise", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getPremiseNumber()) ? CommonUtils.printFields(corporateFinalInfoRequest.getSecondAddress().getPremiseNumber(),null) + "," : "");
+								map.put("adminAddStreetName", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getStreetName()) ? CommonUtils.printFields(corporateFinalInfoRequest.getSecondAddress().getStreetName(),null) + " " : "");
+								map.put("adminAddLandmark", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getLandMark()) ? CommonUtils.printFields(corporateFinalInfoRequest.getSecondAddress().getLandMark(),null) + " " : "");
+								map.put("adminAddCountry", StringEscapeUtils.escapeXml(getCountryName(corporateFinalInfoRequest.getSecondAddress().getCountryId())));
+								map.put("adminAddState", StringEscapeUtils.escapeXml(getStateName(corporateFinalInfoRequest.getSecondAddress().getStateId())));
+								map.put("adminAddCity", StringEscapeUtils.escapeXml(getCityName(corporateFinalInfoRequest.getSecondAddress().getCityId())));
+								map.put("adminAddPincode", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getPincode())?corporateFinalInfoRequest.getSecondAddress().getPincode() : "");			
+								try {
+									if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getDistrictMappingId())) {
+										map.put("adminAddressData",CommonUtils.printFields(pincodeDateService.getById(corporateFinalInfoRequest.getSecondAddress().getDistrictMappingId()),null));				
+									}
+								} catch (Exception e) {
+									logger.error(CommonUtils.EXCEPTION,e);
+								}
+							}
+							
+							//REGISTERED OFFICE ADDRESS
+							if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress())) {
+								map.put("registeredAddPremise", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress().getPremiseNumber()) ? CommonUtils.printFields(corporateFinalInfoRequest.getFirstAddress().getPremiseNumber(),null) + "," : "");
+								map.put("registeredAddStreetName", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress().getStreetName()) ? CommonUtils.printFields(corporateFinalInfoRequest.getFirstAddress().getStreetName(),null) + " " : "");
+								map.put("registeredAddLandmark", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress().getLandMark()) ? CommonUtils.printFields(corporateFinalInfoRequest.getFirstAddress().getLandMark(),null) + " " : "");
+								map.put("registeredAddCountry", StringEscapeUtils.escapeXml(getCountryName(corporateFinalInfoRequest.getFirstAddress().getCountryId())));
+								map.put("registeredAddState", StringEscapeUtils.escapeXml(getStateName(corporateFinalInfoRequest.getFirstAddress().getStateId())));
+								map.put("registeredAddCity", StringEscapeUtils.escapeXml(getCityName(corporateFinalInfoRequest.getFirstAddress().getCityId())));
+								map.put("registeredAddPincode", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress().getPincode())?corporateFinalInfoRequest.getFirstAddress().getPincode() : "");
+								try {
+									if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress().getDistrictMappingId())) {
+										map.put("registeredAddressData",CommonUtils.printFields(pincodeDateService.getById(corporateFinalInfoRequest.getFirstAddress().getDistrictMappingId()),null));				
+									}
+								} catch (Exception e) {
+									logger.error(CommonUtils.EXCEPTION,e);
+								}
+							}
+							map.put("corporateApplicantFinal",corporateFinalInfoRequest);
+							map.put("aboutUs", StringEscapeUtils.escapeXml(corporateFinalInfoRequest.getAboutUs()));
+						}
+					} catch (Exception e1) {
+						logger.error(CommonUtils.EXCEPTION,e1);
+					}
+				}
 				
 				LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
 				map.put("applicationType", (loanApplicationMaster.getWcRenewalStatus() != null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue() : "New" ));
@@ -2632,7 +2636,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	    map.putAll(getGstDetails(applicationId, userId));
 	        
 	    CorporateApplicantRequest corporateApplicantRequest = corporateApplicantService.getCorporateApplicant(applicationId);
-	    map.put("panNo", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getPanNo()) ? corporateApplicantRequest.getPanNo() : " ");
+	    map.put("panNo", corporateApplicantRequest != null && !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getPanNo()) ? corporateApplicantRequest.getPanNo() : " ");
 	    
 	    map.put("bankDetails", getBranchDetails(applicationId, userId, proposalId));
 		Long orgId = null;
