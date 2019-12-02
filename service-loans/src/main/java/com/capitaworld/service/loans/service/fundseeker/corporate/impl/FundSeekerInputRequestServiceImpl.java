@@ -73,14 +73,9 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgr
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FundSeekerInputRequestService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
-import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.mca.client.McaClient;
-import com.capitaworld.service.mca.model.cubictree.api.CubictreeJobRegistrationRequest;
-import com.capitaworld.service.mca.model.cubictree.api.Filter;
-import com.capitaworld.service.mca.model.cubictree.api.JobRegistrationPayload;
-import com.capitaworld.service.mca.model.cubictree.api.MatchTableIndividual;
 import com.capitaworld.service.mca.model.verifyApi.VerifyAPIDINPAN;
 import com.capitaworld.service.mca.model.verifyApi.VerifyAPIDINPANRequest;
 import com.capitaworld.service.mca.model.verifyApi.VerifyAPIPara;
