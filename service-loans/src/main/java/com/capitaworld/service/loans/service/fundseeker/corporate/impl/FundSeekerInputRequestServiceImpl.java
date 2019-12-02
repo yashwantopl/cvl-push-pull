@@ -491,7 +491,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
 
 			/** called cubictree api for company*/
-			CubictreeJobRegistrationRequest jobReg=new CubictreeJobRegistrationRequest();
+			/*CubictreeJobRegistrationRequest jobReg=new CubictreeJobRegistrationRequest();
 			jobReg.setJobRegPayload(new JobRegistrationPayload());
 			jobReg.getJobRegPayload().setFilter(new Filter());
 			jobReg.getJobRegPayload().setMatchTableIndividual(new MatchTableIndividual());
@@ -524,7 +524,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			jobReg.getJobRegPayload().getMatchTableIndividual().setName(corporateApplicantDetail.getOrganisationName());
 			jobReg.getJobRegPayload().getMatchTableIndividual().setPan(corporateApplicantDetail.getPanNo());
 			jobReg.getJobRegPayload().getMatchTableIndividual().setPin(String.valueOf(corporateApplicantDetail.getRegisteredPincode()));
-			asyncComp.callCubictreeApi(jobReg);
+			asyncComp.callCubictreeApi(jobReg);*/
 
 			/** END*/
 			LoansResponse res = new LoansResponse(DIRECTOR_DETAIL_SUCCESSFULLY_SAVED_MSG, HttpStatus.OK.value());
