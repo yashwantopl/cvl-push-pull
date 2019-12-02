@@ -570,4 +570,26 @@ public class LoanRepositoryImpl implements LoanRepository {
 		}
 		return object;
 	}
+
+	@Override
+	public Object[] getUserDetails(Long userId){
+		try {
+			Object[] obj = (Object[]) entityManager.createNativeQuery("select u.last_access_business_type_id,u.is_nbfc_user FROM users.users u where u.user_id =:userId")
+					.setParameter("userId", userId)
+					.getSingleResult();
+			return obj;
+		}catch (Exception e){
+			logger.error("Data not found for userId:",userId);
+		}
+		return null;
+	}
+
+	public List<Object[]> getCoLendingAllRatio(Long applicationId){
+		List<Object[]> ratioList = (List<Object[]>)entityManager.createNativeQuery("SELECT m.ratio_id,fc.nbfc_ratio,fc.bank_ratio,fc.tenure,m.fp_product_id,fc.bank_id FROM nbfc_ratio_mapping m " +
+				"INNER JOIN fp_co_lending_ratio fc ON fc.id=m.ratio_id AND fc.is_proposal_active=TRUE AND fc.is_active=TRUE " +
+				"WHERE m.fp_product_id IN (SELECT fp_product_id FROM fp_product_master WHERE nbfc_product_type =2 AND user_org_id IN (SELECT bank_org_id FROM fs_co_lending_application_bank_mapping WHERE application_id=:applicationId)) " +
+				"AND m.is_active=TRUE group by m.ratio_id")
+				.setParameter("applicationId",applicationId).getResultList();
+		return ratioList;
+	}
 }

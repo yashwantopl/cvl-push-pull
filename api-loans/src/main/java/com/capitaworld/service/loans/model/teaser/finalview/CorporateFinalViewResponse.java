@@ -263,6 +263,7 @@ public class CorporateFinalViewResponse implements Serializable {
     private Object bankComparisionData;
     private List<CollateralSecurityDetailRequest> collateralSecurityDetails;
     Map<String, Object> gstRelatedParty;
+    private String noteOfBorrower;
     
 
 	public List<?> getMatchesList() {
@@ -2433,4 +2434,14 @@ public class CorporateFinalViewResponse implements Serializable {
 	public void setNbfcProjectedFinancials(List<Object> nbfcProjectedFinancials) {
 		this.nbfcProjectedFinancials = nbfcProjectedFinancials;
 	}
+
+	public String getNoteOfBorrower() {
+		return noteOfBorrower;
+	}
+
+	public void setNoteOfBorrower(String noteOfBorrower) {
+		this.noteOfBorrower = noteOfBorrower;
+	}
+	
+	
 }

@@ -6509,7 +6509,6 @@ public class ScoringServiceImpl implements ScoringService {
                                     } else {
                                         noOfChequeBounce = 0.0;
                                     }
-
                                     scoringParameterRequest.setNoOfChequesBouncedLastSixMonth(noOfChequeBounce);
                                     scoringParameterRequest.setChequesBouncedLastSixMonth_p(true);
                                 }catch (Exception e){
@@ -6607,8 +6606,98 @@ public class ScoringServiceImpl implements ScoringService {
                                 }
                                 break;
                             }
+                            case ScoreParameter.CMR_SCORE_MSME_RANKING: {  // CMR RATING FETCH FROM COMMERCIAL BUREAU
 
-                            default: break;
+                            	try {
+                            	String cmrScore = cibilClient.getCMRScore(applicationId);
+                            	 	logger.info("{CMR_SCORE_MSME_RANKING}====={cmrScore}===={}=====>",cmrScore,"==={applicationId}===>"+applicationId);
+                            	 	
+                            		if(!CommonUtils.isObjectNullOrEmpty(cmrScore) && (!cmrScore.equals("NA"))){
+                            			// String cmrValue = cmrScore.substring(4,6);
+                            			String [] cmrValue = cmrScore.trim().split("-");
+	                            			if(!CommonUtils.isObjectNullOrEmpty(cmrValue) && !CommonUtils.isObjectNullOrEmpty(cmrValue[1]))
+	                            			{
+	                            					scoringParameterRequest.setCmrScoreMsmeRanking(Double.valueOf(cmrValue[1]));
+	                            			 }
+	                            			else
+	                            			{
+	                            				scoringParameterRequest.setCmrScoreMsmeRanking(0.0);
+	                            			}
+	                            			scoringParameterRequest.setCmrScoreMsmeRanking_p(true);
+                                   }else{
+                                	   scoringParameterRequest.setCmrScoreMsmeRanking_p(true);
+                                	   scoringParameterRequest.setCmrScoreMsmeRanking(0.0);
+                                   }
+								} catch (Exception e) {
+									logger.error("Exception is getting while Get CMR Score CIBI:---->",e);
+									e.printStackTrace();
+								}
+                                break;
+                            }
+                            case ScoreParameter.ISO_CERTIFICATION: {
+                            	// One form ISO CERTIFIED
+                            	Boolean isoCertifiedResp = primaryCorporateDetail.getIsIsoCertified();
+                            	logger.info("ENTER HERE (ISO_CERTIFICATION)::::::::::{ISO_CERTIFICATION}======{}===>>>",isoCertifiedResp);
+                            	if(!CommonUtils.isObjectNullOrEmpty(isoCertifiedResp)){
+                            		
+                            		scoringParameterRequest.setIsoCertification_p(true);		
+                            		scoringParameterRequest.setIsoCertificationVal(isoCertifiedResp);
+                            	}else{
+                            		scoringParameterRequest.setIsoCertification_p(true);
+                            		scoringParameterRequest.setIsoCertificationVal(false);
+                            		
+                            	}
+                                break;
+                            }
+                            case ScoreParameter.TOTAL_NO_OF_INWARD_CHEQUE_BOUNCES_LAST_SIX_MONTHS: {
+                            	logger.info("TOTAL_NO_OF_INWARD_CHEQUE_BOUNCES_LAST_SIX_MONTHS::::::::::");
+                            	
+                            	try{
+                            		Double totalNoOfInwardChequeBouncesLatSixMonths = 0.0;
+                                    Double noOfChequeBounceLast6MonthsCount = 0.0;
+                                    Double noOfChequeIssuelastSixMonthsCount = 0.0d;
+                                    
+                                 // NO OF CHEQUE BOUNCES   && NO OF CHEQUE ISSUE IN LAST 6 MONTHS
+                                    ReportRequest reportRequest = new ReportRequest();
+                                    reportRequest.setApplicationId(applicationId);
+                                    AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
+                                    if(!CommonUtils.isObjectNullOrEmpty(analyzerResponse) && !CommonUtils.isObjectNullOrEmpty(analyzerResponse.getData())){
+                                    	
+                                    	for(Object object : (List)analyzerResponse.getData()) {
+                                    		try {
+                        						Data dataBs = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) object, Data.class);
+                        						
+                        					    noOfChequeBounceLast6MonthsCount = + Double.valueOf(dataBs.getSummaryInfo().getSummaryInfoTotalDetails().getInwBounces());
+                        						noOfChequeIssuelastSixMonthsCount = + Double.valueOf(dataBs.getSummaryInfo().getSummaryInfoTotalDetails().getChqIssues());
+                        						
+                        						
+                        						if(noOfChequeIssuelastSixMonthsCount!=0.0){
+                        							totalNoOfInwardChequeBouncesLatSixMonths  = (noOfChequeBounceLast6MonthsCount / noOfChequeIssuelastSixMonthsCount) * 100;
+                        						}else{
+                        							totalNoOfInwardChequeBouncesLatSixMonths = 0.0;
+                        						}
+                       							scoringParameterRequest.setTotalNoOfChequeBounceLastSixMonths_p(true);
+                       							scoringParameterRequest.setTotalNoOfInwardChequeBouncesLatSixMonths(totalNoOfInwardChequeBouncesLatSixMonths);
+                       							logger.info("{noOfChequeBounceLast6MonthsCount}::::::::::======{1}======{}===>>>"+noOfChequeBounceLast6MonthsCount);
+                       							logger.info("{noOfChequeIssuelastSixMonthsCount}::::::::::======{2}======{}===>>>"+noOfChequeIssuelastSixMonthsCount);
+                       							logger.info("{totalNoOfInwardChequeBouncesLatSixMonths}::::::::::======{3}======{}===>>>"+totalNoOfInwardChequeBouncesLatSixMonths);
+                        					}catch(Exception e) {
+                        						logger.error("EXCEPTION IS GETTING WHILE CALCULATE CHEQUE BOUNCES / ISSUE LOGIC=====>{}====>{}",noOfChequeIssuelastSixMonthsCount,noOfChequeBounceLast6MonthsCount,e);
+                        						scoringParameterRequest.setChequesBouncedLastSixMonth_p(false);
+                        					}
+                        				}
+                                    }
+                                   
+                                }catch (Exception e){
+                                    logger.error("error while getting NO_OF_CHEQUES_BOUNCED_LAST_SIX_MONTH parameter : ",e);
+                                    scoringParameterRequest.setChequesBouncedLastSixMonth_p(false);
+                                }
+                                
+                                break;
+                            }
+
+                            default:
+                            	break;
                         }
 
                         //fundSeekerInputRequestList.add(fundSeekerInputRequest);

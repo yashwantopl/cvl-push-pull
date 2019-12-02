@@ -26,6 +26,8 @@ public class InEligibleProposalDetailsRequest implements Serializable {
     private Long userId;
 
     private Integer status;
+    
+    private Integer sanctionStatus;
 
     private String reason;
 
@@ -141,6 +143,14 @@ public class InEligibleProposalDetailsRequest implements Serializable {
 
 	public void setAddiFields(String addiFields) {
 		this.addiFields = addiFields;
+	}
+
+	public Integer getSanctionStatus() {
+		return sanctionStatus;
+	}
+
+	public void setSanctionStatus(Integer sanctionStatus) {
+		this.sanctionStatus = sanctionStatus;
 	}
 
 	@Override

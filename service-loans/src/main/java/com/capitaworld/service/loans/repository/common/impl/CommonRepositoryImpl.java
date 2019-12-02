@@ -201,7 +201,12 @@ public class CommonRepositoryImpl  implements CommonRepository {
 				"((cn.stage_id IN (7,9) AND cn.status=3) OR (cn.stage_id=4 AND cn.status=6))").setParameter("pan", pan).getSingleResult();
 	}
 
-	
-	
+	@Override
+    public Object[] getLastCheckerNameByBranchId(Long branchId) throws Exception {
+         return (Object[]) manager.createNativeQuery("SELECT f.first_name,f.last_name " +
+                 "FROM users.users u " +
+                 "LEFT JOIN users.`fund_provider_details` f ON f.user_id=u.user_id " +
+                 "WHERE u.branch_id=:branchId AND u.user_role_id=9 ORDER BY u.user_id DESC Limit 1;").setParameter("branchId", branchId).getSingleResult();
+    }
 	
 }

@@ -123,6 +123,10 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 	private Integer educationalStatus;
 	private Integer nationality;
 	private Integer visuallyImpaired;
+	/*
+	* Co-origination field added
+	* */
+	private Integer physicallyHandicapped;
 	private Integer residentStatus;
 	private Boolean isGuarantor;
 	private DirectorPersonalDetailRequest directorPersonalDetailRequest;
@@ -649,6 +653,14 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 
 	public void setXmlResponseExternal(String xmlResponseExternal) {
 		this.xmlResponseExternal = xmlResponseExternal;
+	}
+
+	public Integer getPhysicallyHandicapped() {
+		return physicallyHandicapped;
+	}
+
+	public void setPhysicallyHandicapped(Integer physicallyHandicapped) {
+		this.physicallyHandicapped = physicallyHandicapped;
 	}
 
 	@Override

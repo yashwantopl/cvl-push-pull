@@ -113,6 +113,7 @@ import com.capitaworld.service.oneform.enums.GetStringFromIdForMasterData;
 import com.capitaworld.service.oneform.enums.MaritalStatusMst;
 import com.capitaworld.service.oneform.enums.OccupationHL;
 import com.capitaworld.service.oneform.enums.OccupationNature;
+import com.capitaworld.service.oneform.enums.OccupationNatureNTB;
 import com.capitaworld.service.oneform.enums.RelationshipTypeHL;
 import com.capitaworld.service.oneform.enums.ReligionRetailMst;
 import com.capitaworld.service.oneform.enums.ResidenceStatusRetailMst;
@@ -610,15 +611,18 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
 						companyMap.put(Retail.AutoLoan.PERSONAL_RELATIONSHIP_WITH_BANK, CommonUtils.printFields(collect.get(0),null));
 					}
-                                        collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.IS_ADHAAR_CARD)).collect(Collectors.toList());
+                    collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.IS_ADHAAR_CARD)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
 						companyMap.put(Retail.AutoLoan.IS_ADHAAR_CARD, CommonUtils.printFields(collect.get(0),null));
 					}
-                                        collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.CAR_SEGMENT)).collect(Collectors.toList());
+                    collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.CAR_SEGMENT)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
 						companyMap.put(Retail.AutoLoan.CAR_SEGMENT, CommonUtils.printFields(collect.get(0),null));
 					}
-                                        
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.TAKE_HOME_PAY)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.AutoLoan.TAKE_HOME_PAY, CommonUtils.printFields(collect.get(0),null));
+					}                   
 					scoreResponse.add(companyMap);
 					map.put("scoringResp", scoreResponse);
 			}catch (Exception e) {
@@ -848,6 +852,10 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 				if(!CommonUtils.isListNullOrEmpty(collect)) {
 					companyMap.put(Retail.AutoLoan.PERSONAL_RELATIONSHIP_WITH_BANK, CommonUtils.printFields(collect.get(0),null));
 				}
+				collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.TAKE_HOME_PAY)).collect(Collectors.toList());
+				if(!CommonUtils.isListNullOrEmpty(collect)) {
+					companyMap.put(Retail.AutoLoan.TAKE_HOME_PAY, CommonUtils.printFields(collect.get(0),null));
+				} 
 					scoreResponse.add(companyMap);
 					coAppScoringData.add(scoreResponse);
 			}
@@ -1190,6 +1198,27 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 				map.put("loanPurpose", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest) && !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getLoanPurpose()) ? StringEscapeUtils.escapeXml(AutoLoanPurposeType.getById(plRetailApplicantRequest.getLoanPurpose()).getValue()): "-");
 				map.put("loanPurposeType" ,!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getLoanPurposeQueType()) ? StringEscapeUtils.escapeXml(AutoDetailPurposeofLoan.getById(plRetailApplicantRequest.getLoanPurposeQueType()).getValue()) : "-");
 				map.put("loanPurposeValue", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getLoanPurposeQueValue()) ? plRetailApplicantRequest.getLoanPurposeQueValue() : "-");
+				
+				
+				//Will your organization/company Pay EMI directly from your Salary Account
+				Boolean isCheckOffDirectPayEmi = plRetailApplicantRequest.getIsCheckOffDirectPayEmi();
+				map.put("isCheckOffDirectPayEmi1", isCheckOffDirectPayEmi == null ? "-" : isCheckOffDirectPayEmi ? "Yes" : "No");
+				
+				//Will your organization/company agree to pay loan outstanding from your terminal payments in event you leave your employer
+				Boolean isCheckOffAgreeToPayOutstanding = plRetailApplicantRequest.getIsCheckOffAgreeToPayOutstanding();
+				map.put("isCheckOffAgreeToPayOutstanding1", isCheckOffAgreeToPayOutstanding == null ? "-" : isCheckOffAgreeToPayOutstanding ? "Yes" : "No");
+				
+				//Will your organization/company Pay salary only in your salary account. Take Confirmation (NOC) from bank before shifting your salary account
+				Boolean isCheckOffShiftSalAcc = plRetailApplicantRequest.getIsCheckOffShiftSalAcc();
+				map.put("isCheckOffShiftSalAcc1", isCheckOffShiftSalAcc == null ? "-" : isCheckOffShiftSalAcc ? "Yes" : "No");
+				
+				//Whether you (Employee/Borrower) will Issue letter to your employer, to pay loan outstanding from your terminal payments in event you leave your employer
+				Boolean isCheckOffPayOutstndAmount = plRetailApplicantRequest.getIsCheckOffPayOutstndAmount();
+				map.put("isCheckOffPayOutstndAmount1", isCheckOffPayOutstndAmount == null ? "-" : isCheckOffPayOutstndAmount ? "Yes" : "No");
+				
+				//Whether you (Employee/Borrower) will Issue Letter to your employer to not change your salary account and if need to change then take confirmation (NOC) from bank
+				Boolean isCheckOffNotChangeSalAcc = plRetailApplicantRequest.getIsCheckOffNotChangeSalAcc();
+				map.put("isCheckOffNotChangeSalAcc1", isCheckOffNotChangeSalAcc == null ? "-" : isCheckOffNotChangeSalAcc ? "Yes" : "No");
 			}
 			
 			//PRIMARY DATA (LOAN DETAILS)

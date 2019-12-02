@@ -1413,6 +1413,27 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 				}else {
 					map.put("mortgageInOwnedProperty", "-");
 				}
+				
+				//Will your organization/company Pay EMI directly from your Salary Account
+				Boolean isCheckOffDirectPayEmi = plRetailApplicantRequest.getIsCheckOffDirectPayEmi();
+				map.put("isCheckOffDirectPayEmi1", isCheckOffDirectPayEmi == null ? "-" : isCheckOffDirectPayEmi ? "Yes" : "No");
+				
+				//Will your organization/company agree to pay loan outstanding from your terminal payments in event you leave your employer
+				Boolean isCheckOffAgreeToPayOutstanding = plRetailApplicantRequest.getIsCheckOffAgreeToPayOutstanding();
+				map.put("isCheckOffAgreeToPayOutstanding1", isCheckOffAgreeToPayOutstanding == null ? "-" : isCheckOffAgreeToPayOutstanding ? "Yes" : "No");
+				
+				//Will your organization/company Pay salary only in your salary account. Take Confirmation (NOC) from bank before shifting your salary account
+				Boolean isCheckOffShiftSalAcc = plRetailApplicantRequest.getIsCheckOffShiftSalAcc();
+				map.put("isCheckOffShiftSalAcc1", isCheckOffShiftSalAcc == null ? "-" : isCheckOffShiftSalAcc ? "Yes" : "No");
+				
+				//Whether you (Employee/Borrower) will Issue letter to your employer, to pay loan outstanding from your terminal payments in event you leave your employer
+				Boolean isCheckOffPayOutstndAmount = plRetailApplicantRequest.getIsCheckOffPayOutstndAmount();
+				map.put("isCheckOffPayOutstndAmount1", isCheckOffPayOutstndAmount == null ? "-" : isCheckOffPayOutstndAmount ? "Yes" : "No");
+				
+				//Whether you (Employee/Borrower) will Issue Letter to your employer to not change your salary account and if need to change then take confirmation (NOC) from bank
+				Boolean isCheckOffNotChangeSalAcc = plRetailApplicantRequest.getIsCheckOffNotChangeSalAcc();
+				map.put("isCheckOffNotChangeSalAcc1", isCheckOffNotChangeSalAcc == null ? "-" : isCheckOffNotChangeSalAcc ? "Yes" : "No");
+				
 				//KEY VERTICAL FUNDING
 				List<Long> keyVerticalFundingId = new ArrayList<>();
 				if (!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getKeyVerticalFunding()))
