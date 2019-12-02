@@ -350,15 +350,15 @@ public class HLIneligibleCamReportServiceImpl implements HLIneligibleCamReportSe
 			}
 			//cibil score
 			try {
-				CibilRequest cibilReq=new CibilRequest();
-				cibilReq.setPan(plRetailApplicantRequest.getPan());
-				cibilReq.setApplicationId(applicationId);
-				CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
-				if (cibilScoreByPanCard != null) {
-					map.put("applicantV2Score", CommonUtils.getCibilV2ScoreRange(cibilScoreByPanCard.getActualScore()));
-					map.put("applicantCIBILScore", cibilScoreByPanCard != null && cibilScoreByPanCard.getActualScore() != null? cibilScoreByPanCard.getActualScore() : null);
-				}
 				
+				List<CibilScoreLogRequest> cibilScoreByPanCard = cibilClient.getSoftpingScores(applicationId, plRetailApplicantRequest.getPan());
+				for(CibilScoreLogRequest req : cibilScoreByPanCard) {
+						if(req.getScoreName().contains("CibilScoreVersion2")) {
+							map.put("applicantV2Score", req.getActualScore() != null ? req.getActualScore() : null);
+						}else {
+							map.put("applicantCIBILScore", cibilScoreByPanCard);
+						}
+				}
 			} catch (Exception e) {
 				logger.error("Error While calling Cibil Score By PanCard : ",e);
 			}
@@ -499,16 +499,17 @@ public class HLIneligibleCamReportServiceImpl implements HLIneligibleCamReportSe
 					logger.error("Error/Exception while fetching data for CoApplicant Banking Relationship");
 				}
 				try {
-                    CibilRequest cibilReq=new CibilRequest();
-                    cibilReq.setPan(coApplicantDetail.getPan());
-                    cibilReq.setApplicationId(applicationId);
-                    CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
-                    if(cibilScoreByPanCard != null) {
-                    	coApp.put("coAppV2Score", CommonUtils.getCibilV2ScoreRange(cibilScoreByPanCard.getActualScore()));
-                    	coApp.put("coAppCibilScore", cibilScoreByPanCard);
-                    }
-                    
-                } catch (Exception e) {
+
+					List<CibilScoreLogRequest> cibilScoreByPanCard = cibilClient.getSoftpingScores(applicationId,
+							coApplicantDetail.getPan());
+					for (CibilScoreLogRequest req : cibilScoreByPanCard) {
+						if (req.getScoreName().contains("CibilScoreVersion2")) {
+							coApp.put("applicantV2Score", req.getActualScore() != null ? req.getActualScore() : null);
+						}else {
+							coApp.put("applicantCIBILScore", cibilScoreByPanCard);
+						}
+					}
+				} catch (Exception e) {
                     logger.error("Error While calling Cibil Score By PanCard : ",e);
                 }
 				
