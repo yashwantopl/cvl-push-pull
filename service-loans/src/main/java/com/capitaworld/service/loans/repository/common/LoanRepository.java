@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.repository.common;
 
 import com.capitaworld.service.loans.model.TutorialsViewAudits;
+import com.capitaworld.service.loans.model.score.ScoringCibilRequest;
 
 import java.util.List;
 
@@ -86,4 +87,10 @@ public interface LoanRepository{
 	public Object[] getUserDetails(Long userId);
 
 	public List<Object[]> getCoLendingAllRatio(Long applicationId);
+	
+	public String getScoringMinAndMaxRangeValue(List<Long> scoreModelId,List<Long> fieldMasterId);
+	
+	public Long getCampaignOrgIdByApplicationId(Long applicationId);
+	
+	public boolean getCibilBureauAPITrueOrFalse(Long orgId);
 }
