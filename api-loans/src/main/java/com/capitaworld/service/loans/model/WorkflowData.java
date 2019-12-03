@@ -18,6 +18,7 @@ public class WorkflowData implements Serializable {
 	private Long jobId;
 	private Long userId;
 	private String actionFor;
+	private Integer roleId;
 	private Integer stage;  // 1 = Pending, 2 = Approved
 	
 	public Long getNextworkflowStep() {
@@ -74,5 +75,13 @@ public class WorkflowData implements Serializable {
 	public void setId(Long id) {
 		this.id = id;
 	}
+	public Integer getRoleId() {
+		return roleId;
+	}
+	public void setRoleId(Integer roleId) {
+		this.roleId = roleId;
+	}
+	
+	
 	
 }
