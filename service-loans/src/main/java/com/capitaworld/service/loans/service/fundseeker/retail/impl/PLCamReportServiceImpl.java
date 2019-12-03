@@ -270,6 +270,11 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			MatchDisplayResponse matchResponse= matchEngineClient.displayMatchesOfRetail(matchRequest);
 			logger.info("matchesResponse"+matchResponse);
 			map.put("matchesResponse", !CommonUtils.isListNullOrEmpty(matchResponse.getMatchDisplayObjectList()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectList(),null) : " ");
+			if(productId != null) {
+				Integer version = productMasterRepository.findBureauVersionByFpProductId(productId);
+				map.put("matchesBureauVersion", version != null ? version : 1) ;
+			}
+			
 		}
 		catch (Exception e) {
 			logger.error("Error while getting matches data : ",e);
@@ -1067,15 +1072,15 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			
 			//cibil score
 			try {
-				CibilRequest cibilReq=new CibilRequest();
-				cibilReq.setPan(plRetailApplicantRequest.getPan());
-				cibilReq.setApplicationId(applicationId);
-				CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
-				if (cibilScoreByPanCard != null) {
-					map.put("applicantV2Score", CommonUtils.getCibilV2ScoreRange(cibilScoreByPanCard.getActualScore()));
-					map.put("applicantCIBILScore", cibilScoreByPanCard);
-				}
 				
+				List<CibilScoreLogRequest> cibilScoreByPanCard = cibilClient.getSoftpingScores(applicationId, plRetailApplicantRequest.getPan());
+				for(CibilScoreLogRequest req : cibilScoreByPanCard) {
+						if(req.getScoreName().contains("CibilScoreVersion2")) {
+							map.put("applicantV2Score", req.getActualScore() != null ? req.getActualScore() : null);
+						}else {
+							map.put("applicantCIBILScore", cibilScoreByPanCard);
+						}
+				}
 			} catch (Exception e) {
 				logger.error("Error While calling Cibil Score By PanCard : ",e);
 			}
@@ -1615,6 +1620,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 				MatchDisplayResponse matchResponse= matchEngineClient.displayMatchesOfRetail(matchRequest);
 				logger.info("matchesResponse ==>{} " , matchResponse);
 				map.put("matchesResponse", !CommonUtils.isListNullOrEmpty(matchResponse.getMatchDisplayObjectList()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectList(),null) : " ");
+				map.put("matchesBureauVersion", productId != null ? productMasterRepository.findBureauVersionByFpProductId(productId) : null) ;
 			}
 			catch (Exception e) {
 				logger.error("Error while getting matches data in ApplicationForm: ",e);

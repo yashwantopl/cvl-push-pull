@@ -635,6 +635,18 @@ public class AsyncComponent {
 		
 	}
 
+	/*@Async
+	public void callCubictreeApi(CubictreeJobRegistrationRequest request){
+		if(request != null){
+			try {
+				logger.info("Cubictree Api calling from loans");
+				mcaClient.callForjobRegistrationApi(request);
+			} catch (McaException e) {
+				logger.error("Exception in calling cubictree api :{}",e);
+			}
+		}
+	}*/
+
 	private UsersRequest getEmailMobile(Long userId) throws IOException {
 		if (CommonUtils.isObjectNullOrEmpty(userId)) {
 			logger.warn("Usesr Id is NULL===>");

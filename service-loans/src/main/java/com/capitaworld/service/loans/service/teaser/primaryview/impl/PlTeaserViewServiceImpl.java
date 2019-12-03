@@ -262,6 +262,10 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 					matchRequest.setBusinessTypeId(loanApplicationMaster.getBusinessTypeId());
 					MatchDisplayResponse matchResponse = matchEngineClient.displayMatchesOfRetail(matchRequest);
 					plTeaserViewResponse.setMatchesList(matchResponse.getMatchDisplayObjectList());
+					if(productMappingId != null) {
+						Integer version = productMasterRepository.findBureauVersionByFpProductId(productMappingId);
+						plTeaserViewResponse.setMatchesBureauVersion(version != null ? version : 1);
+					}
 				} catch (Exception e) {
 					logger.error("Error while getting matches data :{} " , e);
 				}
@@ -464,16 +468,17 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				}
 				
 		//cibil score
-		
 				try {
-					CibilRequest cibilReq=new CibilRequest();
-					cibilReq.setPan(plRetailApplicantResponse.getPan());
-					cibilReq.setApplicationId(toApplicationId);
-					CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
-					if(cibilScoreByPanCard != null) {
-						plTeaserViewResponse.setCibilScoreRange(CommonUtils.getCibilV2ScoreRange(cibilScoreByPanCard.getActualScore()));
+					//old client
+					/*CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);*/
+					List<CibilScoreLogRequest> cibilScoreByPanCard = cibilClient.getSoftpingScores(toApplicationId, plRetailApplicantResponse.getPan());
+					for(CibilScoreLogRequest req : cibilScoreByPanCard) {
+						if(req.getScoreName().contains("CibilScoreVersion2")) {
+							plTeaserViewResponse.setCibilScoreV2(req.getActualScore());
+						}else {
+							plTeaserViewResponse.setCibilScore(req);
+						}
 					}
-					plTeaserViewResponse.setCibilScore(cibilScoreByPanCard);																
 				} catch (Exception e) {
 					logger.error("Error While calling Cibil Score By PanCard : ",e);
 				}
@@ -823,6 +828,10 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 					matchRequest.setProposalId(proposalId);
 					matchRequest.setBusinessTypeId(applicationProposalMapping.getBusinessTypeId());
 					MatchDisplayResponse matchResponse = matchEngineClient.displayMatchesOfRetail(matchRequest);
+					if(productMappingId != null) {
+						Integer version = productMasterRepository.findBureauVersionByFpProductId(productMappingId);
+						plTeaserViewResponse.setMatchesBureauVersion(version != null ? version : 1);
+					}
 					plTeaserViewResponse.setMatchesList(matchResponse.getMatchDisplayObjectList());
 				} catch (Exception e) {
 					logger.error("Error while getting matches data : " + e);
@@ -1141,14 +1150,16 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		
 		//cibil score
 		try {
-			CibilRequest cibilReq=new CibilRequest();
-			cibilReq.setPan(plRetailApplicantResponse.getPan());
-			cibilReq.setApplicationId(toApplicationId);
-			CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
-			if (cibilScoreByPanCard != null) {
-				plTeaserViewResponse.setCibilScoreRange(CommonUtils.getCibilV2ScoreRange(cibilScoreByPanCard.getActualScore()));
+			//old client
+			/*CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);*/
+			List<CibilScoreLogRequest> cibilScoreByPanCard = cibilClient.getSoftpingScores(toApplicationId, plRetailApplicantResponse.getPan());
+			for(CibilScoreLogRequest req : cibilScoreByPanCard) {
+				if(req.getScoreName().contains("CibilScoreVersion2")) {
+					plTeaserViewResponse.setCibilScoreV2(req.getActualScore());
+				}else {
+					plTeaserViewResponse.setCibilScore(req);
+				}
 			}
-			plTeaserViewResponse.setCibilScore(cibilScoreByPanCard);
 		} catch (Exception e) {
 			logger.error("Error While calling Cibil Score By PanCard : ",e);
 		}
