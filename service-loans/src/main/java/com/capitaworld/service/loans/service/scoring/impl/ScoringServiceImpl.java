@@ -802,7 +802,7 @@ public class ScoringServiceImpl implements ScoringService {
             logger.error("Error while getting Bank Statement Details===>{}",e);
             return new ResponseEntity<>(new LoansResponse("Error while Getting Bank Statemtnt Report for ApplicationID====>" + applicationIdTmp + " and Message====>" + e.getMessage() , HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
         }
-
+        
         for(ScoringRequestLoans scoringRequestLoans:scoringRequestLoansList)
         {
             Long scoreModelId = scoringRequestLoans.getScoringModelId();
@@ -995,37 +995,14 @@ public class ScoringServiceImpl implements ScoringService {
                                 break;
                             }
                             case ScoreParameter.Retail.CIBIL_SCORE_PL: {
-
-                                Double cibil_score = null;
                                 try {
-
-                                    scoreParameterRetailRequest.setCibilScore_p(false);
-                                    CibilRequest cibilRequest = new CibilRequest();
-                                    cibilRequest.setPan(retailApplicantDetail.getPan());
-                                    cibilRequest.setApplicationId(applicationId);
-
-                                    CibilScoreLogRequest cibilResponse = cibilClient.getCibilScoreByPanCard(cibilRequest);
-                                    if (!CommonUtils.isObjectNullOrEmpty(cibilResponse.getActualScore())) {
-
-                                        if(cibilResponse.getActualScore().equals("000-1"))
-                                        {
-                                            cibil_score =-1d;
-                                        }
-                                        else
-                                        {
-                                            cibil_score= Double.parseDouble(cibilResponse.getActualScore());
-                                        }
-
-                                        scoreParameterRetailRequest.setCibilScore(cibil_score);
-                                        scoreParameterRetailRequest.setCibilScore_p(true);
-                                    } else {
-                                        scoreParameterRetailRequest.setCibilScore_p(false);
-                                    }
+                                	List<CibilScoreLogRequest> cibilResponse = cibilClient.getSoftpingScores(applicationIdTmp, retailApplicantDetail.getPan());
+                                	scoreParameterRetailRequest.setCibilActualScore(filterBureauScoreByVersion(1, cibilResponse));
+                    				scoreParameterRetailRequest.setCibilActualScoreVersion2(filterBureauScoreByVersion(2, cibilResponse));
+                    				scoreParameterRetailRequest.setCibilScore_p(true);
                                 } catch (Exception e) {
-                                    logger.error("error while getting CIBIL_SCORE_PL parameter from CIBIL client : ",e);
-                                    scoreParameterRetailRequest.setCibilScore_p(false);
+                                    logger.error("error while getting CIBIL_SCORE_PL parameter from CIBIL client : ",e);                                  
                                 }
-
                                 break;
                             }
                             case ScoreParameter.Retail.AGE_PL: {
