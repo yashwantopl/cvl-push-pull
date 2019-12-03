@@ -1,5 +1,7 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate;
 
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.capitaworld.service.rating.model.FinancialInputRequest;
@@ -8,6 +10,8 @@ public interface CamReportPdfDetailsService {
 	
 	public Map<String, Object> getCamReportPrimaryDetails(Long applicationId, Long productId,Long proposalId, boolean isFinalView);
 	public Map<String, Object> getBankStatementAnalysisReport(Long applicationId, Long productId);
+	
+	public List<LinkedHashMap<String, Object>> getGstDetails(Long applicationId ,Long userId);
 	
 	public Map<String ,Object> getGstReportData(String panNo);
 	

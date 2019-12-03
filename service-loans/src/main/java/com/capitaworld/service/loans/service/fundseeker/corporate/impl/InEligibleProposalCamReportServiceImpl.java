@@ -430,41 +430,10 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 			logger.error(CommonUtils.EXCEPTION, e);
 		}
 
-		try {
-			GSTR1Request req = new GSTR1Request();
-			req.setApplicationId(applicationId);
-			req.setUserId(userId);
-			req.setGstin(corporateApplicantRequest.getGstIn());
-			CAMGSTData resp = null;
-			GstResponse response = gstClient.detailCalculation(req);
-
-			DecimalFormat df = new DecimalFormat(".##");
-			if (!CommonUtils.isObjectNullOrEmpty(response)) {
-				System.out.println(response.getData().getClass().getName());
-				for (LinkedHashMap<String, Object> data : (List<LinkedHashMap<String, Object>>) response.getData()) {
-					resp = MultipleJSONObjectHelper.getObjectFromMap(data, CAMGSTData.class);
-					Double totalSales = 0.0d;
-					if (resp.getMomSales() != null) {
-						List<MomSales> momSalesResp = resp.getMomSales();
-						for (MomSales sales : momSalesResp) {
-
-							totalSales += Double.valueOf(sales.getValue());
-						}
-						data.put("totalMomSales", df.format(totalSales));
-//							resp.setTotalMomSales(totalSales);
-					}
-				}
-				
-//				List<LinkedHashMap<String, Object>> jsonString = response.getData().toString();
-			List<LinkedHashMap<String, Object>> dataMapList =  (List<LinkedHashMap<String, Object>>) response.getData();
-			convertExpVal(dataMapList);
-				
-				map.put("gstDetailedResp", ((List<LinkedHashMap<String, Object>>) response.getData()));
-			}
-
-		} catch (Exception e) {
-			logger.error(CommonUtils.EXCEPTION, e);
-		}
+		map.put("gstDetailedResp", camReportPdfDetailsService.getGstDetails(applicationId, userId));
+		
+		
+		
 		PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateRepository
 				.getByApplicationAndUserId(applicationId, userId);
 		if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)) {
