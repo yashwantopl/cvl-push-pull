@@ -182,7 +182,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 	private FpConstitutionMappingTempRepository fpConstitutionMappingTempRepository;
 
 	@Override
-	public boolean saveOrUpdate(TermLoanParameterRequest termLoanParameterRequest, Long mappingId) {
+	public boolean saveOrUpdate(TermLoanParameterRequest termLoanParameterRequest, Long mappingId, Integer roleId) {
 		CommonDocumentUtils.startHook(logger, CommonUtils.SAVE_OR_UPDATE);
 
 		TermLoanParameterTemp loanParameter = termLoanParameterTempRepository
@@ -695,11 +695,11 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 	 * TermLoanParameterService#saveMasterFromTempTl(java.lang.Long)
 	 */
 	@Override
-	public Boolean saveMasterFromTempTl(Long mappingId) throws LoansException {
+	public Boolean saveMasterFromTempTl(Long mappingId, Integer roleId) throws LoansException {
 		try {
 			TermLoanParameterRequest temp = getTermLoanParameterRequestTemp(mappingId, null, null);
 
-			return saveOrUpdate(temp, mappingId);
+			return saveOrUpdate(temp, mappingId,roleId);
 
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION, e);

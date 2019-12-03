@@ -4,7 +4,7 @@ import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.corporate.TermLoanParameterRequest;
 
 public interface TermLoanParameterService {
-	public boolean saveOrUpdate(TermLoanParameterRequest termLoanParameterRequest , Long mappingId);
+	public boolean saveOrUpdate(TermLoanParameterRequest termLoanParameterRequest , Long mappingId,Integer roleId);
 	
 	public boolean saveOrUpdateNtb(TermLoanParameterRequest termLoanParameterRequest , Long mappingId);
 	
@@ -14,9 +14,10 @@ public interface TermLoanParameterService {
 
 	/**
 	 * @param mappingId
+	 * @param roleId 
 	 * @return
 	 */
-	public Boolean saveMasterFromTempTl(Long mappingId) throws LoansException;
+	public Boolean saveMasterFromTempTl(Long mappingId, Integer roleId) throws LoansException;
 	
 	public Boolean saveMasterFromNtbTempTl(Long mappingId) throws LoansException;
 
