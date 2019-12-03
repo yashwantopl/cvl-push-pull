@@ -584,6 +584,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Object[]> getCoLendingAllRatio(Long applicationId){
 		List<Object[]> ratioList = (List<Object[]>)entityManager.createNativeQuery("SELECT m.ratio_id,fc.nbfc_ratio,fc.bank_ratio,fc.tenure,m.fp_product_id,fc.bank_id FROM nbfc_ratio_mapping m " +
 				"INNER JOIN fp_co_lending_ratio fc ON fc.id=m.ratio_id AND fc.is_proposal_active=TRUE AND fc.is_active=TRUE " +
@@ -591,5 +592,46 @@ public class LoanRepositoryImpl implements LoanRepository {
 				"AND m.is_active=TRUE group by m.ratio_id")
 				.setParameter("applicationId",applicationId).getResultList();
 		return ratioList;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public String getScoringMinAndMaxRangeValue(List<Long> scoreModelId,List<Long> fieldMasterId) {
+		try {
+			return (String) entityManager.createNativeQuery("SELECT CAST(JSON_ARRAYAGG(JSON_OBJECT('scoreModelId',mp.scoring_model_id,'minRange',md.min_range,'maxRange',md.max_range,'score',md.score,'description',md.description,'fieldMasterId',mp.`field_master_id`)) AS CHAR) "
+					+ "FROM `scoring_sidbi`.`model_parameter_option` md "
+					+ "INNER JOIN `scoring_sidbi`.`model_parameter` mp ON mp.`id` = md.`model_parameter_id` "
+					+ "WHERE mp.scoring_model_id IN (:scoreModelId) AND mp.`field_master_id` IN (:fieldMasterId) AND md.is_active = TRUE")
+					.setParameter("scoreModelId",scoreModelId)
+					.setParameter("fieldMasterId", fieldMasterId)
+					.getSingleResult();	
+		} catch (Exception e) {
+			logger.error("Exception while Get Scoring Min And Max Range Value",e);
+		}
+		return null;
+	}
+	
+	@Override
+	public Long getCampaignOrgIdByApplicationId(Long applicationId) {
+		try {
+			BigInteger orgId =  (BigInteger) entityManager.createNativeQuery("SELECT org.user_org_id FROM loan_application.fs_loan_application_master ms\r\n" + 
+					"INNER JOIN users.`user_organisation_master` org ON (org.organisation_code = ms.loan_campaign_code OR org.campaign_url_code = ms.loan_campaign_code)\r\n" + 
+					"WHERE ms.application_id =:applicationId").setParameter("applicationId", applicationId).getSingleResult();
+			return orgId != null ? orgId.longValue() : null;
+		} catch (Exception e) {
+			logger.error("Exception while get campaign bank id from application id " + applicationId,e.getMessage());
+		}
+		return null;
+	}
+	
+	@Override
+	public boolean getCibilBureauAPITrueOrFalse(Long orgId) {
+		try {
+			BigInteger id =  (BigInteger) entityManager.createNativeQuery("SELECT cb.id FROM `cibil`.`organisation_master` cb WHERE cb.id =:orgId AND cb.`is_bureau_integration_active` IS TRUE")
+					.setParameter("orgId", orgId).getSingleResult();
+			return id != null ? true : false;
+		} catch (Exception e) {
+			logger.error("Exception while get Cibil bureau API true or false by OrgId " + orgId,e.getMessage());
+		}
+		return false;
 	}
 }

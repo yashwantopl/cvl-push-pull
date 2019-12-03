@@ -5,11 +5,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -73,6 +77,7 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDet
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.score.ScoreParameterRequestLoans;
+import com.capitaworld.service.loans.model.score.ScoringCibilRequest;
 import com.capitaworld.service.loans.model.score.ScoringRequestLoans;
 import com.capitaworld.service.loans.repository.CspCodeRepository;
 import com.capitaworld.service.loans.repository.common.LoanRepository;
@@ -139,6 +144,7 @@ import com.capitaworld.service.thirdparty.model.CGTMSEDataResponse;
 import com.capitaworld.service.thirdpaty.client.ThirdPartyClient;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -257,7 +263,7 @@ public class ScoringServiceImpl implements ScoringService {
     
     @Autowired
     private CspCodeRepository cspCodeRepository;
-
+    
     private static final String ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING = "Error while getting retail applicant detail for personal loan scoring : ";
     private static final String ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_HOME_LOAN_SCORING = "Error while getting retail applicant detail for Home loan scoring : ";
     private static final String ERROR_WHILE_GETTING_FIELD_LIST = "error while getting field list : ";
@@ -5045,6 +5051,69 @@ public class ScoringServiceImpl implements ScoringService {
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
         }
     }
+    
+    @SuppressWarnings("unchecked")
+	private void setBureauScore(List<ScoringRequestLoans> scorReqLoansList) throws Exception {
+    	//put SET
+    	Set<Long> scoreModelIdList = new HashSet<Long>(); 
+    	Long applicationId = null;
+        for(ScoringRequestLoans scrReq : scorReqLoansList) {
+        	applicationId = scrReq.getApplicationId();
+        	scoreModelIdList.add(scrReq.getScoringModelId());
+        }
+        if(scoreModelIdList.isEmpty()) {
+        	throw new Exception("Need to atlease one score model id to process check scoring.");
+        }
+        try {
+        	List<Long> fieldMasterIdList = new ArrayList<Long>();
+        	fieldMasterIdList.add(3l);
+        	fieldMasterIdList.add(30l);
+        	String value = loanRepository.getScoringMinAndMaxRangeValue(scoreModelIdList.stream().collect(Collectors.toList()), fieldMasterIdList);
+        	if(value == null)
+        		return;
+        		//throw new Exception("Score model range is not found from database");
+        	
+        	Map<String, Object> map = new HashMap<String, Object>();
+        	map.put("applicationId", applicationId);
+            List<ScoringCibilRequest> minAndMaxRanges = Arrays.asList(new ObjectMapper().readValue(value, ScoringCibilRequest[].class));
+            
+            for(Long modelId : scoreModelIdList) {
+            	Map<String, Object> filedMap = new HashMap<String, Object>();
+            	for(Long fieldMasterId : fieldMasterIdList) {
+            		List<ScoringCibilRequest> filterList = minAndMaxRanges.stream().filter(a -> modelId.equals(a.getScoreModelId()) && fieldMasterId.equals(a.getFieldMasterId())).collect(Collectors.toList());
+            		List<Map<String, Object>> subMapList = new ArrayList<Map<String,Object>>();
+            		for(ScoringCibilRequest req : filterList) {
+            			Map<String, Object> subMap = new HashMap<String, Object>();
+                       	subMap.put("min", req.getMinRange());
+                       	subMap.put("max", req.getMaxRange());
+                       	subMap.put("score", req.getScore());
+                       	subMap.put("description", req.getDescription());
+                       	subMapList.add(subMap);
+            		}
+            		filedMap.put(fieldMasterId.toString(), subMapList);
+            	}
+            	map.put(modelId.toString(), filedMap);
+            }
+            
+            
+            CibilRequest cibilRequest = new CibilRequest();
+            cibilRequest.setApplicantId(applicationId);
+            cibilRequest.setDataInput(map);
+            CibilResponse response = cibilClient.getScoringResult(cibilRequest);
+            if(response != null && response.getData() != null) {
+            	Map<String,Object> mapRes = (Map<String,Object>) response.getData();
+            	for(ScoringRequestLoans scrReq : scorReqLoansList) {
+                	scrReq.setMapList((Map<String,Object>)mapRes.get(scrReq.getScoringModelId().toString()));
+                }
+            } else {
+            	throw new Exception("Response from cibil integration is null or empty while set bureau score in calculate scoring " + applicationId);	
+            }
+		} catch (Exception e) {
+			logger.error("Exception while Set Bureau Score from cibil integration ",e);
+			throw new Exception("Application hash encountered error while set Bureau Score from cibil integraion ",e);
+		}
+        
+    }
 
     @Override
     public ResponseEntity<LoansResponse> calculateExistingBusinessScoringList(List<ScoringRequestLoans> scoringRequestLoansList) {
@@ -5054,6 +5123,25 @@ public class ScoringServiceImpl implements ScoringService {
         List<ScoringRequest> scoringRequestList=new ArrayList<ScoringRequest>();
 
         ScoringParameterRequest scoringParameterRequest = null;
+        boolean isCibilCheck = false;
+        try {                                            
+        	if(!scoringRequestLoansList.isEmpty()) {
+        		Long applicationId = scoringRequestLoansList.get(0).getApplicationId();
+        		//GET CAMPAIGN BANK ID FROM APPLICATION ID
+        		Long orgId = loanRepository.getCampaignOrgIdByApplicationId(applicationId);
+        		if(orgId == null)
+        			orgId = 10l;
+        		boolean result = loanRepository.getCibilBureauAPITrueOrFalse(orgId);
+        		if(result && "true".equals(loanRepository.getCommonPropertiesValue("CIBIL_BUREAU_API_START"))) {
+        			isCibilCheck = true;
+        			setBureauScore(scoringRequestLoansList);	
+        		}
+        	}
+		} catch (Exception e) {
+			logger.error("Exeption while set Bureau score " + e.getMessage());
+            return new ResponseEntity<LoansResponse>(new LoansResponse("Application has encountered error while check CIBIL bureau score.", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+        
 
         for(ScoringRequestLoans scoringRequestLoans:scoringRequestLoansList)
         {
@@ -5274,46 +5362,48 @@ public class ScoringServiceImpl implements ScoringService {
                                 break;
                             }
                             case ScoreParameter.CUSTOMER_ASSOCIATE_CONCERN: {
-                                Double customer_ass_concern_year = null;
-                                try {
+                            	if(!isCibilCheck) {
+                            		Double customer_ass_concern_year = null;
+                                    try {
 
-                                    CibilResponse cibilResponse = cibilClient.getDPDYears(applicationId);
-                                    if (!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isObjectNullOrEmpty(cibilResponse.getData())) {
-                                        customer_ass_concern_year = (Double) cibilResponse.getData();
+                                        CibilResponse cibilResponse = cibilClient.getDPDYears(applicationId);
+                                        if (!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isObjectNullOrEmpty(cibilResponse.getData())) {
+                                            customer_ass_concern_year = (Double) cibilResponse.getData();
 
-                                        scoringParameterRequest.setCustomerAssociateConcern(customer_ass_concern_year);
-                                        scoringParameterRequest.setCustomerAsscociateConcern_p(true);
-                                    } else {
+                                            scoringParameterRequest.setCustomerAssociateConcern(customer_ass_concern_year);
+                                            scoringParameterRequest.setCustomerAsscociateConcern_p(true);
+                                        } else {
+                                            scoringParameterRequest.setCustomerAsscociateConcern_p(false);
+                                        }
+
+                                    } catch (Exception e) {
+                                        logger.error("error while getting CUSTOMER_ASSOCIATE_CONCERN parameter from CIBIL client : ",e);
                                         scoringParameterRequest.setCustomerAsscociateConcern_p(false);
-                                    }
-
-                                } catch (Exception e) {
-                                    logger.error("error while getting CUSTOMER_ASSOCIATE_CONCERN parameter from CIBIL client : ",e);
-                                    scoringParameterRequest.setCustomerAsscociateConcern_p(false);
-                                }
+                                    }	
+                            	}
                                 break;
-
                             }
                             case ScoreParameter.CIBIL_TRANSUNION_SCORE: {
-                                Double cibil_score_avg_promotor = null;
-                                try {
+                            	if(!isCibilCheck) {
+                            		Double cibil_score_avg_promotor = null;
+                                    try {
 
-                                    CibilRequest cibilRequest = new CibilRequest();
-                                    cibilRequest.setApplicationId(applicationId);
+                                        CibilRequest cibilRequest = new CibilRequest();
+                                        cibilRequest.setApplicationId(applicationId);
 
-                                    CibilResponse cibilResponse = cibilClient.getCibilScore(cibilRequest);
-                                    if (!CommonUtils.isObjectNullOrEmpty(cibilResponse.getData())) {
-                                        cibil_score_avg_promotor = (Double) cibilResponse.getData();
-                                        scoringParameterRequest.setCibilTransuniunScore(cibil_score_avg_promotor);
-                                        scoringParameterRequest.setCibilTransunionScore_p(true);
-                                    } else {
+                                        CibilResponse cibilResponse = cibilClient.getCibilScore(cibilRequest);
+                                        if (!CommonUtils.isObjectNullOrEmpty(cibilResponse.getData())) {
+                                            cibil_score_avg_promotor = (Double) cibilResponse.getData();
+                                            scoringParameterRequest.setCibilTransuniunScore(cibil_score_avg_promotor);
+                                            scoringParameterRequest.setCibilTransunionScore_p(true);
+                                        } else {
+                                            scoringParameterRequest.setCibilTransunionScore_p(false);
+                                        }
+                                    } catch (Exception e) {
+                                        logger.error("error while getting CIBIL_TRANSUNION_SCORE parameter from CIBIL client : ",e);
                                         scoringParameterRequest.setCibilTransunionScore_p(false);
-                                    }
-                                } catch (Exception e) {
-                                    logger.error("error while getting CIBIL_TRANSUNION_SCORE parameter from CIBIL client : ",e);
-                                    scoringParameterRequest.setCibilTransunionScore_p(false);
-                                }
-
+                                    }	
+                            	}
                                 break;
                             }
 
