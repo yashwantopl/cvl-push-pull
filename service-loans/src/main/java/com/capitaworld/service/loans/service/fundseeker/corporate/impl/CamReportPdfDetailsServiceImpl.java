@@ -452,7 +452,20 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
             }
         }
 
-		
+        try {
+			GSTR1Request gstr1Request = new GSTR1Request();
+			gstr1Request.setApplicationId(applicationId);
+			gstr1Request.setUserId(userId);
+			gstr1Request.setGstin(corporateApplicantRequest.getGstIn());
+			GstResponse response = gstClient.getCalculations(gstr1Request);
+			GstCalculation gstData = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)response.getData(),GstCalculation.class);
+			int noOfCustomer = gstData.getNoOfCustomer().intValue();
+			map.put("noOfCustomer", noOfCustomer);
+			map.put("projectedSales", CommonUtils.convertValueIndianCurrency(gstData.getProjectedSales()));
+			map.put("customerConcentration", CommonUtils.convertValue(gstData.getConcentration()));
+		}catch(Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
 		
 		// Product Name
 		if(productId != null) {
@@ -519,7 +532,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}*/
 		
 		//COMMON GST DATA		
-		map.putAll(getGstDetails(applicationId, userId));		
+		map.put("gstDetailedResp" , getGstDetails(applicationId, userId));		
 		
 		//COMMON ONE-FORM DATA
 		map.putAll(getOneFormData(applicationId,proposalId,userId));
@@ -2092,27 +2105,14 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	
 	
 	//GST COMMON METHOD
-	public Map<String ,Object> getGstDetails(Long applicationId ,Long userId){
+	@Override
+	public List<LinkedHashMap<String, Object>> getGstDetails(Long applicationId ,Long userId){
 		//Fetch Bank Details
 		Map<String, Object> map = new HashMap<String, Object>();
 		//GST DATA
 		
 		CorporateApplicantRequest corporateApplicantRequest = corporateApplicantService.getCorporateApplicant(applicationId);
-		if (corporateApplicantRequest != null) {
-			try {
-				GSTR1Request gstr1Request = new GSTR1Request();
-				gstr1Request.setApplicationId(applicationId);
-				gstr1Request.setUserId(userId);
-				gstr1Request.setGstin(corporateApplicantRequest.getGstIn());
-				GstResponse response = gstClient.getCalculations(gstr1Request);
-				GstCalculation gstData = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)response.getData(),GstCalculation.class);
-				int noOfCustomer = gstData.getNoOfCustomer().intValue();
-				map.put("noOfCustomer", noOfCustomer);
-				map.put("projectedSales", CommonUtils.convertValueIndianCurrency(gstData.getProjectedSales()));
-				map.put("customerConcentration", CommonUtils.convertValue(gstData.getConcentration()));
-			}catch(Exception e) {
-				logger.error(CommonUtils.EXCEPTION,e);
-			}
+		if (corporateApplicantRequest != null) {			
 			
 			try {
 				GSTR1Request req= new GSTR1Request();
@@ -2154,7 +2154,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					List<LinkedHashMap<String, Object>> dataMapList =  (List<LinkedHashMap<String, Object>>) response.getData();
 					convertExpVal(dataMapList);
 					
-					map.put("gstDetailedResp", (List<LinkedHashMap<String, Object>>) response.getData());
+					return (List<LinkedHashMap<String, Object>>) response.getData();
 				}else {
 					logger.info("Gst Data Null for==>"+applicationId);
 				}		
@@ -2163,7 +2163,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			}
 		}
 		
-		return map;
+		return null;
 	}
 	
 	//ONE_FORM COMMON
@@ -2633,7 +2633,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}	    
 	    
 	    //GST COMMON DATA
-	    map.putAll(getGstDetails(applicationId, userId));
+	    map.put("gstDetailedResp",getGstDetails(applicationId, userId));
 	        
 	    CorporateApplicantRequest corporateApplicantRequest = corporateApplicantService.getCorporateApplicant(applicationId);
 	    map.put("panNo", corporateApplicantRequest != null && !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getPanNo()) ? corporateApplicantRequest.getPanNo() : " ");
