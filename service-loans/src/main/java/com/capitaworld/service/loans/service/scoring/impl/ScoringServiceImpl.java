@@ -5045,6 +5045,7 @@ public class ScoringServiceImpl implements ScoringService {
         	List<Long> fieldMasterIdList = new ArrayList<Long>();
         	fieldMasterIdList.add(3l);
         	fieldMasterIdList.add(30l);
+        	fieldMasterIdList.add(210l);
         	String value = loanRepository.getScoringMinAndMaxRangeValue(scoreModelIdList.stream().collect(Collectors.toList()), fieldMasterIdList);
         	if(value == null)
         		return;
@@ -5150,6 +5151,7 @@ public class ScoringServiceImpl implements ScoringService {
             scoringRequest.setUserId(scoringRequestLoans.getUserId());
             scoringRequest.setBusinessTypeId(ScoreParameter.BusinessType.EXISTING_BUSINESS);
             scoringRequest.setEligibleLoanAmountCircular(scoringRequestLoans.getEligibleLoanAmountCircular());
+            scoringRequest.setMap(scoringRequestLoans.getMapList());
 
 
 
