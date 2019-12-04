@@ -74,6 +74,10 @@ public interface LoanRepository{
 	
 	public String getApplicationCampaignCode(Long applicationId);
 	
+	public Object[] getApplicationCampaignDetails(Long applicationId);
+	
+	public Boolean isBankSpecificOn(Long applicationId);
+	
 	public Boolean isCampaignUser(Long userId);
 	
 	public String getCampaignUser(Long userId,Long campaignType);

@@ -8630,6 +8630,21 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		return loanRepository.getApplicationCampaignCode(applicationId);
 	}
 	
+	@Override
+	public Object getCampaignCodeAndIsBankSpecific(Long applicationId) {
+		Object[] obj = loanRepository.getApplicationCampaignDetails(applicationId);
+		if(obj == null) {
+			return null;
+		}
+		Map<String,Object> json = new HashMap<String, Object>();
+		json.put("userOrgId", CommonUtils.convertLong(obj[0]));
+		json.put("organisationName", CommonUtils.convertString(obj[1]));
+		json.put("campaignCode", CommonUtils.convertString(obj[2]));
+		json.put("isBankSpecificOn", loanRepository.isBankSpecificOn(applicationId));
+		return json;
+	}
+	
+	
 	public String convertValue(Double value) {
 		return !CommonUtils.isObjectNullOrEmpty(value) ? decim.format(value) : "0";
 	}

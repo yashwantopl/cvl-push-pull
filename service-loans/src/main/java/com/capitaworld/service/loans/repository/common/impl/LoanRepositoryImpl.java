@@ -506,6 +506,37 @@ public class LoanRepositoryImpl implements LoanRepository {
 		return null;
 		
 	}
+	
+	@Override
+	public Object[] getApplicationCampaignDetails(Long applicationId) {
+		try {
+			return (Object[]) entityManager
+					.createNativeQuery("SELECT org.user_org_id,org.organisation_name,fs.`loan_campaign_code` \r\n" + 
+							"FROM `loan_application`.`fs_loan_application_master` fs \r\n" + 
+							"LEFT JOIN `users`.`user_organisation_master` org ON org.organisation_code = fs.loan_campaign_code\r\n" + 
+							"WHERE fs.`application_id` =:applicationId")
+							.setParameter("applicationId", applicationId).getSingleResult();
+		} catch (Exception e) {
+			logger.error("Exception while getApplicationCampaignDetails  ----->" ,e);
+		}
+		return null;
+		
+	}
+	
+	@Override
+	public Boolean isBankSpecificOn(Long applicationId) {
+		try {
+			BigInteger count =  (BigInteger) entityManager.createNativeQuery("SELECT COUNT(org.`user_org_id`) FROM `users`.`user_organisation_master` org,`loan_application`.`fp_offline_app_config` app,`loan_application`.`fs_loan_application_master` cam \r\n" + 
+					"WHERE cam.`application_id` =:applicationId AND cam.`loan_campaign_code` = org.`organisation_code` \r\n" + 
+					"AND org.`user_org_id` = app.`org_id` AND org.`is_active` = TRUE \r\n" + 
+					"AND app.`is_active` = TRUE AND app.`bank_specific` = '1';")
+			.setParameter("applicationId", applicationId).getSingleResult();
+			return count.longValue() > 0;			
+		} catch (Exception e) {
+			logger.error("Exception while isBankSpecificOn  ----->" ,e);
+		}
+		return null;
+	}
 
 	public boolean saveTutorialsAudits(TutorialsViewAudits longLatrequest){
 		BigInteger singleResult = (BigInteger) entityManager.createNativeQuery("SELECT COUNT(id) FROM `tutorial_view_audit` WHERE tutorial_id =:tutorialId AND user_id=:userId AND loan_type=:loanType")
