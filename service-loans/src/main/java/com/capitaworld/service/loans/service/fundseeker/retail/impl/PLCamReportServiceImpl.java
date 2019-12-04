@@ -1078,7 +1078,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 						if(req.getScoreName().contains("CibilScoreVersion2")) {
 							map.put("applicantV2Score", req.getActualScore() != null ? req.getActualScore() : null);
 						}else {
-							map.put("applicantCIBILScore", cibilScoreByPanCard);
+							map.put("applicantCIBILScore", req.getActualScore());
 						}
 				}
 			} catch (Exception e) {
