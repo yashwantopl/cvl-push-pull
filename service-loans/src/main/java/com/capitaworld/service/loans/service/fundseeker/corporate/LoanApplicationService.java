@@ -291,6 +291,8 @@ public interface LoanApplicationService {
 	public Map<String, Object> getGstRelatedPartyDetails(Long applicationId);
 	
 	public String getApplicationCampaignCode(Long applicationId);
+	
+	public Object getCampaignCodeAndIsBankSpecific(Long applicationId);
 
 	public UsersRequest getUserDetailsForUrlSepration(Long userId);
 

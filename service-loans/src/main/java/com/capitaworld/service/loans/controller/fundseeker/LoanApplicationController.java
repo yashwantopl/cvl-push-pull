@@ -3227,4 +3227,19 @@ public class LoanApplicationController {
 	    		  HttpStatus.INTERNAL_SERVER_ERROR);
 	    }
 	}
+	
+	/**
+	 * GET APPLICATION CAMPAIGN DETAILS(OrgId, OrgCode, OrgName, IsBankSpecificON) FROM FS LOAN APPLICATION MASTER
+	 * @param applicationId
+	 * @return
+	 */
+	@RequestMapping(value = "/getApplicationCampDetails/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getApplicationCampDetails(@PathVariable("applicationId") Long applicationId) {
+		try {
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully get data", HttpStatus.OK.value(),loanApplicationService.getCampaignCodeAndIsBankSpecific(applicationId)), HttpStatus.OK);
+	    } catch (Exception e) {
+	    	logger.error("Error while getCampaignCodeAndIsBankSpecific ==>", e);
+	    	return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.INTERNAL_SERVER_ERROR);
+	    }
+	}
 }

@@ -287,6 +287,7 @@ public class LoansClient {
     private static final String SEND_MAIL_INELIGIBLE_FOR_SIDBI = "/sendInEligibleForSidbi";
     
     private static final String GET_APPLICATION_CAMPAIGN_CODE = "/loan_application/getApplicationCampCode";
+    private static final String GET_APPLICATION_CAMPAIGN_DETAILS = "/loan_application/getApplicationCampDetails";
     private static final String GET_FINANCIAL_DATA = "/cma/getFinancialDetailsForBankIntegration";
     
     private static final String LOAN_AMOUNT_FOR_INELIGIBLE = "/get/loan_amount_for_ineligible";
@@ -3004,6 +3005,27 @@ public class LoansClient {
 		} catch (Exception e) {
 			logger.error("Exception in saveBankRelation : ",e);
 			throw new LoansException();
+		}
+	}
+	
+	/**
+	 * GET APPLICATION CAMPAIGN DETAILS(OrgId, OrgCode, OrgName, IsBankSpecificON) FROM LOAN APPLICATION MASTER
+	 * @param applicationId
+	 * @return PLEASE FIND CAMPAIGN DETAILS OBJECT MAP FROM "data" key from "LoansResponse" Class
+	 * @Map From data key :- map.put("userOrgId",obj[0]); map.put("organisationName", obj[1]); map.put("campaignCode", obj[2]); map.put("isBankSpecificOn", true or false or null);
+	 * @throws ExcelException 
+	 */
+	public LoansResponse getApplicationCampaignDetails(Long applicationId) throws ExcelException {
+		String url = loansBaseUrl.concat(GET_APPLICATION_CAMPAIGN_DETAILS).concat("/" + applicationId);
+		logger.info("url for Getting APPLICATION CAMPIGN DETAILS=================>{} = {} = {}" , url , AND_FOR_APPLICATION_ID , applicationId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set(REQ_AUTH, "true");
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			logger.error("Exception in getApplicationCampaignDetails : ",e);
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 }
