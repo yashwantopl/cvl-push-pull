@@ -657,7 +657,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	@Override
 	public boolean getCibilBureauAPITrueOrFalse(Long orgId) {
 		try {
-			BigInteger id =  (BigInteger) entityManager.createNativeQuery("SELECT cb.id FROM `cibil`.`organisation_master` cb WHERE cb.id =:orgId AND cb.`is_bureau_integration_active` IS TRUE")
+			BigInteger id =  (BigInteger) entityManager.createNativeQuery("SELECT cb.id FROM `cibil`.`organisation_master` cb WHERE cb.id =:orgId AND cb.`is_msme_api_active` IS TRUE")
 					.setParameter("orgId", orgId).getSingleResult();
 			return id != null ? true : false;
 		} catch (Exception e) {
