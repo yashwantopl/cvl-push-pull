@@ -5030,7 +5030,7 @@ public class ScoringServiceImpl implements ScoringService {
     }
     
     @SuppressWarnings("unchecked")
-	private void setBureauScore(List<ScoringRequestLoans> scorReqLoansList) throws Exception {
+	private void setBureauScore(List<ScoringRequestLoans> scorReqLoansList, Long orgId) throws Exception {
     	logger.info("Enter setBureauScore --------------------------------->");
     	//put SET
     	Set<Long> scoreModelIdList = new HashSet<Long>(); 
@@ -5079,6 +5079,7 @@ public class ScoringServiceImpl implements ScoringService {
             CibilRequest cibilRequest = new CibilRequest();
             cibilRequest.setApplicantId(applicationId);
             cibilRequest.setDataInput(map);
+            cibilRequest.setOrgId(orgId);
             CibilResponse response = cibilClient.getScoringResult(cibilRequest);
             if(response != null && response.getData() != null) {
             	Map<String,Object> mapRes = (Map<String,Object>) response.getData();
@@ -5117,7 +5118,7 @@ public class ScoringServiceImpl implements ScoringService {
         		logger.info("Found Result For CIBIL API ----->" + result + " For Org ID ----" + orgId + "  And check API --- >" + checkAPI);
         		if(result && "true".equals(checkAPI)) {
         			isCibilCheck = true;
-        			setBureauScore(scoringRequestLoansList);	
+        			setBureauScore(scoringRequestLoansList,orgId);	
         		}
         	}
 		} catch (Exception e) {
