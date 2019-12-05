@@ -13,7 +13,9 @@ public class ScoringCibilRequest  implements Serializable {
 	private String description;
 	private Long fieldMasterId;
 	
-	
+	public ScoringCibilRequest() {
+		super();
+	}
 	public ScoringCibilRequest(Long scoreModelId, Double minRange, Double maxRange, Long score, String description) {
 		super();
 		this.scoreModelId = scoreModelId;
