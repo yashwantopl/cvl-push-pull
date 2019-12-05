@@ -6,6 +6,7 @@ import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -172,6 +173,7 @@ import com.capitaworld.service.oneform.enums.VisuallyImpairedMst;
 import com.capitaworld.service.oneform.enums.WcRenewalType;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
+import com.capitaworld.service.oneform.model.SectorIndustryModel;
 import com.capitaworld.service.rating.model.FinancialInputRequest;
 import com.capitaworld.service.rating.model.RatingResponse;
 import com.capitaworld.service.scoring.ScoringClient;
@@ -2196,12 +2198,40 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			map.put("knowHow", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getKnowHow())? StringEscapeUtils.escapeXml(KnowHowMst.getById(primaryCorporateDetail.getKnowHow()).getValue()) : "-");
 			map.put("competition", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCompetition())? StringEscapeUtils.escapeXml(CompetitionMst_SBI.getById(primaryCorporateDetail.getCompetition()).getValue()) : "-");
 			map.put("productDesc", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getProductServiceDescription()) ? StringEscapeUtils.escapeXml(primaryCorporateDetail.getProductServiceDescription()) : null);
-
+			map.put("additionalLimit", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getAdditionalLoanAmount()) ? primaryCorporateDetail.getAdditionalLoanAmount() : "-" );
+			//map.put("costOfMachinery", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCostOfMachinery()) ? primaryCorporateDetail.getCostOfMachinery() : "-" );
+			
+			//Scientific value removal
+			if (primaryCorporateDetail.getIncrementalTurnover() != null) {
+				Double increTurnover = primaryCorporateDetail.getIncrementalTurnover();
+				BigDecimal incrementalTurnover = BigDecimal.valueOf(increTurnover).setScale(1);
+				map.put("incrementalTurnover", incrementalTurnover.toString());
+			}
+			if (primaryCorporateDetail.getCostOfMachinery() != null) {
+				Double machineCost = primaryCorporateDetail.getCostOfMachinery();
+				BigDecimal costOfMachinery = BigDecimal.valueOf(machineCost).setScale(1);
+				map.put("costOfMachinery", costOfMachinery.toString());
+			}
+			 
+			//map.put("incrementalTurnover", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getIncrementalTurnover()) ? primaryCorporateDetail.getIncrementalTurnover() : "-");
+			map.put("incrementalMargin", !CommonUtils.isObjectNullOrEmptyOrDash(primaryCorporateDetail.getIncrementalMargin()) ? primaryCorporateDetail.getIncrementalMargin() : "-");			
+			map.put("borrowerDeclaredProjSales", !CommonUtils.isObjectNullOrEmptyOrDash(primaryCorporateDetail.getBorrowerDcldProjectedSales()) ? primaryCorporateDetail.getBorrowerDcldProjectedSales() : "-");
+			
+			if (primaryCorporateDetail.getAdditionalLoanAmount() != null && primaryCorporateDetail.getLoanAmount() != null) {
+				Double totLimit = primaryCorporateDetail.getAdditionalLoanAmount() + primaryCorporateDetail.getLoanAmount();
+				BigDecimal totalLimit = BigDecimal.valueOf(totLimit).setScale(1);				
+				map.put("totalLimit", totalLimit.toString());
+			} else {
+				map.put("totalLimit", "-");
+			}
 			Boolean isHaveCollateralSecu =  primaryCorporateDetail.getHaveCollateralSecurity();
 			map.put("isHaveCollateralSecu", isHaveCollateralSecu == null ? "-" : isHaveCollateralSecu ? "Yes" : "No");
 			
 			Boolean isAllowSwitchExistingLender = primaryCorporateDetail.getIsAllowSwitchExistingLender();
 			map.put("isAllowSwitchExistingLender", isAllowSwitchExistingLender == null ? "-" : isAllowSwitchExistingLender ? "Yes" : "No");
+			
+			Boolean isIsoCertified = primaryCorporateDetail.getIsIsoCertified();
+			map.put("isIsoCertified", isIsoCertified == null ? "-" : isIsoCertified ? "Yes" : "No");
 			
 			if (proposalId != null) {
 				map.put("loanType", !CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getProductId()) ? CommonUtils.LoanType.getType(applicationProposalMapping.getProductId()).getName() : " ");	
@@ -2237,6 +2267,46 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				//INDUSTRY DATA
 				Integer industry = corporateApplicantRequest.getKeyVericalFunding().intValue();
 				map.put("keyVerticalFunding", !CommonUtils.isObjectNullOrEmpty(industry) ? CommonUtils.printFields(Industry.getById(industry).getValue(),null) : " ");
+
+				// key vertical sector
+				List<Long> keyVerticalSectorId = new ArrayList<>();
+				// getting sector id from mapping
+				if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getKeyVerticalSector()))
+					keyVerticalSectorId.add(corporateApplicantRequest.getKeyVerticalSector());
+
+				try {
+					OneFormResponse formResponse = oneFormClient
+							.getIndustrySecByMappingId(corporateApplicantRequest.getKeyVerticalSector());
+					// SectorIndustryModel oneResponseDataList = (SectorIndustryModel) formResponse
+					// .getData();
+
+					SectorIndustryModel sectorIndustryModel = MultipleJSONObjectHelper
+							.getObjectFromMap((Map) formResponse.getData(), SectorIndustryModel.class);
+
+					// get key vertical sector value
+					OneFormResponse oneFormResponse = oneFormClient
+							.getSectorById(Arrays.asList(sectorIndustryModel.getSectorId()));
+					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+							.getListData();
+					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+						MasterResponse masterResponse = MultipleJSONObjectHelper
+								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+						map.put("keyVerticalSectorApp", masterResponse.getValue());
+					}
+				} catch (Exception e) {
+					logger.error(CommonUtils.EXCEPTION,e);
+				}
+
+				// key vertical Subsector
+				try {
+					if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getKeyVerticalSubsector())) {
+						OneFormResponse oneFormResponse = oneFormClient
+								.getSubSecNameByMappingId(corporateApplicantRequest.getKeyVerticalSubsector());
+						map.put("keySubSectorApp", oneFormResponse.getData());
+					}
+				} catch (Exception e) {
+					logger.error("error while getting key vertical sub-sector : ",e);
+				}
 			}catch (Exception e) {
 				logger.error(CommonUtils.EXCEPTION,e);
 				}
@@ -2428,7 +2498,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 
 				try {
 					PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
-					map.put("loanAmt", applicationProposalMapping != null && applicationProposalMapping.getLoanAmount() != null ? CommonUtils.convertValueIndianCurrency(applicationProposalMapping.getLoanAmount()) : "-");
+					map.put("loanAmt", applicationProposalMapping != null && applicationProposalMapping.getLoanAmount() != null ? CommonUtils.convertValueIndianCurrency(applicationProposalMapping.getLoanAmount()) : "0");
 					
 					map.put("enhancementAmount", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getEnhancementAmount()) ? CommonUtils.convertValueIndianCurrency(primaryCorporateRequest.getEnhancementAmount()) : " ");
 					//map.put("loanType", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getProductId()) ? CommonUtils.LoanType.getType(primaryCorporateRequest.getProductId()).getName() : " ");
@@ -2537,8 +2607,18 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					logger.error(CommonUtils.EXCEPTION,e);
 				}
 				
-				
-			    
+				//SHARE PRICE
+				if (applicationProposalMapping != null) {
+					try {
+						CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.getByApplicationAndProposalIdAndUserId(userId, applicationId,applicationProposalMapping.getProposalId());
+						if(corporateApplicantDetail != null) {
+							map.put("castCategory", corporateApplicantDetail.getCastCategory());
+						}
+					}catch (Exception e) {
+						logger.error(CommonUtils.EXCEPTION,e);
+					}
+				}
+							   
 				return map;
 		}
 	
@@ -2642,6 +2722,21 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		Long orgId = null;
 		if(proposalId != null) {
 			orgId = proposalDetailsRepository.getOrgIdByProposalId(proposalId);
+			// Product Name
+			if(productId != null) {
+				String productName = productMasterRepository.getFpProductName(productId);
+				if(productName != null) {
+					try {
+						map.put("fpProductName",CommonUtils.printFields(productName, null));
+					} catch (Exception e) {
+						logger.info("error"+e);
+					}
+				}else {
+					logger.info("product name is null..of productId==>{}", productId);
+				}
+			}else {
+				logger.info("fpProductMapping id is null..");
+			}
 		}else {
 			orgId = ineligibleProposalDetailsRepository.getOrgId(applicationId);
 		}
@@ -2656,7 +2751,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		//matches common
 		map.putAll(getMatchesAndEligiblityDetails(applicationId,productId,proposalId));
-
+		
+		//bank Statement data
+		map.putAll(getBankStatementDetails(applicationId, userId));
 	    return map;
 	}
 	
