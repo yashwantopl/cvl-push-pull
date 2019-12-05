@@ -2204,12 +2204,12 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			//Scientific value removal
 			if (primaryCorporateDetail.getIncrementalTurnover() != null) {
 				Double increTurnover = primaryCorporateDetail.getIncrementalTurnover();
-				BigDecimal incrementalTurnover = BigDecimal.valueOf(increTurnover).setScale(1);
+				BigDecimal incrementalTurnover = BigDecimal.valueOf(increTurnover).setScale(0);
 				map.put("incrementalTurnover", incrementalTurnover.toString());
 			}
 			if (primaryCorporateDetail.getCostOfMachinery() != null) {
 				Double machineCost = primaryCorporateDetail.getCostOfMachinery();
-				BigDecimal costOfMachinery = BigDecimal.valueOf(machineCost).setScale(1);
+				BigDecimal costOfMachinery = BigDecimal.valueOf(machineCost).setScale(0);
 				map.put("costOfMachinery", costOfMachinery.toString());
 			}
 			 
@@ -2219,7 +2219,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			
 			if (primaryCorporateDetail.getAdditionalLoanAmount() != null && primaryCorporateDetail.getLoanAmount() != null) {
 				Double totLimit = primaryCorporateDetail.getAdditionalLoanAmount() + primaryCorporateDetail.getLoanAmount();
-				BigDecimal totalLimit = BigDecimal.valueOf(totLimit).setScale(1);				
+				BigDecimal totalLimit = BigDecimal.valueOf(totLimit).setScale(0);				
 				map.put("totalLimit", totalLimit.toString());
 			} else {
 				map.put("totalLimit", "-");
