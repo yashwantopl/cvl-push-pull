@@ -5045,6 +5045,7 @@ public class ScoringServiceImpl implements ScoringService {
         }
         try {
         	List<Long> fieldMasterIdList = new ArrayList<Long>();
+        	fieldMasterIdList.add(2l);
         	fieldMasterIdList.add(3l);
         	fieldMasterIdList.add(30l);
         	fieldMasterIdList.add(210l);
