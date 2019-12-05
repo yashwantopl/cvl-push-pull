@@ -2,8 +2,13 @@ package com.capitaworld.service.loans.controller.fundseeker.corporate;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -22,12 +27,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.capitaworld.api.eligibility.utility.MultipleJSONObjectHelper;
 import com.capitaworld.api.reports.ReportRequest;
 import com.capitaworld.client.reports.ReportsClient;
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
+import com.capitaworld.service.gst.exceptions.GstException;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CamReportPdfDetailsService;
@@ -792,13 +799,18 @@ public class CamReportPdfDetailsController {
 			return null;
 		}
 		try {
+			List<Map<String, Object>> dataMapList =  (List<Map<String, Object>>) callGstClient(panNo, fpUserId, fsUserId);
+
+			//handle exponential value ussue
+			for (Map<String, Object> map : dataMapList) {
+				Iterable<Map<String,Object>> values = ((Map) map.get("financialYearWiseData")).values();
+				for (Map<String,Object> mp : values)
+					mp.computeIfPresent("yearWiseTotalPurchases", (k,v)->BigDecimal.valueOf((Double)v).setScale(1).toString());
+			}
+
+			//use data
 			Map<String, Object> mapData = new HashMap<String, Object>();
-			GSTR1Request gstr1Request = new GSTR1Request();
-			gstr1Request.setPan(panNo);
-			gstr1Request.setFpUserId(fpUserId);
-			gstr1Request.setFsUserId(fsUserId);
-			GstResponse gstResponse = gstClient.gstSpecificDetailCalculation(gstr1Request);
-			mapData.put("gstSpecificData", !CommonUtils.isObjectNullOrEmpty(gstResponse) && !CommonUtils.isObjectNullOrEmpty(gstResponse.getData()) ? gstResponse.getData() : null);
+			mapData.put("gstSpecificData", dataMapList);
 			ReportRequest reportRequest = new ReportRequest();
 			reportRequest.setParams(mapData);
 			reportRequest.setTemplate("GSTSPECIFICDATA");
@@ -814,6 +826,15 @@ public class CamReportPdfDetailsController {
 			logger.error(ERROR_WHILE_GETTING_MAP_DETAILS, e);
 			return null;
 		}
+	}
+
+	private Object callGstClient(String panNo, Long fpUserId, Long fsUserId) throws GstException {
+		GSTR1Request gstr1Request = new GSTR1Request();
+		gstr1Request.setPan(panNo);
+		gstr1Request.setFpUserId(fpUserId);
+		gstr1Request.setFsUserId(fsUserId);
+		GstResponse gstResponse = gstClient.gstSpecificDetailCalculation(gstr1Request);
+		return gstResponse.getData();
 	}
 	
 	@GetMapping(value = {"/getApplicationForm/{applicationId}/{loanTypeId}","/getApplicationForm/{applicationId}/{productMappingId}/{proposalId}","/getApplicationForm/{applicationId}/{productMappingId}/{proposalId}/{loanTypeId}"} , produces = MediaType.APPLICATION_JSON_VALUE)
