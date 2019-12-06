@@ -6676,31 +6676,33 @@ public class ScoringServiceImpl implements ScoringService {
                                 break;
                             }
                             case ScoreParameter.CMR_SCORE_MSME_RANKING: {  // CMR RATING FETCH FROM COMMERCIAL BUREAU
-
-                            	try {
-                            	String cmrScore = cibilClient.getCMRScore(applicationId);
-                            	 	logger.info("{CMR_SCORE_MSME_RANKING}====={cmrScore}===={}=====>",cmrScore,"==={applicationId}===>"+applicationId);
-                            	 	
-                            		if(!CommonUtils.isObjectNullOrEmpty(cmrScore) && (!cmrScore.equals("NA"))){
-                            			// String cmrValue = cmrScore.substring(4,6);
-                            			String [] cmrValue = cmrScore.trim().split("-");
-	                            			if(!CommonUtils.isObjectNullOrEmpty(cmrValue) && !CommonUtils.isObjectNullOrEmpty(cmrValue[1]))
-	                            			{
-	                            					scoringParameterRequest.setCmrScoreMsmeRanking(Double.valueOf(cmrValue[1]));
-	                            			 }
-	                            			else
-	                            			{
-	                            				scoringParameterRequest.setCmrScoreMsmeRanking(0.0);
-	                            			}
-	                            			scoringParameterRequest.setCmrScoreMsmeRanking_p(true);
-                                   }else{
-                                	   scoringParameterRequest.setCmrScoreMsmeRanking_p(true);
-                                	   scoringParameterRequest.setCmrScoreMsmeRanking(0.0);
-                                   }
-								} catch (Exception e) {
-									logger.error("Exception is getting while Get CMR Score CIBI:---->",e);
-									e.printStackTrace();
-								}
+                            	if(!isCibilCheck) {
+                            		try {
+                                    	String cmrScore = cibilClient.getCMRScore(applicationId);
+                                    	 	logger.info("{CMR_SCORE_MSME_RANKING}====={cmrScore}===={}=====>",cmrScore,"==={applicationId}===>"+applicationId);
+                                    	 	
+                                    		if(!CommonUtils.isObjectNullOrEmpty(cmrScore) && (!cmrScore.equals("NA"))){
+                                    			// String cmrValue = cmrScore.substring(4,6);
+                                    			String [] cmrValue = cmrScore.trim().split("-");
+        	                            			if(!CommonUtils.isObjectNullOrEmpty(cmrValue) && !CommonUtils.isObjectNullOrEmpty(cmrValue[1]))
+        	                            			{
+        	                            					scoringParameterRequest.setCmrScoreMsmeRanking(Double.valueOf(cmrValue[1]));
+        	                            			 }
+        	                            			else
+        	                            			{
+        	                            				scoringParameterRequest.setCmrScoreMsmeRanking(0.0);
+        	                            			}
+        	                            			scoringParameterRequest.setCmrScoreMsmeRanking_p(true);
+                                           }else{
+                                        	   scoringParameterRequest.setCmrScoreMsmeRanking_p(true);
+                                        	   scoringParameterRequest.setCmrScoreMsmeRanking(0.0);
+                                           }
+        								} catch (Exception e) {
+        									logger.error("Exception is getting while Get CMR Score CIBI:---->",e);
+        									e.printStackTrace();
+        								}
+                            	}
+                            	
                                 break;
                             }
                             case ScoreParameter.ISO_CERTIFICATION: {
