@@ -5030,7 +5030,8 @@ public class ScoringServiceImpl implements ScoringService {
     }
     
     @SuppressWarnings("unchecked")
-	private void setBureauScore(List<ScoringRequestLoans> scorReqLoansList) throws Exception {
+	private void setBureauScore(List<ScoringRequestLoans> scorReqLoansList, Long orgId) throws Exception {
+    	logger.info("Enter setBureauScore --------------------------------->");
     	//put SET
     	Set<Long> scoreModelIdList = new HashSet<Long>(); 
     	Long applicationId = null;
@@ -5038,11 +5039,13 @@ public class ScoringServiceImpl implements ScoringService {
         	applicationId = scrReq.getApplicationId();
         	scoreModelIdList.add(scrReq.getScoringModelId());
         }
+        logger.info("Enter setBureauScore applicationId --------------------------------->" + applicationId);
         if(scoreModelIdList.isEmpty()) {
         	throw new Exception("Need to atlease one score model id to process check scoring.");
         }
         try {
         	List<Long> fieldMasterIdList = new ArrayList<Long>();
+        	fieldMasterIdList.add(2l);
         	fieldMasterIdList.add(3l);
         	fieldMasterIdList.add(30l);
         	fieldMasterIdList.add(210l);
@@ -5072,11 +5075,12 @@ public class ScoringServiceImpl implements ScoringService {
             	}
             	map.put(modelId.toString(), filedMap);
             }
-            
+            logger.info("PREPARE MAP FOR CIBIL API CALL -----> " + MultipleJSONObjectHelper.getStringfromObject(map));
             
             CibilRequest cibilRequest = new CibilRequest();
             cibilRequest.setApplicantId(applicationId);
             cibilRequest.setDataInput(map);
+            cibilRequest.setOrgId(orgId);
             CibilResponse response = cibilClient.getScoringResult(cibilRequest);
             if(response != null && response.getData() != null) {
             	Map<String,Object> mapRes = (Map<String,Object>) response.getData();
@@ -5104,15 +5108,18 @@ public class ScoringServiceImpl implements ScoringService {
         boolean isCibilCheck = false;
         try {                                            
         	if(!scoringRequestLoansList.isEmpty()) {
+        		logger.info("Enter in calculateExistingBusinessScoringList for check If Cibil API check or not");
         		Long applicationId = scoringRequestLoansList.get(0).getApplicationId();
         		//GET CAMPAIGN BANK ID FROM APPLICATION ID
         		Long orgId = loanRepository.getCampaignOrgIdByApplicationId(applicationId);
         		if(orgId == null)
         			orgId = 10l;
         		boolean result = loanRepository.getCibilBureauAPITrueOrFalse(orgId);
-        		if(result && "true".equals(loanRepository.getCommonPropertiesValue("CIBIL_BUREAU_API_START"))) {
+        		String checkAPI = loanRepository.getCommonPropertiesValue("CIBIL_BUREAU_API_START");
+        		logger.info("Found Result For CIBIL API ----->" + result + " For Org ID ----" + orgId + "  And check API --- >" + checkAPI);
+        		if(result && "true".equals(checkAPI)) {
         			isCibilCheck = true;
-        			setBureauScore(scoringRequestLoansList);	
+        			setBureauScore(scoringRequestLoansList,orgId);	
         		}
         	}
 		} catch (Exception e) {
