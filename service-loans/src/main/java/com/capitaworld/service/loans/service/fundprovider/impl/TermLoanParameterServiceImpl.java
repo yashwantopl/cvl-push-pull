@@ -259,8 +259,10 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		saveNbfcRatioMapping(termLoanParameterRequest);
 		
 		//add duplicate productmaster entries based on nbfc ids
-		addduplicateEntriesForNbfc(termLoanParameterRequest,mappingId);
-		
+		if(termLoanParameterRequest.getProductType()!=null && termLoanParameterRequest.getProductType()==2){
+			addduplicateEntriesForNbfc(termLoanParameterRequest,mappingId);
+		}
+
 		boolean isUpdate = msmeValueMappingService.updateMsmeValueMapping(false, mappingId, termLoanParameter2.getId());
 		logger.info(UPDATED_MSG, isUpdate);
 		CommonDocumentUtils.endHook(logger, CommonUtils.SAVE_OR_UPDATE);
