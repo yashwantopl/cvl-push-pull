@@ -5037,6 +5037,7 @@ public class ScoringServiceImpl implements ScoringService {
     	Long applicationId = null;
         for(ScoringRequestLoans scrReq : scorReqLoansList) {
         	applicationId = scrReq.getApplicationId();
+        	logger.info("scrReq.getScoringModelId()------------------------------>" + scrReq.getScoringModelId());
         	scoreModelIdList.add(scrReq.getScoringModelId());
         }
         logger.info("Enter setBureauScore applicationId --------------------------------->" + applicationId);
