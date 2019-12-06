@@ -2325,7 +2325,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 						if(directorBackgroundDetailRequest.getPanNo() != null) {
 							directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo().toUpperCase());
 						}
-						
+						directorBackgroundDetailResponse.setShareholding(directorBackgroundDetailRequest.getShareholding().toString());
 						String directorName = "";
 						if (directorBackgroundDetailRequest.getSalutationId() != null){
 							directorName = Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue();
