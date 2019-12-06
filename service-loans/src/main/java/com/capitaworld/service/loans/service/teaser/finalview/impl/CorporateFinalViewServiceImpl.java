@@ -73,6 +73,7 @@ import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateMcqRequest;
 import com.capitaworld.service.loans.model.corporate.TotalCostOfProjectRequest;
 import com.capitaworld.service.loans.model.teaser.finalview.CorporateFinalViewResponse;
+import com.capitaworld.service.loans.repository.common.CommonRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.WcTlLoanParameterRepository;
@@ -327,6 +328,9 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 	private CIBILClient cibilClient;
 	
 	@Autowired
+	private CommonRepository commonRepository;
+	
+	@Autowired
 	private LoanApplicationService loanApplicationService;
 	
 	@Autowired
@@ -402,6 +406,13 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 				.getByApplicationAndProposalIdAndUserId(userId, toApplicationId,proposalMapId); // NEW BASED ON PROPOSAL MAP ID
 
+		//NOTE OF BORROWER FOR MSME
+		try {
+			String note = commonRepository.getNoteForHLCam(toApplicationId);
+			corporateFinalViewResponse.setNoteOfBorrower(!CommonUtils.isObjectNullOrEmpty(note) ? note : null);
+		}catch (Exception e) {
+			logger.error("Error/Exception while getting note of borrower....Error==>{}", e);
+		}
 		 
 		// SET VALUE TO RESPONSE
 		if (corporateApplicantDetail != null) {

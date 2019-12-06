@@ -17,6 +17,9 @@ public interface LoanSanctionRepository extends JpaRepository<LoanSanctionDomain
 															  
 	@Query("SELECT lsd FROM LoanSanctionDomain lsd where lsd.applicationId =:applicationId AND lsd.isActive = true")
 	public LoanSanctionDomain  findByAppliationId(@Param("applicationId") Long applicationId);
+	
+	@Query("SELECT lsd FROM LoanSanctionDomain lsd where lsd.applicationId =:applicationId AND lsd.isActive = true and lsd.orgId =:orgId")
+	public LoanSanctionDomain  findByAppliationIdAndOrgId(@Param("applicationId") Long applicationId , @Param("orgId") Long orgId);
 
 	@Query("SELECT lsd FROM LoanSanctionDomain lsd where lsd.applicationId =:applicationId AND lsd.nbfcFlow=:nbfcFlow AND lsd.isActive = true")
 	public LoanSanctionDomain  findByAppliationIdAndNBFCFlow(@Param("applicationId") Long applicationId,@Param("nbfcFlow") Integer nbfcFlow);
@@ -30,4 +33,6 @@ public interface LoanSanctionRepository extends JpaRepository<LoanSanctionDomain
 	
 	@Query("SELECT lsd.tenure,lsd.roi FROM LoanSanctionDomain lsd where lsd.applicationId =:applicationId AND lsd.nbfcFlow=:nbfcFlow AND lsd.isActive = true")
 	public Object[] getTenureAndRoiByAppIdAndNbfcFlow(@Param("applicationId") Long applicationId,@Param("nbfcFlow") Integer nbfcFlow);
+	
+	
 }

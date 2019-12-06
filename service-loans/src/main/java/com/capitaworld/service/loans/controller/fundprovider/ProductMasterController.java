@@ -759,7 +759,7 @@ public class ProductMasterController {
 		try {
 			CommonDocumentUtils.startHook(logger, "saveMasterFromTemp");
 			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
-			productMasterService.saveCorporateMasterFromTemp(mappingId);
+			productMasterService.saveCorporateMasterFromTemp(mappingId,null);
 			return new ResponseEntity<>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while saveMasterFromTemp==>", e);

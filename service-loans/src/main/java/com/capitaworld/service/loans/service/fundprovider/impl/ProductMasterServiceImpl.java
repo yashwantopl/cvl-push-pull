@@ -10,7 +10,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.capitaworld.service.loans.model.colending.FpProductRoiResponse;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,6 +57,7 @@ import com.capitaworld.service.loans.model.ProductDetailsForSp;
 import com.capitaworld.service.loans.model.ProductDetailsResponse;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
 import com.capitaworld.service.loans.model.WorkflowData;
+import com.capitaworld.service.loans.model.colending.FpProductRoiResponse;
 import com.capitaworld.service.loans.model.common.ChatDetails;
 import com.capitaworld.service.loans.model.corporate.AddProductRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateProduct;
@@ -362,7 +362,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						break;
 					case TERM_LOAN:
 						if (addProductRequest.getBusinessTypeId()==2) {
-							
+							 
 							NtbTermLoanParameterTemp ntbTermLoanParameterTemp = new NtbTermLoanParameterTemp();
 							TermLoanParameterRequest termLoanParameterRequest=termLoanParameterService.getNtbTermLoanParameterRequest(addProductRequest.getLoanId(),addProductRequest.getRoleId());
 
@@ -496,7 +496,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						BeanUtils.copyProperties(agriLoanParameterRequest, agriLoanParameterTemp,"id");
 						productMasterTemp = agriLoanParameterTemp;
 						productMasterTemp.setIsParameterFilled(true);
-						break;
+						break; 
 						
 					case AUTO_LOAN:
 						AutoLoanParameterTemp autoLoanParameterTemp = new AutoLoanParameterTemp();
@@ -1324,7 +1324,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					TermLoanParameterRequest loanParameterRequest = new TermLoanParameterRequest();
 					BeanUtils.copyProperties(corporateProduct, loanParameterRequest);
 					CommonDocumentUtils.endHook(logger, SAVE_CORPORATE);
-					return termLoanParameterService.saveOrUpdate(loanParameterRequest, null);
+					return termLoanParameterService.saveOrUpdate(loanParameterRequest, null,null);
 				} else if (corporateProduct.getProductId() == CommonUtils.LoanType.UNSECURED_LOAN.getValue()) {
 					UnsecuredLoanParameterRequest unsecuredLoanParameterRequest = new UnsecuredLoanParameterRequest();
 					BeanUtils.copyProperties(corporateProduct, unsecuredLoanParameterRequest);
@@ -1512,7 +1512,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	}
 
 	@Override
-	public Boolean saveCorporateMasterFromTemp(Long mappingId) throws LoansException {
+	public Boolean saveCorporateMasterFromTemp(Long mappingId, Integer roleId) throws LoansException {
 
 		ProductMasterTemp corporateProduct = productMasterTempRepository.getProductMasterTemp(mappingId);
 		CommonDocumentUtils.startHook(logger, SAVE_CORPORATE);
@@ -1525,7 +1525,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					if (corporateProduct.getBusinessTypeId() != null && corporateProduct.getBusinessTypeId() == 2) {
 						return termLoanParameterService.saveMasterFromNtbTempTl(mappingId);
 					} else {
-						return termLoanParameterService.saveMasterFromTempTl(mappingId);
+						return termLoanParameterService.saveMasterFromTempTl(mappingId,roleId);
 					}
 
 				} else if (corporateProduct.getProductId() == CommonUtils.LoanType.WCTL_LOAN.getValue()) {
@@ -1647,7 +1647,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 				}
 			} else if (workflowData.getActionId() == WorkflowUtils.Action.APPROVED) {
-				Boolean result = saveCorporateMasterFromTemp(workflowData.getFpProductId());
+				Boolean result = saveCorporateMasterFromTemp(workflowData.getFpProductId(),workflowData.getRoleId());
 				if (result) {
 					WorkflowResponse workflowResponse = workflowClient.updateJob(request);
 					if (workflowResponse.getStatus() == 200) {
@@ -1864,15 +1864,9 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	@Override
 	public FpProductRoiResponse getMinMaxRoiFromFpProductId(Long fpProductId) {
-		FpProductRoiResponse response = new FpProductRoiResponse();
-		ProductMaster productMaster = productMasterRepository.getById(fpProductId);
-		if (!CommonUtils.isObjectNullOrEmpty(productMaster)) {
-			response.setMaxRoi(productMaster.getMaxRoi());
-			response.setMinRoi(productMaster.getMinRoi());
-			return response;
-		}else{
-			return null;
-		}
+		// TODO Auto-generated method stub
+		return null;
 	}
+
 }
 

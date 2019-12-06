@@ -1350,8 +1350,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
                                 + applicationProposalMapping);
             }
             applicationProposalMapping.setIsFinalLocked(flag);
-            applicationProposalMapping
-                    .setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.SUBMITTED));
+            
+            if(applicationProposalMapping.getApplicationStatusMaster() != null && 
+            		(applicationProposalMapping.getApplicationStatusMaster().getId() == CommonUtils.ApplicationStatus.OPEN ||
+            		applicationProposalMapping.getApplicationStatusMaster().getId() == CommonUtils.ApplicationStatus.ASSIGNED)){
+            	
+            	applicationProposalMapping.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.SUBMITTED));
+            }
+            
             applicationProposalMappingRepository.save(applicationProposalMapping);
 
             // send FP notification
@@ -8623,6 +8629,21 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	public String getApplicationCampaignCode(Long applicationId) {
 		return loanRepository.getApplicationCampaignCode(applicationId);
 	}
+	
+	@Override
+	public Object getCampaignCodeAndIsBankSpecific(Long applicationId) {
+		Object[] obj = loanRepository.getApplicationCampaignDetails(applicationId);
+		if(obj == null) {
+			return null;
+		}
+		Map<String,Object> json = new HashMap<String, Object>();
+		json.put("userOrgId", CommonUtils.convertLong(obj[0]));
+		json.put("organisationName", CommonUtils.convertString(obj[1]));
+		json.put("campaignCode", CommonUtils.convertString(obj[2]));
+		json.put("isBankSpecificOn", loanRepository.isBankSpecificOn(applicationId));
+		return json;
+	}
+	
 	
 	public String convertValue(Double value) {
 		return !CommonUtils.isObjectNullOrEmpty(value) ? decim.format(value) : "0";

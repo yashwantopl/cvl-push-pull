@@ -64,7 +64,7 @@ public interface ProductMasterService {
 	
 	public List<ProductMasterRequest> getProductByOrgId(Long orgd);
 
-	public Boolean saveCorporateMasterFromTemp(Long mappingId) throws LoansException;
+	public Boolean saveCorporateMasterFromTemp(Long mappingId, Integer roleId) throws LoansException;
 
 	/**
 	 * @param corporateProduct

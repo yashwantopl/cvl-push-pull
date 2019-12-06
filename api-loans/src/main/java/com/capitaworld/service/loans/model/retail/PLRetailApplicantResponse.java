@@ -148,7 +148,7 @@ public class PLRetailApplicantResponse implements Serializable {
     private String isOwnedProp;
     private List<EmpSalariedTypeRequest> empSalariedDetails;
     private List<Object> coAppcibilConsumerReport;
-    private String cibilScoreRange;
+    private String cibilScoreV2;
     private Object cibilScore;
 	
     
@@ -1123,12 +1123,13 @@ public class PLRetailApplicantResponse implements Serializable {
 		this.isIncomeCons = isIncomeCons;
 	}
 
-	public String getCibilScoreRange() {
-		return cibilScoreRange;
+	
+	public String getCibilScoreV2() {
+		return cibilScoreV2;
 	}
 
-	public void setCibilScoreRange(String cibilScoreRange) {
-		this.cibilScoreRange = cibilScoreRange;
+	public void setCibilScoreV2(String cibilScoreV2) {
+		this.cibilScoreV2 = cibilScoreV2;
 	}
 
 	public Object getCibilScore() {

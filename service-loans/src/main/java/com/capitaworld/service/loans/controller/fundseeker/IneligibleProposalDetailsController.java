@@ -142,6 +142,34 @@ public class IneligibleProposalDetailsController {
 					new LoansResponse("The application has encountered an error, please try again after sometime!!!", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 		}
 	}
+	
+	/**
+	 * update reject status after sanctioned
+	 * @param inEligibleProposalDetailsRequest
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "/update/ineligible/rejectStatus", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> updateSanctionedRejectStatus( @RequestBody InEligibleProposalDetailsRequest inEligibleProposalDetailsRequest, HttpServletRequest request) {
+		if (CommonUtils.isObjectNullOrEmpty(inEligibleProposalDetailsRequest) || CommonUtils.isObjectNullOrEmpty(inEligibleProposalDetailsRequest.getApplicationId()) || CommonUtils.isObjectNullOrEmpty(inEligibleProposalDetailsRequest.getStatus())) {
+			logger.warn("Requested data can not be empty.Invalid Request. ");
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		
+		if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			Long userOrgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
+			inEligibleProposalDetailsRequest.setUserId(userId);
+			inEligibleProposalDetailsRequest.setUserOrgId(userOrgId);
+		}
+		
+		Boolean isDetailsSaved = ineligibleProposalDetailsService.updateApplicationStatus(inEligibleProposalDetailsRequest);
+		if (isDetailsSaved) {
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Data saved", HttpStatus.OK.value()), HttpStatus.OK);
+		} else {
+			return new ResponseEntity<LoansResponse>( new LoansResponse("The application has encountered an error, please try again after sometime!!!", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+		}
+	}
 
 	@RequestMapping(value = "/getOfflineProposalByOrgId", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getOfflineProposalByOrgId(@RequestBody ProposalDetailsAdminRequest request, HttpServletRequest httpServletRequest) {

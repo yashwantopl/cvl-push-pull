@@ -5,11 +5,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -73,6 +77,7 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDet
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.score.ScoreParameterRequestLoans;
+import com.capitaworld.service.loans.model.score.ScoringCibilRequest;
 import com.capitaworld.service.loans.model.score.ScoringRequestLoans;
 import com.capitaworld.service.loans.repository.CspCodeRepository;
 import com.capitaworld.service.loans.repository.common.LoanRepository;
@@ -139,6 +144,7 @@ import com.capitaworld.service.thirdparty.model.CGTMSEDataResponse;
 import com.capitaworld.service.thirdpaty.client.ThirdPartyClient;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -257,7 +263,7 @@ public class ScoringServiceImpl implements ScoringService {
     
     @Autowired
     private CspCodeRepository cspCodeRepository;
-
+    
     private static final String ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING = "Error while getting retail applicant detail for personal loan scoring : ";
     private static final String ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_HOME_LOAN_SCORING = "Error while getting retail applicant detail for Home loan scoring : ";
     private static final String ERROR_WHILE_GETTING_FIELD_LIST = "error while getting field list : ";
@@ -796,7 +802,7 @@ public class ScoringServiceImpl implements ScoringService {
             logger.error("Error while getting Bank Statement Details===>{}",e);
             return new ResponseEntity<>(new LoansResponse("Error while Getting Bank Statemtnt Report for ApplicationID====>" + applicationIdTmp + " and Message====>" + e.getMessage() , HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
         }
-
+        
         for(ScoringRequestLoans scoringRequestLoans:scoringRequestLoansList)
         {
             Long scoreModelId = scoringRequestLoans.getScoringModelId();
@@ -989,37 +995,14 @@ public class ScoringServiceImpl implements ScoringService {
                                 break;
                             }
                             case ScoreParameter.Retail.CIBIL_SCORE_PL: {
-
-                                Double cibil_score = null;
                                 try {
-
-                                    scoreParameterRetailRequest.setCibilScore_p(false);
-                                    CibilRequest cibilRequest = new CibilRequest();
-                                    cibilRequest.setPan(retailApplicantDetail.getPan());
-                                    cibilRequest.setApplicationId(applicationId);
-
-                                    CibilScoreLogRequest cibilResponse = cibilClient.getCibilScoreByPanCard(cibilRequest);
-                                    if (!CommonUtils.isObjectNullOrEmpty(cibilResponse.getActualScore())) {
-
-                                        if(cibilResponse.getActualScore().equals("000-1"))
-                                        {
-                                            cibil_score =-1d;
-                                        }
-                                        else
-                                        {
-                                            cibil_score= Double.parseDouble(cibilResponse.getActualScore());
-                                        }
-
-                                        scoreParameterRetailRequest.setCibilScore(cibil_score);
-                                        scoreParameterRetailRequest.setCibilScore_p(true);
-                                    } else {
-                                        scoreParameterRetailRequest.setCibilScore_p(false);
-                                    }
+                                	List<CibilScoreLogRequest> cibilResponse = cibilClient.getSoftpingScores(applicationIdTmp, retailApplicantDetail.getPan());
+                                	scoreParameterRetailRequest.setCibilActualScore(filterBureauScoreByVersion(1, cibilResponse));
+                    				scoreParameterRetailRequest.setCibilActualScoreVersion2(filterBureauScoreByVersion(2, cibilResponse));
+                    				scoreParameterRetailRequest.setCibilScore_p(true);
                                 } catch (Exception e) {
-                                    logger.error("error while getting CIBIL_SCORE_PL parameter from CIBIL client : ",e);
-                                    scoreParameterRetailRequest.setCibilScore_p(false);
+                                    logger.error("error while getting CIBIL_SCORE_PL parameter from CIBIL client : ",e);                                  
                                 }
-
                                 break;
                             }
                             case ScoreParameter.Retail.AGE_PL: {
@@ -5045,6 +5028,74 @@ public class ScoringServiceImpl implements ScoringService {
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
         }
     }
+    
+    @SuppressWarnings("unchecked")
+	private void setBureauScore(List<ScoringRequestLoans> scorReqLoansList, Long orgId) throws Exception {
+    	logger.info("Enter setBureauScore --------------------------------->");
+    	//put SET
+    	Set<Long> scoreModelIdList = new HashSet<Long>(); 
+    	Long applicationId = null;
+        for(ScoringRequestLoans scrReq : scorReqLoansList) {
+        	applicationId = scrReq.getApplicationId();
+        	scoreModelIdList.add(scrReq.getScoringModelId());
+        }
+        logger.info("Enter setBureauScore applicationId --------------------------------->" + applicationId);
+        if(scoreModelIdList.isEmpty()) {
+        	throw new Exception("Need to atlease one score model id to process check scoring.");
+        }
+        try {
+        	List<Long> fieldMasterIdList = new ArrayList<Long>();
+        	fieldMasterIdList.add(2l);
+        	fieldMasterIdList.add(3l);
+        	fieldMasterIdList.add(160l);
+        	fieldMasterIdList.add(210l);
+        	String value = loanRepository.getScoringMinAndMaxRangeValue(scoreModelIdList.stream().collect(Collectors.toList()), fieldMasterIdList);
+        	if(value == null)
+        		return;
+        		//throw new Exception("Score model range is not found from database");
+        	
+        	Map<String, Object> map = new HashMap<String, Object>();
+        	map.put("applicationId", applicationId);
+            List<ScoringCibilRequest> minAndMaxRanges = Arrays.asList(new ObjectMapper().readValue(value, ScoringCibilRequest[].class));
+            
+            for(Long modelId : scoreModelIdList) {
+            	Map<String, Object> filedMap = new HashMap<String, Object>();
+            	for(Long fieldMasterId : fieldMasterIdList) {
+            		List<ScoringCibilRequest> filterList = minAndMaxRanges.stream().filter(a -> modelId.equals(a.getScoreModelId()) && fieldMasterId.equals(a.getFieldMasterId())).collect(Collectors.toList());
+            		List<Map<String, Object>> subMapList = new ArrayList<Map<String,Object>>();
+            		for(ScoringCibilRequest req : filterList) {
+            			Map<String, Object> subMap = new HashMap<String, Object>();
+                       	subMap.put("min", req.getMinRange());
+                       	subMap.put("max", req.getMaxRange());
+                       	subMap.put("score", req.getScore());
+                       	subMap.put("description", req.getDescription());
+                       	subMapList.add(subMap);
+            		}
+            		filedMap.put(fieldMasterId.toString(), subMapList);
+            	}
+            	map.put(modelId.toString(), filedMap);
+            }
+            logger.info("PREPARE MAP FOR CIBIL API CALL -----> " + MultipleJSONObjectHelper.getStringfromObject(map));
+            
+            CibilRequest cibilRequest = new CibilRequest();
+            cibilRequest.setApplicantId(applicationId);
+            cibilRequest.setDataInput(map);
+            cibilRequest.setOrgId(orgId);
+            CibilResponse response = cibilClient.getScoringResult(cibilRequest);
+            if(response != null && response.getData() != null) {
+            	Map<String,Object> mapRes = (Map<String,Object>) response.getData();
+            	for(ScoringRequestLoans scrReq : scorReqLoansList) {
+                	scrReq.setMapList((Map<String,Object>)mapRes.get(scrReq.getScoringModelId().toString()));
+                }
+            } else {
+            	throw new Exception("Response from cibil integration is null or empty while set bureau score in calculate scoring " + applicationId);	
+            }
+		} catch (Exception e) {
+			logger.error("Exception while Set Bureau Score from cibil integration ",e);
+			throw new Exception("Application hash encountered error while set Bureau Score from cibil integraion ",e);
+		}
+        
+    }
 
     @Override
     public ResponseEntity<LoansResponse> calculateExistingBusinessScoringList(List<ScoringRequestLoans> scoringRequestLoansList) {
@@ -5054,6 +5105,28 @@ public class ScoringServiceImpl implements ScoringService {
         List<ScoringRequest> scoringRequestList=new ArrayList<ScoringRequest>();
 
         ScoringParameterRequest scoringParameterRequest = null;
+        boolean isCibilCheck = false;
+        try {                                            
+        	if(!scoringRequestLoansList.isEmpty()) {
+        		logger.info("Enter in calculateExistingBusinessScoringList for check If Cibil API check or not");
+        		Long applicationId = scoringRequestLoansList.get(0).getApplicationId();
+        		//GET CAMPAIGN BANK ID FROM APPLICATION ID
+        		Long orgId = loanRepository.getCampaignOrgIdByApplicationId(applicationId);
+        		if(orgId == null)
+        			orgId = 10l;
+        		boolean result = loanRepository.getCibilBureauAPITrueOrFalse(orgId);
+        		String checkAPI = loanRepository.getCommonPropertiesValue("CIBIL_BUREAU_API_START");
+        		logger.info("Found Result For CIBIL API ----->" + result + " For Org ID ----" + orgId + "  And check API --- >" + checkAPI);
+        		if(result && "true".equals(checkAPI)) {
+        			isCibilCheck = true;
+        			setBureauScore(scoringRequestLoansList,orgId);	
+        		}
+        	}
+		} catch (Exception e) {
+			logger.error("Exeption while set Bureau score " + e.getMessage());
+            return new ResponseEntity<LoansResponse>(new LoansResponse("Application has encountered error while check CIBIL bureau score.", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+        
 
         for(ScoringRequestLoans scoringRequestLoans:scoringRequestLoansList)
         {
@@ -5085,6 +5158,7 @@ public class ScoringServiceImpl implements ScoringService {
             scoringRequest.setUserId(scoringRequestLoans.getUserId());
             scoringRequest.setBusinessTypeId(ScoreParameter.BusinessType.EXISTING_BUSINESS);
             scoringRequest.setEligibleLoanAmountCircular(scoringRequestLoans.getEligibleLoanAmountCircular());
+            scoringRequest.setMap(scoringRequestLoans.getMapList());
 
 
 
@@ -5274,46 +5348,48 @@ public class ScoringServiceImpl implements ScoringService {
                                 break;
                             }
                             case ScoreParameter.CUSTOMER_ASSOCIATE_CONCERN: {
-                                Double customer_ass_concern_year = null;
-                                try {
+                            	if(!isCibilCheck) {
+                            		Double customer_ass_concern_year = null;
+                                    try {
 
-                                    CibilResponse cibilResponse = cibilClient.getDPDYears(applicationId);
-                                    if (!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isObjectNullOrEmpty(cibilResponse.getData())) {
-                                        customer_ass_concern_year = (Double) cibilResponse.getData();
+                                        CibilResponse cibilResponse = cibilClient.getDPDYears(applicationId);
+                                        if (!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isObjectNullOrEmpty(cibilResponse.getData())) {
+                                            customer_ass_concern_year = (Double) cibilResponse.getData();
 
-                                        scoringParameterRequest.setCustomerAssociateConcern(customer_ass_concern_year);
-                                        scoringParameterRequest.setCustomerAsscociateConcern_p(true);
-                                    } else {
+                                            scoringParameterRequest.setCustomerAssociateConcern(customer_ass_concern_year);
+                                            scoringParameterRequest.setCustomerAsscociateConcern_p(true);
+                                        } else {
+                                            scoringParameterRequest.setCustomerAsscociateConcern_p(false);
+                                        }
+
+                                    } catch (Exception e) {
+                                        logger.error("error while getting CUSTOMER_ASSOCIATE_CONCERN parameter from CIBIL client : ",e);
                                         scoringParameterRequest.setCustomerAsscociateConcern_p(false);
-                                    }
-
-                                } catch (Exception e) {
-                                    logger.error("error while getting CUSTOMER_ASSOCIATE_CONCERN parameter from CIBIL client : ",e);
-                                    scoringParameterRequest.setCustomerAsscociateConcern_p(false);
-                                }
+                                    }	
+                            	}
                                 break;
-
                             }
                             case ScoreParameter.CIBIL_TRANSUNION_SCORE: {
-                                Double cibil_score_avg_promotor = null;
-                                try {
+                            	if(!isCibilCheck) {
+                            		Double cibil_score_avg_promotor = null;
+                                    try {
 
-                                    CibilRequest cibilRequest = new CibilRequest();
-                                    cibilRequest.setApplicationId(applicationId);
+                                        CibilRequest cibilRequest = new CibilRequest();
+                                        cibilRequest.setApplicationId(applicationId);
 
-                                    CibilResponse cibilResponse = cibilClient.getCibilScore(cibilRequest);
-                                    if (!CommonUtils.isObjectNullOrEmpty(cibilResponse.getData())) {
-                                        cibil_score_avg_promotor = (Double) cibilResponse.getData();
-                                        scoringParameterRequest.setCibilTransuniunScore(cibil_score_avg_promotor);
-                                        scoringParameterRequest.setCibilTransunionScore_p(true);
-                                    } else {
+                                        CibilResponse cibilResponse = cibilClient.getCibilScore(cibilRequest);
+                                        if (!CommonUtils.isObjectNullOrEmpty(cibilResponse.getData())) {
+                                            cibil_score_avg_promotor = (Double) cibilResponse.getData();
+                                            scoringParameterRequest.setCibilTransuniunScore(cibil_score_avg_promotor);
+                                            scoringParameterRequest.setCibilTransunionScore_p(true);
+                                        } else {
+                                            scoringParameterRequest.setCibilTransunionScore_p(false);
+                                        }
+                                    } catch (Exception e) {
+                                        logger.error("error while getting CIBIL_TRANSUNION_SCORE parameter from CIBIL client : ",e);
                                         scoringParameterRequest.setCibilTransunionScore_p(false);
-                                    }
-                                } catch (Exception e) {
-                                    logger.error("error while getting CIBIL_TRANSUNION_SCORE parameter from CIBIL client : ",e);
-                                    scoringParameterRequest.setCibilTransunionScore_p(false);
-                                }
-
+                                    }	
+                            	}
                                 break;
                             }
 
@@ -6573,65 +6649,69 @@ public class ScoringServiceImpl implements ScoringService {
                                 break;
                             }
                             case ScoreParameter.PAYMENT_RECORDS_WITH_LENDERS: {
-                                try {
-                                    CibilResponse cibilResponse = cibilClient.getDPDLastXMonth(applicationId);
-                                    if(!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isObjectNullOrEmpty(cibilResponse.getListData())){
-                                        List cibilDirectorsResponseList = cibilResponse.getListData();
-                                        int commercialVal = 0;
-                                        int maxDpd = 0;
-                                        for (int j = 0; j < cibilDirectorsResponseList.size(); j++) {
-                                            String cibilResponseObj = cibilDirectorsResponseList.get(j).toString();
-                                            if(cibilResponseObj.contains("|")){
-                                                String[] cibilDpdVal = cibilResponseObj.split(Pattern.quote("|"));
-                                                if(!CommonUtils.isObjectNullOrEmpty(cibilDpdVal[1]))
-                                                    commercialVal = Integer.parseInt(cibilDpdVal[1]);
-                                            }else {
-                                                commercialVal = Integer.parseInt(cibilDirectorsResponseList.get(i).toString());
-                                            }
-                                            logger.info("commercialVal1::::::::::::::::::::::::::::::::::::::::::::::::::::::::"+commercialVal);
-                                            if(maxDpd <= commercialVal){
-                                                maxDpd = commercialVal;
-                                            }
-                                            logger.info("maxDpd::::::::::::::::::::::::::::::::::::::::::::::::::::::::"+maxDpd);
-                                            scoringParameterRequest.setDpd(maxDpd);
-                                            scoringParameterRequest.setPaymentRecordsWithLenders_p(true);
-                                        }
-                                    }else {
-                                        logger.error("error while getting PAYMENT_RECORDS_WITH_LENDERS parameter :- Unable to fetch DPD details");
-                                        scoringParameterRequest.setPaymentRecordsWithLenders_p(false);
-                                    }
-                                } catch (Exception e) {
-                                    logger.error("error while getting PAYMENT_RECORDS_WITH_LENDERS parameter : ", e);
-                                    scoringParameterRequest.setPaymentRecordsWithLenders_p(false);
-                                }
+                            	if(!isCibilCheck) {
+                            		  try {
+                                          CibilResponse cibilResponse = cibilClient.getDPDLastXMonth(applicationId);
+                                          if(!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isObjectNullOrEmpty(cibilResponse.getListData())){
+                                              List cibilDirectorsResponseList = cibilResponse.getListData();
+                                              int commercialVal = 0;
+                                              int maxDpd = 0;
+                                              for (int j = 0; j < cibilDirectorsResponseList.size(); j++) {
+                                                  String cibilResponseObj = cibilDirectorsResponseList.get(j).toString();
+                                                  if(cibilResponseObj.contains("|")){
+                                                      String[] cibilDpdVal = cibilResponseObj.split(Pattern.quote("|"));
+                                                      if(!CommonUtils.isObjectNullOrEmpty(cibilDpdVal[1]))
+                                                          commercialVal = Integer.parseInt(cibilDpdVal[1]);
+                                                  }else {
+                                                      commercialVal = Integer.parseInt(cibilDirectorsResponseList.get(i).toString());
+                                                  }
+                                                  logger.info("commercialVal1::::::::::::::::::::::::::::::::::::::::::::::::::::::::"+commercialVal);
+                                                  if(maxDpd <= commercialVal){
+                                                      maxDpd = commercialVal;
+                                                  }
+                                                  logger.info("maxDpd::::::::::::::::::::::::::::::::::::::::::::::::::::::::"+maxDpd);
+                                                  scoringParameterRequest.setDpd(maxDpd);
+                                                  scoringParameterRequest.setPaymentRecordsWithLenders_p(true);
+                                              }
+                                          }else {
+                                              logger.error("error while getting PAYMENT_RECORDS_WITH_LENDERS parameter :- Unable to fetch DPD details");
+                                              scoringParameterRequest.setPaymentRecordsWithLenders_p(false);
+                                          }
+                                      } catch (Exception e) {
+                                          logger.error("error while getting PAYMENT_RECORDS_WITH_LENDERS parameter : ", e);
+                                          scoringParameterRequest.setPaymentRecordsWithLenders_p(false);
+                                      }
+                            	}
                                 break;
                             }
                             case ScoreParameter.CMR_SCORE_MSME_RANKING: {  // CMR RATING FETCH FROM COMMERCIAL BUREAU
-
-                            	try {
-                            	String cmrScore = cibilClient.getCMRScore(applicationId);
-                            	 	logger.info("{CMR_SCORE_MSME_RANKING}====={cmrScore}===={}=====>",cmrScore,"==={applicationId}===>"+applicationId);
-                            	 	
-                            		if(!CommonUtils.isObjectNullOrEmpty(cmrScore) && (!cmrScore.equals("NA"))){
-                            			// String cmrValue = cmrScore.substring(4,6);
-                            			String [] cmrValue = cmrScore.trim().split("-");
-	                            			if(!CommonUtils.isObjectNullOrEmpty(cmrValue) && !CommonUtils.isObjectNullOrEmpty(cmrValue[1]))
-	                            			{
-	                            					scoringParameterRequest.setCmrScoreMsmeRanking(Double.valueOf(cmrValue[1]));
-	                            			 }
-	                            			else
-	                            			{
-	                            				scoringParameterRequest.setCmrScoreMsmeRanking(0.0);
-	                            			}
-	                            			scoringParameterRequest.setCmrScoreMsmeRanking_p(true);
-                                   }else{
-                                	   scoringParameterRequest.setCmrScoreMsmeRanking_p(true);
-                                	   scoringParameterRequest.setCmrScoreMsmeRanking(0.0);
-                                   }
-								} catch (Exception e) {
-									logger.error("Exception is getting while Get CMR Score CIBI:---->",e);
-									e.printStackTrace();
-								}
+                            	if(!isCibilCheck) {
+                            		try {
+                                    	String cmrScore = cibilClient.getCMRScore(applicationId);
+                                    	 	logger.info("{CMR_SCORE_MSME_RANKING}====={cmrScore}===={}=====>",cmrScore,"==={applicationId}===>"+applicationId);
+                                    	 	
+                                    		if(!CommonUtils.isObjectNullOrEmpty(cmrScore) && (!cmrScore.equals("NA"))){
+                                    			// String cmrValue = cmrScore.substring(4,6);
+                                    			String [] cmrValue = cmrScore.trim().split("-");
+        	                            			if(!CommonUtils.isObjectNullOrEmpty(cmrValue) && !CommonUtils.isObjectNullOrEmpty(cmrValue[1]))
+        	                            			{
+        	                            					scoringParameterRequest.setCmrScoreMsmeRanking(Double.valueOf(cmrValue[1]));
+        	                            			 }
+        	                            			else
+        	                            			{
+        	                            				scoringParameterRequest.setCmrScoreMsmeRanking(0.0);
+        	                            			}
+        	                            			scoringParameterRequest.setCmrScoreMsmeRanking_p(true);
+                                           }else{
+                                        	   scoringParameterRequest.setCmrScoreMsmeRanking_p(true);
+                                        	   scoringParameterRequest.setCmrScoreMsmeRanking(0.0);
+                                           }
+        								} catch (Exception e) {
+        									logger.error("Exception is getting while Get CMR Score CIBI:---->",e);
+        									e.printStackTrace();
+        								}
+                            	}
+                            	
                                 break;
                             }
                             case ScoreParameter.ISO_CERTIFICATION: {
