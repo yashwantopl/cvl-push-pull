@@ -5047,7 +5047,7 @@ public class ScoringServiceImpl implements ScoringService {
         	List<Long> fieldMasterIdList = new ArrayList<Long>();
         	fieldMasterIdList.add(2l);
         	fieldMasterIdList.add(3l);
-        	fieldMasterIdList.add(30l);
+        	fieldMasterIdList.add(160l);
         	fieldMasterIdList.add(210l);
         	String value = loanRepository.getScoringMinAndMaxRangeValue(scoreModelIdList.stream().collect(Collectors.toList()), fieldMasterIdList);
         	if(value == null)
@@ -6649,37 +6649,39 @@ public class ScoringServiceImpl implements ScoringService {
                                 break;
                             }
                             case ScoreParameter.PAYMENT_RECORDS_WITH_LENDERS: {
-                                try {
-                                    CibilResponse cibilResponse = cibilClient.getDPDLastXMonth(applicationId);
-                                    if(!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isObjectNullOrEmpty(cibilResponse.getListData())){
-                                        List cibilDirectorsResponseList = cibilResponse.getListData();
-                                        int commercialVal = 0;
-                                        int maxDpd = 0;
-                                        for (int j = 0; j < cibilDirectorsResponseList.size(); j++) {
-                                            String cibilResponseObj = cibilDirectorsResponseList.get(j).toString();
-                                            if(cibilResponseObj.contains("|")){
-                                                String[] cibilDpdVal = cibilResponseObj.split(Pattern.quote("|"));
-                                                if(!CommonUtils.isObjectNullOrEmpty(cibilDpdVal[1]))
-                                                    commercialVal = Integer.parseInt(cibilDpdVal[1]);
-                                            }else {
-                                                commercialVal = Integer.parseInt(cibilDirectorsResponseList.get(i).toString());
-                                            }
-                                            logger.info("commercialVal1::::::::::::::::::::::::::::::::::::::::::::::::::::::::"+commercialVal);
-                                            if(maxDpd <= commercialVal){
-                                                maxDpd = commercialVal;
-                                            }
-                                            logger.info("maxDpd::::::::::::::::::::::::::::::::::::::::::::::::::::::::"+maxDpd);
-                                            scoringParameterRequest.setDpd(maxDpd);
-                                            scoringParameterRequest.setPaymentRecordsWithLenders_p(true);
-                                        }
-                                    }else {
-                                        logger.error("error while getting PAYMENT_RECORDS_WITH_LENDERS parameter :- Unable to fetch DPD details");
-                                        scoringParameterRequest.setPaymentRecordsWithLenders_p(false);
-                                    }
-                                } catch (Exception e) {
-                                    logger.error("error while getting PAYMENT_RECORDS_WITH_LENDERS parameter : ", e);
-                                    scoringParameterRequest.setPaymentRecordsWithLenders_p(false);
-                                }
+                            	if(!isCibilCheck) {
+                            		  try {
+                                          CibilResponse cibilResponse = cibilClient.getDPDLastXMonth(applicationId);
+                                          if(!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isObjectNullOrEmpty(cibilResponse.getListData())){
+                                              List cibilDirectorsResponseList = cibilResponse.getListData();
+                                              int commercialVal = 0;
+                                              int maxDpd = 0;
+                                              for (int j = 0; j < cibilDirectorsResponseList.size(); j++) {
+                                                  String cibilResponseObj = cibilDirectorsResponseList.get(j).toString();
+                                                  if(cibilResponseObj.contains("|")){
+                                                      String[] cibilDpdVal = cibilResponseObj.split(Pattern.quote("|"));
+                                                      if(!CommonUtils.isObjectNullOrEmpty(cibilDpdVal[1]))
+                                                          commercialVal = Integer.parseInt(cibilDpdVal[1]);
+                                                  }else {
+                                                      commercialVal = Integer.parseInt(cibilDirectorsResponseList.get(i).toString());
+                                                  }
+                                                  logger.info("commercialVal1::::::::::::::::::::::::::::::::::::::::::::::::::::::::"+commercialVal);
+                                                  if(maxDpd <= commercialVal){
+                                                      maxDpd = commercialVal;
+                                                  }
+                                                  logger.info("maxDpd::::::::::::::::::::::::::::::::::::::::::::::::::::::::"+maxDpd);
+                                                  scoringParameterRequest.setDpd(maxDpd);
+                                                  scoringParameterRequest.setPaymentRecordsWithLenders_p(true);
+                                              }
+                                          }else {
+                                              logger.error("error while getting PAYMENT_RECORDS_WITH_LENDERS parameter :- Unable to fetch DPD details");
+                                              scoringParameterRequest.setPaymentRecordsWithLenders_p(false);
+                                          }
+                                      } catch (Exception e) {
+                                          logger.error("error while getting PAYMENT_RECORDS_WITH_LENDERS parameter : ", e);
+                                          scoringParameterRequest.setPaymentRecordsWithLenders_p(false);
+                                      }
+                            	}
                                 break;
                             }
                             case ScoreParameter.CMR_SCORE_MSME_RANKING: {  // CMR RATING FETCH FROM COMMERCIAL BUREAU
