@@ -10,6 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.repository.common.LoanRepository;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -263,7 +264,8 @@ public class ProductMasterServiceImpl implements ProductMasterService {
     @Autowired
     private FpGstTypeMappingTempRepository fpGstTypeMappingTempRepository;
 
-   
+	@Autowired
+	private LoanRepository loanRepository;
 	
     private Integer [] productIds = { CommonUtils.LoanType.HOME_LOAN.getValue(),CommonUtils.LoanType.PERSONAL_LOAN.getValue(),CommonUtils.LoanType.AUTO_LOAN.getValue()};
     
@@ -937,9 +939,14 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	@Override
 	public List<ProductMasterRequest> getList(Long userId, Long userOrgId) {
 		CommonDocumentUtils.startHook(logger, "getList");
+		Object[]  userObj= loanRepository.getUserDetails(userId);
 		List<ProductMaster> results;
 		if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
-			results = productMasterRepository.getUserProductListByOrgId(userOrgId);
+			if(!CommonUtils.isObjectNullOrEmpty(userObj) && !CommonUtils.isObjectNullOrEmpty(userObj[0])){
+				Long businessTypeId = Long.valueOf (userObj[0].toString());
+				results = productMasterRepository.getUserProductListByOrgIdByBusinessTypeId(userOrgId,businessTypeId);
+			}else
+				results = productMasterRepository.getUserProductListByOrgId(userOrgId);
 		} else {
 			results = productMasterRepository.getUserProductList(userId);
 		}
@@ -1251,9 +1258,14 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					productMasterRequests.add(productMasterRequest);
 				}
 			} else {
-
+				Object[]  userObj= loanRepository.getUserDetails(userId);
 				if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
-					results = productMasterTempRepository.getUserCorporateProductListByOrgId(userOrgId);
+					if(!CommonUtils.isObjectNullOrEmpty(userObj) && !CommonUtils.isObjectNullOrEmpty(userObj[0])) {
+						Long businessTypeId = Long.valueOf(userObj[0].toString());
+						results = productMasterTempRepository.getUserCorporateProductListByOrgIdByBusinessTypeId(userOrgId, businessTypeId);
+					}else{
+						results = productMasterTempRepository.getUserCorporateProductListByOrgId(userOrgId);
+					}
 				} else {
 					results = productMasterTempRepository.getUserCorporateProductList(userId);
 				}
@@ -1274,8 +1286,14 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					results = productMasterRepository.getUserRetailProductList(userId,Arrays.asList(productId));
 				}
 			} else {
+				Object[]  userObj= loanRepository.getUserDetails(userId);
 				if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
-					results = productMasterRepository.getUserCorporateProductListByOrgId(userOrgId);
+					if(!CommonUtils.isObjectNullOrEmpty(userObj) && !CommonUtils.isObjectNullOrEmpty(userObj[0])) {
+						Long businessTypeId = Long.valueOf(userObj[0].toString());
+						results = productMasterRepository.getUserProductListByOrgIdByBusinessTypeId(userOrgId, businessTypeId);
+					}else {
+						results = productMasterRepository.getUserCorporateProductListByOrgId(userOrgId);
+					}
 				} else {
 					results = productMasterRepository.getUserCorporateProductList(userId);
 				}
