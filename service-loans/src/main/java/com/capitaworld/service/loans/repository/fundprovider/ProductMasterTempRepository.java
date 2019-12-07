@@ -118,5 +118,7 @@ public interface ProductMasterTempRepository extends JpaRepository<ProductMaster
 
 	@Query("select pm from ProductMasterTemp pm where pm.userId =:userId and pm.isCopied=false and pm.productId  IN (:productIds)")
 	public List<ProductMasterTemp> getProductListByUserId(@Param("userId") Long userId,@Param("productIds") List<Integer> productIds);
-	
+
+	@Query("from ProductMasterTemp pm where pm.userOrgId =:userOrgId  and isCopied=false and productId in (1,2,15,16,17) and pm.businessTypeId=:businessTypeId")
+	public List<ProductMasterTemp> getUserCorporateProductListByOrgIdByBusinessTypeId(@Param("userOrgId") Long userOrgId,@Param("businessTypeId") Long businessTypeId);
 }

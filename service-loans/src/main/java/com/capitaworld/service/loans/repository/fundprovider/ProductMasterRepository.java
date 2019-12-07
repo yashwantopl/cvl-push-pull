@@ -170,4 +170,7 @@ public interface ProductMasterRepository extends JpaRepository<ProductMaster, Lo
 	
 	@Query(value="select bureau_version from fp_product_master pm where pm.fp_product_id=:productId", nativeQuery=true)
 	public Integer findBureauVersionByFpProductId(@Param("productId") Long fpProductId);
+
+	@Query("from ProductMaster pm where pm.userOrgId =:userOrgId and pm.isActive = true and pm.businessTypeId=:businessTypeId")
+	public List<ProductMaster> getUserProductListByOrgIdByBusinessTypeId(@Param("userOrgId") Long userOrgId,@Param("businessTypeId") Long businessTypeId);
 }
