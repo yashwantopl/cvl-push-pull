@@ -37,7 +37,6 @@ import com.capitaworld.service.loans.repository.common.CommonRepository;
 import com.capitaworld.service.loans.repository.common.LoanRepository;
 import com.capitaworld.service.loans.repository.fundseeker.IneligibleProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.IneligibleProposalTransferHistoryRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.repository.sanction.LoanSanctionRepository;
@@ -66,7 +65,6 @@ import com.capitaworld.service.notification.utils.NotificationAlias;
 import com.capitaworld.service.notification.utils.NotificationType;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.PurposeOfLoan;
-import com.capitaworld.service.scoring.utils.ScoreParameter.NTB;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.BranchBasicDetailsRequest;
 import com.capitaworld.service.users.model.BranchUserResponse;
@@ -136,9 +134,6 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 	@Autowired
 	private AsyncComponent asyncComp;
 	
-    @Autowired
-    private ApplicationProposalMappingRepository applicationRepository;
-
     @Autowired
     private GatewayClient gatewayClient;
     
@@ -335,6 +330,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 		return true;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Boolean sendMailToFsAndBankBranch(Long applicationId, Long branchId, Long userOrgId) {
 		boolean isSent = false;
@@ -503,6 +499,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 		return isSent;
 	}
 
+	@SuppressWarnings("unchecked")
 	private Map<String, Object> getBankAndBranchDetails(Long userOrgId, Long branchId,
 			Map<String, Object> notificationParams) {
 
@@ -604,7 +601,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 	}
 
 	private Map<String, Object> getFsNameAndDetailsForAllProduct(Long applicationId, LoanApplicationRequest applicationRequest) {
-		Map<String, Object> notificationParams = new HashMap();
+		Map<String, Object> notificationParams = new HashMap<String, Object>();
 		String fsName = null;
 		String address = null;
 		List<DirectorBackgroundDetailRequest> NTBResponse = null;
@@ -884,6 +881,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 			return true;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Boolean sendMailToFsAndBankBranchForSbiBankSpecific(Long applicationId,Long branchId,Long userOrgId,Boolean sidbiStatus) {
 		Boolean status=false;

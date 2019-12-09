@@ -41,6 +41,7 @@ import com.capitaworld.service.notification.utils.ContentType;
 import com.capitaworld.service.notification.utils.EmailSubjectAlias;
 import com.capitaworld.service.notification.utils.NotificationAlias;
 import com.capitaworld.service.notification.utils.NotificationType;
+import com.capitaworld.service.oneform.enums.SanctionedStatusMaster;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.BranchUserResponse;
 import com.capitaworld.service.users.model.UserResponse;
@@ -122,7 +123,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 		
 		LoanSanctionDomain loanSanctionDomainOld = null;
 		if(CommonUtils.isObjectNullOrEmpty(loanSanctionRequest.getNbfcFlow())){
-			loanSanctionDomainOld = loanSanctionRepository.findByAppliationId(loanSanctionRequest.getApplicationId());
+			loanSanctionDomainOld = loanSanctionRepository.findByAppliationIdAndOrgId(loanSanctionRequest.getApplicationId(),loanSanctionRequest.getOrgId());
 		}else{
 			logger.info("NBFC flow....");
 			loanSanctionDomainOld = loanSanctionRepository.findByAppliationIdAndNBFCFlow(loanSanctionRequest.getApplicationId(),loanSanctionRequest.getNbfcFlow());
@@ -146,6 +147,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			}
 			loanSanctionDomainOld.setCreatedBy(loanSanctionRequest.getActionBy());
 			loanSanctionDomainOld.setCreatedDate(new Date());
+			loanSanctionDomainOld.setStatus(SanctionedStatusMaster.IN_PROGRES.getId());
 			loanSanctionDomainOld.setIsActive(true);
 		}else{
 			//BeanUtils.copyProperties(loanSanctionRequest, loanSanctionDomainOld,"id");
@@ -172,6 +174,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			loanSanctionDomainOld.setNbfcFlow(loanSanctionRequest.getNbfcFlow());
 			loanSanctionDomainOld.setModifiedBy(loanSanctionRequest.getActionBy());
 			loanSanctionDomainOld.setModifiedDate(new Date());
+			loanSanctionDomainOld.setStatus(SanctionedStatusMaster.IN_PROGRES.getId());
 			/*loanSanctionDomainOld.setIsSanctionedFrom(1l);*/
 		}
 
