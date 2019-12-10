@@ -5,28 +5,26 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
-import com.capitaworld.service.loans.domain.colending.RecommendDetail;
-import com.capitaworld.service.loans.domain.sanction.LoanDisbursementDomain;
-import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
-import com.capitaworld.service.loans.repository.colending.RecommendDetailRepository;
-import com.capitaworld.service.loans.repository.sanction.LoanDisbursementRepository;
-import com.capitaworld.service.loans.repository.sanction.LoanSanctionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
+import com.capitaworld.api.payment.gateway.model.LoansResponse;
 import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.connect.client.ConnectClient;
@@ -49,6 +47,7 @@ import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.gst.model.CAMGSTData;
 import com.capitaworld.service.gst.util.DateComparator2;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
+import com.capitaworld.service.loans.domain.colending.RecommendDetail;
 import com.capitaworld.service.loans.domain.fundprovider.NbfcProposalBlendedRate;
 import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
@@ -58,6 +57,9 @@ import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMappin
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
+import com.capitaworld.service.loans.domain.sanction.LoanDisbursementDomain;
+import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.DirectorPersonalDetailResponse;
@@ -68,6 +70,7 @@ import com.capitaworld.service.loans.model.corporate.CollateralSecurityDetailReq
 import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
 import com.capitaworld.service.loans.model.teaser.primaryview.CorporatePrimaryViewResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.CorporatePrimaryViewResponseNbfc;
+import com.capitaworld.service.loans.repository.colending.RecommendDetailRepository;
 import com.capitaworld.service.loans.repository.fundprovider.NbfcProposalBlendedRateRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
@@ -78,6 +81,8 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.Application
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
+import com.capitaworld.service.loans.repository.sanction.LoanDisbursementRepository;
+import com.capitaworld.service.loans.repository.sanction.LoanSanctionRepository;
 import com.capitaworld.service.loans.service.common.CommonService;
 import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CollateralSecurityDetailService;
@@ -1800,4 +1805,33 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 	public String convertValue(Double value) {
 		return !CommonUtils.isObjectNullOrEmpty(value) ? decim.format(value) : "0";
 	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
+	public com.capitaworld.service.loans.model.LoansResponse getCubictreeReport(Long applicationId) throws LoansException {
+		com.capitaworld.service.loans.model.LoansResponse response=new com.capitaworld.service.loans.model.LoansResponse();
+		try {
+			Map<String,Object>reportResp=new HashMap<>();
+			
+			McaResponse cubictreeReport = mcaClient.getCubictreeReport(applicationId);
+			List<Map<String,Object>>listData=((List<Map<String,Object>>)cubictreeReport.getData());
+			
+			if(cubictreeReport.getStatus().equals(HttpStatus.OK.value()) && cubictreeReport.getData() != null) {
+				Map<String,Object> resp= (Map<String, Object>)listData.get(0);
+				if(!resp.isEmpty()) {
+					response.setData(reportResp);
+				}
+			}else {
+				response.setMessage("Report not found");
+				response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+			}
+		}catch (Exception e) {
+			response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+			response.setMessage("Exception in getting report :"+e);
+			throw new LoansException("Exception in getting CubictreeReport",e);
+		}
+		return response;
+	}
+	 
+	
 }

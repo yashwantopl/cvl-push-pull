@@ -13,6 +13,21 @@ public class CommonRequest {
 	private Long fpProductId;
 	private Long proposalId;
 	private Integer loanTypeId;
+	private Long userOrgId;
+	
+	
+	@Override
+	public String toString() {
+		return "CommonRequest [emailId=" + emailId + ", mobile=" + mobile + ", userId=" + userId + ", applicationId="
+				+ applicationId + ", fpProductId=" + fpProductId + ", proposalId=" + proposalId + ", loanTypeId="
+				+ loanTypeId + ", userOrgId=" + userOrgId + "]";
+	}
+	public Long getUserOrgId() {
+		return userOrgId;
+	}
+	public void setUserOrgId(Long userOrgId) {
+		this.userOrgId = userOrgId;
+	}
 	public String getEmailId() {
 		return emailId;
 	}

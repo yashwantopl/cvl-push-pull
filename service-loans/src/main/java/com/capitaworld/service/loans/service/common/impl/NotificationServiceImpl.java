@@ -14,20 +14,18 @@ import org.springframework.transaction.annotation.Transactional;
 import com.capitaworld.service.loans.model.teaser.primaryview.CommonRequest;
 import com.capitaworld.service.loans.service.common.NotificationService;
 import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
-import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
+import com.capitaworld.service.loans.utils.CommonNotificationUtils.NotificationTemplate;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
-import com.capitaworld.service.loans.utils.CommonNotificationUtils.NotificationTemplate;
 import com.capitaworld.service.notification.client.NotificationClient;
 import com.capitaworld.service.notification.exceptions.NotificationException;
 import com.capitaworld.service.notification.model.Notification;
 import com.capitaworld.service.notification.model.NotificationRequest;
 import com.capitaworld.service.notification.utils.ContentType;
 import com.capitaworld.service.notification.utils.EmailSubjectAlias;
+import com.capitaworld.service.notification.utils.NotificationMasterAlias;
 import com.capitaworld.service.notification.utils.NotificationType;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
@@ -51,25 +49,25 @@ public class NotificationServiceImpl implements NotificationService{
 	@Autowired
 	private NotificationClient notificationClient;
 	
-	@Autowired
+	/*@Autowired
 	private CorporateApplicantService corporateApplicantService;
 	
 	@Autowired
-	private RetailApplicantService retailApplicantService;
+	private RetailApplicantService retailApplicantService;*/
 	
 	@Autowired
 	private UsersClient usersClient;
 	
 	@Autowired
 	private Environment environment; 
-	
-	@Autowired
-	private DirectorBackgroundDetailsService directorBackgroundDetailsService;
+//	
+//	@Autowired
+//	private DirectorBackgroundDetailsService directorBackgroundDetailsService;
 	
 	private static final String EMAIL_ADDRESS_FROM = "com.capitaworld.mail.url";
 
 	
-	private static Notification createSysNotification(String[] toIds, Long fromId, Long fromUserTypeId, Long templateId,
+/*	private static Notification createSysNotification(String[] toIds, Long fromId, Long fromUserTypeId, Long templateId,
 			Map<String, Object> parameters, Long applicationId, Long fpProductId) {
         CommonDocumentUtils.startHook(logger, "createNotification");
         
@@ -85,10 +83,11 @@ public class NotificationServiceImpl implements NotificationService{
 		CommonDocumentUtils.endHook(logger, "createNotification");
 		return notification;
 
-	}
+	}*/
 	
+	@SuppressWarnings("unchecked")
 	private Notification createEmailNotification(String[] toIds, Long fromId, Long fromUserTypeId, Long templateId,
-			Map<String, Object> parameters, Long applicationId, Long fpProductId,NotificationTemplate notificationTemplate,String fpName,Object subjectId) {
+			Map<String, Object> parameters, Long applicationId, Long fpProductId,NotificationTemplate notificationTemplate,String fpName,Object subjectId,Integer lonaTypeId,Long userOrgId,Long masterId) {
 		
         CommonDocumentUtils.startHook(logger, "create Email Notification");
         
@@ -98,7 +97,7 @@ public class NotificationServiceImpl implements NotificationService{
         	for(int i=0;i <toIds.length;i++) {
         		UserResponse toUsersDetails = usersClient.getEmailMobile(Long.valueOf(toIds[i]));
                 if (!CommonUtils.isObjectNullOrEmpty(toUsersDetails.getData())) {
-        			UsersRequest request = MultipleJSONObjectHelper
+					UsersRequest request = MultipleJSONObjectHelper
         					.getObjectFromMap((LinkedHashMap<String, Object>) toUsersDetails.getData(), UsersRequest.class);
         			if(!CommonUtils.isObjectNullOrEmpty(request)) {
         				toEmail[i] = request.getEmail();	
@@ -119,6 +118,9 @@ public class NotificationServiceImpl implements NotificationService{
 		notification.setTemplateId(notificationTemplate.getValue());
 		notification.setContentType(ContentType.TEMPLATE);
 		notification.setParameters(parameters);
+		notification.setLoanTypeId(lonaTypeId);
+		notification.setUserOrgId(userOrgId);
+		notification.setMasterId(masterId);
 		notification.setFrom(environment.getRequiredProperty(EMAIL_ADDRESS_FROM));
 		if(subjectId == null) {
 			notification.setSubject(NotificationTemplate.getSubjectName(notificationTemplate.getValue(), fpName));
@@ -134,7 +136,7 @@ public class NotificationServiceImpl implements NotificationService{
 
 	@Override
 	public void sendViewNotification(String toUserId, Long fromUserId, Long fromUserTypeId, Long notificationId,
-			Long applicationId, Long fpProductId,NotificationTemplate notificationTemplate,Long loginUserType,Object subjectId) {
+			Long applicationId, Long fpProductId,NotificationTemplate notificationTemplate,Long loginUserType,Object subjectId,Integer loanTypeId,Long userOrgId) {
 
 		CommonDocumentUtils.startHook(logger, SEND_VIEW_NOTIFICATION);
 		
@@ -152,7 +154,6 @@ public class NotificationServiceImpl implements NotificationService{
 					logger.error("Exception in getting name of fs : ",e);
 					parameters.put("fs_name", "NA");
 				}
-				
 				
 				
 				Object[] o=productMasterService.getUserDetailsByPrductId(fpProductId);
@@ -179,7 +180,8 @@ public class NotificationServiceImpl implements NotificationService{
 					logger.error(CommonUtils.EXCEPTION,e);
 					parameters.put(FP_PNAME_PARAMETERS, "NA");
 				}
-				request.addNotification(createEmailNotification(a, fromUserId, fromUserTypeId,notificationId, parameters, applicationId, fpProductId,notificationTemplate,fpName,subjectId));
+				request.addNotification(createEmailNotification(a, fromUserId, fromUserTypeId,notificationId, parameters, applicationId, fpProductId,
+						notificationTemplate,fpName,subjectId,loanTypeId,userOrgId,NotificationMasterAlias.EMAIL_PRIMARY_VIEW_FS.getMasterId()));
 			try {
 				notificationClient.send(request);
 				logger.info("Successfully sent notification and email for primary or final view");
@@ -190,13 +192,13 @@ public class NotificationServiceImpl implements NotificationService{
 		}
 		
 	}
-	
+	/** not in use any more*/
 	@Override
 	public void createEmailNotificationForUBI(String[] toIds, Long fromId, Long fromUserTypeId, Long templateId, Long fromUserId,
-			Map<String, Object> parameters, Long applicationId, Long fpProductId,NotificationTemplate notificationTemplate,String fpName){
+			Map<String, Object> parameters, Long applicationId, Long fpProductId,NotificationTemplate notificationTemplate,String fpName,Integer loanTypeId,Long userOrgId,Long masterId){
 		NotificationRequest request = new NotificationRequest();
 		request.setClientRefId(fromUserId.toString());
-      		request.addNotification(createEmailNotification(toIds, fromUserId, fromUserTypeId,templateId, parameters, applicationId, fpProductId,notificationTemplate,fpName,null));
+      		request.addNotification(createEmailNotification(toIds, fromUserId, fromUserTypeId,templateId, parameters, applicationId, fpProductId,notificationTemplate,fpName,null,loanTypeId,userOrgId,masterId));
 		try {
 			notificationClient.send(request);
 			logger.info("Successfully sent notification and email for primary or final view");
@@ -216,6 +218,7 @@ public class NotificationServiceImpl implements NotificationService{
 		request.setLoanTypeId(obj[4]!= null?Integer.valueOf(String.valueOf(obj[4])):null);
 		request.setEmailId(obj[5] != null ? String.valueOf(obj[5]):null);
 		request.setMobile(obj[6] != null ? String.valueOf(obj[6]):null);
+		request.setUserOrgId(obj[7] != null ? Long.valueOf(String.valueOf(obj[7])):null);
 		return request;
 	} 
 

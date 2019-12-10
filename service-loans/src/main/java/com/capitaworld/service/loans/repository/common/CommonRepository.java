@@ -46,4 +46,5 @@ public interface CommonRepository {
 	
 	public String getGatewayProvider();
 	
+	public Object[] getLastCheckerNameByBranchId(Long branchId) throws Exception;
 }

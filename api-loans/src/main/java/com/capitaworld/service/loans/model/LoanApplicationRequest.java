@@ -132,7 +132,9 @@ public class LoanApplicationRequest implements Serializable {
     private Boolean isMcqSkipped;
 
     private Boolean isNbfcFlow;
-
+    
+    /** userOrgId By Maaz*/
+    private Long orgId;
 
 	public Long getProposalId() {
 		return proposalId;
@@ -674,6 +676,14 @@ public class LoanApplicationRequest implements Serializable {
 
 	public void setIsNbfcFlow(Boolean isNbfcFlow) {
 		this.isNbfcFlow = isNbfcFlow;
+	}
+
+	public Long getOrgId() {
+		return orgId;
+	}
+
+	public void setOrgId(Long orgId) {
+		this.orgId = orgId;
 	}
 
 	@Override

@@ -57,6 +57,7 @@ public class CommonRepositoryImpl  implements CommonRepository {
 	/* (non-Javadoc)
 	 * @see com.capitaworld.service.loans.repository.common.CommonRepository#getAdminMakerDetails(java.lang.Long)
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<Object[]> getBranchUserDetailsBasedOnRoleId(Long orgId,Integer roleId) {
 		return manager.createNativeQuery("SELECT  u.email,u.mobile,fp.first_name,fp.last_name,fp.`organization_name` ,u.user_id AS UserId FROM users.`users` u LEFT JOIN users.`fund_provider_details` fp ON u.user_id=fp.user_id WHERE  u.user_org_id=:orgId AND u.user_role_id =:roleId").setParameter("orgId", orgId).setParameter("roleId", roleId).getResultList();
@@ -157,11 +158,9 @@ public class CommonRepositoryImpl  implements CommonRepository {
 
 	@Override
 	public Object[] getUserDetailsByApplicationId(Long applicationId) throws Exception {
-		return (Object[]) manager.createNativeQuery("select c.application_id,c.user_id,pd.id,pd.fp_product_id,c.loan_type_id,u.email,u.mobile\r\n" + 
-				"from connect.connect_log c \r\n" + 
-				"left join loan_application.proposal_details pd on pd.application_id=c.application_id\r\n" + 
-				"left join users.users u on u.user_id=c.user_id\r\n" + 
-				"where c.application_id=:applicationId limit 1").setParameter("applicationId", applicationId).getSingleResult();
+		return (Object[]) manager.createNativeQuery("SELECT apm.application_id,apm.user_id,pd.id,pd.fp_product_id,apm.product_id,u.email,u.mobile,pd.user_org_id\r\n" + 
+				"FROM loan_application.proposal_details pd  LEFT JOIN loan_application.application_proposal_mapping apm  ON apm.application_id=pd.application_id\r\n" + 
+				"LEFT JOIN users.users u ON u.user_id=apm.user_id WHERE apm.application_id=:applicationId LIMIT 1").setParameter("applicationId", applicationId).getSingleResult();
 	}
 	
 	@Override
@@ -199,6 +198,14 @@ public class CommonRepositoryImpl  implements CommonRepository {
 				"INNER JOIN `loan_application`.`proposal_details` pd ON pd.application_id=cn.application_id AND pd.is_active=TRUE AND pd.proposal_status_id IN (11,13)\n" +
 				"WHERE (SUBSTR(cn.gstin,3,10) =:pan) AND\n" +
 				"((cn.stage_id IN (7,9) AND cn.status=3) OR (cn.stage_id=4 AND cn.status=6))").setParameter("pan", pan).getSingleResult();
+	}
+
+	@Override
+	public Object[] getLastCheckerNameByBranchId(Long branchId) throws Exception {
+		 return (Object[]) manager.createNativeQuery("SELECT f.first_name,f.last_name\r\n" + 
+		 		"FROM users.users u \r\n" + 
+		 		"LEFT JOIN users.`fund_provider_details` f ON f.user_id=u.user_id\r\n" + 
+		 		"WHERE u.branch_id=branchId AND u.user_role_id=9 ORDER BY u.user_id DESC;").setParameter("branchId", branchId).getSingleResult();
 	}
 
 	

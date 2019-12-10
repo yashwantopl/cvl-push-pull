@@ -1,10 +1,29 @@
 package com.capitaworld.service.loans.config;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Timer;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
+
+import com.capitaworld.service.loans.domain.fundseeker.IneligibleProposalDetails;
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
+import com.capitaworld.service.loans.repository.common.CommonRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
@@ -15,9 +34,15 @@ import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
-import com.capitaworld.service.matchengine.model.*;
+import com.capitaworld.service.matchengine.model.ConnectionResponse;
+import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
+import com.capitaworld.service.matchengine.model.MatchRequest;
+import com.capitaworld.service.matchengine.model.ProposalCountResponse;
+import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
+import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.mca.client.McaClient;
 import com.capitaworld.service.mca.exception.McaException;
+import com.capitaworld.service.mca.model.cubictree.api.CubictreeJobRegistrationRequest;
 import com.capitaworld.service.mca.model.verifyApi.VerifyAPIRequest;
 import com.capitaworld.service.notification.client.NotificationClient;
 import com.capitaworld.service.notification.exceptions.NotificationException;
@@ -25,7 +50,9 @@ import com.capitaworld.service.notification.model.Notification;
 import com.capitaworld.service.notification.model.NotificationRequest;
 import com.capitaworld.service.notification.utils.ContentType;
 import com.capitaworld.service.notification.utils.NotificationAlias;
+import com.capitaworld.service.notification.utils.NotificationConstants;
 import com.capitaworld.service.notification.utils.NotificationConstants.NotificationProperty.DomainValue;
+import com.capitaworld.service.notification.utils.NotificationMasterAlias;
 import com.capitaworld.service.notification.utils.NotificationType;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.model.MasterResponse;
@@ -34,15 +61,6 @@ import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
 import com.ibm.icu.text.SimpleDateFormat;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Component;
-
-import java.io.IOException;
-import java.util.*;
 
 @Component
 public class AsyncComponent {
@@ -81,7 +99,13 @@ public class AsyncComponent {
 	@Autowired 
 	private McaClient mcaClient;
 	
-
+	@Autowired
+	private LoanApplicationRepository loanApplicationRepository;
+	
+	@Autowired
+	private CommonRepository commonRepo;
+	
+	private static final String HOLD_REJECT_REASON_UNABLE_TO_CONTACT_THE_CLIENT = "Unable to Contact the Client";
 	private static final String EMAIL_ADDRESS_FROM = "com.capitaworld.mail.url";
 	private static final String PARAMETERS_TOTAL_MATCHES = "total_matches";
 
@@ -552,7 +576,7 @@ public class AsyncComponent {
 								UsersRequest resp = getEmailMobile(userId);
 								if (resp != null && resp.getMobile() != null) {
 									sendSMSNotification(String.valueOf(userId), parameters,
-											NotificationAlias.SMS_VIEW_MORE_DETAILS,domainId, resp.getMobile());
+											NotificationAlias.SMS_VIEW_MORE_DETAILS,domainId,null,null,null,resp.getMobile());
 									logger.info("Sms Sent for fp view more details request:{}" , resp.getMobile());
 								}
 							} catch (Exception e) {
@@ -566,7 +590,7 @@ public class AsyncComponent {
 		}
 	}
 
-	private void sendSMSNotification(String userId, Map<String, Object> parameters, Long templateId, Long domainId, String... to)
+	private void sendSMSNotification(String userId, Map<String, Object> parameters, Long templateId, Long domainId,Long userOrgId,Integer loanTypeId,Long masterId, String... to)
 			throws NotificationException {
 		NotificationRequest req = new NotificationRequest();
 		req.setClientRefId(userId);
@@ -576,6 +600,9 @@ public class AsyncComponent {
 		notification.setTo(to);
 		notification.setType(NotificationType.SMS);
 		notification.setParameters(parameters);
+		notification.setMasterId(masterId);
+		notification.setLoanTypeId(loanTypeId);
+		notification.setUserOrgId(userOrgId);
 		req.addNotification(notification);
 		req.setDomainId(domainId);
 		notificationClient.send(req);
@@ -913,6 +940,60 @@ public class AsyncComponent {
 		}
 
 	}
+	
+	
+	public Boolean sendNotificationToFsWhenProposalIneligibleInRetail(IneligibleProposalDetails inProp) {
+		Boolean isSent=false;
+		try {
+			if((inProp != null) && (inProp.getStatus() == 4) && (inProp.getReason().equals(HOLD_REJECT_REASON_UNABLE_TO_CONTACT_THE_CLIENT))) {
+				Map<String, Object> notiParam=new HashMap<String, Object>();
+				LoanApplicationMaster lonaApplication = loanApplicationRepository.findOne(inProp.getApplicationId());
+				if(lonaApplication.getProductId() != null && (lonaApplication.getProductId() == LoanType.HOME_LOAN.getValue()
+						|| lonaApplication.getProductId() == LoanType.PERSONAL_LOAN.getValue()
+						|| lonaApplication.getProductId() == LoanType.AUTO_LOAN.getValue() )) {
+					Long domainId = NotificationConstants.NotificationProperty.DomainValue.RETAIL.getId();
+					UsersRequest fsRequest = getUserNameAndEmail(inProp.getCreatedBy());
+					
+					Object[] checkerName = commonRepo.getLastCheckerNameByBranchId(inProp.getBranchId());
+					if(checkerName != null) {
+						String chkName=checkerName[0] != null ? 
+								String.valueOf(checkerName[0]).concat(checkerName[1] != null ?" "+checkerName[1] :"")
+								:"Sir/Madam";
+						notiParam.put("checkerName", chkName);		
+					}
+					
+					if(!CommonUtils.isObjectNullOrEmpty(fsRequest) && !CommonUtils.isObjectNullOrEmpty(fsRequest.getEmail())) {
+						String to = fsRequest.getEmail();	
+						if(to !=null) {
+//							sendNotification(to, fsRequest.getUserId().toString(),notiParam,null,null ,domainId,null,lonaApplication.getProductId(),
+//									inProp.getUserOrgId(),NotificationMasterAlias.EMAIL_FS_REJECT_HOLD_FOR_UNABLE_CONTACT_CLIENT_REASEON.getMasterId());
+							isSent = true;
+						}else {
+							logger.info("to and fpName is null");
+						}
+					}
+					if(!CommonUtils.isObjectNullOrEmpty(fsRequest.getMobile())) {
+						String to = "91"+fsRequest.getMobile();	
+						sendSMSNotification(lonaApplication.getUserId().toString(), notiParam, null, domainId, inProp.getUserOrgId(),lonaApplication.getProductId(),
+								NotificationMasterAlias.SMS_FS_REJECT_HOLD_FOR_UNABLE_CONTACT_CLIENT_REASEON.getMasterId(), to);
+						isSent = true;
+					}
+					if(!CommonUtils.isObjectNullOrEmpty(lonaApplication.getUserId())) {
+//						sendSYSNotification(inProp.getApplicationId(),lonaApplication.getUserId().toString(),
+//							notiParam, NotificationAlias.SYS_FS_CHECKER_REJECTS_PROPOSAL, lonaApplication.getUserId().toString(), domainId,inProp.getUserOrgId(),lonaApplication.getProductId(),
+//							NotificationMasterAlias.SYS_FS_REJECT_HOLD_FOR_UNABLE_CONTACT_CLIENT_REASEON.getMasterId(),lonaApplication.getId());
+					}
+					
+					
+				}else {
+					return null;
+				}
+			}
+		}catch (Exception e) {
+			logger.error("Exception in sending email {}",e);
+		}
+		return isSent;
+	}
 
 	/**
 	 * 
@@ -1048,6 +1129,18 @@ public class AsyncComponent {
 		address=!address.equals("")  ? state!=null?address.concat(","+state):address.concat(""):address.concat(state);
 		address=!address.equals("")  ? pincode!=null?address.concat("-"+pincode):address.concat(""):address.concat(pincode.toString());
 		return address;
+	}
+	
+	@Async
+	public void callCubictreeApi(CubictreeJobRegistrationRequest request){
+		if(request != null){
+			try {
+				logger.info("Cubictree Api calling from loans");
+				mcaClient.callForjobRegistrationApi(request);
+			} catch (McaException e) {
+				logger.error("Exception in calling cubictree api :{}",e);
+			}
+		}
 	}
 
 }

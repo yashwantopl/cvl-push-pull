@@ -73,13 +73,19 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgr
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FundSeekerInputRequestService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.mca.client.McaClient;
+import com.capitaworld.service.mca.model.cubictree.api.CubictreeJobRegistrationRequest;
+import com.capitaworld.service.mca.model.cubictree.api.Filter;
+import com.capitaworld.service.mca.model.cubictree.api.JobRegistrationPayload;
+import com.capitaworld.service.mca.model.cubictree.api.MatchTableIndividual;
 import com.capitaworld.service.mca.model.verifyApi.VerifyAPIDINPAN;
 import com.capitaworld.service.mca.model.verifyApi.VerifyAPIDINPANRequest;
 import com.capitaworld.service.mca.model.verifyApi.VerifyAPIPara;
 import com.capitaworld.service.mca.model.verifyApi.VerifyAPIRequest;
+import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.Constitution;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserOrganisationRequest;
@@ -182,6 +188,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	
 	@Autowired
 	private CollateralSecurityDetailService collateralSecurityDetailService;
+	
+	@Autowired
+	private OneFormClient oneFormClient;
 	
 	@Autowired
 	private CollateralSecurityDetailRepository collateralSecurityDetailRepository;
@@ -358,12 +367,15 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			
 			try {
 				for (DirectorBackgroundDetailRequest reqObj : directorBackgroundDetailRequestList) {
+					
 					DirectorBackgroundDetail saveDirObj = null;
 					if (!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
 						saveDirObj = directorBackgroundDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
 						BeanUtils.copyProperties(reqObj, saveDirObj, "id", "createdBy", "createdDate", "modifiedBy", "modifiedDate");
 						saveDirObj.setModifiedBy(fundSeekerInputRequest.getUserId());
 						saveDirObj.setModifiedDate(new Date());
+						
+						
 					} else {
 						logger.info("New Object Created for Director");
 						saveDirObj = new DirectorBackgroundDetail();
@@ -375,14 +387,20 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 						saveDirObj.setCreatedDate(new Date());
 						saveDirObj.setIsActive(true);
 					}
+					
 					/*set Pan No for Verify Api*/
 					if(saveDirObj.getIsActive() != null && saveDirObj.getIsActive()) {
 						StringBuilder sb= new StringBuilder();
 						sb.append(reqObj.getFirstName() != null ? reqObj.getFirstName() : "");
 						sb.append(reqObj.getMiddleName() != null ? " "+ reqObj.getMiddleName() : "");
 						sb.append(reqObj.getLastName() != null ? " " + reqObj.getLastName() : "");
-						verifyApiReq.getVerifyAPIDINPANRequest().getPara().getVerifyAPIDINPANs().add(new VerifyAPIDINPAN(sb.toString(), reqObj.getPanNo()));						
+						verifyApiReq.getVerifyAPIDINPANRequest().getPara().getVerifyAPIDINPANs().add(new VerifyAPIDINPAN(sb.toString(), reqObj.getPanNo()));					
+						
+						/** setting name for Cubictree api*/
+						List<String> key= new ArrayList<String>();
+						key.add(sb.toString());
 					}
+					
 					if(!CommonUtils.isObjectNullOrEmpty(reqObj.getIsMainDirector()) && (reqObj.getIsMainDirector())){
 						DirectorPersonalDetailRequest directorPersonalDetailRequest = reqObj.getDirectorPersonalDetailRequest();
 						DirectorPersonalDetail directorPersonalDetail = null;
@@ -405,6 +423,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 					}
 					dobOfProprietor = reqObj.getDob();
 					directorBackgroundDetailsRepository.save(saveDirObj);
+					
 				}
 				//call place for verify api async
 				asyncComp.callVerify(verifyApiReq);
@@ -442,6 +461,44 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			logger.info("Just Before Save ------------------------------------->" + corporateApplicantDetail.getConstitutionId());
 			corporateApplicantDetailRepository.save(corporateApplicantDetail);			
 
+			
+			/** called cubictree api for company*/
+			CubictreeJobRegistrationRequest jobReg=new CubictreeJobRegistrationRequest();
+			jobReg.setJobRegPayload(new JobRegistrationPayload());
+			jobReg.getJobRegPayload().setFilter(new Filter());
+			jobReg.getJobRegPayload().setMatchTableIndividual(new MatchTableIndividual());
+			
+			jobReg.setApplicationId(corporateApplicantDetail.getApplicationId().getId());
+			jobReg.setUserId(corporateApplicantDetail.getApplicationId().getUserId());
+			jobReg.getJobRegPayload().setAreaLocality(corporateApplicantDetail.getRegisteredStreetName());
+			jobReg.getJobRegPayload().setIndividual(Boolean.FALSE);
+			jobReg.getJobRegPayload().setCinNumber(corporateApplicantDetail.getApplicationId().getCompanyCinNumber());
+			
+			List<String> keyWord = new ArrayList<>();
+			keyWord.add(corporateApplicantDetail.getOrganisationName());
+			jobReg.getJobRegPayload().setKeywords(keyWord);
+			
+			StringBuilder sb=new StringBuilder();
+			sb.append(corporateApplicantDetail.getRegisteredPremiseNumber());
+			sb.append(corporateApplicantDetail.getRegisteredStreetName());
+			jobReg.getJobRegPayload().setAreaLocality(sb.toString());
+			
+			if(corporateApplicantDetail.getRegisteredStateId() != null) {
+				String state= CommonDocumentUtils.getState(Long.valueOf(corporateApplicantDetail.getRegisteredStateId()), oneFormClient);
+				jobReg.getJobRegPayload().getFilter().setState(state);
+				jobReg.getJobRegPayload().getMatchTableIndividual().setState(state);
+			}
+			
+			if(corporateApplicantDetail.getRegisteredStateId() != null) {
+				jobReg.getJobRegPayload().getFilter().setCity(CommonDocumentUtils.getCity(Long.valueOf(corporateApplicantDetail.getRegisteredStateId()),oneFormClient));
+			}
+			
+			jobReg.getJobRegPayload().getMatchTableIndividual().setName(corporateApplicantDetail.getOrganisationName());
+			jobReg.getJobRegPayload().getMatchTableIndividual().setPan(corporateApplicantDetail.getPanNo());
+			jobReg.getJobRegPayload().getMatchTableIndividual().setPin(String.valueOf(corporateApplicantDetail.getRegisteredPincode()));
+/** TODO need to call while working -	asyncComp.callCubictreeApi(jobReg);*/
+			
+			/** END*/
 			LoansResponse res = new LoansResponse(DIRECTOR_DETAIL_SUCCESSFULLY_SAVED_MSG, HttpStatus.OK.value());
 			res.setFlag(true);
 			logger.info(DIRECTOR_DETAIL_SUCCESSFULLY_SAVED_MSG);
@@ -1205,4 +1262,5 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		}
 		return new LoansResponse("Successfully Reset the Form.", HttpStatus.OK.value(), getDataForOnePagerOneForm(connectResponse.getApplicationId()));
 	}
+	
 }
