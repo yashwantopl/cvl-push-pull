@@ -5050,6 +5050,7 @@ public class ScoringServiceImpl implements ScoringService {
         	fieldMasterIdList.add(3l);
         	fieldMasterIdList.add(160l);
         	fieldMasterIdList.add(210l);
+        	fieldMasterIdList.add(69l);
         	String value = loanRepository.getScoringMinAndMaxRangeValue(scoreModelIdList.stream().collect(Collectors.toList()), fieldMasterIdList);
         	if(value == null)
         		return;
