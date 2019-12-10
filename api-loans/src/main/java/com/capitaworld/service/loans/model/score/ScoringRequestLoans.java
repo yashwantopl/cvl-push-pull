@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.model.score;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 public class ScoringRequestLoans {
 
@@ -81,6 +82,8 @@ public class ScoringRequestLoans {
 	private Integer bureauVersion;
 
 	private Double eligibleLoanAmountCircular;
+	
+	private Map<String,Object> mapList;
 	
 	public Double getEligibleLoanAmountCircular() {
 		return eligibleLoanAmountCircular;
@@ -504,6 +507,15 @@ public class ScoringRequestLoans {
 
 	public void setBureauVersion(Integer bureauVersion) {
 		this.bureauVersion = bureauVersion;
+	}
+
+
+	public Map<String, Object> getMapList() {
+		return mapList;
+	}
+
+	public void setMapList(Map<String, Object> mapList) {
+		this.mapList = mapList;
 	}
 
 	@Override

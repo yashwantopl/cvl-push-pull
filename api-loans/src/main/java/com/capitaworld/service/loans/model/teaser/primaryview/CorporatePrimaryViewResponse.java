@@ -143,6 +143,9 @@ public class CorporatePrimaryViewResponse {
     private Object regPinData;
     private String regAddDist;
     private String regAddTaluko;
+    
+    //NOTE OF BORROWER
+    private String noteOfBorrower;
 
     private String applicationType;
     private String fpProductName;
@@ -1348,6 +1351,14 @@ public class CorporatePrimaryViewResponse {
 	public void setNbfcProjectedFinancials(List<Object> nbfcProjectedFinancials) {
 		this.nbfcProjectedFinancials = nbfcProjectedFinancials;
 	}
+	public String getNoteOfBorrower() {
+		return noteOfBorrower;
+	}
+	public void setNoteOfBorrower(String noteOfBorrower) {
+		this.noteOfBorrower = noteOfBorrower;
+	}
+	
+	
 	
 	
 	/*

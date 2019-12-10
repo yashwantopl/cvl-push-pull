@@ -186,6 +186,9 @@ public class DirectorBackgroundDetail extends AuditActivity implements Serializa
 	@Column(name="visually_impaired")
 	private Integer visuallyImpaired;
 
+	@Column(name="physically_handicapped")
+	private Integer physicallyHandicapped;
+
 	@Column(name="resident_status")
 	private Integer residentStatus;
 
@@ -653,5 +656,13 @@ public class DirectorBackgroundDetail extends AuditActivity implements Serializa
 
 	public void setApplicationProposalMapping(ApplicationProposalMapping applicationProposalMapping) {
 		this.applicationProposalMapping = applicationProposalMapping;
+	}
+
+	public Integer getPhysicallyHandicapped() {
+		return physicallyHandicapped;
+	}
+
+	public void setPhysicallyHandicapped(Integer physicallyHandicapped) {
+		this.physicallyHandicapped = physicallyHandicapped;
 	}
 }

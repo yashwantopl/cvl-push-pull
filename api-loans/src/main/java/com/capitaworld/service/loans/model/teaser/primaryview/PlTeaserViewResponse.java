@@ -22,7 +22,7 @@ import com.capitaworld.service.loans.model.corporate.CorporateDirectorIncomeRequ
 public class PlTeaserViewResponse {
 	
 	private List<?> matchesList;
-
+	private Integer matchesBureauVersion;
     private String organisationName;
     private String fpProductName;
     private String scoringModelName;
@@ -219,7 +219,7 @@ public class PlTeaserViewResponse {
 	private String noteOfBorrower;
 	private String scoringBasedOn;
 	private String campaignType;
-	private String cibilScoreRange;
+	private String cibilScoreV2;
 	private Long orgId;
 	public String getScoringBasedOn() {
 		return scoringBasedOn;
@@ -1239,11 +1239,12 @@ public class PlTeaserViewResponse {
 	public void setCampaignType(String campaignType) {
 		this.campaignType = campaignType;
 	}
-	public String getCibilScoreRange() {
-		return cibilScoreRange;
+	
+	public String getCibilScoreV2() {
+		return cibilScoreV2;
 	}
-	public void setCibilScoreRange(String cibilScoreRange) {
-		this.cibilScoreRange = cibilScoreRange;
+	public void setCibilScoreV2(String cibilScoreV2) {
+		this.cibilScoreV2 = cibilScoreV2;
 	}
 	public Long getOrgId() {
 		return orgId;
@@ -1251,7 +1252,10 @@ public class PlTeaserViewResponse {
 	public void setOrgId(Long orgId) {
 		this.orgId = orgId;
 	}
-	
-	
-	
+	public Integer getMatchesBureauVersion() {
+		return matchesBureauVersion;
+	}
+	public void setMatchesBureauVersion(Integer matchesBureauVersion) {
+		this.matchesBureauVersion = matchesBureauVersion;
+	}
 }

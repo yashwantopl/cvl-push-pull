@@ -26,6 +26,7 @@ import com.capitaworld.service.loans.config.AsyncComponent;
 import com.capitaworld.service.loans.domain.fundseeker.IneligibleProposalDetails;
 import com.capitaworld.service.loans.domain.fundseeker.IneligibleProposalTransferHistory;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
+import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.InEligibleProposalDetailsRequest;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
@@ -36,9 +37,9 @@ import com.capitaworld.service.loans.repository.common.CommonRepository;
 import com.capitaworld.service.loans.repository.common.LoanRepository;
 import com.capitaworld.service.loans.repository.fundseeker.IneligibleProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.IneligibleProposalTransferHistoryRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
+import com.capitaworld.service.loans.repository.sanction.LoanSanctionRepository;
 import com.capitaworld.service.loans.service.common.IneligibleProposalDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
@@ -64,7 +65,6 @@ import com.capitaworld.service.notification.utils.NotificationAlias;
 import com.capitaworld.service.notification.utils.NotificationType;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.PurposeOfLoan;
-import com.capitaworld.service.scoring.utils.ScoreParameter.NTB;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.BranchBasicDetailsRequest;
 import com.capitaworld.service.users.model.BranchUserResponse;
@@ -135,9 +135,6 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 	private AsyncComponent asyncComp;
 	
     @Autowired
-    private ApplicationProposalMappingRepository applicationRepository;
-
-    @Autowired
     private GatewayClient gatewayClient;
     
     @Autowired
@@ -154,6 +151,9 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 
     @Autowired
     private SidbiSpecificService sidbiService;
+    
+    @Autowired
+    private LoanSanctionRepository sanctionRepository;
 
     @Value("${isSIDBIFlowForIneligible}")
     private Boolean isSIDBIFlowForIneligible;
@@ -329,9 +329,9 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 		asyncComp.sendNotificationToFsWhenProposalIneligibleInRetail(ineligibleProposalDetails);
 		
 		return true;
-
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Boolean sendMailToFsAndBankBranch(Long applicationId, Long branchId, Long userOrgId) {
 		boolean isSent = false;
@@ -500,6 +500,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 		return isSent;
 	}
 
+	@SuppressWarnings("unchecked")
 	private Map<String, Object> getBankAndBranchDetails(Long userOrgId, Long branchId,
 			Map<String, Object> notificationParams) {
 
@@ -601,7 +602,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 	}
 
 	private Map<String, Object> getFsNameAndDetailsForAllProduct(Long applicationId, LoanApplicationRequest applicationRequest) {
-		Map<String, Object> notificationParams = new HashMap();
+		Map<String, Object> notificationParams = new HashMap<String, Object>();
 		String fsName = null;
 		String address = null;
 		List<DirectorBackgroundDetailRequest> NTBResponse = null;
@@ -881,6 +882,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 			return true;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Boolean sendMailToFsAndBankBranchForSbiBankSpecific(Long applicationId,Long branchId,Long userOrgId,Boolean sidbiStatus) {
 		Boolean status=false;
@@ -1055,4 +1057,48 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 		BeanUtils.copyProperties(ineliApp, detailsRequest);
 		return detailsRequest;
 	}
+
+		@Override
+		public boolean updateApplicationStatus(InEligibleProposalDetailsRequest inEliProReq) {
+			
+			try {
+				IneligibleProposalDetails ineligibleProposalDetails = ineligibleProposalDetailsRepository.findByApplicationIdAndUserOrgIdAndIsActive(inEliProReq.getApplicationId(), inEliProReq.getUserOrgId(), true);
+				if(CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)) {
+					return false;
+				}
+				// IF ALREADY DISBURED OR REJECTED THEN RETURN
+				if (ineligibleProposalDetails.getStatus().equals((InEligibleProposalStatus.DECLINE)) || ineligibleProposalDetails.getStatus().equals((InEligibleProposalStatus.DISBURED))) {
+					return false;
+				}
+				ineligibleProposalDetails.setStatus(inEliProReq.getStatus());
+				ineligibleProposalDetails.setReason(inEliProReq.getReason());
+				ineligibleProposalDetails.setModifiedBy(inEliProReq.getUserId());
+				ineligibleProposalDetails.setModifiedDate(new Date());
+				ineligibleProposalDetailsRepository.save(ineligibleProposalDetails);
+				// UPDATE STATUS IN SANCTION TABLE
+				return updateSanctionStatus(inEliProReq);
+			} catch (Exception e) {
+				logger.error(CommonUtils.EXCEPTION,e);
+				return false;
+			}	
+		}
+		
+		@Override
+		public boolean updateSanctionStatus(InEligibleProposalDetailsRequest inEliProReq) {
+			
+			try {
+				LoanSanctionDomain loanSanction = sanctionRepository.findByAppliationIdAndOrgId(inEliProReq.getApplicationId(), inEliProReq.getUserOrgId()); 
+				if(CommonUtils.isObjectNullOrEmpty(loanSanction)) {
+					return false;
+				}
+				loanSanction.setStatus(inEliProReq.getSanctionStatus());
+				loanSanction.setModifiedBy(inEliProReq.getUserId().toString());
+				loanSanction.setModifiedDate(new Date());
+				sanctionRepository.save(loanSanction);
+				return true;
+			} catch (Exception e) {
+				logger.error(CommonUtils.EXCEPTION,e);
+				return false;
+			}
+		}
 }

@@ -113,6 +113,7 @@ import com.capitaworld.service.oneform.enums.GetStringFromIdForMasterData;
 import com.capitaworld.service.oneform.enums.MaritalStatusMst;
 import com.capitaworld.service.oneform.enums.OccupationHL;
 import com.capitaworld.service.oneform.enums.OccupationNature;
+import com.capitaworld.service.oneform.enums.OccupationNatureNTB;
 import com.capitaworld.service.oneform.enums.RelationshipTypeHL;
 import com.capitaworld.service.oneform.enums.ReligionRetailMst;
 import com.capitaworld.service.oneform.enums.ResidenceStatusRetailMst;
@@ -329,6 +330,10 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 			MatchDisplayResponse matchResponse= matchEngineClient.displayMatchesOfRetail(matchRequest);
 			logger.info("matchesResponse ==>{}", matchResponse);
 			map.put("matchesResponse", !CommonUtils.isObjectNullOrEmpty(matchResponse.getMatchDisplayObjectMap()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectMap(),null) : null);
+			if(productId != null) {
+				Integer version = productMasterRepository.findBureauVersionByFpProductId(productId);
+				map.put("matchesBureauVersion", version != null ? version : 1) ;
+			}
 		}
 		catch (Exception e) {
 			logger.error("Error while getting matches data : ",e);
@@ -606,15 +611,18 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
 						companyMap.put(Retail.AutoLoan.PERSONAL_RELATIONSHIP_WITH_BANK, CommonUtils.printFields(collect.get(0),null));
 					}
-                                        collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.IS_ADHAAR_CARD)).collect(Collectors.toList());
+                    collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.IS_ADHAAR_CARD)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
 						companyMap.put(Retail.AutoLoan.IS_ADHAAR_CARD, CommonUtils.printFields(collect.get(0),null));
 					}
-                                        collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.CAR_SEGMENT)).collect(Collectors.toList());
+                    collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.CAR_SEGMENT)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
 						companyMap.put(Retail.AutoLoan.CAR_SEGMENT, CommonUtils.printFields(collect.get(0),null));
 					}
-                                        
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.TAKE_HOME_PAY)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.AutoLoan.TAKE_HOME_PAY, CommonUtils.printFields(collect.get(0),null));
+					}                   
 					scoreResponse.add(companyMap);
 					map.put("scoringResp", scoreResponse);
 			}catch (Exception e) {
@@ -844,6 +852,10 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 				if(!CommonUtils.isListNullOrEmpty(collect)) {
 					companyMap.put(Retail.AutoLoan.PERSONAL_RELATIONSHIP_WITH_BANK, CommonUtils.printFields(collect.get(0),null));
 				}
+				collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AutoLoan.TAKE_HOME_PAY)).collect(Collectors.toList());
+				if(!CommonUtils.isListNullOrEmpty(collect)) {
+					companyMap.put(Retail.AutoLoan.TAKE_HOME_PAY, CommonUtils.printFields(collect.get(0),null));
+				} 
 					scoreResponse.add(companyMap);
 					coAppScoringData.add(scoreResponse);
 			}
@@ -1224,13 +1236,14 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 			
 			//cibil score
 			try {
-				CibilRequest cibilReq=new CibilRequest();
-				cibilReq.setPan(plRetailApplicantRequest.getPan());
-				cibilReq.setApplicationId(applicationId);
-				CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
-				if (cibilScoreByPanCard != null) {
-					map.put("applicantV2Score", CommonUtils.getCibilV2ScoreRange(cibilScoreByPanCard.getActualScore()));
-					map.put("applicantCIBILScore", cibilScoreByPanCard);
+				
+				List<CibilScoreLogRequest> cibilScoreByPanCard = cibilClient.getSoftpingScores(applicationId, plRetailApplicantRequest.getPan());
+				for(CibilScoreLogRequest req : cibilScoreByPanCard) {
+						if(req.getScoreName().contains("CibilScoreVersion2")) {
+							map.put("applicantV2Score", req.getActualScore() != null ? req.getActualScore() : null);
+						}else {
+							map.put("applicantCIBILScore", cibilScoreByPanCard);
+						}
 				}
 			} catch (Exception e) {
 				logger.error("Error While calling Cibil Score By PanCard : ",e);
@@ -1512,18 +1525,20 @@ public class ALCamReportServiceImpl implements ALCamReportService {
 					}
 				}
 				
-				 try {
-                    CibilRequest cibilReq=new CibilRequest();
-                    cibilReq.setPan(coApplicantDetail.getPan());
-                    cibilReq.setApplicationId(applicationId);
-                    CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
-                    if(cibilScoreByPanCard != null) {
-                    	coApp.put("coAppV2Score", CommonUtils.getCibilV2ScoreRange(cibilScoreByPanCard.getActualScore()));
-                    	coApp.put("coAppCibilScore", cibilScoreByPanCard);
-                    }
-                } catch (Exception e) {
-                    logger.error("Error While calling Cibil Score By PanCard : ",e);
-                }
+				try {
+
+					List<CibilScoreLogRequest> cibilScoreByPanCard = cibilClient.getSoftpingScores(applicationId,
+							coApplicantDetail.getPan());
+					for (CibilScoreLogRequest req : cibilScoreByPanCard) {
+						if (req.getScoreName().contains("CibilScoreVersion2")) {
+							coApp.put("applicantV2Score", req.getActualScore() != null ? req.getActualScore() : null);
+						}else {
+							coApp.put("applicantCIBILScore", cibilScoreByPanCard);
+						}
+					}
+				} catch (Exception e) {
+					logger.error("Error While calling Cibil Score By PanCard : ", e);
+				}
 				
 				try {
 					List<BankRelationshipRequest> bankRelationshipRequests = new ArrayList<>();

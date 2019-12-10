@@ -858,6 +858,7 @@ public class CommonUtils {
 		public static final Integer OTHER_BRANCH = 7;
 		public static final Integer OTHER_BANK = 8;
 		public static final Integer ALREADY_ONLINE_IN_PRINCIPLE = 9;
+		public static final Integer DECLINE_AFTER_SANTIONED = 10;
 	}
 
 	public static String getDdrStatusString(Integer ddrStatusId) {

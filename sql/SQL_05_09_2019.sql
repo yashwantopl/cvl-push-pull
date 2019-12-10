@@ -1,0 +1,3 @@
+CREATE TABLE loan_application.mfi_geographic_parameter_mapping_temp ( id BIGINT(20) UNSIGNED NOT NULL, fp_product_id BIGINT, pincode_state_master_id BIGINT, created_by BIGINT, created_date DATETIME, modified_by BIGINT, modified_date DATETIME, is_active BIT(1), PRIMARY KEY (id) );
+
+CREATE TABLE loan_application.mfi_geographic_parameter_mapping ( id BIGINT(20) UNSIGNED NOT NULL, fp_product_id BIGINT, pincode_state_master_id BIGINT, created_by BIGINT, created_date DATETIME, modified_by BIGINT, modified_date DATETIME, is_active BIT(1), PRIMARY KEY (id) ); 

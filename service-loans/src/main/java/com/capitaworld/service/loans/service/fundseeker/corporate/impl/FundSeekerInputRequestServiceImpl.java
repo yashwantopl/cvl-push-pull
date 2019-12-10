@@ -190,11 +190,11 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	private CollateralSecurityDetailService collateralSecurityDetailService;
 	
 	@Autowired
-	private OneFormClient oneFormClient;
-	
-	@Autowired
 	private CollateralSecurityDetailRepository collateralSecurityDetailRepository;
-	
+
+	@Autowired
+	private OneFormClient oneFormClient;
+
 	@Override
 	public boolean saveOrUpdate(FundSeekerInputRequestResponse fundSeekerInputRequest) throws LoansException {
 		try {
@@ -364,7 +364,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			verifyApiReq.getVerifyAPIDINPANRequest().setPara(new VerifyAPIPara());
 			verifyApiReq.getVerifyAPIDINPANRequest().getPara().setVerifyAPIDINPANs(new ArrayList<>());
 			Date dobOfProprietor = null;
-			
+
 			try {
 				for (DirectorBackgroundDetailRequest reqObj : directorBackgroundDetailRequestList) {
 					
@@ -387,18 +387,13 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 						saveDirObj.setCreatedDate(new Date());
 						saveDirObj.setIsActive(true);
 					}
-					
 					/*set Pan No for Verify Api*/
 					if(saveDirObj.getIsActive() != null && saveDirObj.getIsActive()) {
 						StringBuilder sb= new StringBuilder();
 						sb.append(reqObj.getFirstName() != null ? reqObj.getFirstName() : "");
 						sb.append(reqObj.getMiddleName() != null ? " "+ reqObj.getMiddleName() : "");
 						sb.append(reqObj.getLastName() != null ? " " + reqObj.getLastName() : "");
-						verifyApiReq.getVerifyAPIDINPANRequest().getPara().getVerifyAPIDINPANs().add(new VerifyAPIDINPAN(sb.toString(), reqObj.getPanNo()));					
-						
-						/** setting name for Cubictree api*/
-						List<String> key= new ArrayList<String>();
-						key.add(sb.toString());
+						verifyApiReq.getVerifyAPIDINPANRequest().getPara().getVerifyAPIDINPANs().add(new VerifyAPIDINPAN(sb.toString(), reqObj.getPanNo()));
 					}
 					
 					if(!CommonUtils.isObjectNullOrEmpty(reqObj.getIsMainDirector()) && (reqObj.getIsMainDirector())){
@@ -423,7 +418,6 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 					}
 					dobOfProprietor = reqObj.getDob();
 					directorBackgroundDetailsRepository.save(saveDirObj);
-					
 				}
 				//call place for verify api async
 				asyncComp.callVerify(verifyApiReq);
@@ -455,13 +449,12 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			}catch (Exception e) {
 				logger.error("error while find diff of establishment year : ",e);
 			}
-			
+
 			corporateApplicantDetail.setBusinessSinceYear(fundSeekerInputRequest.getSinceYear());
 			corporateApplicantDetail.setBusinessSinceMonth(fundSeekerInputRequest.getSinceMonth());
 			logger.info("Just Before Save ------------------------------------->" + corporateApplicantDetail.getConstitutionId());
-			corporateApplicantDetailRepository.save(corporateApplicantDetail);			
+			corporateApplicantDetailRepository.save(corporateApplicantDetail);
 
-			
 			/** called cubictree api for company*/
 			CubictreeJobRegistrationRequest jobReg=new CubictreeJobRegistrationRequest();
 			jobReg.setJobRegPayload(new JobRegistrationPayload());

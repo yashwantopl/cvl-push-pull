@@ -795,6 +795,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		logger.info("CorporateApplicantRequest Object new Created:-=>");
 		BeanUtils.copyProperties(applicantDetail, applicantRequest);
 		copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
+		applicantRequest.setLoanApplicationCreatedDate(loanApplicationRepository.getCreatedDateById(applicationId));
 		logger.info("CorporateApplicantRequest Object new Created applicantRequest:-=>{}",applicantRequest.toString());
 		logger.info("Data===>:-=>{}",applicantRequest.getGstIn() + "==============>");
 		logger.info("Copy Domain to Request=======================:-=>");

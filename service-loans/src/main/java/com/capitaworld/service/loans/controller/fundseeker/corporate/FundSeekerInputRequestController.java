@@ -253,7 +253,7 @@ public class FundSeekerInputRequestController {
         	}
         	logger.info("Application Id for Getting Margin============>{}"+ntbRequest.getApplicationId()+ "BusinessTypeID ====>{}"+ ntbRequest.getBusineeTypeId());
             ScoringModelReqRes scoringResponse = loanApplicationService.getMinMaxMarginByApplicationId(ntbRequest.getApplicationId(),ntbRequest.getBusineeTypeId());
-            logger.info("Response from Scoring==>{}",scoringResponse.toString());
+            //logger.info("Response from Scoring==>{}",scoringResponse.toString());
             return new ResponseEntity<LoansResponse>(new LoansResponse("Details successfully fetched",HttpStatus.OK.value(),scoringResponse), HttpStatus.OK);
 
         } catch (Exception e) {

@@ -94,6 +94,9 @@ public class LoanSanctionDomain implements Serializable {
 
 	@Column(name = "is_kyc_verified")
 	private Boolean isKycVerified;
+	
+	@Column(name="status")
+    private Integer status;
 
 	public Long getId() {
 		return id;
@@ -292,6 +295,14 @@ public class LoanSanctionDomain implements Serializable {
 
 	public void setKycVerified(Boolean kycVerified) {
 		isKycVerified = kycVerified;
+	}
+	
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
 	}
 
 	@Override

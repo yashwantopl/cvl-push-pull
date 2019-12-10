@@ -5,13 +5,11 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
-import com.capitaworld.api.payment.gateway.model.LoansResponse;
 import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.connect.client.ConnectClient;
@@ -71,6 +68,7 @@ import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
 import com.capitaworld.service.loans.model.teaser.primaryview.CorporatePrimaryViewResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.CorporatePrimaryViewResponseNbfc;
 import com.capitaworld.service.loans.repository.colending.RecommendDetailRepository;
+import com.capitaworld.service.loans.repository.common.CommonRepository;
 import com.capitaworld.service.loans.repository.fundprovider.NbfcProposalBlendedRateRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
@@ -249,6 +247,9 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 
 	@Autowired
     private LoanSanctionRepository loanSanctionRepository;
+	
+	@Autowired
+	private CommonRepository commonRepository;
 
 	@Autowired
 	private LoanDisbursementRepository loanDisbursementRepository;
@@ -281,7 +282,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		//Long userId = loanApplicationMaster.getUserId(); // previous
 
 		//corporatePrimaryViewResponse.setProductId(loanApplicationMaster.getProductId()); //  previous
-		corporatePrimaryViewResponse.setProductId(applicationProposalMapping.getProductId()); // new
+		
 		corporatePrimaryViewResponse.setApplicationType(loanApplicationMaster.getWcRenewalStatus() != null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New" );
 		/* ========= Matches Data ========== */
 		if (userType != null && CommonUtils.UserType.FUND_SEEKER != userType ) {
@@ -320,6 +321,14 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				.getByApplicationAndProposalIdAndUserId(toUserId,toApplicationId,proposalId); //NEW BASED ON PROPOSAL MAPPING ID=======>
 		
 		 
+		//NOTE OF BORROWER FOR MSME
+				try {
+					String note = commonRepository.getNoteForHLCam(toApplicationId);
+					corporatePrimaryViewResponse.setNoteOfBorrower(!CommonUtils.isObjectNullOrEmpty(note) ? note : null);
+				}catch (Exception e) {
+					logger.error("Error/Exception while getting note of borrower....Error==>{}", e);
+				}
+		
 		// set value to response
 		if (corporateApplicantDetail != null) {
 			BeanUtils.copyProperties(corporateApplicantDetail, corporatePrimaryViewResponse);
@@ -496,7 +505,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			/*corporatePrimaryViewResponse.setLoanType(primaryCorporateDetail.getProductId() != null
 					? LoanType.getById(primaryCorporateDetail.getProductId()).getValue()
 					: null);*/ // PREVIOUS
-
+			corporatePrimaryViewResponse.setProductId(applicationProposalMapping.getProductId()); // new
 			corporatePrimaryViewResponse.setLoanType(applicationProposalMapping.getProductId() != null
 					? LoanType.getById(applicationProposalMapping.getProductId()).getValue()
 					: null); // NEW BASED ON PROPOSAL MAPPING DATABASE

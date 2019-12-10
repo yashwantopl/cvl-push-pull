@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.users.model.UsersRequest;
 import org.json.simple.JSONObject;
 
 import com.capitaworld.service.loans.exceptions.LoansException;
@@ -290,4 +291,9 @@ public interface LoanApplicationService {
 	public Map<String, Object> getGstRelatedPartyDetails(Long applicationId);
 	
 	public String getApplicationCampaignCode(Long applicationId);
+	
+	public Object getCampaignCodeAndIsBankSpecific(Long applicationId);
+
+	public UsersRequest getUserDetailsForUrlSepration(Long userId);
+
 }

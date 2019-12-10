@@ -65,6 +65,7 @@ import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
 import com.capitaworld.service.loans.model.retail.RetailFinalInfoRequest;
 import com.capitaworld.service.loans.model.teaser.primaryview.HlTeaserViewResponse;
 import com.capitaworld.service.loans.repository.common.CommonRepository;
+import com.capitaworld.service.loans.repository.common.LoanRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
@@ -259,6 +260,9 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 	@Autowired
 	private CoApplicantIncomeService coApplicantIncomeService;
 	
+	@Autowired
+	private LoanRepository loanRepo;
+	
 	
 	Date dateOfProposal =null;
 	@Override
@@ -322,6 +326,11 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 					matchRequest.setBusinessTypeId(applicationProposalMapping.getBusinessTypeId());
 					MatchDisplayResponse matchResponse = matchEngineClient.displayMatchesOfRetail(matchRequest);
 					hlTeaserViewResponse.setMatchesList(matchResponse.getMatchDisplayObjectList());
+					if(productMappingId != null) {
+						Integer version = productMasterRepository.findBureauVersionByFpProductId(productMappingId);
+						hlTeaserViewResponse.setMatchesBureauVersion(version != null ? version : 1);
+					}
+					
 				} catch (Exception e) {
 					logger.error("Error while getting matches data : " + e);
 				}
@@ -428,7 +437,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				/*plRetailApplicantResponse.setEmploymentWith(plRetailApplicantRequest.getEmploymentStatus() != null ? OccupationHL.getById(plRetailApplicantRequest.getEmploymentStatus()).getValue().toString() : "-");*/
 				plRetailApplicantResponse.setCurrentEmploymentStatus(plRetailApplicantRequest.getCurrentEmploymentStatus()!= null ? 	EmploymentStatusRetailMst.getById(plRetailApplicantRequest.getCurrentEmploymentStatus()).getValue() : "-");
 				plRetailApplicantResponse.setEmploymentStatus(plRetailApplicantRequest.getEmploymentStatus()!= null ? 	OccupationHL.getById(plRetailApplicantRequest.getEmploymentStatus()).getValue() : "-");
-				plRetailApplicantResponse.setCurrentJobYear((plRetailApplicantRequest.getCurrentJobYear() !=null ? (plRetailApplicantRequest.getCurrentJobYear() +" year") : "") + "" +(plRetailApplicantRequest.getCurrentJobMonth() != null ? (plRetailApplicantRequest.getCurrentJobMonth() +" months") :  "" )); 
+				plRetailApplicantResponse.setCurrentJobYear((plRetailApplicantRequest.getCurrentJobYear() !=null ? (plRetailApplicantRequest.getCurrentJobYear() +" year ") : "") + "" +(plRetailApplicantRequest.getCurrentJobMonth() != null ? (plRetailApplicantRequest.getCurrentJobMonth() +" months") :  "" )); 
 				plRetailApplicantResponse.setTotalExperienceYear((plRetailApplicantRequest.getTotalExperienceYear() !=null ? (plRetailApplicantRequest.getTotalExperienceYear() +" year") : "") + "" + (plRetailApplicantRequest.getTotalExperienceMonth() != null ? (plRetailApplicantRequest.getTotalExperienceMonth() +" months") :  "" ));
 				plRetailApplicantResponse.setResidenceType(plRetailApplicantRequest.getResidenceType() != null ? ResidenceStatusRetailMst.getById(plRetailApplicantRequest.getResidenceType()).getValue().toString() : "-");
 				plRetailApplicantResponse.setMaritalStatus(plRetailApplicantRequest.getStatusId() != null ? MaritalStatusMst.getById(plRetailApplicantRequest.getStatusId()).getValue().toString() : "-");
@@ -675,14 +684,16 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				
 		//cibil score
 		try {
-			CibilRequest cibilReq=new CibilRequest();
-			cibilReq.setPan(plRetailApplicantResponse.getPan());
-			cibilReq.setApplicationId(toApplicationId);
-			CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
-			if(cibilScoreByPanCard != null) {
-				hlTeaserViewResponse.setCibilScoreRange(CommonUtils.getCibilV2ScoreRange(cibilScoreByPanCard.getActualScore()));
+			//old client
+			/*CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);*/
+			List<CibilScoreLogRequest> cibilScoreByPanCard = cibilClient.getSoftpingScores(toApplicationId, plRetailApplicantResponse.getPan());
+			for(CibilScoreLogRequest req : cibilScoreByPanCard) {
+				if(req.getScoreName().contains("CibilScoreVersion2")) {
+					hlTeaserViewResponse.setCibilScoreV2(req.getActualScore());
+				}else {
+					hlTeaserViewResponse.setCibilScore(req);
+				}
 			}
-			hlTeaserViewResponse.setCibilScore(cibilScoreByPanCard);
 		} catch (Exception e) {
 			logger.error("Error While calling Cibil Score By PanCard : ",e);
 		}
@@ -1090,7 +1101,7 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 				plRetailApplicantResponse.setCompanyName(coApplicantDetail.getCompanyName());
 				plRetailApplicantResponse.setEmploymentType(coApplicantDetail.getEmploymentType() != null ? OccupationNatureNTB.getById(coApplicantDetail.getEmploymentType()).getValue().toString() : "-");
 				plRetailApplicantResponse.setEmploymentStatus(coApplicantDetail.getEmploymentStatus() != null ? EmploymentStatusRetailMst.getById(coApplicantDetail.getEmploymentStatus()).getValue() : "-");
-				plRetailApplicantResponse.setCurrentJobYear((coApplicantDetail.getCurrentJobYear() !=null ? (coApplicantDetail.getCurrentJobYear() +" year") : "") + "" +(coApplicantDetail.getCurrentJobMonth() != null ? (coApplicantDetail.getCurrentJobMonth() +" months") :  "" )); 
+				plRetailApplicantResponse.setCurrentJobYear((coApplicantDetail.getCurrentJobYear() !=null ? (coApplicantDetail.getCurrentJobYear() +" year ") : "") + "" +(coApplicantDetail.getCurrentJobMonth() != null ? (coApplicantDetail.getCurrentJobMonth() +" months") :  "" )); 
 				plRetailApplicantResponse.setTotalExperienceYear((coApplicantDetail.getTotalExperienceYear() !=null ? (coApplicantDetail.getTotalExperienceYear() +" year") : "") + "" + (coApplicantDetail.getTotalExperienceMonth() != null ? (coApplicantDetail.getTotalExperienceMonth() +" months") :  "" ));
 				plRetailApplicantResponse.setResidenceType(coApplicantDetail.getResidenceType() != null ? ResidenceStatusRetailMst.getById(coApplicantDetail.getResidenceType()).getValue().toString() : "-");
 				plRetailApplicantResponse.setMaritalStatus(coApplicantDetail.getStatusId() != null ? MaritalStatusMst.getById(coApplicantDetail.getStatusId()).getValue().toString() : "-");
@@ -1244,14 +1255,16 @@ public class HlTeaserViewServiceImpl implements HlTeaserViewService {
 					logger.error(":::::::::::---------Error while fetching name as per itr----------:::::::::::",e);
 				}*/
 				try {
-					CibilRequest cibilReq=new CibilRequest();
-					cibilReq.setPan(coApplicantDetail.getPan());
-					cibilReq.setApplicationId(applicationId);
-					CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
-					if(cibilScoreByPanCard != null) {
-						plRetailApplicantResponse.setCibilScoreRange(CommonUtils.getCibilV2ScoreRange(cibilScoreByPanCard.getActualScore()));
+					//old client
+					/*CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);*/
+					List<CibilScoreLogRequest> cibilScoreByPanCard = cibilClient.getSoftpingScores(applicationId, coApplicantDetail.getPan());
+					for(CibilScoreLogRequest req : cibilScoreByPanCard) {
+						if(req.getScoreName().contains("CibilScoreVersion2")) {
+							plRetailApplicantResponse.setCibilScoreV2(req.getActualScore());
+						}else {
+							plRetailApplicantResponse.setCibilScore(req);
+						}
 					}
-					plRetailApplicantResponse.setCibilScore(cibilScoreByPanCard);
 				} catch (Exception e) {
 					logger.error("Error While calling Cibil Score By PanCard : ",e);
 				}
