@@ -529,7 +529,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 			BigInteger count =  (BigInteger) entityManager.createNativeQuery("SELECT COUNT(org.`user_org_id`) FROM `users`.`user_organisation_master` org,`loan_application`.`fp_offline_app_config` app,`loan_application`.`fs_loan_application_master` cam \r\n" + 
 					"WHERE cam.`application_id` =:applicationId AND cam.`loan_campaign_code` = org.`organisation_code` \r\n" + 
 					"AND org.`user_org_id` = app.`org_id` AND org.`is_active` = TRUE \r\n" + 
-					"AND app.`is_active` = TRUE AND app.`bank_specific` = '1';")
+					"AND app.`is_active` = TRUE AND app.`bank_specific` = '1' AND app.business_type_id = cam.business_type_id")
 			.setParameter("applicationId", applicationId).getSingleResult();
 			return count.longValue() > 0;			
 		} catch (Exception e) {
