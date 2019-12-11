@@ -6393,9 +6393,18 @@ public class ScoringServiceImpl implements ScoringService {
                                     	ScoringCibilRequest scoringCibilRequest = filterScore(scoringRequest.getMap(), null, modelParameterResponse.getFieldMasterId());
                                     	if(!CommonUtils.isObjectNullOrEmpty(scoringCibilRequest)) {
                                     		if(!CommonUtils.isObjectNullOrEmpty(scoringCibilRequest.getTotalEmiOfCompany())) {
-                                    			individualLoanObligation = individualLoanObligation + scoringCibilRequest.getTotalEmiOfCompany();                                    			
+                                    			if(!CommonUtils.isObjectNullOrEmpty(individualLoanObligation)) {
+                                    				individualLoanObligation = individualLoanObligation + scoringCibilRequest.getTotalEmiOfCompany();                                    				
+                                    			}else {
+                                    				individualLoanObligation = scoringCibilRequest.getTotalEmiOfCompany();
+                                    			}
                                     		}if(!CommonUtils.isObjectNullOrEmpty(scoringCibilRequest.getTotalEmiOfDirector())) {
-                                    			commercialLoanObligation = commercialLoanObligation + scoringCibilRequest.getTotalEmiOfDirector();                                    			
+                                    			if(!CommonUtils.isObjectNullOrEmpty(commercialLoanObligation)) {
+                                    				commercialLoanObligation = commercialLoanObligation + scoringCibilRequest.getTotalEmiOfDirector();	
+                                    			}else {
+                                    				commercialLoanObligation = scoringCibilRequest.getTotalEmiOfDirector();
+                                    			}
+                                    			                                    			
                                     		}
                                     	}
                                     }
