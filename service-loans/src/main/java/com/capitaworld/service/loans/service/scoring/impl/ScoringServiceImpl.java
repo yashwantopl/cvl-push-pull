@@ -5051,6 +5051,7 @@ public class ScoringServiceImpl implements ScoringService {
         	fieldMasterIdList.add(160l);
         	fieldMasterIdList.add(210l);
         	fieldMasterIdList.add(69l);
+        	fieldMasterIdList.add(66l);
         	String value = loanRepository.getScoringMinAndMaxRangeValue(scoreModelIdList.stream().collect(Collectors.toList()), fieldMasterIdList);
         	if(value == null)
         		return;
@@ -6334,8 +6335,21 @@ public class ScoringServiceImpl implements ScoringService {
                                     List<String> loanTypeList=new ArrayList<String>();
                                     loanTypeList.add(CibilUtils.CreditTypeEnum.CASH_CREDIT.getValue());
                                     loanTypeList.add(CibilUtils.CreditTypeEnum.OVERDRAFT.getValue());
-
-                                    scoringParameterRequest.setLimitsInAccount(financialArrangementDetailsRepository.getExistingLimits(applicationId , loanTypeList ));
+                                    Double existingLimits = financialArrangementDetailsRepository.getExistingLimits(applicationId , loanTypeList );
+                                    if(isCibilCheck) {
+                                    	ScoringCibilRequest scoringCibilRequest = filterScore(scoringRequest.getMap(), null, modelParameterResponse.getFieldMasterId());
+                                    	if(!CommonUtils.isObjectNullOrEmpty(scoringCibilRequest)) {
+                                    		logger.info("Total Bureau Existing Limit ===>{} ===>{}",applicationId,scoringCibilRequest.getTotalExistingLimit());
+                                    		if(!CommonUtils.isObjectNullOrEmpty(scoringCibilRequest.getTotalExistingLimit())) {
+                                    			if(!CommonUtils.isObjectNullOrEmpty(existingLimits)) {
+                                    				existingLimits = existingLimits + scoringCibilRequest.getTotalExistingLimit();                                    				
+                                    			}else {
+                                    				existingLimits = scoringCibilRequest.getTotalExistingLimit();
+                                    			}
+                                    		}
+                                    	}
+                                    }
+                                    scoringParameterRequest.setLimitsInAccount(existingLimits);
 
                                     scoringParameterRequest.setUtilisationPercentage_p(true);
 
