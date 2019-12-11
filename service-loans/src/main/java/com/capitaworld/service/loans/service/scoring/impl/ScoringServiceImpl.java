@@ -6349,6 +6349,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     		}
                                     	}
                                     }
+                                    logger.info("existingLimits For UTILISATION_PERCENTAGE ApplicationId ==>{}",applicationId,existingLimits);
                                     scoringParameterRequest.setLimitsInAccount(existingLimits);
 
                                     scoringParameterRequest.setUtilisationPercentage_p(true);
@@ -6429,6 +6430,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     if(!CommonUtils.isObjectNullOrEmpty(commercialLoanObligation)) {
                                     	totalExistingLoanObligation+=(commercialLoanObligation*12);
                                     }
+                                    logger.info("totalExistingLoanObligation For DEBT_SERVICE_COVERAGE_RATIO ApplicationId ==>{}",applicationId,totalExistingLoanObligation);
 
                                     scoringParameterRequest.setExistingLoanObligation(totalExistingLoanObligation);
 
