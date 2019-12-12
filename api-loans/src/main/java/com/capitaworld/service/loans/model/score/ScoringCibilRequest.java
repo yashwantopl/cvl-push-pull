@@ -9,6 +9,9 @@ public class ScoringCibilRequest  implements Serializable {
 	private Long scoreModelId;
 	private Double minRange;
 	private Double maxRange;
+	private Double totalEmiOfCompany;
+	private Double totalEmiOfDirector;
+	private Double totalExistingLimit;
 	private Long score;
 	private String description;
 	private Long fieldMasterId;
@@ -61,8 +64,22 @@ public class ScoringCibilRequest  implements Serializable {
 	public void setFieldMasterId(Long fieldMasterId) {
 		this.fieldMasterId = fieldMasterId;
 	}
-	
-	
-
-	
+	public Double getTotalEmiOfCompany() {
+		return totalEmiOfCompany;
+	}
+	public void setTotalEmiOfCompany(Double totalEmiOfCompany) {
+		this.totalEmiOfCompany = totalEmiOfCompany;
+	}
+	public Double getTotalEmiOfDirector() {
+		return totalEmiOfDirector;
+	}
+	public void setTotalEmiOfDirector(Double totalEmiOfDirector) {
+		this.totalEmiOfDirector = totalEmiOfDirector;
+	}
+	public Double getTotalExistingLimit() {
+		return totalExistingLimit;
+	}
+	public void setTotalExistingLimit(Double totalExistingLimit) {
+		this.totalExistingLimit = totalExistingLimit;
+	}
 }

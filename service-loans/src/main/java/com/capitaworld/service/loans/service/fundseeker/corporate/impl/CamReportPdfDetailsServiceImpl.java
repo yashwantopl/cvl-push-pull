@@ -96,6 +96,7 @@ import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
 import com.capitaworld.service.loans.model.corporate.PrimaryCorporateRequest;
 import com.capitaworld.service.loans.model.corporate.TotalCostOfProjectRequest;
 import com.capitaworld.service.loans.repository.common.CommonRepository;
+import com.capitaworld.service.loans.repository.common.impl.LoanRepositoryImpl;
 import com.capitaworld.service.loans.repository.fundprovider.NbfcProposalBlendedRateRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
@@ -346,10 +347,15 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	
 	@Autowired
 	private CommonRepository commonRepository;
-	
-	
+        
+        @Autowired
+        private FinancialArrangementDetailsService arrangementsDetailServiceImpl;
+		
 	@Autowired
 	private NbfcProposalBlendedRateRepository nbfcProposalBlendedRateRepository;
+        
+        @Autowired
+        private LoanRepositoryImpl loanRepoImpl;
 
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -2198,10 +2204,18 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			map.put("knowHow", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getKnowHow())? StringEscapeUtils.escapeXml(KnowHowMst.getById(primaryCorporateDetail.getKnowHow()).getValue()) : "-");
 			map.put("competition", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCompetition())? StringEscapeUtils.escapeXml(CompetitionMst_SBI.getById(primaryCorporateDetail.getCompetition()).getValue()) : "-");
 			map.put("productDesc", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getProductServiceDescription()) ? StringEscapeUtils.escapeXml(primaryCorporateDetail.getProductServiceDescription()) : null);
-			map.put("additionalLimit", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getAdditionalLoanAmount()) ? primaryCorporateDetail.getAdditionalLoanAmount() : "-" );
+			//map.put("additionalLimit", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getAdditionalLoanAmount()) ? primaryCorporateDetail.getAdditionalLoanAmount() : "-" );
 			//map.put("costOfMachinery", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCostOfMachinery()) ? primaryCorporateDetail.getCostOfMachinery() : "-" );
 			
 			//Scientific value removal
+                        if (primaryCorporateDetail.getAdditionalLoanAmount() != null) {
+                            Double addiLoanAmt = primaryCorporateDetail.getAdditionalLoanAmount();
+				BigDecimal additionalLoanAmt = BigDecimal.valueOf(addiLoanAmt).setScale(0);
+				map.put("additionalLimit", additionalLoanAmt.toString());    
+                        } else {
+                            map.put("additionalLimit", 0);    
+                        }
+                        
 			if (primaryCorporateDetail.getIncrementalTurnover() != null) {
 				Double increTurnover = primaryCorporateDetail.getIncrementalTurnover();
 				BigDecimal incrementalTurnover = BigDecimal.valueOf(increTurnover).setScale(0);
@@ -2215,15 +2229,31 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			 
 			//map.put("incrementalTurnover", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getIncrementalTurnover()) ? primaryCorporateDetail.getIncrementalTurnover() : "-");
 			map.put("incrementalMargin", !CommonUtils.isObjectNullOrEmptyOrDash(primaryCorporateDetail.getIncrementalMargin()) ? primaryCorporateDetail.getIncrementalMargin() : "-");			
-			map.put("borrowerDeclaredProjSales", !CommonUtils.isObjectNullOrEmptyOrDash(primaryCorporateDetail.getBorrowerDcldProjectedSales()) ? primaryCorporateDetail.getBorrowerDcldProjectedSales() : "-");
-			
-			if (primaryCorporateDetail.getAdditionalLoanAmount() != null && primaryCorporateDetail.getLoanAmount() != null) {
-				Double totLimit = primaryCorporateDetail.getAdditionalLoanAmount() + primaryCorporateDetail.getLoanAmount();
-				BigDecimal totalLimit = BigDecimal.valueOf(totLimit).setScale(0);				
+			map.put("borrowerDeclaredProjSales", !CommonUtils.isObjectNullOrEmptyOrDash(primaryCorporateDetail.getBorrowerDcldProjectedSales()) ? primaryCorporateDetail.getBorrowerDcldProjectedSales() : "-");			
+                        FinancialArrangementsDetailRequest req = arrangementsDetailServiceImpl.getTotalEmiAndSanctionAmountByApplicationId(applicationId);
+                        req.getAmount();
+                        if (req.getAmount() != null) {
+                            Double existingLim = req.getAmount();
+				BigDecimal existingLimit = BigDecimal.valueOf(existingLim).setScale(0);
+				map.put("existingLimit", existingLimit.toString());
+                        }else{
+                                map.put("existingLimit", 0);
+                        }
+                        //map.put("existingLimit", !CommonUtils.isObjectNullOrEmpty(req.getAmount()) ? req.getAmount() : "0");                       
+			if (primaryCorporateDetail.getAdditionalLoanAmount() != null) {
+                            if (req.getAmount() != null) {
+                                Double totLimit = primaryCorporateDetail.getAdditionalLoanAmount() + req.getAmount();
+                                BigDecimal totalLimit = BigDecimal.valueOf(totLimit).setScale(0);				
 				map.put("totalLimit", totalLimit.toString());
+                            } else {
+                                Double totLimit = primaryCorporateDetail.getAdditionalLoanAmount() + 0;
+                                BigDecimal totalLimit = BigDecimal.valueOf(totLimit).setScale(0);				
+				map.put("totalLimit", totalLimit.toString());
+                            }				
 			} else {
 				map.put("totalLimit", "-");
 			}
+                        
 			Boolean isHaveCollateralSecu =  primaryCorporateDetail.getHaveCollateralSecurity();
 			map.put("isHaveCollateralSecu", isHaveCollateralSecu == null ? "-" : isHaveCollateralSecu ? "Yes" : "No");
 			
@@ -2311,7 +2341,13 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				logger.error(CommonUtils.EXCEPTION,e);
 				}
 		}
-				
+//                                Long orgId = null;
+//		                if (proposalId != null) {
+//                                orgId = proposalDetailsRepository.getOrgIdByProposalId(proposalId);
+//                                } else {
+//                                orgId = ineligibleProposalDetailsRepository.getOrgId(applicationId);
+//                                }
+//                                boolean isCibilCall = loanRepoImpl.getCibilBureauAPITrueOrFalse(orgId);
 		//DIRECTOR'S BACKGROUND
 				try {
 					List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList = backgroundDetailsService.getDirectorBackgroundDetailList(applicationId, userId);
@@ -2325,7 +2361,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 						if(directorBackgroundDetailRequest.getPanNo() != null) {
 							directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo().toUpperCase());
 						}
-						directorBackgroundDetailResponse.setShareholding(directorBackgroundDetailRequest.getShareholding().toString());
+
 						String directorName = "";
 						if (directorBackgroundDetailRequest.getSalutationId() != null){
 							directorName = Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue();
@@ -2343,8 +2379,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 						
 						if(directorBackgroundDetailRequest.getPanNo().charAt(3) == 'H' ||directorBackgroundDetailRequest.getPanNo().charAt(3) == 'h') {
 							directorBackgroundDetailResponse.setCibilScore("HUF");
-						}else {
-							try {
+						}else {                                                            
+                                                        try {
 								CibilRequest cibilRequest = new CibilRequest();
 								cibilRequest.setPan(directorBackgroundDetailRequest.getPanNo());
 								cibilRequest.setApplicationId(applicationId);
@@ -2370,7 +2406,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 								}
 							}catch(Exception e) {
 								logger.error("Error while getting cibil details : ",e);
-							}
+							}                                                    						
 						}
 						
 						Double loanObligation = financialArrangementDetailsService.getTotalOfEmiByApplicationIdAndDirectorId(applicationId , directorBackgroundDetailRequest.getId());
@@ -2447,8 +2483,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				}
 				
 				/* cmr details cibil */
-				
-				try {
+                                    try {
 					String cmrScore= cibilClient.getCMRScore(applicationId);
 					
 					if (cmrScore != null && cmrScore.contains("EXP")) {
@@ -2462,8 +2497,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				} catch (Exception e) {
 					
 					logger.error("error while getting cmr score : ",e);
-				}
-					
+                                    }    
+								
 				//FINANCIAL ARRANGEMENTS
 				try {
 					List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService.getFinancialArrangementDetailsList(applicationId, userId);

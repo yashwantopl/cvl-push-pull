@@ -5050,6 +5050,8 @@ public class ScoringServiceImpl implements ScoringService {
         	fieldMasterIdList.add(3l);
         	fieldMasterIdList.add(160l);
         	fieldMasterIdList.add(210l);
+        	fieldMasterIdList.add(69l);
+        	fieldMasterIdList.add(66l);
         	String value = loanRepository.getScoringMinAndMaxRangeValue(scoreModelIdList.stream().collect(Collectors.toList()), fieldMasterIdList);
         	if(value == null)
         		return;
@@ -5098,6 +5100,26 @@ public class ScoringServiceImpl implements ScoringService {
         
     }
 
+    public ScoringCibilRequest filterScore(Map<String,Object> map, Long scoringModelId,Long fieldMasterId) {
+		Object fieldMap = map.entrySet().stream().filter(x -> x.getKey().equalsIgnoreCase(fieldMasterId.toString())).map(x -> x.getValue()).findFirst().orElse(null);
+		if(fieldMap == null) {
+			logger.warn("No Object Found for Field master id == >{}-===Score ====>{}",fieldMasterId);			
+		}
+		logger.warn("Filtered Map ====>{} ===> by Field Master Id ====>{}",fieldMap,fieldMasterId);
+		ScoringCibilRequest response = null;
+		if(fieldMap instanceof ScoringCibilRequest) {
+			response = (ScoringCibilRequest)fieldMap;
+		}else if (fieldMap instanceof Map) {
+			try {
+				response = MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>)fieldMap,ScoringCibilRequest.class );
+			}catch(Exception e) {
+				logger.error("Error while converting Map to Object to Scoring response from Bureau Integration Server",e);
+			}
+		}
+		logger.info("Scoring CIbil Response == >{}",response);
+		return response;
+	}
+    
     @Override
     public ResponseEntity<LoansResponse> calculateExistingBusinessScoringList(List<ScoringRequestLoans> scoringRequestLoansList) {
 
@@ -6313,8 +6335,22 @@ public class ScoringServiceImpl implements ScoringService {
                                     List<String> loanTypeList=new ArrayList<String>();
                                     loanTypeList.add(CibilUtils.CreditTypeEnum.CASH_CREDIT.getValue());
                                     loanTypeList.add(CibilUtils.CreditTypeEnum.OVERDRAFT.getValue());
-
-                                    scoringParameterRequest.setLimitsInAccount(financialArrangementDetailsRepository.getExistingLimits(applicationId , loanTypeList ));
+                                    Double existingLimits = financialArrangementDetailsRepository.getExistingLimits(applicationId , loanTypeList );
+                                    if(isCibilCheck) {
+                                    	ScoringCibilRequest scoringCibilRequest = filterScore(scoringRequest.getMap(), null, modelParameterResponse.getFieldMasterId());
+                                    	if(!CommonUtils.isObjectNullOrEmpty(scoringCibilRequest)) {
+                                    		logger.info("Total Bureau Existing Limit ===>{} ===>{}",applicationId,scoringCibilRequest.getTotalExistingLimit());
+                                    		if(!CommonUtils.isObjectNullOrEmpty(scoringCibilRequest.getTotalExistingLimit())) {
+                                    			if(!CommonUtils.isObjectNullOrEmpty(existingLimits)) {
+                                    				existingLimits = existingLimits + scoringCibilRequest.getTotalExistingLimit();                                    				
+                                    			}else {
+                                    				existingLimits = scoringCibilRequest.getTotalExistingLimit();
+                                    			}
+                                    		}
+                                    	}
+                                    }
+                                    logger.info("existingLimits For UTILISATION_PERCENTAGE ApplicationId ==>{}",applicationId,existingLimits);
+                                    scoringParameterRequest.setLimitsInAccount(existingLimits);
 
                                     scoringParameterRequest.setUtilisationPercentage_p(true);
 
@@ -6366,20 +6402,44 @@ public class ScoringServiceImpl implements ScoringService {
 
                                     Double totalExistingLoanObligation=0.0;
 
-                                    Double individualLoanObligation=financialArrangementDetailsRepository.getTotalEmiByApplicationId(applicationId);
-                                    Double commercialLoanObligation=financialArrangementDetailsService.getTotalEmiOfAllDirByApplicationId(applicationId);
-                                    if(!CommonUtils.isObjectNullOrEmpty(individualLoanObligation))
-                                        totalExistingLoanObligation+=(individualLoanObligation*12);
+                                    Double individualLoanObligation = financialArrangementDetailsRepository.getTotalEmiByApplicationId(applicationId);
+                                    Double commercialLoanObligation = financialArrangementDetailsService.getTotalEmiOfAllDirByApplicationId(applicationId);
+                                    if(isCibilCheck) {
+                                    	ScoringCibilRequest scoringCibilRequest = filterScore(scoringRequest.getMap(), null, modelParameterResponse.getFieldMasterId());
+                                    	if(!CommonUtils.isObjectNullOrEmpty(scoringCibilRequest)) {
+                                    		if(!CommonUtils.isObjectNullOrEmpty(scoringCibilRequest.getTotalEmiOfCompany())) {
+                                    			if(!CommonUtils.isObjectNullOrEmpty(individualLoanObligation)) {
+                                    				individualLoanObligation = individualLoanObligation + scoringCibilRequest.getTotalEmiOfCompany();                                    				
+                                    			}else {
+                                    				individualLoanObligation = scoringCibilRequest.getTotalEmiOfCompany();
+                                    			}
+                                    		}if(!CommonUtils.isObjectNullOrEmpty(scoringCibilRequest.getTotalEmiOfDirector())) {
+                                    			if(!CommonUtils.isObjectNullOrEmpty(commercialLoanObligation)) {
+                                    				commercialLoanObligation = commercialLoanObligation + scoringCibilRequest.getTotalEmiOfDirector();	
+                                    			}else {
+                                    				commercialLoanObligation = scoringCibilRequest.getTotalEmiOfDirector();
+                                    			}
+                                    			                                    			
+                                    		}
+                                    	}
+                                    }
+                                    if(!CommonUtils.isObjectNullOrEmpty(individualLoanObligation)){
+                                    	totalExistingLoanObligation+=(individualLoanObligation*12);
+                                    }
 
-                                    if(!CommonUtils.isObjectNullOrEmpty(commercialLoanObligation))
-                                        totalExistingLoanObligation+=(commercialLoanObligation*12);
+                                    if(!CommonUtils.isObjectNullOrEmpty(commercialLoanObligation)) {
+                                    	totalExistingLoanObligation+=(commercialLoanObligation*12);
+                                    }
+                                    logger.info("totalExistingLoanObligation For DEBT_SERVICE_COVERAGE_RATIO ApplicationId ==>{}",applicationId,totalExistingLoanObligation);
 
                                     scoringParameterRequest.setExistingLoanObligation(totalExistingLoanObligation);
 
-                                    if(primaryCorporateDetail.getPurposeOfLoanId() == 1)
-                                        scoringParameterRequest.setLoanType(2);
-                                    else
-                                        scoringParameterRequest.setLoanType(1);
+                                    if(primaryCorporateDetail.getPurposeOfLoanId() == 1) {
+                                    	scoringParameterRequest.setLoanType(2);
+                                    }else {
+                                    	scoringParameterRequest.setLoanType(1);
+                                    }
+                                        
 
                                     scoringParameterRequest.setDebtServiceCoverageRatio_p(true);
 
