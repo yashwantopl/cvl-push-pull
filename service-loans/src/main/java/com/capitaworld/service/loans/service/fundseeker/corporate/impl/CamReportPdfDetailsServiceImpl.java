@@ -2409,7 +2409,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 							}                                                    						
 						}
 						
-						Double loanObligation = financialArrangementDetailsService.getTotalOfEmiByApplicationIdAndDirectorId(applicationId , directorBackgroundDetailRequest.getId());
+						Double loanObligation = financialArrangementDetailsService.getTotalEmiOfAllDirByApplicationId(applicationId);
 						directorBackgroundDetailResponse.setLoanObligation(!CommonUtils.isObjectNullOrEmpty(loanObligation) ? loanObligation : 0);
 						
 						directorBackgroundDetailResponse.setPincode(directorBackgroundDetailRequest.getPincode());
