@@ -655,6 +655,19 @@ public class LoanRepositoryImpl implements LoanRepository {
 	}
 	
 	@Override
+	public Object[] getBankBureauFlags(Long orgId){
+		try{
+			Object [] count = (Object [])entityManager
+					.createNativeQuery("SELECT org.is_msme_api_active,org.is_score_enable,org.is_cmr_enable,org.is_main_dir_score_enable,org.is_loans_enable FROM cibil.`organisation_master` org WHERE org.id =:orgId")
+					.setParameter("orgId", orgId).getSingleResult();
+			return count;
+		}catch (Exception e) {
+			logger.error("Error while Getting Bank Bureau Flags ==>{}",e);
+			return null;
+		}
+	}
+	
+	@Override
 	public boolean getCibilBureauAPITrueOrFalse(Long orgId) {
 		try {
 			BigInteger id =  (BigInteger) entityManager.createNativeQuery("SELECT cb.id FROM `cibil`.`organisation_master` cb WHERE cb.id =:orgId AND cb.`is_msme_api_active` IS TRUE")

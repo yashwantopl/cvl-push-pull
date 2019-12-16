@@ -97,4 +97,6 @@ public interface LoanRepository{
 	public Long getCampaignOrgIdByApplicationId(Long applicationId);
 	
 	public boolean getCibilBureauAPITrueOrFalse(Long orgId);
+	
+	public Object[] getBankBureauFlags(Long orgId);
 }

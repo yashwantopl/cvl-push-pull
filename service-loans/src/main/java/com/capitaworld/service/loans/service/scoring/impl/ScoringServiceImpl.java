@@ -5129,6 +5129,8 @@ public class ScoringServiceImpl implements ScoringService {
 
         ScoringParameterRequest scoringParameterRequest = null;
         boolean isCibilCheck = false;
+        boolean result = false;
+		Boolean isBureauExistingLoansDisplayActive = false;
         try {                                            
         	if(!scoringRequestLoansList.isEmpty()) {
         		logger.info("Enter in calculateExistingBusinessScoringList for check If Cibil API check or not");
@@ -5137,7 +5139,11 @@ public class ScoringServiceImpl implements ScoringService {
         		Long orgId = loanRepository.getCampaignOrgIdByApplicationId(applicationId);
         		if(orgId == null)
         			orgId = 10l;
-        		boolean result = loanRepository.getCibilBureauAPITrueOrFalse(orgId);
+        		Object [] bankBureauFlags = loanRepository.getBankBureauFlags(orgId);
+        		if(bankBureauFlags != null) {
+        			result = (!CommonUtils.isObjectNullOrEmpty(bankBureauFlags[0]) && Boolean.valueOf(bankBureauFlags[0].toString()));
+        			isBureauExistingLoansDisplayActive = (!CommonUtils.isObjectNullOrEmpty(bankBureauFlags[4]) && Boolean.valueOf(bankBureauFlags[4].toString()));
+    			}
         		String checkAPI = loanRepository.getCommonPropertiesValue("CIBIL_BUREAU_API_START");
         		logger.info("Found Result For CIBIL API ----->" + result + " For Org ID ----" + orgId + "  And check API --- >" + checkAPI);
         		if(result && "true".equals(checkAPI)) {
@@ -6336,7 +6342,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     loanTypeList.add(CibilUtils.CreditTypeEnum.CASH_CREDIT.getValue());
                                     loanTypeList.add(CibilUtils.CreditTypeEnum.OVERDRAFT.getValue());
                                     Double existingLimits = financialArrangementDetailsRepository.getExistingLimits(applicationId , loanTypeList );
-                                    if(isCibilCheck) {
+                                    if(isCibilCheck && !isBureauExistingLoansDisplayActive) {
                                     	ScoringCibilRequest scoringCibilRequest = filterScore(scoringRequest.getMap(), null, modelParameterResponse.getFieldMasterId());
                                     	if(!CommonUtils.isObjectNullOrEmpty(scoringCibilRequest)) {
                                     		logger.info("Total Bureau Existing Limit ===>{} ===>{}",applicationId,scoringCibilRequest.getTotalExistingLimit());
@@ -6404,7 +6410,7 @@ public class ScoringServiceImpl implements ScoringService {
 
                                     Double individualLoanObligation = financialArrangementDetailsRepository.getTotalEmiByApplicationId(applicationId);
                                     Double commercialLoanObligation = financialArrangementDetailsService.getTotalEmiOfAllDirByApplicationId(applicationId);
-                                    if(isCibilCheck) {
+                                    if(isCibilCheck && !isBureauExistingLoansDisplayActive) {
                                     	ScoringCibilRequest scoringCibilRequest = filterScore(scoringRequest.getMap(), null, modelParameterResponse.getFieldMasterId());
                                     	if(!CommonUtils.isObjectNullOrEmpty(scoringCibilRequest)) {
                                     		if(!CommonUtils.isObjectNullOrEmpty(scoringCibilRequest.getTotalEmiOfCompany())) {
