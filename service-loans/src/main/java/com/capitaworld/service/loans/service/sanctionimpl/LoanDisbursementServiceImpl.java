@@ -26,6 +26,7 @@ import com.capitaworld.service.loans.repository.sanction.LoanSanctionRepository;
 import com.capitaworld.service.loans.service.sanction.LoanDisbursementService;
 import com.capitaworld.service.loans.utils.CommonUtility;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.oneform.enums.SanctionedStatusMaster;
 
 /**
  * @author Ankit
@@ -69,6 +70,16 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 				loanDisbursementDomain.setOrgId(loanDisbursementRequest.getOrgId());
 			}
 			
+			try {
+				LoanSanctionDomain sanDetails = loanSanctionRepository.findByAppliationIdAndOrgId(loanDisbursementRequest.getApplicationId(), loanDisbursementRequest.getOrgId());
+				if(sanDetails != null) {
+					if(loanDisbursementRequest.getIsIneligibleProposal()!= null &&  loanDisbursementRequest.getIsIneligibleProposal()) {
+						sanDetails.setStatus(SanctionedStatusMaster.OFFLINE_DISBURSED.getId());	
+					}
+				}
+			} catch (Exception e) {
+				logger.error("Exception while update sanctioned status ",e);
+			}
 			
 			logger.info("Exit saveLoanDisbursementDetail() -----------------------> ");
 			return loanDisbursementRepository.save(loanDisbursementDomain) != null;
