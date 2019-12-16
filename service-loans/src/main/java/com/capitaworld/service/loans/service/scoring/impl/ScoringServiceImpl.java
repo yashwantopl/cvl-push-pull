@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -109,6 +110,7 @@ import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.loans.utils.scoreexcel.ScoreExcelFileGenerator;
 import com.capitaworld.service.loans.utils.scoreexcel.ScoreExcelReader;
+import com.capitaworld.service.matchengine.model.BankBureauRequest;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.AnnualIncomeRural;
 import com.capitaworld.service.oneform.enums.AutoLoanPurposeType;
@@ -5099,8 +5101,45 @@ public class ScoringServiceImpl implements ScoringService {
 		}
         
     }
+    @SuppressWarnings("unchecked")
+	private void saveBureauScoringResponse(Map<String,Object> map,Long applicationId,Long fpProductId) {
+    	BankBureauRequest bankBureauRequest = null;
+//    	Map<String,Map<String,Object>>
+    	for(Entry<String, Object> scoringSet : map.entrySet()) {
+    		for(Entry<String, Map<String, Object>> fieldSet : ((Map<String,Map<String,Object>>)scoringSet).entrySet()) {
+        		bankBureauRequest = new BankBureauRequest();
+        		bankBureauRequest.setApplicationId(applicationId);
+        		bankBureauRequest.setFpProductId(fpProductId);
+        		bankBureauRequest.setType(com.capitaworld.service.matchengine.utils.CommonUtils.BankBureauResponseType.SCORING.getId());
+        		bankBureauRequest.setFieldMasterId(Long.valueOf(fieldSet.getKey()));
+        		bankBureauRequest.setScoringModelId(Long.valueOf(scoringSet.getKey()));
+        		if(!CommonUtils.isObjectNullOrEmpty(fieldSet.getValue())) {
+        			Map<String, Object> dataMap= fieldSet.getValue();
+        			if(!CommonUtils.isObjectNullOrEmpty(dataMap.get("score"))) {
+        				bankBureauRequest.setScore(Double.valueOf(dataMap.get("score").toString()));		
+        			}
+        			if(!CommonUtils.isObjectNullOrEmpty(dataMap.get("description"))) {
+        				bankBureauRequest.setDescription(dataMap.get("description").toString());	
+        			}
+        			
+        			if(!CommonUtils.isObjectNullOrEmpty(dataMap.get("totalEmiOfCompany"))) {
+        				bankBureauRequest.setTotalComEmi(Double.valueOf(dataMap.get("totalEmiOfCompany").toString()));
+        			}
 
-    public ScoringCibilRequest filterScore(Map<String,Object> map, Long scoringModelId,Long fieldMasterId) {
+					if(!CommonUtils.isObjectNullOrEmpty(dataMap.get("totalEmiOfDirector"))) {
+						bankBureauRequest.setTotalDirEmi(Double.valueOf(dataMap.get("totalEmiOfDirector").toString()));
+					}
+					
+					if(!CommonUtils.isObjectNullOrEmpty(dataMap.get("totalExistingLimit"))) {
+						bankBureauRequest.setExistingLoanAmount(Double.valueOf(dataMap.get("totalExistingLimit").toString()));
+					}
+        		}
+        	}    		
+    	}
+    	
+    }
+
+    private ScoringCibilRequest filterScore(Map<String,Object> map, Long scoringModelId,Long fieldMasterId) {
 		Object fieldMap = map.entrySet().stream().filter(x -> x.getKey().equalsIgnoreCase(fieldMasterId.toString())).map(x -> x.getValue()).findFirst().orElse(null);
 		if(fieldMap == null) {
 			logger.warn("No Object Found for Field master id == >{}-===Score ====>{}",fieldMasterId);			
