@@ -1005,8 +1005,8 @@ public class AsyncComponent {
                     }
                     if(!CommonUtils.isObjectNullOrEmpty(fsRequest.getMobile())) {
                         String to = "91"+fsRequest.getMobile();   
-//                        sendSMSNotification(lonaApplication.getUserId().toString(), notiParam, null, domainId, inProp.getUserOrgId(),lonaApplication.getProductId(),
-//                               NotificationMasterAlias.SMS_FS_REJECT_HOLD_FOR_UNABLE_CONTACT_CLIENT_REASEON.getMasterId(), to);
+                        sendSMSNotification(lonaApplication.getUserId().toString(), notiParam, null, domainId, inProp.getUserOrgId(),lonaApplication.getProductId(),
+                               NotificationMasterAlias.SMS_FS_REJECT_HOLD_FOR_UNABLE_CONTACT_CLIENT_REASEON.getMasterId(), to);
                         isSent = true;
                     }
                     if(!CommonUtils.isObjectNullOrEmpty(lonaApplication.getUserId())) {
