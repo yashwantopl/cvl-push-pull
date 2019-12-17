@@ -172,6 +172,26 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 		}
 		return true;
 	}
+	
+	@Override
+	public Boolean saveAllExistingLoansByApplicationId(List<FinancialArrangementsDetailRequest> existingLoanDetailRequest, Long applicationId, Long userId) {
+		int inactivatedRow = financialArrangementDetailsRepository.inActive(userId, applicationId);
+		logger.info("Inactivated existing loan rows [{}] for ApplicationId [{}]", inactivatedRow, applicationId);
+
+		for (FinancialArrangementsDetailRequest req : existingLoanDetailRequest) {
+			FinancialArrangementsDetail arrangementsDetail = new FinancialArrangementsDetail();
+			BeanUtils.copyProperties(req, arrangementsDetail);
+			arrangementsDetail.setApplicationId(new LoanApplicationMaster(applicationId));
+			arrangementsDetail.setCreatedBy(userId);
+			arrangementsDetail.setCreatedDate(new Date());
+			arrangementsDetail.setIsActive(true);
+			if(req.getDirectorId() != null) {
+				arrangementsDetail.setDirectorBackgroundDetail(req.getDirectorId());
+			}
+			financialArrangementDetailsRepository.save(arrangementsDetail);
+		}
+		return true;
+	}
 
 	@Override
 	public FinancialArrangementsDetailRequest getTotalEmiAndSanctionAmountByApplicationId(Long applicationId) {

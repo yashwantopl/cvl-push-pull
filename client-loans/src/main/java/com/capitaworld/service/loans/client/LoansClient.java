@@ -154,6 +154,7 @@ public class LoansClient {
 	private static final String EXISTING_LOAN_DETAIL_CIBIL = "/existing_loan_details/save_from_cibil";
 	private static final String CREDIT_CARD_DETAIL_CIBIL = "/credit_cards_detail/save_from_cibil";
 	private static final String FINANCIAL_ARRANGEMENT_DETAILS_CIBIL = "/financial_arrangement_details/save_from_cibil";
+	private static final String FINANCIAL_ARRANGEMENT_DETAILS_CIBIL_ALL = "/financial_arrangement_details/save_from_cibil_all";
 	private static final String MFI_FINANCIAL_ARRANGEMENT_DETAILS = "/mfi/saveFinancialDetails";
 	private static final String CREDIT_RATING_DETAILS_CIBIL = "/credit_rating_organization_details/save_from_cibil";
 
@@ -1500,6 +1501,21 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			logger.error("Exception in saveFinancialArrangementDetailFromCibil : ",e);
+			throw new ExcelException(url + " " + e.getCause().getMessage());
+		}
+	}
+	
+	public LoansResponse saveAllExistingLoansByApplicationId(List<FinancialArrangementsDetailRequest> detailRequests, Long userId, Long applicationId) throws ExcelException {
+		String url = loansBaseUrl.concat(FINANCIAL_ARRANGEMENT_DETAILS_CIBIL_ALL).concat("/" + applicationId + "/" + userId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set(REQ_AUTH, "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<List<FinancialArrangementsDetailRequest>> entity = new HttpEntity<>(
+					detailRequests, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			logger.error("Exception in saveAllExistingLoansByApplicationId() : ", e);
 			throw new ExcelException(url + " " + e.getCause().getMessage());
 		}
 	}
