@@ -191,6 +191,21 @@ public class FinancialArrangementDetailsController {
 
 	}
 	
+	@RequestMapping(value = "/save_from_cibil_all/{applicationId}/{userId}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveFromCibil(@RequestBody List<FinancialArrangementsDetailRequest> detailRequests, @PathVariable("applicationId") Long applicationId, @PathVariable("userId") Long userId) {
+		if (CommonUtils.isListNullOrEmpty(detailRequests)) {
+			logger.warn("Invalid request body for ApplicationId [{}]", applicationId);
+			return new ResponseEntity<>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		try {
+			financialArrangementDetailsService.saveAllExistingLoansByApplicationId(detailRequests, applicationId, userId);
+			return new ResponseEntity<>(new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value()), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while saving all existing loan details for AppicationId [{}] ==> ", applicationId, e);
+			return new ResponseEntity<>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+		}
+	}
+	
 	@RequestMapping(value = "/save_for_one_pager_eligibility", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> saveForOnePagerEligibility(@RequestBody FundSeekerInputRequestResponse fundSeekerInputRequestResponse,HttpServletRequest httpServletRequest ) {
 
