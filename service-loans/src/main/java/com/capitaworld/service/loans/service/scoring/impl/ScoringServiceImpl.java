@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -101,6 +102,7 @@ import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryAutoLoa
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryHomeLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantIncomeRepository;
+import com.capitaworld.service.loans.service.common.BankBureauResponseService;
 import com.capitaworld.service.loans.service.fundprovider.HomeLoanModelService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
@@ -109,6 +111,7 @@ import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.loans.utils.scoreexcel.ScoreExcelFileGenerator;
 import com.capitaworld.service.loans.utils.scoreexcel.ScoreExcelReader;
+import com.capitaworld.service.matchengine.model.BankBureauRequest;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.AnnualIncomeRural;
 import com.capitaworld.service.oneform.enums.AutoLoanPurposeType;
@@ -260,6 +263,9 @@ public class ScoringServiceImpl implements ScoringService {
 
     @Autowired
     private MfiIncomeDetailsRepository mfiIncomeDetailsRepository;
+    
+    @Autowired
+    private BankBureauResponseService bankBureauResponseService; 
     
     @Autowired
     private CspCodeRepository cspCodeRepository;
@@ -5087,6 +5093,11 @@ public class ScoringServiceImpl implements ScoringService {
             CibilResponse response = cibilClient.getScoringResult(cibilRequest);
             if(response != null && response.getData() != null) {
             	Map<String,Object> mapRes = (Map<String,Object>) response.getData();
+            	try {
+            			saveBureauScoringResponse(mapRes, applicationId, null);            			
+            	}catch(Exception e) {
+            		logger.error("Error while saving Bureau Response ====>{}",e);
+            	}
             	for(ScoringRequestLoans scrReq : scorReqLoansList) {
                 	scrReq.setMapList((Map<String,Object>)mapRes.get(scrReq.getScoringModelId().toString()));
                 }
@@ -5099,8 +5110,46 @@ public class ScoringServiceImpl implements ScoringService {
 		}
         
     }
+    @SuppressWarnings("unchecked")
+	private void saveBureauScoringResponse(Map<String,Object> map,Long applicationId,Long fpProductId) {
+    	BankBureauRequest bankBureauRequest = null;
+//    	Map<String,Map<String,Object>>
+    	for(Entry<String, Object> scoringSet : map.entrySet()) {
+    		for(Entry<String, Map<String, Object>> fieldSet : ((Map<String,Map<String,Object>>)scoringSet.getValue()).entrySet()) {
+        		bankBureauRequest = new BankBureauRequest();
+        		bankBureauRequest.setApplicationId(applicationId);
+        		bankBureauRequest.setFpProductId(fpProductId);
+        		bankBureauRequest.setType(com.capitaworld.service.matchengine.utils.CommonUtils.BankBureauResponseType.SCORING.getId());
+        		bankBureauRequest.setFieldMasterId(Long.valueOf(fieldSet.getKey()));
+        		bankBureauRequest.setScoringModelId(Long.valueOf(scoringSet.getKey()));
+        		if(!CommonUtils.isObjectNullOrEmpty(fieldSet.getValue())) {
+        			Map<String, Object> dataMap = fieldSet.getValue();
+        			if(!CommonUtils.isObjectNullOrEmpty(dataMap.get("score"))) {
+        				bankBureauRequest.setScore(Double.valueOf(dataMap.get("score").toString()));		
+        			}
+        			if(!CommonUtils.isObjectNullOrEmpty(dataMap.get("description"))) {
+        				bankBureauRequest.setDescription(dataMap.get("description").toString());	
+        			}
+        			
+        			if(!CommonUtils.isObjectNullOrEmpty(dataMap.get("totalEmiOfCompany"))) {
+        				bankBureauRequest.setTotalComEmi(Double.valueOf(dataMap.get("totalEmiOfCompany").toString()));
+        			}
 
-    public ScoringCibilRequest filterScore(Map<String,Object> map, Long scoringModelId,Long fieldMasterId) {
+					if(!CommonUtils.isObjectNullOrEmpty(dataMap.get("totalEmiOfDirector"))) {
+						bankBureauRequest.setTotalDirEmi(Double.valueOf(dataMap.get("totalEmiOfDirector").toString()));
+					}
+					
+					if(!CommonUtils.isObjectNullOrEmpty(dataMap.get("totalExistingLimit"))) {
+						bankBureauRequest.setExistingLoanAmount(Double.valueOf(dataMap.get("totalExistingLimit").toString()));
+					}
+        		}
+        		bankBureauResponseService.inActiveAndsaveScoring(bankBureauRequest);
+        	}    		
+    	}
+    	
+    }
+
+    private ScoringCibilRequest filterScore(Map<String,Object> map, Long scoringModelId,Long fieldMasterId) {
 		Object fieldMap = map.entrySet().stream().filter(x -> x.getKey().equalsIgnoreCase(fieldMasterId.toString())).map(x -> x.getValue()).findFirst().orElse(null);
 		if(fieldMap == null) {
 			logger.warn("No Object Found for Field master id == >{}-===Score ====>{}",fieldMasterId);			
@@ -5129,6 +5178,8 @@ public class ScoringServiceImpl implements ScoringService {
 
         ScoringParameterRequest scoringParameterRequest = null;
         boolean isCibilCheck = false;
+        boolean result = false;
+		Boolean isBureauExistingLoansDisplayActive = false;
         try {                                            
         	if(!scoringRequestLoansList.isEmpty()) {
         		logger.info("Enter in calculateExistingBusinessScoringList for check If Cibil API check or not");
@@ -5137,7 +5188,11 @@ public class ScoringServiceImpl implements ScoringService {
         		Long orgId = loanRepository.getCampaignOrgIdByApplicationId(applicationId);
         		if(orgId == null)
         			orgId = 10l;
-        		boolean result = loanRepository.getCibilBureauAPITrueOrFalse(orgId);
+        		Object [] bankBureauFlags = loanRepository.getBankBureauFlags(orgId);
+        		if(bankBureauFlags != null) {
+        			result = (!CommonUtils.isObjectNullOrEmpty(bankBureauFlags[0]) && Boolean.valueOf(bankBureauFlags[0].toString()));
+        			isBureauExistingLoansDisplayActive = (!CommonUtils.isObjectNullOrEmpty(bankBureauFlags[4]) && Boolean.valueOf(bankBureauFlags[4].toString()));
+    			}
         		String checkAPI = loanRepository.getCommonPropertiesValue("CIBIL_BUREAU_API_START");
         		logger.info("Found Result For CIBIL API ----->" + result + " For Org ID ----" + orgId + "  And check API --- >" + checkAPI);
         		if(result && "true".equals(checkAPI)) {
@@ -6336,7 +6391,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     loanTypeList.add(CibilUtils.CreditTypeEnum.CASH_CREDIT.getValue());
                                     loanTypeList.add(CibilUtils.CreditTypeEnum.OVERDRAFT.getValue());
                                     Double existingLimits = financialArrangementDetailsRepository.getExistingLimits(applicationId , loanTypeList );
-                                    if(isCibilCheck) {
+                                    if(isCibilCheck && !isBureauExistingLoansDisplayActive) {
                                     	ScoringCibilRequest scoringCibilRequest = filterScore(scoringRequest.getMap(), null, modelParameterResponse.getFieldMasterId());
                                     	if(!CommonUtils.isObjectNullOrEmpty(scoringCibilRequest)) {
                                     		logger.info("Total Bureau Existing Limit ===>{} ===>{}",applicationId,scoringCibilRequest.getTotalExistingLimit());
@@ -6404,7 +6459,7 @@ public class ScoringServiceImpl implements ScoringService {
 
                                     Double individualLoanObligation = financialArrangementDetailsRepository.getTotalEmiByApplicationId(applicationId);
                                     Double commercialLoanObligation = financialArrangementDetailsService.getTotalEmiOfAllDirByApplicationId(applicationId);
-                                    if(isCibilCheck) {
+                                    if(isCibilCheck && !isBureauExistingLoansDisplayActive) {
                                     	ScoringCibilRequest scoringCibilRequest = filterScore(scoringRequest.getMap(), null, modelParameterResponse.getFieldMasterId());
                                     	if(!CommonUtils.isObjectNullOrEmpty(scoringCibilRequest)) {
                                     		if(!CommonUtils.isObjectNullOrEmpty(scoringCibilRequest.getTotalEmiOfCompany())) {
