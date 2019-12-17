@@ -5115,7 +5115,7 @@ public class ScoringServiceImpl implements ScoringService {
     	BankBureauRequest bankBureauRequest = null;
 //    	Map<String,Map<String,Object>>
     	for(Entry<String, Object> scoringSet : map.entrySet()) {
-    		for(Entry<String, Map<String, Object>> fieldSet : ((Map<String,Map<String,Object>>)scoringSet).entrySet()) {
+    		for(Entry<String, Map<String, Object>> fieldSet : ((LinkedHashMap<String,Map<String,Object>>)scoringSet).entrySet()) {
         		bankBureauRequest = new BankBureauRequest();
         		bankBureauRequest.setApplicationId(applicationId);
         		bankBureauRequest.setFpProductId(fpProductId);
