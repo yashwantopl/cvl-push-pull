@@ -102,6 +102,7 @@ import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryAutoLoa
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryHomeLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantIncomeRepository;
+import com.capitaworld.service.loans.service.common.BankBureauResponseService;
 import com.capitaworld.service.loans.service.fundprovider.HomeLoanModelService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
@@ -262,6 +263,9 @@ public class ScoringServiceImpl implements ScoringService {
 
     @Autowired
     private MfiIncomeDetailsRepository mfiIncomeDetailsRepository;
+    
+    @Autowired
+    private BankBureauResponseService bankBureauResponseService; 
     
     @Autowired
     private CspCodeRepository cspCodeRepository;
@@ -5089,6 +5093,11 @@ public class ScoringServiceImpl implements ScoringService {
             CibilResponse response = cibilClient.getScoringResult(cibilRequest);
             if(response != null && response.getData() != null) {
             	Map<String,Object> mapRes = (Map<String,Object>) response.getData();
+            	try {
+            			saveBureauScoringResponse(mapRes, applicationId, null);            			
+            	}catch(Exception e) {
+            		logger.error("Error while saving Bureau Response ====>{}",e);
+            	}
             	for(ScoringRequestLoans scrReq : scorReqLoansList) {
                 	scrReq.setMapList((Map<String,Object>)mapRes.get(scrReq.getScoringModelId().toString()));
                 }
@@ -5114,7 +5123,7 @@ public class ScoringServiceImpl implements ScoringService {
         		bankBureauRequest.setFieldMasterId(Long.valueOf(fieldSet.getKey()));
         		bankBureauRequest.setScoringModelId(Long.valueOf(scoringSet.getKey()));
         		if(!CommonUtils.isObjectNullOrEmpty(fieldSet.getValue())) {
-        			Map<String, Object> dataMap= fieldSet.getValue();
+        			Map<String, Object> dataMap = fieldSet.getValue();
         			if(!CommonUtils.isObjectNullOrEmpty(dataMap.get("score"))) {
         				bankBureauRequest.setScore(Double.valueOf(dataMap.get("score").toString()));		
         			}
@@ -5134,6 +5143,7 @@ public class ScoringServiceImpl implements ScoringService {
 						bankBureauRequest.setExistingLoanAmount(Double.valueOf(dataMap.get("totalExistingLimit").toString()));
 					}
         		}
+        		bankBureauResponseService.inActiveAndsaveScoring(bankBureauRequest);
         	}    		
     	}
     	
