@@ -43,6 +43,7 @@ import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.mca.client.McaClient;
 import com.capitaworld.service.mca.exception.McaException;
+import com.capitaworld.service.mca.model.cubictree.api.CubictreeJobRegistrationRequest;
 import com.capitaworld.service.mca.model.verifyApi.VerifyAPIRequest;
 import com.capitaworld.service.notification.client.NotificationClient;
 import com.capitaworld.service.notification.exceptions.NotificationException;
@@ -53,6 +54,7 @@ import com.capitaworld.service.notification.utils.EmailSubjectAlias;
 import com.capitaworld.service.notification.utils.NotificationAlias;
 import com.capitaworld.service.notification.utils.NotificationConstants;
 import com.capitaworld.service.notification.utils.NotificationConstants.NotificationProperty.DomainValue;
+import com.capitaworld.service.notification.utils.NotificationMasterAlias;
 import com.capitaworld.service.notification.utils.NotificationType;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.model.MasterResponse;
@@ -102,9 +104,11 @@ public class AsyncComponent {
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
 	
-    @Autowired
-    private CommonRepository commonRepo;
-    
+	@Autowired
+	private CommonRepository commonRepo;
+	
+	private static final String HOLD_REJECT_REASON_UNABLE_TO_CONTACT_THE_CLIENT = "Unable to Contact the Client";
+ 
     @Autowired
     private RetailApplicantDetailRepository retailApplicantDetailRepository;
 
@@ -114,7 +118,6 @@ public class AsyncComponent {
 	private static final String THROW_EXCEPTION_WHILE_SENDING_MAIL_PRIMARY_COMPLETE = "Throw exception while sending mail, Primary Complete : ";
 	private static final String ERROR_WHILE_GET_FUND_PROVIDER_NAME = "Error while get fund provider name : ";
 	
-	private static final String HOLD_REJECT_REASON_UNABLE_TO_CONTACT_THE_CLIENT = "Unable to Contact the Client";
 	private static final String ISDYNAMIC ="isDynamic";
 
 	/**
@@ -581,7 +584,7 @@ public class AsyncComponent {
 								UsersRequest resp = getEmailMobile(userId);
 								if (resp != null && resp.getMobile() != null) {
 									sendSMSNotification(String.valueOf(userId), parameters,
-											NotificationAlias.SMS_VIEW_MORE_DETAILS,domainId, resp.getMobile());
+											NotificationAlias.SMS_VIEW_MORE_DETAILS,domainId,null,null,null,resp.getMobile());
 									logger.info("Sms Sent for fp view more details request:{}" , resp.getMobile());
 								}
 							} catch (Exception e) {
@@ -595,7 +598,7 @@ public class AsyncComponent {
 		}
 	}
 
-	private void sendSMSNotification(String userId, Map<String, Object> parameters, Long templateId, Long domainId, String... to)
+	private void sendSMSNotification(String userId, Map<String, Object> parameters, Long templateId, Long domainId,Long userOrgId,Integer loanTypeId,Long masterId, String... to)
 			throws NotificationException {
 		NotificationRequest req = new NotificationRequest();
 		req.setClientRefId(userId);
@@ -605,6 +608,9 @@ public class AsyncComponent {
 		notification.setTo(to);
 		notification.setType(NotificationType.SMS);
 		notification.setParameters(parameters);
+		notification.setMasterId(masterId);
+		notification.setLoanTypeId(loanTypeId);
+		notification.setUserOrgId(userOrgId);
 		req.addNotification(notification);
 		req.setDomainId(domainId);
 		notificationClient.send(req);
@@ -999,8 +1005,8 @@ public class AsyncComponent {
                     }
                     if(!CommonUtils.isObjectNullOrEmpty(fsRequest.getMobile())) {
                         String to = "91"+fsRequest.getMobile();   
-//                        sendSMSNotification(lonaApplication.getUserId().toString(), notiParam, null, domainId, inProp.getUserOrgId(),lonaApplication.getProductId(),
-//                               NotificationMasterAlias.SMS_FS_REJECT_HOLD_FOR_UNABLE_CONTACT_CLIENT_REASEON.getMasterId(), to);
+                        sendSMSNotification(lonaApplication.getUserId().toString(), notiParam, null, domainId, inProp.getUserOrgId(),lonaApplication.getProductId(),
+                               NotificationMasterAlias.SMS_FS_REJECT_HOLD_FOR_UNABLE_CONTACT_CLIENT_REASEON.getMasterId(), to);
                         isSent = true;
                     }
                     if(!CommonUtils.isObjectNullOrEmpty(lonaApplication.getUserId())) {
@@ -1186,6 +1192,18 @@ public class AsyncComponent {
 		address=!address.equals("")  ? state!=null?address.concat(","+state):address.concat(""):address.concat(state);
 		address=!address.equals("")  ? pincode!=null?address.concat("-"+pincode):address.concat(""):address.concat(pincode.toString());
 		return address;
+	}
+	
+	@Async
+	public void callCubictreeApi(CubictreeJobRegistrationRequest request){
+		if(request != null){
+			try {
+				logger.info("Cubictree Api calling from loans");
+				mcaClient.callForjobRegistrationApi(request);
+			} catch (McaException e) {
+				logger.error("Exception in calling cubictree api :{}",e);
+			}
+		}
 	}
 
 }

@@ -87,23 +87,23 @@ public class IneligibleProposalDetailsController {
 			Boolean isEligible = false;
 			if(!CommonUtils.isObjectNullOrEmpty(fsBusinessType)
 					&& fsBusinessType == CommonUtils.BusinessType.EXISTING_BUSINESS.getId()){
-				//Trigger mail  to fs and bank branch
-				//This email check if the selected bank is (sbi and wc_renewal) or sidbi specific then this email shoot
+				/** Trigger mail  to fs and bank branch
+					This email check if the selected bank is (sbi and wc_renewal) or sidbi specific then this email shoot*/
 				isEligible = ineligibleProposalDetailsService.sendMailToFsAndBankBranchForSbiBankSpecific(
 						inEligibleProposalDetailsRequest.getApplicationId(),
 						inEligibleProposalDetailsRequest.getBranchId(),inEligibleProposalDetailsRequest.getUserOrgId(),false);
 			}	
-				if(!isEligible && (isSendMail != null && isSendMail)) {
-					//If users is not from sbi and sidbi specific then this email shoot
-					Boolean isSent = ineligibleProposalDetailsService.sendMailToFsAndBankBranch(
-							inEligibleProposalDetailsRequest.getApplicationId(),
-							inEligibleProposalDetailsRequest.getBranchId(),inEligibleProposalDetailsRequest.getUserOrgId());
-					if (isSent) {
-						logger.info("Email sent to fs and branch");
-					} else {
-						logger.info("Error in sending email to fs and branch");
-					}
+			if(!isEligible && (isSendMail != null && isSendMail)) {
+				//If users is not from sbi and sidbi specific then this email shoot
+				Boolean isSent = ineligibleProposalDetailsService.sendMailToFsAndBankBranch(
+						inEligibleProposalDetailsRequest.getApplicationId(),
+						inEligibleProposalDetailsRequest.getBranchId(),inEligibleProposalDetailsRequest.getUserOrgId());
+				if (isSent) {
+					logger.info("Email sent to fs and branch");
+				} else {
+					logger.info("Error in sending email to fs and branch");
 				}
+			}
 			
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Data saved", HttpStatus.OK.value(),isSendMail),
 					HttpStatus.OK);

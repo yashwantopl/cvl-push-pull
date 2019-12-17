@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -1114,7 +1115,7 @@ public class PrimaryViewController {
 		        	Integer viewedTeaser = commonRepository.getViewedTeaser(req.getEmailId());
 					if(viewedTeaser != null && viewedTeaser > 0 && req.getUserId() != null) {
 						notificationService.sendViewNotification(String.valueOf(req.getUserId()), fromUserId, fromUserTypeId, notificationId,
-								applicationId, req.getFpProductId(), NotificationTemplate.PRIMARY_VIEW, loanType,subject);
+								applicationId, req.getFpProductId(), NotificationTemplate.PRIMARY_VIEW, loanType,subject,req.getLoanTypeId(),req.getUserOrgId());
 					}
 				}	
 				
@@ -1381,5 +1382,18 @@ public class PrimaryViewController {
 			}
 		}
 	}
-
+	@PostMapping(value = "/getCubictreeReport")
+	public @ResponseBody ResponseEntity<LoansResponse> getCubictreeReport(@RequestBody Long applicationId) {
+		logger.info("In PL View Ctrl of applicationId==>{} " , applicationId);
+		 LoansResponse cubictreeReport = new LoansResponse();
+		try {
+			 cubictreeReport = corporatePrimaryViewService.getCubictreeReport(applicationId);
+			
+		}catch (Exception e) {
+			logger.error("Exception {}",e);
+		}
+		return new ResponseEntity<LoansResponse>(cubictreeReport, HttpStatus.OK);
+			
+	}
+	
 }

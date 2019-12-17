@@ -421,6 +421,14 @@ public class CommonUtils {
 						|| "-".equals(value) || "undefined".equals(value))
 				: false));
 	}
+	public static boolean isObjectNullOrEmptyOrZero(Object value) {
+		return (value == null || (value instanceof String ? (((String) value).isEmpty() 
+				|| "".equals(((String) value).trim()) 
+				|| "null".equals(value) 
+				|| "-".equals(value)
+				|| "undefined".equals(value)) : false) 
+				|| (value instanceof Long ? Long.valueOf(value.toString()).equals(0L) :false) );
+	}
 
 	public static Date getDateByDateMonthYear(Integer date, Integer month, Integer year) {
 
