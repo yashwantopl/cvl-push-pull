@@ -33,6 +33,10 @@ public interface FinancialArrangementDetailsRepository extends JpaRepository<Fin
 	@Modifying
 	@Query("update FinancialArrangementsDetail pm set pm.isActive = false,pm.modifiedDate = NOW(),pm.modifiedBy =:userId where pm.applicationId.id =:applicationId and pm.isActive = true and pm.directorBackgroundDetail IS NULL")
 	public int inActive(@Param("userId") Long userId,@Param("applicationId") Long applicationId);
+	
+	@Modifying
+	@Query("update FinancialArrangementsDetail pm set pm.isActive = false,pm.modifiedDate = NOW(),pm.modifiedBy =:userId where pm.applicationId.id =:applicationId and pm.isActive = true")
+	public int inActiveAllByApplicationId(@Param("userId") Long userId,@Param("applicationId") Long applicationId);
 
 	@Modifying
 	@Query("update FinancialArrangementsDetail pm set pm.isActive = false,pm.modifiedDate = NOW(),pm.modifiedBy =:userId where pm.applicationId.id =:applicationId and pm.isManuallyAdded = true and pm.isActive = true and pm.directorBackgroundDetail IS NULL")
