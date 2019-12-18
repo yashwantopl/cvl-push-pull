@@ -812,6 +812,10 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 				directorBackgroundDetailResponse.setDob(directorBackgroundDetailRequest.getDob());
 				directorBackgroundDetailResponse.setPincode(directorBackgroundDetailRequest.getPincode());
 				directorBackgroundDetailResponse.setPersonalId(directorBackgroundDetailRequest.getPersonalId());
+                                
+                                //Loan Obligation Added
+                                Double loanObligation = financialArrangementDetailsService.getTotalEmiOfAllDirByApplicationId(toApplicationId);
+				directorBackgroundDetailResponse.setLoanObligation(!CommonUtils.isObjectNullOrEmpty(loanObligation) ? loanObligation : 0);
 				try {
 					if (!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDistrictMappingId())) {
 						directorBackgroundDetailResponse.setPinData(
