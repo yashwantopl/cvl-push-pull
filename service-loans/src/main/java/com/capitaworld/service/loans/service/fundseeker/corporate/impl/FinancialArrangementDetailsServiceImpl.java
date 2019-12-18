@@ -175,12 +175,13 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 	
 	@Override
 	public Boolean saveAllExistingLoansByApplicationId(List<FinancialArrangementsDetailRequest> existingLoanDetailRequest, Long applicationId, Long userId) {
-		int inactivatedRow = financialArrangementDetailsRepository.inActive(userId, applicationId);
+		int inactivatedRow = financialArrangementDetailsRepository.inActiveAllByApplicationId(userId, applicationId);
 		logger.info("Inactivated existing loan rows [{}] for ApplicationId [{}]", inactivatedRow, applicationId);
 
 		for (FinancialArrangementsDetailRequest req : existingLoanDetailRequest) {
 			FinancialArrangementsDetail arrangementsDetail = new FinancialArrangementsDetail();
 			BeanUtils.copyProperties(req, arrangementsDetail);
+			arrangementsDetail.setId(null);
 			arrangementsDetail.setApplicationId(new LoanApplicationMaster(applicationId));
 			arrangementsDetail.setCreatedBy(userId);
 			arrangementsDetail.setCreatedDate(new Date());
