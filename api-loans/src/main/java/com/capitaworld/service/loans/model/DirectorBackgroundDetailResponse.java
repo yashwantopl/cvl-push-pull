@@ -106,6 +106,7 @@ public class DirectorBackgroundDetailResponse implements Serializable{
 		private Object visuallyImpaired;
 		private Object residentStatus;
 		private Boolean isGuarantor;
+                private Double loanObligation;
 		
 		
 		
@@ -617,7 +618,18 @@ public class DirectorBackgroundDetailResponse implements Serializable{
 	public void setIsGuarantor(Boolean isGuarantor) {
 		this.isGuarantor = isGuarantor;
 	}
-	
+
+        public Double getLoanObligation() {
+        return loanObligation;
+        }
+
+        public void setLoanObligation(Double loanObligation) {
+        this.loanObligation = loanObligation;
+        }
+        
+        
+        
+        
 	
 	
 }
