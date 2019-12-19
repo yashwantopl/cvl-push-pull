@@ -21,11 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.capitaworld.api.ekyc.model.EkycResponse;
-import com.capitaworld.api.ekyc.model.epf.request.EmployerRequest;
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
-import com.capitaworld.cibil.api.model.CibilRequest;
 import com.capitaworld.cibil.api.model.CibilScoreLogRequest;
 import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.ekyc.EPFClient;
@@ -1091,7 +1088,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		}
 		
 		/*get epfoData*/
-		try {
+		/*try {
 			EmployerRequest epfReq=new EmployerRequest();
 			epfReq.setApplicationId(toApplicationId);
 			EkycResponse epfRes=epfClient.getEpfData(epfReq);
@@ -1102,7 +1099,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 			}
 		} catch (Exception e) {
 			logger.info("error"+e);
-		}
+		}*/
 		
 		
 		//PROPOSAL RESPONSE

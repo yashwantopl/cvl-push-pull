@@ -814,7 +814,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 				directorBackgroundDetailResponse.setPersonalId(directorBackgroundDetailRequest.getPersonalId());
                                 
                                 //Loan Obligation Added
-                                Double loanObligation = financialArrangementDetailsService.getTotalEmiOfAllDirByApplicationId(toApplicationId);
+				Double loanObligation = financialArrangementDetailsService.getTotalEmiByApplicationIdSoftPing(toApplicationId,directorBackgroundDetailRequest.getId());
 				directorBackgroundDetailResponse.setLoanObligation(!CommonUtils.isObjectNullOrEmpty(loanObligation) ? loanObligation : 0);
 				try {
 					if (!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDistrictMappingId())) {
