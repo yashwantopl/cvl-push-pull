@@ -8,6 +8,7 @@ public class LoantypeSelectionResponse {
     private  int businessTypeId;
     private String imgPath;
     private Boolean isActive;
+    private Long parentId;
     
     public LoantypeSelectionResponse(){
 
@@ -106,6 +107,13 @@ public class LoantypeSelectionResponse {
 		this.isActive = isActive;
 	}
 
+	public Long getParentId() {
+		return parentId;
+	}
+
+	public void setParentId(Long parentId) {
+		this.parentId = parentId;
+	}
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
