@@ -8448,10 +8448,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		List<LoantypeSelectionResponse> selectionList = new ArrayList<>();
 		for(Object[] obj : responseList) {
 			LoantypeSelectionResponse  response = new LoantypeSelectionResponse();
+			
+//			response.setId();
 			response.setType(obj[0].toString());
 			response.setDescription((String)obj[1]);
 			response.setBusinessTypeId((int)obj[2]);
 			response.setImgPath((String)obj[3]);
+			response.setId(((BigInteger)obj[4]).longValue());
+			response.setParentId(obj[5] != null ?((BigInteger)obj[5]) .longValue() : null);
 			selectionList.add(response);			
 		}
 		return selectionList;
