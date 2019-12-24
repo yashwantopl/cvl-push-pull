@@ -1162,7 +1162,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 
 			try {
 
-				EligibilityResponse eligibilityResp = eligibilityClient.corporateLoanData(eligibilityReq);
+				EligibilityResponse eligibilityResp = eligibilityClient.corporateEligibilityData(eligibilityReq);
 				corporatePrimaryViewResponse.setEligibilityDataObject(eligibilityResp.getData());
 
 			} catch (Exception e1) {

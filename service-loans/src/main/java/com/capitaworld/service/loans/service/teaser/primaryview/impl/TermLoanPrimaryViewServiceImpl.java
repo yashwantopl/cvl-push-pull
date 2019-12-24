@@ -30,7 +30,6 @@ import com.capitaworld.service.loans.model.teaser.primaryview.TermLoanPrimaryVie
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.PastFinancialEstimateDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryTermLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
@@ -47,7 +46,6 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.PromotorBackgr
 import com.capitaworld.service.loans.service.fundseeker.corporate.ProposedProductDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.SecurityCorporateDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.TotalCostOfProjectService;
-import com.capitaworld.service.loans.service.fundseeker.retail.ReferenceRetailDetailsService;
 import com.capitaworld.service.loans.service.teaser.primaryview.TermLoanPrimaryViewService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
@@ -138,14 +136,8 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 	private UsersClient usersClient;
 
 	@Autowired
-	private PastFinancialEstimateDetailsRepository pastFinancialEstimateDetailsRepository;
-
-	@Autowired
 	private DirectorBackgroundDetailsService directorBackgroundDetailsService;
 
-	@Autowired
-	private ReferenceRetailDetailsService referenceRetailDetailsService;
-	
 	@Autowired
 	private PrimaryCorporateDetailRepository primaryCorporateRepository;
 

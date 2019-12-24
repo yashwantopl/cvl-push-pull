@@ -29,22 +29,14 @@ import com.capitaworld.service.loans.model.teaser.primaryview.WorkingCapitalPrim
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.PastFinancialEstimateDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryWorkingCapitalLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
 import com.capitaworld.service.loans.service.common.CommonService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.AchievmentDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.CreditRatingOrganizationDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ExistingProductDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.FutureFinancialEstimatesDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.OwnershipDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.PromotorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ProposedProductDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.SecurityCorporateDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.retail.ReferenceRetailDetailsService;
 import com.capitaworld.service.loans.service.teaser.primaryview.WorkingCapitalPrimaryViewService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
@@ -87,26 +79,10 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 	@Autowired
 	private ProposedProductDetailsService proposedProductDetailsService;
 
-	@Autowired
-	private AchievmentDetailsService achievmentDetailsService;
-
-	@Autowired
-	private CreditRatingOrganizationDetailsService creditRatingOrganizationDetailsService;
-
-	@Autowired
-	private OwnershipDetailsService ownershipDetailsService;
-
-	@Autowired
-	private PromotorBackgroundDetailsService promotorBackgroundDetailsService;
-
-	@Autowired
-	private FutureFinancialEstimatesDetailsService futureFinancialEstimatesDetailsService;
 
 	@Autowired
 	private ExistingProductDetailsService existingProductDetailsService;
 
-	@Autowired
-	private SecurityCorporateDetailsService securityCorporateDetailsService;
 
 	@Autowired
 	private FinancialArrangementDetailsService financialArrangementDetailsService;
@@ -133,13 +109,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 	private UsersClient usersClient;
 
 	@Autowired
-	private PastFinancialEstimateDetailsRepository pastFinancialEstimateDetailsRepository;
-
-	@Autowired
 	private DirectorBackgroundDetailsService directorBackgroundDetailsService;
-
-	@Autowired
-	private ReferenceRetailDetailsService referenceRetailDetailsService;
 
 	@Autowired
 	private PrimaryCorporateDetailRepository primaryCorporateRepository;

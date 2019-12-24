@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.capitaworld.service.loans.service.colending.CoLendingFlowService;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,8 +36,8 @@ import com.capitaworld.service.loans.model.common.ChatDetails;
 import com.capitaworld.service.loans.model.common.DisbursementRequest;
 import com.capitaworld.service.loans.model.common.EkycRequest;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
+import com.capitaworld.service.loans.service.colending.CoLendingFlowService;
 import com.capitaworld.service.loans.service.common.AutoFillOneFormDetailService;
-import com.capitaworld.service.loans.service.common.FsDetailsForPdfService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ApplicationProposalMappingService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.sanction.LoanDisbursementService;
@@ -86,9 +85,6 @@ public class LoanApplicationController {
 
 	@Autowired
 	private UsersClient usersClient;
-
-	@Autowired
-	private FsDetailsForPdfService fsDetailPdfService;
 
 	@Autowired
 	private AutoFillOneFormDetailService autoFillOneFormDetailService;
@@ -1653,23 +1649,6 @@ public class LoanApplicationController {
 		}
 	}
 
-	@RequestMapping(value = "/getFsDetailsInMapResponse/{applicationId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getFsDetailsInMapResponse(@PathVariable("applicationId") Long applicationId,
-			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
-		try {
-			CommonDocumentUtils.startHook(logger, "getFsDetailsInMapResponse");
-			LoansResponse loansResponse = new LoansResponse("Successfully recieved", HttpStatus.OK.value());
-			loansResponse.setData(fsDetailPdfService.getHomeLoanDetails(applicationId));
-			CommonDocumentUtils.endHook(logger, CHECK_USER_HAS_ANY_APPLICATION);
-			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
-		} catch (Exception e) {
-			logger.error("Error whilegetFsDetailsInMapResponse==>", e);
-			return new ResponseEntity<LoansResponse>(
-					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-					HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
-
 	@RequestMapping(value = "/set_eligibility_amount", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public Integer setEligibilityAmount(@RequestBody LoanApplicationRequest loanRequest) {
 		try {
@@ -3191,7 +3170,6 @@ public class LoanApplicationController {
 	@RequestMapping(value = "/getBsData", method = RequestMethod.POST,consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getBsData(@RequestBody String bCode, HttpServletRequest request) {
 		try {
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			if (CommonUtils.isObjectNullOrEmpty(bCode)) {
 				logger.error("User Id is null or Empty");
 				return new ResponseEntity<LoansResponse>(new LoansResponse("Invalid request, Request parameter null or empty",HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);

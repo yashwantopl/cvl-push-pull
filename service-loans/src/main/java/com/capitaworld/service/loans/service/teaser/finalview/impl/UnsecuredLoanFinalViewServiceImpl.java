@@ -7,7 +7,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -21,6 +20,7 @@ import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateCoApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryUnsecuredLoanDetail;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailRequest;
 import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailResponse;
 import com.capitaworld.service.loans.model.FinanceMeansDetailRequest;
@@ -80,9 +80,6 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.PromotorBackgr
 import com.capitaworld.service.loans.service.fundseeker.corporate.ProposedProductDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.SecurityCorporateDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.TotalCostOfProjectService;
-import com.capitaworld.service.loans.service.fundseeker.retail.BankAccountHeldDetailService;
-import com.capitaworld.service.loans.service.fundseeker.retail.CreditCardsDetailService;
-import com.capitaworld.service.loans.service.fundseeker.retail.ReferenceRetailDetailsService;
 import com.capitaworld.service.loans.service.teaser.finalview.UnsecuredLoanFinalViewService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
@@ -285,15 +282,6 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 	
 	@Autowired
 	private CorporateCoApplicantRepository corporateCoApplicantRepository;
-	
-	@Autowired
-	private BankAccountHeldDetailService bankAccountHeldDetailService;
-	
-	@Autowired
-	private ReferenceRetailDetailsService referenceRetailDetailsService;
-	
-	@Autowired
-	private CreditCardsDetailService creditCardsDetailService;
 	
 	@Autowired
 	private CommonService commonService;
@@ -1271,7 +1259,7 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 	
         //setting bank account details
         try {
-			response.setBankAccountHeldDetailsRequest(bankAccountHeldDetailService.getExistingLoanDetailList(toApplicationId, user_type));
+//			response.setBankAccountHeldDetailsRequest(bankAccountHeldDetailService.getExistingLoanDetailList(toApplicationId, user_type));
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Bank account {}", e);
 		}
@@ -1279,7 +1267,7 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
         //credit card
 		List<CreditCardsDetailRequest> creditCardsDetailRequestList = null;
 		try {
-			creditCardsDetailRequestList = creditCardsDetailService.getCreditCardDetailList(toApplicationId, user_type);
+//			creditCardsDetailRequestList = creditCardsDetailService.getCreditCardDetailList(toApplicationId, user_type);
 		} catch (Exception e1) {
 			logger.error(CommonUtils.EXCEPTION,e1);
 		}
@@ -1300,7 +1288,7 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
         //references
         List<ReferenceRetailDetailsRequest> referenceRetailDetailsRequestList = null;
 		try {
-			referenceRetailDetailsRequestList = referenceRetailDetailsService.getReferenceRetailDetailList(toApplicationId, user_type);
+//			referenceRetailDetailsRequestList = referenceRetailDetailsService.getReferenceRetailDetailList(toApplicationId, user_type);
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}

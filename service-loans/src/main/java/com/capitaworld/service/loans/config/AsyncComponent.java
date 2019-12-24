@@ -21,14 +21,12 @@ import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
-import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
 import com.capitaworld.service.loans.repository.common.CommonRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
-import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
 import com.capitaworld.service.loans.utils.CommonNotificationUtils.NotificationTemplate;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
@@ -43,7 +41,6 @@ import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.mca.client.McaClient;
 import com.capitaworld.service.mca.exception.McaException;
-import com.capitaworld.service.mca.model.cubictree.api.CubictreeJobRegistrationRequest;
 import com.capitaworld.service.mca.model.verifyApi.VerifyAPIRequest;
 import com.capitaworld.service.notification.client.NotificationClient;
 import com.capitaworld.service.notification.exceptions.NotificationException;
@@ -91,9 +88,6 @@ public class AsyncComponent {
 
 	@Autowired
 	private CorporateApplicantService corporateApplicantService;
-
-	@Autowired
-	private RetailApplicantService retailApplicantService;
 
 	@Autowired
 	private OneFormClient oneFormClient;
@@ -835,20 +829,6 @@ public class AsyncComponent {
 							+ corporateApplicantRequest.getOrganisationName());
 					return corporateApplicantRequest.getOrganisationName();
 				}
-			} else if (CommonUtils.UserMainType.RETAIL == fsType) {
-				logger.info("In Retails, Find fpProd Id by userid and applicationId");
-				RetailApplicantRequest retailApplicantRequest = retailApplicantService.get(applicationId);
-				if (!CommonUtils.isObjectNullOrEmpty(retailApplicantRequest)) {
-					String fsName = (!CommonUtils.isObjectNullOrEmpty(retailApplicantRequest.getFirstName())
-							? retailApplicantRequest.getFirstName()
-							: "")
-							+ " "
-							+ (!CommonUtils.isObjectNullOrEmpty(retailApplicantRequest.getLastName())
-									? retailApplicantRequest.getLastName()
-									: "");
-					logger.info("Successfully get fundseeker name =====> " + fsName);
-					return fsName;
-				}
 			}
 			return null;
 		} catch (Exception e) {
@@ -1193,17 +1173,4 @@ public class AsyncComponent {
 		address=!address.equals("")  ? pincode!=null?address.concat("-"+pincode):address.concat(""):address.concat(pincode.toString());
 		return address;
 	}
-	
-	@Async
-	public void callCubictreeApi(CubictreeJobRegistrationRequest request){
-		if(request != null){
-			try {
-				logger.info("Cubictree Api calling from loans");
-				mcaClient.callForjobRegistrationApi(request);
-			} catch (McaException e) {
-				logger.error("Exception in calling cubictree api :{}",e);
-			}
-		}
-	}
-
 }

@@ -1,20 +1,8 @@
 package com.capitaworld.service.loans.service.scoring;
 
 import java.io.IOException;
-
 import java.util.List;
 
-import com.capitaworld.cibil.api.model.CibilScoreLogRequest;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.FinancialArrangementsDetail;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
-import com.capitaworld.service.loans.domain.fundseeker.retail.BankingRelation;
-import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
-import com.capitaworld.service.scoring.MCLRReqRes;
-import com.capitaworld.service.scoring.REPOReqRes;
-import com.capitaworld.service.scoring.exception.ScoringException;
-import com.capitaworld.service.scoring.model.GenericCheckerReqRes;
-import com.capitaworld.service.scoring.model.ScoringResponse;
-import com.capitaworld.service.scoring.model.scoringmodel.ScoringModelReqRes;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +11,9 @@ import org.springframework.web.multipart.MultipartFile;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.score.ScoringRequestLoans;
+import com.capitaworld.service.scoring.exception.ScoringException;
+import com.capitaworld.service.scoring.model.GenericCheckerReqRes;
+import com.capitaworld.service.scoring.model.scoringmodel.ScoringModelReqRes;
 
 public interface ScoringService {
 
@@ -30,23 +21,7 @@ public interface ScoringService {
 
     public ResponseEntity<LoansResponse> calculateExistingBusinessScoring(ScoringRequestLoans scoringRequestLoans);
 
-    public ResponseEntity<LoansResponse> calculateNTBScoring(ScoringRequestLoans scoringRequestLoans, PrimaryCorporateDetail primaryCorporateDetail);
-
     public ResponseEntity<LoansResponse> calculateExistingBusinessScoringList(List<ScoringRequestLoans> scoringRequestLoansList);
-
-    public ResponseEntity<LoansResponse> calculateRetailPersonalLoanScoringList(List<ScoringRequestLoans> scoringRequestLoansList);
-    
-    public ResponseEntity<LoansResponse> calculateRetailHomeLoanScoringList(List<ScoringRequestLoans> scoringRequestLoansList);
-    
-    public ResponseEntity<LoansResponse> calculateRetailHomeLoanScoringListForCoApplicant(List<ScoringRequestLoans> scoringRequestLoansList);
-
-    public ResponseEntity<LoansResponse> calculateRetailAutoLoanScoringListForCoApplicant(List<ScoringRequestLoans> scoringRequestLoansList);
-
-    public ResponseEntity<LoansResponse> calculateRetailAutoLoanScoringList(List<ScoringRequestLoans> scoringRequestLoansList);
-
-    public ResponseEntity<LoansResponse> calculateMFILoanScoringList(List<ScoringRequestLoans> scoringRequestLoansList);
-
-    //////////////
 
     public ResponseEntity<LoansResponse> calculateScoringTest(ScoringRequestLoans scoringRequestLoans);
     
@@ -71,31 +46,4 @@ public interface ScoringService {
     public ScoringModelReqRes getScoringModelMasterDetail(ScoringModelReqRes scoringModelReqRes);
 
     public Integer getFinYear(Long applicationId);
-
-    public ScoringResponse getMCLRHistoryDetail(MCLRReqRes mclrReqRes);
-
-    public ScoringResponse getREPOHistoryDetail(REPOReqRes repoReqRes);
-
-    public ScoringResponse getLatestMCLRDetails(MCLRReqRes mclrReqRes);
-
-    public ScoringResponse getMCLRForChecker(MCLRReqRes mclrReqRes);
-
-    public ScoringResponse getREPOForChecker(REPOReqRes repoReqRes);
-
-    public ScoringResponse getEffectiveMCLRDetails(MCLRReqRes mclrReqRes);
-
-    public ScoringResponse createJob(MCLRReqRes mclrReqRes);
-
-    public ScoringResponse createJobForREPO(REPOReqRes repoReqRes);
-
-    public ScoringResponse saveMCLRDetails(MCLRReqRes mclrReqRes);
-
-    public ScoringResponse saveREPODetails(REPOReqRes repoReqRes);
-
-    public List<GenericCheckerReqRes> sendToCheckerMCLR(List <GenericCheckerReqRes> genericCheckerReqRes , Long userId)  throws ScoringException ;
-
-    public List<GenericCheckerReqRes> sendToCheckerREPO(List <GenericCheckerReqRes> genericCheckerReqRes , Long userId)  throws ScoringException ;
-
-    public Object [] getRetailConcessionDetails(ScoringRequestLoans scoringRequestLoans,List<String> bankStringsList,List<BankingRelation> bankingRelationList,List<FinancialArrangementsDetail> financialArrangementsDetailList,RetailApplicantDetail retailApplicantDetail,List<CibilScoreLogRequest> cibilResponse1);
-
 }

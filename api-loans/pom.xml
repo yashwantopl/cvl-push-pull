@@ -4,7 +4,9 @@
 	<modelVersion>4.0.0</modelVersion>
 	<!-- <parent> <groupId>com.capitaworld.loans.service.parent</groupId> <artifactId>service-parent-loans</artifactId> 
 		<version>0.0.1</version> </parent> -->
-	<artifactId>api-loans</artifactId>
+	<groupId>com.capitaworld.api.loans</groupId>
+	<artifactId>api-loans-mudra</artifactId>
+	<version>3.0.0</version>
     <build>
         <plugins>
             <plugin>
@@ -112,6 +114,4 @@
 		</dependency>
 
     </dependencies>
-	<version>1.0.1</version>
-	<groupId>com.capitaworld.api.loans</groupId>
 </project>
