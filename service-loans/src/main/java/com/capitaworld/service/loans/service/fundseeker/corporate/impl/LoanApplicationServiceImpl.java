@@ -8454,7 +8454,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			response.setDescription((String)obj[1]);
 			response.setBusinessTypeId((int)obj[2]);
 			response.setImgPath((String)obj[3]);
-			response.setId(((BigInteger)obj[4]).longValue());
+			response.setId(obj[4] != null ?((BigInteger)obj[4]) .longValue() : null);
 			response.setParentId(obj[5] != null ?((BigInteger)obj[5]) .longValue() : null);
 			selectionList.add(response);			
 		}
