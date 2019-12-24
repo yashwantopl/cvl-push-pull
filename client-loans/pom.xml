@@ -2,10 +2,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.capitaworld.service.loans</groupId>
-	<artifactId>client-loans</artifactId>
-	<version>1.0.1</version>
+	<artifactId>client-loans-mudra</artifactId>
+	<version>3.0.0</version>
 	<packaging>jar</packaging>
-	<name>client-api</name>
+	<name>client-api-mudra</name>
 
 
 
@@ -145,7 +145,7 @@
 						<configuration>
 							<artifactSet>
 								<includes>
-									<include>com.capitaworld.api.loans:api-loans</include>
+									<include>com.capitaworld.api.loans:api-loans-mudra</include>
 								</includes>
 							</artifactSet>
 							<filters>

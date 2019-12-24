@@ -8,9 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.capitaworld.service.loans.exceptions.LoansException;
-import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,11 +23,11 @@ import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.ddr.DDRFormDetails;
+import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.ddr.DDRFormDetailsRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateUploadService;
-import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
-import com.capitaworld.service.loans.service.fundseeker.retail.GuarantorService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 
@@ -59,12 +56,6 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 	private ApplicationProposalMappingRepository applicationProposalMappingRepository;
 
 	@Autowired
-	CoApplicantService coApplicantService;
-	
-	@Autowired
-	GuarantorService guarantorService;
-	
-	@Autowired
 	private DDRFormDetailsRepository ddrFormDetailsRepository;
 
 	@SuppressWarnings("unchecked")
@@ -73,21 +64,9 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 			MultipartFile multipartFile) throws LoansException {
 		try {
 			JSONObject jsonObj = new JSONObject();
-
 			if (CommonUtils.UploadUserType.UERT_TYPE_APPLICANT.equalsIgnoreCase(userType)) {
 				jsonObj.put("applicationId", applicantId);
-			} else if (CommonUtils.UploadUserType.UERT_TYPE_CO_APPLICANT.equalsIgnoreCase(userType)) {
-				// here we have set same applicant variable because when
-				// requested user is co-applicant then it "coApplicantId" will
-				// be considered and same as for "guarantors".
-				jsonObj.put("coApplicantId", applicantId);
-			} else if (CommonUtils.UploadUserType.UERT_TYPE_GUARANTOR.equalsIgnoreCase(userType)) {
-				// here we have set same applicant variable because when
-				// requested user is co-applicant then it "coApplicantId" will
-				// be considered and same as for "guarantors".
-				jsonObj.put("guarantorId", applicantId);
 			}
-
 			jsonObj.put("productDocumentMappingId", mappingId);
 			jsonObj.put("userType", userType);
 			jsonObj.put("originalFileName", fileName);
@@ -105,16 +84,6 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 			DocumentRequest docRequest = new DocumentRequest();
 			if (CommonUtils.UploadUserType.UERT_TYPE_APPLICANT.equalsIgnoreCase(userType)) {
 				docRequest.setApplicationId(applicantId);
-			} else if (CommonUtils.UploadUserType.UERT_TYPE_CO_APPLICANT.equalsIgnoreCase(userType)) {
-				// here we have set same applicant variable because when
-				// requested user is co-applicant then it "coApplicantId" will
-				// be considered and same as for "guarantors".
-				docRequest.setCoApplicantId(applicantId);
-			} else if (CommonUtils.UploadUserType.UERT_TYPE_GUARANTOR.equalsIgnoreCase(userType)) {
-				// here we have set same applicant variable because when
-				// requested user is co-applicant then it "coApplicantId" will
-				// be considered and same as for "guarantors".
-				docRequest.setGuarantorId(applicantId);
 			}
 			docRequest.setProductDocumentMappingId(mappingId);
 			docRequest.setUserType(userType);
@@ -133,16 +102,6 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 			DocumentRequest docRequest = new DocumentRequest();
 			if (CommonUtils.UploadUserType.UERT_TYPE_APPLICANT.equalsIgnoreCase(userType)) {
 				docRequest.setApplicationId(applicantId);
-			} else if (CommonUtils.UploadUserType.UERT_TYPE_CO_APPLICANT.equalsIgnoreCase(userType)) {
-				// here we have set same applicant variable because when
-				// requested user is co-applicant then it "coApplicantId" will
-				// be considered and same as for "guarantors".
-				docRequest.setCoApplicantId(applicantId);
-			} else if (CommonUtils.UploadUserType.UERT_TYPE_GUARANTOR.equalsIgnoreCase(userType)) {
-				// here we have set same applicant variable because when
-				// requested user is co-applicant then it "coApplicantId" will
-				// be considered and same as for "guarantors".
-				docRequest.setGuarantorId(applicantId);
 			}
 			docRequest.setProductDocumentMappingId(mappingId);
 			docRequest.setUserType(userType);
@@ -286,87 +245,6 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 					}
 				}
 				maps.put("app",map);
-				List<Long> ids = coApplicantService.getCoAppIds(userId, applicationId);
-				
-				int i =1;
-				
-				for (Long coappid : ids) {
-					Map<String, Object> mapCoApp = new HashMap<String, Object>();
-					mapCoApp.put(IDENTITY_PROOF, false);
-					mapCoApp.put(BANK_STATEMENT, false);
-					mapCoApp.put("itr", false);
-					mapCoApp.put(AUDITED_ANNUAL_REPORT, false);
-					mapCoApp.put(ADDRESS_PROOF, false);
-					for (Long id : co_app_proIdList) {
-						DocumentRequest documentRequest = new DocumentRequest();
-						documentRequest.setCoApplicantId(coappid);
-						documentRequest.setProductDocumentMappingId(id);
-						documentRequest.setUserType(DocumentAlias.UERT_TYPE_CO_APPLICANT);
-						dmsClient.listProductDocument(documentRequest);
-								
-						if (dmsClient.listProductDocument(documentRequest).getDataList().size() > 0) {
-							if(id.equals(57L) || id.equals(58L)){
-								mapCoApp.put(IDENTITY_PROOF, true);
-							}
-							else if(id.equals(69L)){
-								mapCoApp.put(BANK_STATEMENT, true);
-							}
-							else if(id.equals(71L) || id.equals(254L) || id.equals(259L)){
-								mapCoApp.put("itr", true);
-							}
-							else if(id.equals(72L)){
-								mapCoApp.put(AUDITED_ANNUAL_REPORT, true);
-							}
-							else if(id.equals(73L)){
-								mapCoApp.put(ADDRESS_PROOF, true);
-							}
-						} 
-					}
-					maps.put("coApp "+i,mapCoApp);
-					i++;
-				}
-				
-				
-				
-				List<Long> gua_ids = guarantorService.getGuarantorIds(userId, applicationId);
-				
-				int j = 1;
-				for (Long guaId : gua_ids) {
-					Map<String, Object> mapGua = new HashMap<String, Object>();
-						mapGua.put(IDENTITY_PROOF, false);
-						mapGua.put(BANK_STATEMENT, false);
-						mapGua.put("itr", false);
-						mapGua.put(AUDITED_ANNUAL_REPORT, false);
-						mapGua.put(ADDRESS_PROOF, false);
-				for (Long id : gua_proIdList) {
-					DocumentRequest documentRequest = new DocumentRequest();
-					documentRequest.setGuarantorId(guaId);
-					documentRequest.setProductDocumentMappingId(id);
-					documentRequest.setUserType(DocumentAlias.UERT_TYPE_GUARANTOR);
-					dmsClient.listProductDocument(documentRequest);
-						
-					if (dmsClient.listProductDocument(documentRequest).getDataList().size() > 0) {
-						if(id.equals(59L) || id.equals(60L)){
-							mapGua.put(IDENTITY_PROOF, true);
-						}
-						else if(id.equals(77L)){
-							mapGua.put(BANK_STATEMENT, true);
-						}
-						else if(id.equals(79L) || id.equals(264L) || id.equals(269L)){
-							mapGua.put("itr", true);
-						}
-						else if(id.equals(80L)){
-							mapGua.put(AUDITED_ANNUAL_REPORT, true);
-						}
-						else if(id.equals(81L)){
-							mapGua.put(ADDRESS_PROOF, true);
-						}
-					} 
-				}
-				maps.put("Guar "+j, mapGua);
-				j++;
-				}
-				
 				return maps;
 			} catch (DocumentException e) {
 				logger.error("Error while getting Corporate Other Documents : ",e);

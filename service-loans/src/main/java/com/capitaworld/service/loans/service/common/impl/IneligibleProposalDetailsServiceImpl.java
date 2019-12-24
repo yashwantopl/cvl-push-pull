@@ -32,7 +32,6 @@ import com.capitaworld.service.loans.model.InEligibleProposalDetailsRequest;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.ProposalDetailsAdminRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
-import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
 import com.capitaworld.service.loans.repository.common.CommonRepository;
 import com.capitaworld.service.loans.repository.common.LoanRepository;
 import com.capitaworld.service.loans.repository.fundseeker.IneligibleProposalDetailsRepository;
@@ -45,9 +44,6 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateAppli
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.InEligibleProposalCamReportService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
-import com.capitaworld.service.loans.service.fundseeker.retail.HLIneligibleCamReportService;
-import com.capitaworld.service.loans.service.fundseeker.retail.PLCamReportService;
-import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
 import com.capitaworld.service.loans.service.sidbi.SidbiSpecificService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -117,9 +113,6 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 	private CorporateApplicantService corporateApplicantService;
 
 	@Autowired
-	private RetailApplicantService retailApplicantSercive;
-
-	@Autowired
 	private PrimaryCorporateDetailRepository primaryCorporateDetailRepository;
 
 	@Autowired
@@ -143,12 +136,6 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
     @Autowired
 	private LoanApplicationRepository loanApplicationRepository;
     
-    @Autowired
-    private HLIneligibleCamReportService hlIneligibleService;
-    
-    @Autowired
-	private PLCamReportService plCamService;
-
     @Autowired
     private SidbiSpecificService sidbiService;
     
@@ -634,24 +621,6 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 				notificationParams.put(CommonUtils.PARAMETERS_ADDRESS, "NA");
 			}
 			return notificationParams;
-		} else if (applicationRequest.getBusinessTypeId() == CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId() 
-				|| applicationRequest.getBusinessTypeId() == CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId()
-				|| applicationRequest.getBusinessTypeId() == CommonUtils.BusinessType.RETAIL_AUTO_LOAN.getId()) {
-			try {
-				// for fs name and address only
-				RetailApplicantRequest plRequest = retailApplicantSercive.get(applicationId);
-				notificationParams.put(CommonUtils.PARAMETERS_LOAN_AMOUNT, plRequest.getLoanAmountRequired()!=null?plRequest.getLoanAmountRequired():" - ");
-				
-				if (plRequest != null) {
-					notificationParams.put(CommonUtils.PARAMETERS_FS_NAME, plRequest.getFirstName());
-					address = asyncComp.murgedAddress(plRequest.getAddressPremiseName(), plRequest.getAddressLandmark(), plRequest.getAddressStreetName(), plRequest.getAddressCity(), null, plRequest.getAddressState());
-					
-					notificationParams.put(CommonUtils.PARAMETERS_ADDRESS, address);
-				}
-			} catch (Exception e) {
-				logger.error("Exception in Getting Fund seeker details for PL ineligible proposal details: {}" , e);
-			}
-			return notificationParams;
 		} else {
 			fsName = applicationRequest.getUserName() != null ? applicationRequest.getUserName() : "NA";
 			notificationParams.put(CommonUtils.PARAMETERS_FS_NAME, fsName);
@@ -750,23 +719,6 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 			}
 			catch (Exception e)
 			{
-				logger.error("error while attaching cam report : {}",e);
-				return null;
-			}
-		}else if(productId == LoanType.PERSONAL_LOAN.getValue()) {
-			try
-			{
-				return hlIneligibleService.generateIneligibleCamReportFromMap(applicationId);
-			}
-			catch (Exception e)
-			{
-				logger.error("error while attaching cam report : ",e);
-				return null;
-			}
-		}else if(productId == LoanType.HOME_LOAN.getValue()) {
-			try {
-				return plCamService.generateIneligibleCamReportFromMap(applicationId);
-			}catch (Exception e) {
 				logger.error("error while attaching cam report : {}",e);
 				return null;
 			}

@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -21,6 +20,7 @@ import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryUnsecuredLoanDetail;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.AddressResponse;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
@@ -34,22 +34,10 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorp
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryUnsecuredLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
 import com.capitaworld.service.loans.service.common.CommonService;
-import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.AchievmentDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateCoApplicantService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.CreditRatingOrganizationDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ExistingProductDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.FinanceMeansDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.FutureFinancialEstimatesDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.OwnershipDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.PastFinancialEstiamateDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.PromotorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ProposedProductDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.SecurityCorporateDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.TotalCostOfProjectService;
-import com.capitaworld.service.loans.service.fundseeker.retail.ReferenceRetailDetailsService;
 import com.capitaworld.service.loans.service.teaser.primaryview.UnsecuredLoanPrimaryViewService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
@@ -89,28 +77,7 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 	private ProposedProductDetailsService proposedProductDetailsService;
 
 	@Autowired
-	private AchievmentDetailsService achievmentDetailsService;
-
-	@Autowired
-	private CreditRatingOrganizationDetailsService creditRatingOrganizationDetailsService;
-
-	@Autowired
-	private OwnershipDetailsService ownershipDetailsService;
-
-	@Autowired
-	private PromotorBackgroundDetailsService promotorBackgroundDetailsService;
-
-	@Autowired
-	private PastFinancialEstiamateDetailsService pastFinancialEstiamateDetailsService;
-
-	@Autowired
-	private FutureFinancialEstimatesDetailsService futureFinancialEstimatesDetailsService;
-
-	@Autowired
 	private ExistingProductDetailsService existingProductDetailsService;
-
-	@Autowired
-	private SecurityCorporateDetailsService securityCorporateDetailsService;
 
 	@Autowired
 	private FinancialArrangementDetailsService financialArrangementDetailsService;
@@ -125,20 +92,7 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 	private SubSectorRepository subSectorRepository;
 
 	@Autowired
-	private TotalCostOfProjectService costOfProjectService;
-
-	@Autowired
-	private FinanceMeansDetailsService financeMeansDetailsService;
-
-	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
-
-	@Autowired
-	private ProductMasterService productMasterService;
-
-
-	@Autowired
-	private CorporateCoApplicantService corporateCoApplicantService;
 
 	@Autowired
 	private DMSClient dmsClient;
@@ -151,9 +105,6 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 
 	@Autowired
 	private DirectorBackgroundDetailsService directorBackgroundDetailsService;
-
-	@Autowired
-	private ReferenceRetailDetailsService referenceRetailDetailsService;
 
 	@Autowired
 	private PrimaryCorporateDetailRepository primaryCorporateDetailRepository;

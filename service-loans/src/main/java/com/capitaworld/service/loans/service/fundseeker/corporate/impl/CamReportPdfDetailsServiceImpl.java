@@ -13,8 +13,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import javax.transaction.Transactional;
 
@@ -23,9 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.capitaworld.api.eligibility.model.CLEligibilityRequest;
@@ -60,7 +57,6 @@ import com.capitaworld.service.gst.MomSales;
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.gst.model.CAMGSTData;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
-import com.capitaworld.service.loans.domain.fundprovider.NbfcProposalBlendedRate;
 import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WcTlParameter;
@@ -1048,7 +1044,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			EligibililityRequest eligibilityReq=new EligibililityRequest();
 			eligibilityReq.setApplicationId(toApplicationId);
 			eligibilityReq.setFpProductMappingId(productId);
-			EligibilityResponse eligibilityResp= eligibilityClient.corporateLoanData(eligibilityReq);
+			EligibilityResponse eligibilityResp= eligibilityClient.corporateEligibilityData(eligibilityReq);
 			
 			if(!CommonUtils.isObjectListNull(eligibilityResp.getData())){
 				CLEligibilityRequest req= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), CLEligibilityRequest.class);
@@ -2093,7 +2089,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				EligibililityRequest eligibilityReq=new EligibililityRequest();
 				eligibilityReq.setApplicationId(applicationId);
 				eligibilityReq.setFpProductMappingId(productId);
-				EligibilityResponse eligibilityResp= eligibilityClient.corporateLoanData(eligibilityReq);
+				EligibilityResponse eligibilityResp= eligibilityClient.corporateEligibilityData(eligibilityReq);
 			
 				if(!CommonUtils.isObjectListNull(eligibilityResp.getData())){
 					CLEligibilityRequest req= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), CLEligibilityRequest.class);

@@ -1754,7 +1754,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		logger.info(" for eligibility appid============>>{}" , toApplicationId);
 
 		try {
-			EligibilityResponse eligibilityResp = eligibilityClient.corporateLoanData(eligibilityReq);
+			EligibilityResponse eligibilityResp = eligibilityClient.corporateEligibilityData(eligibilityReq);
 			corporateFinalViewResponse.setEligibilityDataObject(eligibilityResp.getData());
 		} catch (Exception e1) {
 			logger.error(CommonUtils.EXCEPTION,e1);
