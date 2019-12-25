@@ -1157,7 +1157,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			EligibililityRequest eligibilityReq = new EligibililityRequest();
 			eligibilityReq.setApplicationId(toApplicationId);
 			// eligibilityReq.set
-			eligibilityReq.setFpProductMappingId(fpProductMappingId);
+			eligibilityReq.setFpProductId(fpProductMappingId);
 			logger.info(" for eligibility appid============>>{}" , toApplicationId);
 
 			try {
