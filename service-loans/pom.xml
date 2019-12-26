@@ -110,8 +110,8 @@
 
 		<dependency>
 			<groupId>com.capitaworld.client.scoring</groupId>
-			<artifactId>client-scoring</artifactId>
-			<version>1.0.0</version>
+			<artifactId>client-scoring-mudra</artifactId>
+			<version>3.0.0</version>
 		</dependency>
 
 		<dependency>
@@ -189,8 +189,8 @@
 			<version>1.0.1</version> </dependency> -->
 		<dependency>
 			<groupId>com.capitaworld.service.loans</groupId>
-			<artifactId>client-loans</artifactId>
-			<version>1.0.1</version>
+			<artifactId>client-loans-mudra</artifactId>
+			<version>3.0.0</version>
 		</dependency>
 		<dependency>
 

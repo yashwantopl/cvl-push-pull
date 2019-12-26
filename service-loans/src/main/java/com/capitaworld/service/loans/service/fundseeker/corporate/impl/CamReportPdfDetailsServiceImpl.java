@@ -25,7 +25,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.capitaworld.api.eligibility.model.CLEligibilityRequest;
+import com.capitaworld.api.eligibility.model.CalculationJSON;
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
 import com.capitaworld.api.workflow.model.WorkflowRequest;
@@ -1043,14 +1043,13 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		try{
 			EligibililityRequest eligibilityReq=new EligibililityRequest();
 			eligibilityReq.setApplicationId(toApplicationId);
-			eligibilityReq.setFpProductMappingId(productId);
+			eligibilityReq.setFpProductId(productId);
 			EligibilityResponse eligibilityResp= eligibilityClient.corporateEligibilityData(eligibilityReq);
 			
 			if(!CommonUtils.isObjectListNull(eligibilityResp.getData())){
-				CLEligibilityRequest req= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), CLEligibilityRequest.class);
-				
-				map.put("elProSales", req.getProjectedSales() != null ? CommonUtils.convertValueIndianCurrency(req.getProjectedSales())  : "-");
-				map.put("defaultHisSales", req.getDefaultHistoricSales() != null ? CommonUtils.convertValueIndianCurrency(req.getDefaultHistoricSales())  : "-");
+				CalculationJSON req= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), CalculationJSON.class);
+//				map.put("elProSales", req.getProjectedSales() != null ? CommonUtils.convertValueIndianCurrency(req.getProjectedSales())  : "-");
+//				map.put("defaultHisSales", req.getDefaultHistoricSales() != null ? CommonUtils.convertValueIndianCurrency(req.getDefaultHistoricSales())  : "-");
 				map.put("assLimits",CommonUtils.convertToDoubleForXmlIndianCurr(req, new HashMap<>()));
 			}
 		}catch (Exception e) {
@@ -2088,14 +2087,13 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			if(proposalId != null) {
 				EligibililityRequest eligibilityReq=new EligibililityRequest();
 				eligibilityReq.setApplicationId(applicationId);
-				eligibilityReq.setFpProductMappingId(productId);
+				eligibilityReq.setFpProductId(productId);
 				EligibilityResponse eligibilityResp= eligibilityClient.corporateEligibilityData(eligibilityReq);
 			
 				if(!CommonUtils.isObjectListNull(eligibilityResp.getData())){
-					CLEligibilityRequest req= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), CLEligibilityRequest.class);
-					
-					map.put("elProSales", req.getProjectedSales() != null ? CommonUtils.convertValueIndianCurrency(req.getProjectedSales())  : "-");
-					map.put("defaultHisSales", req.getDefaultHistoricSales() != null ? CommonUtils.convertValueIndianCurrency(req.getDefaultHistoricSales())  : "-");
+					CalculationJSON req= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), CalculationJSON.class);
+//					map.put("elProSales", req.getProjectedSales() != null ? CommonUtils.convertValueIndianCurrency(req.getProjectedSales())  : "-");
+//					map.put("defaultHisSales", req.getDefaultHistoricSales() != null ? CommonUtils.convertValueIndianCurrency(req.getDefaultHistoricSales())  : "-");
 					map.put("assLimits",CommonUtils.convertToDoubleForXmlIndianCurr(req, new HashMap<>()));
 				}
 			}
