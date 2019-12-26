@@ -86,8 +86,8 @@
 		</dependency>
 		<dependency>
 			<groupId>com.capitaworld.client.matchengine</groupId>
-			<artifactId>client-matchengine-mudra</artifactId>
-			<version>3.0.0</version>
+			<artifactId>client-matchengine</artifactId>
+			<version>1.0.0</version>
 		</dependency>
 
 		<dependency>
@@ -110,8 +110,8 @@
 
 		<dependency>
 			<groupId>com.capitaworld.client.scoring</groupId>
-			<artifactId>client-scoring-mudra</artifactId>
-			<version>3.0.0</version>
+			<artifactId>client-scoring</artifactId>
+			<version>1.0.0</version>
 		</dependency>
 
 		<dependency>
@@ -187,11 +187,11 @@
 		</dependency>
 		<!-- <dependency> <groupId>com.capitaworld.connect</groupId> <artifactId>api-connect</artifactId> 
 			<version>1.0.1</version> </dependency> -->
-	<!-- 	<dependency>
+		<dependency>
 			<groupId>com.capitaworld.service.loans</groupId>
 			<artifactId>client-loans-mudra</artifactId>
 			<version>3.0.0</version>
-		</dependency> -->
+		</dependency>
 		<dependency>
 
 			<groupId>com.capitaworld.mca</groupId>
