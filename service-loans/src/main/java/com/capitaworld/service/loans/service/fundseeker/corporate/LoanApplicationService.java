@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import com.capitaworld.service.users.model.UsersRequest;
 import org.json.simple.JSONObject;
 
 import com.capitaworld.service.loans.exceptions.LoansException;
@@ -27,7 +26,6 @@ import com.capitaworld.service.loans.model.common.EkycResponse;
 import com.capitaworld.service.loans.model.common.HunterRequestDataResponse;
 import com.capitaworld.service.loans.model.common.MinMaxProductDetailRequest;
 import com.capitaworld.service.loans.model.common.ProposalList;
-import com.capitaworld.service.loans.model.common.SanctioningDetailResponse;
 import com.capitaworld.service.loans.model.corporate.CorporateProduct;
 import com.capitaworld.service.loans.model.mobile.MLoanDetailsResponse;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
@@ -35,6 +33,7 @@ import com.capitaworld.service.scoring.model.scoringmodel.ScoringModelReqRes;
 import com.capitaworld.service.users.model.FpProfileBasicDetailRequest;
 import com.capitaworld.service.users.model.RegisteredUserResponse;
 import com.capitaworld.service.users.model.UserResponse;
+import com.capitaworld.service.users.model.UsersRequest;
 
 public interface LoanApplicationService {
 
@@ -219,8 +218,6 @@ public interface LoanApplicationService {
 	public HunterRequestDataResponse getDataForHunter(Long applicationId) throws LoansException;
 
 
-	public SanctioningDetailResponse getDetailsForSanction(DisbursementRequest disbursementRequest) throws LoansException;
-
 	
 	public String saveDetailedInfo(ProfileReqRes profileReqRes) throws LoansException;
 	
@@ -275,10 +272,6 @@ public interface LoanApplicationService {
 	public TutorialUploadManageRes getTutorialsById(Long id);
 
 	public boolean saveTutorialsAudit(TutorialsViewAudits longLatrequest);
-
-	public JSONObject getTutorialsAudit(TutorialsViewAudits request);
-	
-	public String getTutorialsAuditList(TutorialsViewAudits request);
 
 	public String getPrefillProfileStatus(Long fromLoanId, Long toLoanId);
 	

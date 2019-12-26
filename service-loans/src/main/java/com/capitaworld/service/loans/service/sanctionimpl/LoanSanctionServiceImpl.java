@@ -17,15 +17,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.capitaworld.service.loans.config.FPAsyncComponent;
-import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
-import com.capitaworld.service.loans.domain.fundseeker.mfi.MFIApplicantDetail;
 import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.LoanSanctionRequest;
 import com.capitaworld.service.loans.repository.OfflineProcessedAppRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiApplicationDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.sanction.LoanSanctionRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
@@ -113,9 +110,6 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 	@Autowired
 	private ApplicationProposalMappingRepository applicationProposalMappingRepository;
 
-	@Autowired
-	private MfiApplicationDetailsRepository mfiApplicationDetailsRepository;
-	
 	@Override
 	public Boolean saveLoanSanctionDetail(LoanSanctionRequest loanSanctionRequest) throws LoansException {
 		try {
@@ -213,25 +207,6 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 
 	}
 
-
-
-	@Override
-	public LoanSanctionRequest checkSanctionAmountMFI(LoanSanctionRequest loanSanctionRequest) throws LoansException {
-
-		ProposalDetails proposalDetails=proposalDetailsRepository.findOne(loanSanctionRequest.getProposalId());
-		MFIApplicantDetail mfiApplicantDetail=mfiApplicationDetailsRepository.findByAppIdAndType(proposalDetails.getApplicationId(),1);
-		if(loanSanctionRequest.getSanctionAmount() > mfiApplicantDetail.getLoanAmountBankMaker())
-		{
-			loanSanctionRequest.setFlag(false);
-			loanSanctionRequest.setMessage("Sanction Amount should be less than recommended by SIDBI Maker!!");
-		}
-		else
-		{
-			loanSanctionRequest.setFlag(true);
-		}
-
-		return loanSanctionRequest;
-	}
 
 	public Boolean sendMailToHOBOCheckerMakerForMultipleBanks(Long applicationId) {
 		logger.info("inside notification start for sanction In Multibank case of ApplicationId==>{}" ,applicationId);

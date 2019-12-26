@@ -68,9 +68,6 @@ import com.capitaworld.service.loans.repository.CspCodeRepository;
 import com.capitaworld.service.loans.repository.common.LoanRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.ScoringRequestDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiApplicationDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiExpenseExpectedIncomeDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiIncomeDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateDirectorIncomeDetailsRepository;
@@ -217,14 +214,6 @@ public class ScoringServiceImpl implements ScoringService {
     @Autowired
     private ProductMasterRepository productMasterRepository;
 
-    @Autowired
-    private MfiApplicationDetailsRepository mfiApplicationDetailsRepository;
-    @Autowired
-    private MfiExpenseExpectedIncomeDetailRepository expectedIncomeDetailRepository;
-
-    @Autowired
-    private MfiIncomeDetailsRepository mfiIncomeDetailsRepository;
-    
     @Autowired
     private BankBureauResponseService bankBureauResponseService; 
     

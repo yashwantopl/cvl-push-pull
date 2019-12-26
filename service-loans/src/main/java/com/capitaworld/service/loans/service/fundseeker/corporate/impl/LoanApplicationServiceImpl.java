@@ -32,7 +32,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -79,7 +78,6 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.PromotorBackgro
 import com.capitaworld.service.loans.domain.fundseeker.corporate.ProposedProductDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.SecurityCorporateDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.TotalCostOfProject;
-import com.capitaworld.service.loans.domain.fundseeker.mfi.MFIApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.GuarantorDetails;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryAutoLoanDetail;
@@ -127,7 +125,6 @@ import com.capitaworld.service.loans.model.common.EkycResponse;
 import com.capitaworld.service.loans.model.common.HunterRequestDataResponse;
 import com.capitaworld.service.loans.model.common.MinMaxProductDetailRequest;
 import com.capitaworld.service.loans.model.common.ProposalList;
-import com.capitaworld.service.loans.model.common.SanctioningDetailResponse;
 import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateProduct;
 import com.capitaworld.service.loans.model.mobile.MLoanDetailsResponse;
@@ -140,8 +137,6 @@ import com.capitaworld.service.loans.repository.common.MinMaxProductDetailReposi
 import com.capitaworld.service.loans.repository.common.PaymentGatewayAuditMasterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiApplicationDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.Mfi.MfiTutorialsViewAuditsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AchievementDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
@@ -263,9 +258,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private RetailApplicantDetailRepository retailApplicantDetailRepository;
-
-	@Autowired
-	private MfiApplicationDetailsRepository mfiApplicationDetailsRepository;
 
 	@Autowired
 	private CoApplicantDetailRepository coApplicantDetailRepository;
@@ -416,9 +408,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private CorporateFinalInfoService corporateFinalInfoService;
-	
-	@Autowired
-	private MfiTutorialsViewAuditsRepository mfiTutorialsViewAuditsRepository;
 	
 	public static final DecimalFormat decim = new DecimalFormat("#,###.00");
 	
@@ -3623,35 +3612,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return null;
 
 		if (applicationMaster.getProductId() != null && applicationMaster.getBusinessTypeId() != null) {
-			if (applicationMaster.getBusinessTypeId().intValue() == CommonUtils.BusinessType.NEW_TO_BUSINESS.getId()
-					.intValue()) {
-				List<DirectorBackgroundDetail> directorBackgroundDetails = directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(applicationId);
-				DirectorBackgroundDetail directorBackgroundDetail = directorBackgroundDetails.stream()
-						.filter(DirectorBackgroundDetail::getIsMainDirector).findAny().orElse(null);
-				if (directorBackgroundDetail != null) {
-					return directorBackgroundDetail.getDirectorsName();
-				}
-			} else if (applicationMaster.getBusinessTypeId().intValue() == CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId() ||
-					applicationMaster.getBusinessTypeId().intValue() == CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId()) {
-				RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
-						.findByApplicationId(applicationId);
-				return retailApplicantDetail.getFirstName() + " " + retailApplicantDetail.getLastName();
-			}
-			else if (applicationMaster.getBusinessTypeId().intValue() == CommonUtils.BusinessType.MFI.getId()) {
-				MFIApplicantDetail mfiApplicantDetail= mfiApplicationDetailsRepository.findByAppIdAndType(applicationId,1);
-				return mfiApplicantDetail.getFirstName() + " " + mfiApplicantDetail.getLastName();
-			}
-			else {
-				if (CommonUtils.getUserMainType(applicationMaster.getProductId()) == CommonUtils.UserMainType.RETAIL) {
-					RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
-							.findByApplicationId(applicationId);
-					return retailApplicantDetail.getFirstName() + " " + retailApplicantDetail.getLastName();
-				} else if (CommonUtils.getUserMainType(applicationMaster.getProductId()) == CommonUtils.UserMainType.CORPORATE) {
+				if (CommonUtils.getUserMainType(applicationMaster.getProductId()) == CommonUtils.UserMainType.CORPORATE) {
 					  CorporateApplicantDetail crApp = corporateApplicantDetailRepository.getCorporateApplicantDetailByApplicationId(applicationId);
 
 					return crApp.getOrganisationName();
 				}
-			}
 		} else {
 			if (applicationMaster.getBusinessTypeId() != null && applicationMaster.getBusinessTypeId().intValue() == CommonUtils.BusinessType.NEW_TO_BUSINESS.getId()
 					.intValue()) {
@@ -7061,64 +7026,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 	}
 
-	@Override
-	public SanctioningDetailResponse getDetailsForSanction(DisbursementRequest disbursementRequest) throws LoansException {
-		try {
-			logger.info(
-					"Start getDetailsForSanction with data application Id : " + disbursementRequest.getApplicationId()
-							+ " ProductMapping Id :" + disbursementRequest.getProductMappingId());
-			SanctioningDetailResponse sanctioningDetailResponse = new SanctioningDetailResponse();
-
-			logger.info("Fetching data from in-principle: ");
-			ProposalMappingResponse response = proposalDetailsClient.getActivateProposalById(
-					disbursementRequest.getProductMappingId(), disbursementRequest.getApplicationId());
-			Map<String, Object> proposalresp = MultipleJSONObjectHelper
-					.getObjectFromMap((Map<String, Object>) response.getData(), Map.class);
-			if (proposalresp != null) {
-
-				MFIApplicantDetail mfiApplicantDetail=mfiApplicationDetailsRepository.findByAppIdAndType(disbursementRequest.getApplicationId(),1);
-				if(!CommonUtils.isObjectNullOrEmpty(mfiApplicantDetail))
-				{
-					sanctioningDetailResponse.setSanctionAmount(mfiApplicantDetail.getLoanAmountBankMaker());
-				}
-				else
-				{
-					sanctioningDetailResponse.setSanctionAmount(
-							proposalresp.get("elAmount") != null ? Double.valueOf(proposalresp.get("elAmount").toString())
-									: 0.0);
-				}
-				sanctioningDetailResponse.setTenure(
-						proposalresp.get("elTenure") != null ? Double.valueOf(proposalresp.get("elTenure").toString())
-								: 0.0);
-				sanctioningDetailResponse.setRoi(
-						proposalresp.get("elRoi") != null ? Double.valueOf(proposalresp.get("elRoi").toString()) : 0.0);
-				sanctioningDetailResponse.setProcessingFee(proposalresp.get("processingFee") != null
-						? Double.valueOf(proposalresp.get("processingFee").toString())
-						: 0.0);
-				sanctioningDetailResponse.setBranch(
-						proposalresp.get("branchId") != null ? Long.valueOf(proposalresp.get("branchId").toString())
-								: null);
-				sanctioningDetailResponse.setUserOrgId(
-						proposalresp.get("userOrgId") != null ? Long.valueOf(proposalresp.get("userOrgId").toString())
-								: null);
-			}
-
-			logger.info("Fetching data for proposal: ");
-			DisbursementRequest disbursementDetailsResponse = getDisbursementDetails(disbursementRequest);
-
-			if (disbursementDetailsResponse != null) {
-				BeanUtils.copyProperties(disbursementDetailsResponse, sanctioningDetailResponse, TENURE_LITERAL, "roi",
-						"userId");
-			}
-			logger.info("End getDetailsForSanction with data application Id : " + disbursementRequest.getApplicationId()
-					+ " ProductMapping Id :" + disbursementRequest.getProductMappingId());
-			return sanctioningDetailResponse;
-		} catch (Exception e) {
-			logger.error(CommonUtils.EXCEPTION,e);
-			throw new LoansException(e);
-		}
-	}
-
 	private String getQualificationForHunter(Integer qualificationId) {
 		if (qualificationId != null) {
 			if (EducationQualificationNTB.TECHNICAL.getId() == qualificationId) {
@@ -8571,30 +8478,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		return loanRepository.saveTutorialsAudits(longLatrequest);
 	}
 
-	@SuppressWarnings({ "unchecked", "null" })
-	@Override
-	public JSONObject getTutorialsAudit(TutorialsViewAudits request) {
-//		return loanRepository.getTutorialsAudit(request);
-		List<BigInteger> newtutorialSize = null;
-		TutorialsViewAudits tutorialsViewAudits;
-		JSONObject tutorialObj = new JSONObject();
-		List<Object[]> detailsReq = mfiTutorialsViewAuditsRepository.getTutorialListData(request.getTutorialId(),
-				new PageRequest(request.getPageIndex(), request.getSize()));
-		List<TutorialsViewAudits> TutorialList = new ArrayList<TutorialsViewAudits>();
-		for(Object[] obj : detailsReq) {
-			tutorialsViewAudits = new TutorialsViewAudits();
-			tutorialsViewAudits.setUserName((String)obj[1]);
-			tutorialsViewAudits.setRoleName((String)obj[2]);
-			tutorialsViewAudits.setBranchName((String)obj[3]);
-			tutorialsViewAudits.setViewDate((Date)obj[4]);
-			TutorialList.add(tutorialsViewAudits);
-		}
-		newtutorialSize = mfiTutorialsViewAuditsRepository.getTutorialCount(request.getTutorialId());
-		tutorialObj.put("tutorialData", TutorialList);
-		tutorialObj.put("totaltutorial", newtutorialSize.size());
-		return tutorialObj;
-	}
-	
 	@Override
 	public String getPrefillProfileStatus(Long fromLoanId, Long toLoanId) {
 		return loanRepository.getPrefillProfileStatus(fromLoanId, toLoanId);
@@ -8651,11 +8534,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	
 	public String convertValue(Double value) {
 		return !CommonUtils.isObjectNullOrEmpty(value) ? decim.format(value) : "0";
-	}
-
-	@Override
-	public String getTutorialsAuditList(TutorialsViewAudits request) {
-		return  mfiTutorialsViewAuditsRepository.getTutorialAuditList(request.getTutorialId());
 	}
 
 	@Override
