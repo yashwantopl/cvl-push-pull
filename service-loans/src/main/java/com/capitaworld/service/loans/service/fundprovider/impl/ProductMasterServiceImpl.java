@@ -10,7 +10,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.capitaworld.service.loans.repository.common.LoanRepository;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,19 +31,14 @@ import com.capitaworld.service.dms.model.StorageDetailsResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.config.FPAsyncComponent;
 import com.capitaworld.service.loans.domain.IndustrySectorDetailTemp;
-import com.capitaworld.service.loans.domain.fundprovider.AgriLoanParameterTemp;
-import com.capitaworld.service.loans.domain.fundprovider.AutoLoanParameterTemp;
 import com.capitaworld.service.loans.domain.fundprovider.FpGstTypeMappingTemp;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalCityDetailTemp;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalCountryDetailTemp;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalStateDetailTemp;
-import com.capitaworld.service.loans.domain.fundprovider.HomeLoanParameterTemp;
-import com.capitaworld.service.loans.domain.fundprovider.MFILoanParameterTemp;
 import com.capitaworld.service.loans.domain.fundprovider.MsmeValueMapping;
 import com.capitaworld.service.loans.domain.fundprovider.MsmeValueMappingTemp;
 import com.capitaworld.service.loans.domain.fundprovider.NegativeIndustryTemp;
 import com.capitaworld.service.loans.domain.fundprovider.NtbTermLoanParameterTemp;
-import com.capitaworld.service.loans.domain.fundprovider.PersonalLoanParameterTemp;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMasterTemp;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameterTemp;
@@ -66,13 +60,11 @@ import com.capitaworld.service.loans.model.corporate.TermLoanParameterRequest;
 import com.capitaworld.service.loans.model.corporate.UnsecuredLoanParameterRequest;
 import com.capitaworld.service.loans.model.corporate.WcTlParameterRequest;
 import com.capitaworld.service.loans.model.corporate.WorkingCapitalParameterRequest;
-import com.capitaworld.service.loans.model.mfi.MFILoanParameterRequest;
 import com.capitaworld.service.loans.model.retail.AgriLoanParameterRequest;
 import com.capitaworld.service.loans.model.retail.AutoLoanParameterRequest;
 import com.capitaworld.service.loans.model.retail.EmiNmiDetailRequest;
 import com.capitaworld.service.loans.model.retail.HomeLoanParameterRequest;
-import com.capitaworld.service.loans.model.retail.PersonalLoanParameterRequest;
-import com.capitaworld.service.loans.model.retail.RetailProduct;
+import com.capitaworld.service.loans.repository.common.LoanRepository;
 import com.capitaworld.service.loans.repository.fundprovider.AutoLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.FpGstTypeMappingRepository;
 import com.capitaworld.service.loans.repository.fundprovider.FpGstTypeMappingTempRepository;
@@ -95,15 +87,8 @@ import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRe
 import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorTempRepository;
 import com.capitaworld.service.loans.service.common.FundProviderSequenceService;
-import com.capitaworld.service.loans.service.fundprovider.AgriLoanParameterService;
-import com.capitaworld.service.loans.service.fundprovider.AutoLoanParameterService;
 import com.capitaworld.service.loans.service.fundprovider.FPParameterMappingService;
-import com.capitaworld.service.loans.service.fundprovider.HomeLoanParameterService;
-import com.capitaworld.service.loans.service.fundprovider.LapLoanParameterService;
 import com.capitaworld.service.loans.service.fundprovider.LoanPurposeAmountMappingService;
-import com.capitaworld.service.loans.service.fundprovider.MFILoanParameterService;
-import com.capitaworld.service.loans.service.fundprovider.MFILoanParameterTempService;
-import com.capitaworld.service.loans.service.fundprovider.PersonalLoanParameterService;
 import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.service.fundprovider.TermLoanParameterService;
 import com.capitaworld.service.loans.service.fundprovider.UnsecuredLoanParameterService;
@@ -135,10 +120,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	private static final String GET_USER_NAME_BY_APPLICATION_ID = "getUserNameByApplicationId";
 	private static final String IS_PRODUCT_MATCHED = "isProductMatched";
 	private static final String SAVE_CORPORATE = "saveCorporate";
-	private static final String SAVE_RETAIL = "saveRetail";
-	private static final String SAVE_MFI = "saveMfi";
 	private static final String SAVE_CORPORATE_IN_TEMP = "saveCorporateInTemp";
-	private static final String SAVE_RETAIL_IN_TEMP = "saveRetailInTemp";
 
 	@Autowired
 	private OneFormClient oneFormClient;
@@ -189,32 +171,11 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	private UnsecuredLoanParameterService unsecuredLoanParameterService;
 
 	@Autowired
-	private HomeLoanParameterService homeLoanParameterService;
-
-	@Autowired
-	private MFILoanParameterService mfiLoanParameterService;
-
-	@Autowired
-	private AutoLoanParameterService autoLoanParameterService;
-
-	@Autowired
-	private PersonalLoanParameterService personalLoanParameterService;
-
-	@Autowired
-	private LapLoanParameterService lapLoanParameterService;
-
-	@Autowired
 	private ProposalDetailsClient proposalDetailsClient;
 
 	@Autowired
 	private WcTlParameterService wcTlParameterService;
 	
-	@Autowired
-	private AgriLoanParameterService agriLoanParameterService;
-	
-	@Autowired
-	private MFILoanParameterTempService mfiLoanParameterTempService;
-
 	@Autowired
 	private DMSClient dmsClient;
 
@@ -314,23 +275,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					break;
 				case WCTL_LOAN:
 					productMasterTemp = new WcTlParameterTemp();
-					break;
-				case PERSONAL_LOAN:
-					productMasterTemp = new PersonalLoanParameterTemp();
-					break;
-				case HOME_LOAN:
-					productMasterTemp = new HomeLoanParameterTemp();
-					break;
-				case MFI_LOAN:
-					productMasterTemp = new MFILoanParameterTemp();
-					break;
-				case AGRI_LOAN:
-					productMasterTemp = new AgriLoanParameterTemp();
-					break;
-				case AUTO_LOAN:
-					productMasterTemp = new AutoLoanParameterTemp();
-					break;
-					
+					break;		
 
 				default:
 					break;
@@ -425,86 +370,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						}
 						BeanUtils.copyProperties(wcTlParameterRequest, wcTlParameterTemp,"id","profitabilityHistory","netWorth");
 						productMasterTemp = wcTlParameterTemp;
-						productMasterTemp.setIsParameterFilled(true);
-						break;
-					case PERSONAL_LOAN:
-
-						PersonalLoanParameterTemp personalLoanParameterTemp = new PersonalLoanParameterTemp();
-						PersonalLoanParameterRequest personalLoanParameterRequest=personalLoanParameterService.getPersonalLoanParameterRequest(addProductRequest.getLoanId());
-					
-						geogaphicallyCountry=personalLoanParameterRequest.getCountryList();
-						geogaphicallyState=personalLoanParameterRequest.getStateList();
-						geogaphicallyCity=personalLoanParameterRequest.getCityList();
-						//negativeIndList=personalLoanParameterRequest.getUnInterestedIndustrylist();
-						//END set multiple value in temp
-						detailRequests=personalLoanParameterRequest.getEmiNmiDetailRequestList();
-						salaryModeIds=personalLoanParameterRequest.getSalaryModeIds();
-						empStatusIds=personalLoanParameterRequest.getEmpStatusIds();
-						empWithIds=personalLoanParameterRequest.getEmpWithIds();
-						BeanUtils.copyProperties(personalLoanParameterRequest, personalLoanParameterTemp,"id");
-						productMasterTemp = personalLoanParameterTemp;
-						productMasterTemp.setIsParameterFilled(true);
-						break;
-					case HOME_LOAN:
-						HomeLoanParameterTemp homeLoanParameterTemp = new HomeLoanParameterTemp();
-						homeLoanParameterRequest = homeLoanParameterService.getHomeLoanParameterRequest(addProductRequest.getLoanId());
-						geogaphicallyCountry=homeLoanParameterRequest.getCountryList();
-						geogaphicallyState=homeLoanParameterRequest.getStateList();
-						geogaphicallyCity=homeLoanParameterRequest.getCityList();
-						BeanUtils.copyProperties(homeLoanParameterRequest, homeLoanParameterTemp,"id");
-						if (!CommonUtils.isObjectListNull(homeLoanParameterRequest.getMaxTenure()))
-							homeLoanParameterRequest.setMaxTenure(homeLoanParameterRequest.getMaxTenure() * 12);
-						if (!CommonUtils.isObjectListNull(homeLoanParameterRequest.getMinTenure()))
-							homeLoanParameterRequest.setMinTenure(homeLoanParameterRequest.getMinTenure() * 12);
-
-						if(!CommonUtils.isObjectNullOrEmpty(homeLoanParameterRequest.getMinBankRelation())) {
-							homeLoanParameterTemp.setMinBankRelation(homeLoanParameterRequest.getMinBankRelation().intValue());	
-						}
-						
-						if(!CommonUtils.isObjectNullOrEmpty(homeLoanParameterRequest.getMinBureauScore())) {
-							homeLoanParameterTemp.setMinBureauScore(homeLoanParameterRequest.getMinBureauScore().intValue());	
-						}
-						
-						if(!CommonUtils.isObjectNullOrEmpty(homeLoanParameterRequest.getMaxBureauScore())) {
-							homeLoanParameterTemp.setMaxBureauScore(homeLoanParameterRequest.getMaxBureauScore().intValue());	
-						}
-						
-						if(!CommonUtils.isObjectNullOrEmpty(homeLoanParameterRequest.getMinTotalJobExp())) {
-							homeLoanParameterTemp.setMinTotalJobExp(homeLoanParameterRequest.getMinTotalJobExp().intValue());	
-						}
-						if(!CommonUtils.isObjectNullOrEmpty(homeLoanParameterRequest.getMaxTotalJobExp())) {
-							homeLoanParameterTemp.setMaxTotalJobExp(homeLoanParameterRequest.getMaxTotalJobExp().intValue());	
-						}
-						productMasterTemp = homeLoanParameterTemp;
-						productMasterTemp.setIsParameterFilled(true);
-						break;
-					case MFI_LOAN:
-
-						MFILoanParameterTemp mfiLoanParameterTemp = new MFILoanParameterTemp();
-						MFILoanParameterRequest mfiLoanParameterRequest=mfiLoanParameterService.getMFILoanParameterRequest(addProductRequest.getLoanId());
-
-						/*geogaphicallyCountry=mfiLoanParameterRequest.getCountryList();
-						geogaphicallyState=mfiLoanParameterRequest.getStateList();
-						geogaphicallyCity=mfiLoanParameterRequest.getCityList();*/
-
-						BeanUtils.copyProperties(mfiLoanParameterRequest, mfiLoanParameterTemp,"id");
-						productMasterTemp = mfiLoanParameterTemp;
-						productMasterTemp.setIsParameterFilled(true);
-						break;
-						
-					case AGRI_LOAN:
-						AgriLoanParameterTemp agriLoanParameterTemp = new AgriLoanParameterTemp();
-						agriLoanParameterRequest = agriLoanParameterService.get(addProductRequest.getLoanId());
-						BeanUtils.copyProperties(agriLoanParameterRequest, agriLoanParameterTemp,"id");
-						productMasterTemp = agriLoanParameterTemp;
-						productMasterTemp.setIsParameterFilled(true);
-						break; 
-						
-					case AUTO_LOAN:
-						AutoLoanParameterTemp autoLoanParameterTemp = new AutoLoanParameterTemp();
-						autoLoanParameterRequest = autoLoanParameterService.getAutoLoanParameterRequest(addProductRequest.getLoanId());
-						BeanUtils.copyProperties(autoLoanParameterRequest, autoLoanParameterTemp,"id");
-						productMasterTemp = autoLoanParameterTemp;
 						productMasterTemp.setIsParameterFilled(true);
 						break;
 					default:
@@ -610,120 +475,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 							temp.setModifiedDate(new Date());
 							tempRepository.save(temp);
 						}
-					}
-				}
-
-				
-				//pl specific copy parameter changes
-				if(LoanType.PERSONAL_LOAN.getId().equals(loanType.getId())) {
-					//save empwith
-					PersonalLoanParameterRequest personalLoanParameterRequest=new  PersonalLoanParameterRequest();
-					personalLoanParameterRequest.setId(productMaster2.getId());
-					personalLoanParameterRequest.setEmpWithIds(empWithIds);
-					personalLoanParameterRequest.setEmiNmiDetailRequestList(detailRequests);
-					personalLoanParameterRequest.setEmpStatusIds(empStatusIds);
-					personalLoanParameterRequest.setSalaryModeIds(salaryModeIds);
-					
-					
-					personalLoanParameterService.saveEmiNmiTemp(personalLoanParameterRequest);
-					
-					//save empstatus
-					personalLoanParameterService.saveEmpStatus(personalLoanParameterRequest);
-					
-					//save salaryModeIds
-					personalLoanParameterService.saveSalaryMode(personalLoanParameterRequest);
-					
-					personalLoanParameterService.saveEmpWith(personalLoanParameterRequest);
-				}
-				
-				//HomeLoan Specific Copy Changes
-			
-				if(LoanType.HOME_LOAN.getId().equals(loanType.getId())) {
-					// Saving Mapping Current CURRENT_EMPLOYMENT
-					
-					if(!CommonUtils.isObjectNullOrEmpty(homeLoanParameterRequest)) {
-						fPParameterMappingService.inactiveAndSaveTemp(productMaster2.getId(),
-								CommonUtils.ParameterTypes.CURRENT_EMPLOYMENT,
-								homeLoanParameterRequest.getCurrentEmploymentStatusIds());
-
-						// Saving Mapping Current RESIDENTIAL
-						fPParameterMappingService.inactiveAndSaveTemp(productMaster2.getId(),
-								CommonUtils.ParameterTypes.RESIDENTIAL, homeLoanParameterRequest.getResidentialStatusIds());
-
-						// Saving Mapping Current BORROWER_TYPE
-						fPParameterMappingService.inactiveAndSaveTemp(productMaster2.getId(),
-								CommonUtils.ParameterTypes.BORROWER_TYPE, homeLoanParameterRequest.getBorrowerTypeIds());
-
-						// Saving Mapping Current SALARY_MODE
-						fPParameterMappingService.inactiveAndSaveTemp(productMaster2.getId(),
-								CommonUtils.ParameterTypes.SALARY_MODE, homeLoanParameterRequest.getSalaryModeIds());
-
-						// Saving Mapping Current BORROWER_SALARY_ACCOUNT
-						fPParameterMappingService.inactiveAndSaveTemp(productMaster2.getId(),
-								CommonUtils.ParameterTypes.BORROWER_SALARY_ACCOUNT, homeLoanParameterRequest.getBorrSalAccIds());
-						
-						fPParameterMappingService.inactiveAndSaveTemp(productMaster2.getId(),
-								CommonUtils.ParameterTypes.EMPLOYMENT_WITH, homeLoanParameterRequest.getEmploymentWithIds());
-						
-						fPParameterMappingService.inactiveAndSaveTemp(productMaster2.getId(),
-								CommonUtils.ParameterTypes.SLEF_EMPLOYMENT_WITH, homeLoanParameterRequest.getSelfEmployedWithIds());
-						
-						//Saving Loan Purpose Amount Mapping
-						loanPurposeAmountMappingService.deleteAndSave(homeLoanParameterRequest.getLoanPurposeAmountMappingRequests(), productMaster2.getId());						
-					}
-				}
-				
-				if(LoanType.AGRI_LOAN.getId().equals(loanType.getId())) {
-					// Saving Mapping Current CURRENT_EMPLOYMENT
-					
-					if(!CommonUtils.isObjectNullOrEmpty(agriLoanParameterRequest)) {
-						// Saving Mapping Current BORROWER_SALARY_ACCOUNT
-						fPParameterMappingService.inactiveAndSaveTemp(productMaster2.getId(),
-								CommonUtils.ParameterTypes.DISTRICT, agriLoanParameterRequest.getDistrictIds());
-						
-						fPParameterMappingService.inactiveAndSaveTemp(productMaster2.getId(),
-								CommonUtils.ParameterTypes.CROP, agriLoanParameterRequest.getCropIds());
-						
-						fPParameterMappingService.inactiveAndSaveTemp(productMaster2.getId(),
-								CommonUtils.ParameterTypes.IRRIGATED_UNIRRIGATED, agriLoanParameterRequest.getIrriUnirriIds());
-					}
-				}
-				
-				if(LoanType.AUTO_LOAN.getId().equals(loanType.getId())) {
-					// Saving Mapping Current CURRENT_EMPLOYMENT
-					
-					if(!CommonUtils.isObjectNullOrEmpty(autoLoanParameterRequest)) {
-						fPParameterMappingService.inactiveAndSaveTemp(productMaster2.getId(),
-								CommonUtils.ParameterTypes.CURRENT_EMPLOYMENT,
-								autoLoanParameterRequest.getCurrentEmploymentStatusIds());
-
-						// Saving Mapping Current RESIDENTIAL
-						fPParameterMappingService.inactiveAndSaveTemp(productMaster2.getId(),
-								CommonUtils.ParameterTypes.RESIDENTIAL, autoLoanParameterRequest.getResidentialStatusIds());
-
-						// Saving Mapping Current BORROWER_TYPE
-						fPParameterMappingService.inactiveAndSaveTemp(productMaster2.getId(),
-								CommonUtils.ParameterTypes.BORROWER_TYPE, autoLoanParameterRequest.getBorrowerTypeIds());
-
-						// Saving Mapping Current SALARY_MODE
-						fPParameterMappingService.inactiveAndSaveTemp(productMaster2.getId(),
-								CommonUtils.ParameterTypes.SALARY_MODE, autoLoanParameterRequest.getSalaryModeIds());
-
-						// Saving Mapping Current BORROWER_SALARY_ACCOUNT
-						fPParameterMappingService.inactiveAndSaveTemp(productMaster2.getId(),
-								CommonUtils.ParameterTypes.BORROWER_SALARY_ACCOUNT, autoLoanParameterRequest.getBorrSalAccIds());
-						
-						fPParameterMappingService.inactiveAndSaveTemp(productMaster2.getId(),
-								CommonUtils.ParameterTypes.EMPLOYMENT_WITH, autoLoanParameterRequest.getEmploymentWithIds());
-						
-						fPParameterMappingService.inactiveAndSaveTemp(productMaster2.getId(),
-								CommonUtils.ParameterTypes.SLEF_EMPLOYMENT_WITH, autoLoanParameterRequest.getSelfEmployedWithIds());
-						
-						fPParameterMappingService.inactiveAndSaveTemp(productMaster2.getId(),
-								CommonUtils.ParameterTypes.REPAYMENT_MODE, autoLoanParameterRequest.getRepaymentModeIds());
-						
-						//Saving Loan Purpose Amount Mapping
-						loanPurposeAmountMappingService.deleteAndSave(autoLoanParameterRequest.getLoanPurposeAmountMappingRequests(), productMaster2.getId());						
 					}
 				}
 				return true;
@@ -1360,19 +1111,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	}
 
 	@Override
-	public Boolean saveRetail(RetailProduct retailProduct) {
-		CommonDocumentUtils.startHook(logger, SAVE_RETAIL);
-		if (!CommonUtils.isObjectNullOrEmpty(retailProduct) && !CommonUtils.isObjectNullOrEmpty(retailProduct.getProductId()) && retailProduct.getProductId() == CommonUtils.LoanType.PERSONAL_LOAN.getValue() ) {
-					PersonalLoanParameterRequest personalLoanParameterRequest = new PersonalLoanParameterRequest();
-					BeanUtils.copyProperties(retailProduct, personalLoanParameterRequest);
-					CommonDocumentUtils.endHook(logger, SAVE_RETAIL);
-					return personalLoanParameterService.saveOrUpdate(personalLoanParameterRequest,null);
-		}
-		CommonDocumentUtils.endHook(logger, SAVE_RETAIL);
-		return false;
-	}
-
-	@Override
 	public ProductMasterRequest lastAccessedProduct(Long userId) {
 		CommonDocumentUtils.startHook(logger, "lastAccessedProduct");
 		ProductMasterRequest productMasterRequest = new ProductMasterRequest();
@@ -1483,32 +1221,11 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				} else {
 					return termLoanParameterService.getTermLoanParameterRequestTemp(master.getId(), role, userId);
 				}
-			}else if (master.getProductId() == 7) {
-				return personalLoanParameterService.getPersonalLoanParameterRequestTemp(master.getId(), role, userId);
-			}else if (master.getProductId() == CommonUtils.LoanType.AUTO_LOAN.getValue()) {
-				return autoLoanParameterService.getTemp(master.getId(), role, userId);
-			}else if (master.getProductId() == 3) {
-				return homeLoanParameterService.getTemp(master.getId(), role, userId);
-			}else if (master.getProductId() == 16) {
-				return wcTlParameterService.getWcTlRequestTemp(master.getId(), role, userId);
-			}
-			else if (master.getProductId() == 17) {
-				return mfiLoanParameterTempService.getMFILoanParameterRequest(master.getId(),role, userId);
 			}
 		} else {
 			ProductMaster master = productMasterRepository.findOne(id);
 
-			if (master.getProductId() == 3) {
-				return homeLoanParameterService.getHomeLoanParameterRequest(master.getId());
-			} else if (master.getProductId() == 7) {
-				return personalLoanParameterService.getPersonalLoanParameterRequest(master.getId());
-			} else if (master.getProductId() == 12) {
-				return autoLoanParameterService.getAutoLoanParameterRequest(master.getId());
-			} else if (master.getProductId() == 13) {
-				return lapLoanParameterService.getLapParameterRequest(master.getId());
-			}
-
-			else if (master.getProductId() == 1) {
+			if (master.getProductId() == 1) {
 				return workingCapitalParameterService.getWorkingCapitalParameter(master.getId());
 			} else if (master.getProductId() == 2) {
 
@@ -1521,10 +1238,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				return unsecuredLoanParameterService.getUnsecuredLoanParameterRequest(master.getId());
 			} else if (master.getProductId() == 16) {
 				return wcTlParameterService.getWcTlRequest(master.getId(),role);
-			}
-			else if (master.getProductId() == 17) {
-				return mfiLoanParameterService.getMFILoanParameterRequest(master.getId());
-			}
+			}			
 		}
 		return null;
 	}
@@ -1549,18 +1263,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				} else if (corporateProduct.getProductId() == CommonUtils.LoanType.WCTL_LOAN.getValue()) {
 					CommonDocumentUtils.endHook(logger, SAVE_CORPORATE);
 					return wcTlParameterService.saveMasterFromTempWcTl(mappingId);
-				}else if (corporateProduct.getProductId() == CommonUtils.LoanType.PERSONAL_LOAN.getValue()) {
-						CommonDocumentUtils.endHook(logger, SAVE_CORPORATE);
-						return personalLoanParameterService.saveMasterFromTempPl(mappingId);
-				}else if (corporateProduct.getProductId() == CommonUtils.LoanType.HOME_LOAN.getValue()) {
-					CommonDocumentUtils.endHook(logger, SAVE_RETAIL);
-					return homeLoanParameterService.saveMasterFromTemp(mappingId);
-				}else if (corporateProduct.getProductId() == CommonUtils.LoanType.AUTO_LOAN.getValue()) {
-					CommonDocumentUtils.endHook(logger, SAVE_RETAIL);
-					return autoLoanParameterService.saveMasterFromTemp(mappingId);
-				}else if (corporateProduct.getProductId() == CommonUtils.LoanType.MFI.getValue()) {
-					CommonDocumentUtils.endHook(logger, SAVE_MFI);
-					return mfiLoanParameterService.saveMasterFromTemp(mappingId);
 				}
 		}
 		CommonDocumentUtils.endHook(logger, SAVE_CORPORATE);
@@ -1596,12 +1298,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					BeanUtils.copyProperties(corporateProduct, wcTlParameterRequest);
 					CommonDocumentUtils.endHook(logger, SAVE_CORPORATE_IN_TEMP);
 					return wcTlParameterService.saveOrUpdateTemp(wcTlParameterRequest);
-				}
-				else if (corporateProduct.getProductId() == CommonUtils.LoanType.MFI.getValue()) {
-					MFILoanParameterRequest mfiLoanParameterRequest = new MFILoanParameterRequest();
-					BeanUtils.copyProperties(corporateProduct, mfiLoanParameterRequest);
-					CommonDocumentUtils.endHook(logger, SAVE_CORPORATE_IN_TEMP);
-					return mfiLoanParameterTempService.saveOrUpdateTemp(mfiLoanParameterRequest);
 				}
 		}
 		CommonDocumentUtils.endHook(logger, SAVE_CORPORATE);
@@ -1707,32 +1403,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			logger.error(CommonUtils.EXCEPTION,e);
 			return false;
 		}
-	}
-
-	@Override
-	public Boolean saveRetailInTemp(RetailProduct retailProduct) {
-
-		CommonDocumentUtils.startHook(logger, SAVE_RETAIL_IN_TEMP);
-		if(!CommonUtils.isObjectNullOrEmpty(retailProduct) && !CommonUtils.isObjectNullOrEmpty(retailProduct.getProductId())) {
-			if (retailProduct.getProductId() == CommonUtils.LoanType.PERSONAL_LOAN.getValue() ) {
-				PersonalLoanParameterRequest personalLoanParameterRequest= new PersonalLoanParameterRequest();
-				BeanUtils.copyProperties(retailProduct, personalLoanParameterRequest);
-				CommonDocumentUtils.endHook(logger, SAVE_RETAIL_IN_TEMP);
-				return personalLoanParameterService.saveOrUpdateTemp(personalLoanParameterRequest);
-			}else if (retailProduct.getProductId() == CommonUtils.LoanType.HOME_LOAN.getValue() ) {
-				HomeLoanParameterRequest homeLoanParameterRequest = (HomeLoanParameterRequest)retailProduct;
-				BeanUtils.copyProperties(retailProduct, homeLoanParameterRequest);
-				CommonDocumentUtils.endHook(logger, SAVE_RETAIL_IN_TEMP);
-				return homeLoanParameterService.saveOrUpdateTemp(homeLoanParameterRequest);
-			}else if (retailProduct.getProductId() == CommonUtils.LoanType.AUTO_LOAN.getValue() ) {
-				AutoLoanParameterRequest autoLoanParameterRequest = (AutoLoanParameterRequest)retailProduct;
-				BeanUtils.copyProperties(retailProduct, autoLoanParameterRequest);
-				CommonDocumentUtils.endHook(logger, SAVE_RETAIL_IN_TEMP);
-				return autoLoanParameterService.saveOrUpdateTemp(autoLoanParameterRequest);
-			}
-		}
-		CommonDocumentUtils.endHook(logger, SAVE_RETAIL_IN_TEMP);
-		return false;
 	}
 
 	@Override
