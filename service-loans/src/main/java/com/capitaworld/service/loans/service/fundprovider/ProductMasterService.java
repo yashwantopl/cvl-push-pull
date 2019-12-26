@@ -3,21 +3,20 @@ package com.capitaworld.service.loans.service.fundprovider;
 import java.io.IOException;
 import java.util.List;
 
-import com.capitaworld.service.loans.exceptions.LoansException;
-import com.capitaworld.service.loans.model.colending.FpProductRoiResponse;
 import org.json.simple.JSONObject;
 
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.FpProductDetails;
 import com.capitaworld.service.loans.model.MultipleFpPruductRequest;
 import com.capitaworld.service.loans.model.ProductDetailsForSp;
 import com.capitaworld.service.loans.model.ProductDetailsResponse;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
 import com.capitaworld.service.loans.model.WorkflowData;
+import com.capitaworld.service.loans.model.colending.FpProductRoiResponse;
 import com.capitaworld.service.loans.model.common.ChatDetails;
 import com.capitaworld.service.loans.model.corporate.AddProductRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateProduct;
-import com.capitaworld.service.loans.model.retail.RetailProduct;
 public interface ProductMasterService {
 	public Boolean saveOrUpdate(AddProductRequest addProductRequest, Long userOrgId);
 
@@ -54,8 +53,6 @@ public interface ProductMasterService {
 	
 	public Boolean saveCorporate(CorporateProduct corporateProduct);
 	
-	public Boolean saveRetail(RetailProduct retailProduct);
-	
 	public ProductMasterRequest lastAccessedProduct(Long userId);
 	
 	public List<ChatDetails> getChatListByFpMappingId(Long applicationId);
@@ -72,8 +69,6 @@ public interface ProductMasterService {
 	 */
 	public Boolean saveCorporateInTemp(CorporateProduct corporateProduct);
 	
-	public Boolean saveRetailInTemp(RetailProduct retailProduct);
-
 	public Boolean clickOnWorkFlowButton(WorkflowData workflowData);
 
 	public List<ProductMasterRequest> getApprovedListByProductType(Long userId, Integer parseInt, Integer businessId,Long userOrgId);

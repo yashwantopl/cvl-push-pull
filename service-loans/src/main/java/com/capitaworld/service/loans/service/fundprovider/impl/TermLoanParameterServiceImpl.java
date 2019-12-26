@@ -71,7 +71,6 @@ import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterTe
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorTempRepository;
 import com.capitaworld.service.loans.service.common.FundProviderSequenceService;
-import com.capitaworld.service.loans.service.fundprovider.CoLendingService;
 import com.capitaworld.service.loans.service.fundprovider.MsmeValueMappingService;
 import com.capitaworld.service.loans.service.fundprovider.TermLoanParameterService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
@@ -165,9 +164,6 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 	
 	@Autowired
 	private NbfcRatioMappingRepository nbfcRatioMappingRepository;
-	
-	@Autowired
-	private CoLendingService coLendingService;
 	
 	@Autowired
 	private ScoringClient  scoringClient;

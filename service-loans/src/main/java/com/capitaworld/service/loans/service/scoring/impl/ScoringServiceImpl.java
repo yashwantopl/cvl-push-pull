@@ -84,7 +84,6 @@ import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryHomeLoa
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantIncomeRepository;
 import com.capitaworld.service.loans.service.common.BankBureauResponseService;
-import com.capitaworld.service.loans.service.fundprovider.HomeLoanModelService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.scoring.ScoringService;
@@ -204,9 +203,6 @@ public class ScoringServiceImpl implements ScoringService {
 
     @Autowired
     private EligibilityClient eligibilityClient;
-
-    @Autowired
-	private HomeLoanModelService homeLoanModelService;
 
     @Autowired
     private LoanRepository loanRepository;
