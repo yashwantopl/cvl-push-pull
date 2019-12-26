@@ -1,15 +1,12 @@
 package com.capitaworld.service.loans.service.sanction;
 
 import com.capitaworld.service.loans.exceptions.LoansException;
-import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
 import com.capitaworld.service.loans.model.LoanSanctionRequest;
 
 public interface LoanSanctionService {
 	
 	public Boolean saveLoanSanctionDetail(LoanSanctionRequest loanSanctionRequest) throws LoansException;
 
-	public LoanSanctionRequest checkSanctionAmountMFI(LoanSanctionRequest loanSanctionRequest) throws LoansException;
-	
 	public LoanSanctionRequest getSanctionDetail(Long applicationId) throws LoansException;
 
 	public String sanctionRequestValidation( Long applicationId,Long orgId)  throws LoansException ;

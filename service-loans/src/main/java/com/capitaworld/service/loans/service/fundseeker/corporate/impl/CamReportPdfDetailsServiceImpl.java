@@ -363,27 +363,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	@Override
 	public Map<String, Object> getCamReportPrimaryDetails(Long applicationId, Long productId,Long proposalId, boolean isFinalView) {
 
-		Boolean nbfcUser = false;
 		ProposalMappingRequestString proposalMappingRequestString = null;
 		Map<String, Object> map = new HashMap<String, Object>();
 		
-		//fetch NBFC Details
-		try {
-			Integer isNbfcUser = ((BigInteger)commonRepository.getIsNBFCUser(applicationId)).intValue();
-			if(isNbfcUser != null && isNbfcUser > 0) {
-				/**ProposalDetails proposalDetailsForBank = proposalDetailsRepository.findFirstByApplicationIdAndIsActiveAndNbfcFlowOrderByIdDesc(applicationId, true, 2);
-				if(!CommonUtils.isObjectNullOrEmpty(proposalDetailsForBank)) {
-					productId = proposalDetailsForBank.getFpProductId();
-					proposalId = proposalDetailsForBank.getId();
-				}*/
-				nbfcUser = true;
-				logger.info("Start Fetching Cam Data For ApplicationId==>{}  with  ProductId==>{}  and  ProposalId==>{}" , applicationId , productId , proposalId);
-				map.put("nbfcDatas", corporatePrimaryViewService.getNbfcData(applicationId));
-			}
-		}catch (Exception e) {
-			logger.error("Error/Exception while fetching Details For NBFC by ApplicationId==>{}" , applicationId);
-		}
-
 		Long userOrgId = proposalDetailsRepository.getOrgIdByProposalId(proposalId);
 		ProposalDetails proposalDetails = proposalDetailsRepository.getSanctionProposalByApplicationIdAndUserOrgId(applicationId, userOrgId);
 		IneligibleProposalDetails ineligibleProposalDetails = ineligibleProposalDetailsRepository.getSanctionedByApplicationIdAndOrgId(applicationId, userOrgId);
@@ -430,16 +412,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
             LinkedHashMap<String, Object> lm = (LinkedHashMap<String, Object>)userResponse.getData();
             try {
                 UsersRequest request = MultipleJSONObjectHelper.getObjectFromMap(lm,UsersRequest.class);
-                
-                if(nbfcUser) {
-                	Object[] str = commonRepository.getEmailIdAndMobileForNBFCUser(userId);
-                	map.put("mobile", str != null && str.length > 0 && str[0] != null ? str[0] : "-");
-	                map.put("email", str != null && str.length > 0 && str[1] != null ? StringEscapeUtils.escapeXml(String.valueOf(str[1])) : "-");
-                }else {
 	                map.put("mobile", request.getMobile());
 	                map.put("email", StringEscapeUtils.escapeXml(request.getEmail()));
-                }
-                
                 if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getPanNo())) {
                 	 BigInteger isEmailMobileFound = commonRepository.checkApplicationDisbursed(corporateApplicantRequest.getPanNo());
          			String msg;

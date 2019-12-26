@@ -36,7 +36,6 @@ import com.capitaworld.service.loans.model.common.ChatDetails;
 import com.capitaworld.service.loans.model.common.DisbursementRequest;
 import com.capitaworld.service.loans.model.common.EkycRequest;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
-import com.capitaworld.service.loans.service.colending.CoLendingFlowService;
 import com.capitaworld.service.loans.service.common.AutoFillOneFormDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ApplicationProposalMappingService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
@@ -100,9 +99,6 @@ public class LoanApplicationController {
 
 	@Autowired
 	private ApplicationProposalMappingService appPropMappService;
-
-	@Autowired
-	private CoLendingFlowService coLendingFlowService;
 
 	/*@Autowired
 	private GatewayClient gatewayClient;*/
@@ -2049,14 +2045,6 @@ public class LoanApplicationController {
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		try {
 			logger.info("start getDisbursementDetails()");
-			/*
-			 * Long userId = null; if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)
-			 * request.getAttribute(CommonUtils.USER_TYPE)) .intValue() ||
-			 * CommonUtils.UserType.NETWORK_PARTNER == ((Integer)
-			 * request.getAttribute(CommonUtils.USER_TYPE)) .intValue()) { userId =
-			 * clientId; } else { userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			 * }
-			 */
 			if(disbursementRequest.getIsIneligibleProposal() == null || disbursementRequest.getIsIneligibleProposal() == false) {
 				if (CommonUtils.isObjectListNull(disbursementRequest.getApplicationId(),disbursementRequest.getProductMappingId())) {
 					logger.warn(ALL_PARAMETER_MUST_NOT_BE_NULL_MSG);
@@ -2072,31 +2060,6 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getDisbursementDetails", e);
-			return new ResponseEntity<LoansResponse>(
-					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-					HttpStatus.OK);
-		}
-	}
-
-	@RequestMapping(value = "/getDetailsForSanctionPopup", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getDetailsForSanctionPopup(@RequestBody DisbursementRequest disbursementRequest, HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) {
-		try {
-			logger.info("start getDetailsForApproval()");
-			if(disbursementRequest.getIsIneligibleProposal() == null || disbursementRequest.getIsIneligibleProposal() == false) {
-				if (CommonUtils.isObjectListNull(disbursementRequest.getApplicationId(),disbursementRequest.getProductMappingId())) {
-					logger.warn(ALL_PARAMETER_MUST_NOT_BE_NULL_MSG);
-					return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-				}
-			}else if(disbursementRequest.getIsIneligibleProposal() != null && disbursementRequest.getIsIneligibleProposal() == true && CommonUtils.isObjectNullOrEmpty(disbursementRequest.getApplicationId()) ) {
-					logger.warn("Application Id must not be null");
-					return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-			}
-			LoansResponse response = new LoansResponse(CommonUtils.SUCCESS, HttpStatus.OK.value());
-			response.setData(loanApplicationService.getDetailsForSanction(disbursementRequest));
-			logger.info("end getDetailsForApproval()");
-			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
-		} catch (Exception e) {
-			logger.error("Error while getDetailsForApproval", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -2168,34 +2131,6 @@ public class LoanApplicationController {
 		}
 	}
 
-
-
-	@RequestMapping(value = "/checkSanctionAmountMFI", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> checkSanctionAmountMFI(@RequestBody LoanSanctionRequest loanSanctionRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
-		try {
-			logger.info("start checkSanctionAmountMFI()");
-
-			if (CommonUtils.isObjectListNull(loanSanctionRequest.getProposalId())) {
-				logger.warn(ALL_PARAMETER_MUST_NOT_BE_NULL_MSG);
-				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-			}
-
-			LoansResponse response = new LoansResponse(CommonUtils.SUCCESS, HttpStatus.OK.value());
-			loanSanctionRequest = loanSanctionService.checkSanctionAmountMFI(loanSanctionRequest);
-			response.setData(loanSanctionRequest);
-
-			logger.info("end checkSanctionAmountMFI()---------------->" + loanSanctionRequest);
-			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
-
-		} catch (Exception e) {
-			logger.error("Error while checkSanctionAmountMFI", e);
-			return new ResponseEntity<LoansResponse>(
-					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-					HttpStatus.OK);
-		}
-	}
-
-
 	@RequestMapping(value = "/updateProductDetails", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> updateProductDetails(@RequestBody LoanApplicationRequest loanRequest) {
 		try {
@@ -2207,9 +2142,6 @@ public class LoanApplicationController {
 			}
 			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			Boolean success = loanApplicationService.updateProductDetails(loanRequest);
-			if(success && loanRequest.getIsNbfcFlow() != null && !loanRequest.getIsNbfcFlow()){
-				coLendingFlowService.calculateBlendedRateNbfc(loanRequest.getId());
-			}
 			loansResponse.setData(success);
 			CommonDocumentUtils.endHook(logger, "updateProductDetails");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);

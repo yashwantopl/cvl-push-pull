@@ -4,7 +4,6 @@ import java.util.LinkedHashMap;
 
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.teaser.primaryview.CorporatePrimaryViewResponse;
-import com.capitaworld.service.loans.model.teaser.primaryview.CorporatePrimaryViewResponseNbfc;
 import com.capitaworld.service.rating.model.FinancialInputRequest;
 
 public interface CorporatePrimaryViewService {
@@ -13,7 +12,5 @@ public interface CorporatePrimaryViewService {
     
     public LinkedHashMap<String,Object> gstVsItrVsBsComparision(Long applicationId,FinancialInputRequest financialInputRequest);
     
-    public CorporatePrimaryViewResponseNbfc getNbfcData(Long applicationId);
-
     public com.capitaworld.service.loans.model.LoansResponse getCubictreeReport(Long applicationId) throws LoansException;
 }

@@ -5,11 +5,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.capitaworld.service.loans.domain.common.MinMaxProductDetail;
-import com.capitaworld.service.loans.model.TutorialUploadManageRes;
-import com.capitaworld.service.loans.model.TutorialsViewAudits;
-import com.capitaworld.service.loans.model.api_model.LoantypeSelectionResponse;
-import com.capitaworld.service.loans.model.common.*;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,10 +12,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.model.NhbsApplicationRequest;
+import com.capitaworld.service.loans.model.TutorialUploadManageRes;
+import com.capitaworld.service.loans.model.TutorialsViewAudits;
+import com.capitaworld.service.loans.model.common.BasicDetailFS;
+import com.capitaworld.service.loans.model.common.CGTMSECalcDataResponse;
+import com.capitaworld.service.loans.model.common.HunterRequestDataResponse;
+import com.capitaworld.service.loans.model.common.LongitudeLatitudeRequest;
+import com.capitaworld.service.loans.model.common.MinMaxProductDetailRequest;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
@@ -482,34 +490,6 @@ public class CommonController {
 			return new ResponseEntity<>(new LoansResponse("Successfully get data !!",HttpStatus.OK.value(),tutorialsById), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.warn("Error while getTutorialsByRoleId",e);
-			return new ResponseEntity<>(new LoansResponse("Something went wrong !!",HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
-
-//	@GetMapping(value = "/getTutorialsAudit")
-	@RequestMapping(value = "/getTutorialsAudit", method = RequestMethod.POST,consumes=MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getTutorialsAudit(@RequestBody TutorialsViewAudits tutorialsViewAudits,HttpServletRequest request) {
-		logger.info("Enter in getTutorialsAudit");
-		try {
-			return new ResponseEntity<>(new LoansResponse("Successfully get data !!",HttpStatus.OK.value(),applicationService.getTutorialsAudit(tutorialsViewAudits)), HttpStatus.OK);
-		} catch (Exception e) {
-			logger.warn("Error while getTutorialsAudit",e);
-			return new ResponseEntity<>(new LoansResponse("Something went wrong !!",HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
-	
-	@RequestMapping(value = "/getTutorialsAuditList", method = RequestMethod.POST,consumes=MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getTutorialsAuditList(@RequestBody TutorialsViewAudits tutorialsViewAudits, HttpServletRequest request) {
-		logger.info("Enter in getTutorialsAuditList");
-		
-		if (CommonUtils.isObjectNullOrEmpty(tutorialsViewAudits.getTutorialId())) {
-			logger.warn("TutorialId is null");
-			return new ResponseEntity<>(new LoansResponse("Bad request",HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-		}
-		try {
-			return new ResponseEntity<>(new LoansResponse("Successfully get data !!",HttpStatus.OK.value(),applicationService.getTutorialsAuditList(tutorialsViewAudits)), HttpStatus.OK);
-		} catch (Exception e) {
-			logger.warn("Error while getTutorialsAuditList",e);
 			return new ResponseEntity<>(new LoansResponse("Something went wrong !!",HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
