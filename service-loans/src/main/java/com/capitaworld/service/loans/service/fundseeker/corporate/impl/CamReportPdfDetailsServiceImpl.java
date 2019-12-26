@@ -1048,6 +1048,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			
 			if(!CommonUtils.isObjectListNull(eligibilityResp.getData())){
 				CalculationJSON req= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), CalculationJSON.class);
+				
 //				map.put("elProSales", req.getProjectedSales() != null ? CommonUtils.convertValueIndianCurrency(req.getProjectedSales())  : "-");
 //				map.put("defaultHisSales", req.getDefaultHistoricSales() != null ? CommonUtils.convertValueIndianCurrency(req.getDefaultHistoricSales())  : "-");
 				map.put("assLimits",CommonUtils.convertToDoubleForXmlIndianCurr(req, new HashMap<>()));
@@ -2092,6 +2093,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			
 				if(!CommonUtils.isObjectListNull(eligibilityResp.getData())){
 					CalculationJSON req= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), CalculationJSON.class);
+					
 //					map.put("elProSales", req.getProjectedSales() != null ? CommonUtils.convertValueIndianCurrency(req.getProjectedSales())  : "-");
 //					map.put("defaultHisSales", req.getDefaultHistoricSales() != null ? CommonUtils.convertValueIndianCurrency(req.getDefaultHistoricSales())  : "-");
 					map.put("assLimits",CommonUtils.convertToDoubleForXmlIndianCurr(req, new HashMap<>()));
