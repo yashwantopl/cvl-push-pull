@@ -52,7 +52,7 @@ public class ProductMasterController {
 	private static final String FP_PRODUCT_DETAILS = "fpProductDetails";
 	private static final String GET_FP_DETAILS = "getFpDetails";
 	private static final String IS_SELF_VIEW = "isSelfView";
-	private static final String CHECK_PARAMETER_IS_FILLED = "checkParameterIsFilled";
+	private static final String CHECK_PARAMETER_IS_FILLED = " ";
 	private static final String CHANGE_STATUS = "changeStatus";
 	private static final String LAST_ACCESSED_PRODUCT = "lastAccessedProduct";
 	private static final String CHANGE_STATUS_WITH_WORKFLOW = "changeStatusWithWorkFlow";
