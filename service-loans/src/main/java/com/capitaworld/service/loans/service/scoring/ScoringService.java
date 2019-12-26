@@ -39,8 +39,6 @@ public interface ScoringService {
 
     public ScoringModelReqRes saveScoringModelTempDetail(ScoringModelReqRes scoringModelReqRes);
     
-    public List<GenericCheckerReqRes> sendToChecker(List <GenericCheckerReqRes> genericCheckerReqRes , Long userId)  throws ScoringException ;
-    
     public ScoringModelReqRes getScoringModelMasterList(ScoringModelReqRes scoringModelReqRes);
     
     public ScoringModelReqRes getScoringModelMasterDetail(ScoringModelReqRes scoringModelReqRes);
