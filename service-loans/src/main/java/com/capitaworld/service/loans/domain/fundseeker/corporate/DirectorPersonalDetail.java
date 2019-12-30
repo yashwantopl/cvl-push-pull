@@ -32,9 +32,25 @@ public class DirectorPersonalDetail extends AuditActivity implements Serializabl
     @Column(name="have_li_policy")
     private Integer haveLiPolicy;
 
-
     @Column(name="spouse_name")
     private String spouseName;
+    
+    @Column(name="id_proof")
+    private Integer idProof;
+    
+    private Integer dependent;
+    
+    @Column(name="is_same_add_id_proof")
+    private Boolean isSameAddIdProof;
+    
+    @Column(name="address_years")
+    private Integer addressYears;
+    
+    @Column(name="other_income_source")
+    private Integer otherIncomeSource;
+    
+    @Column(name="other_certification_course")
+    private String otherCertificationCourse;
 
     public DirectorPersonalDetail(){
         // Do nothing because of X and Y.
@@ -103,4 +119,54 @@ public class DirectorPersonalDetail extends AuditActivity implements Serializabl
     public void setSpouseName(String spouseName) {
         this.spouseName = spouseName;
     }
+
+	public Integer getIdProof() {
+		return idProof;
+	}
+
+	public void setIdProof(Integer idProof) {
+		this.idProof = idProof;
+	}
+
+	public Integer getDependent() {
+		return dependent;
+	}
+
+	public void setDependent(Integer dependent) {
+		this.dependent = dependent;
+	}
+
+
+	public Boolean getIsSameAddIdProof() {
+		return isSameAddIdProof;
+	}
+
+	public void setIsSameAddIdProof(Boolean isSameAddIdProof) {
+		this.isSameAddIdProof = isSameAddIdProof;
+	}
+
+	public Integer getAddressYears() {
+		return addressYears;
+	}
+
+	public void setAddressYears(Integer addressYears) {
+		this.addressYears = addressYears;
+	}
+
+	public Integer getOtherIncomeSource() {
+		return otherIncomeSource;
+	}
+
+	public void setOtherIncomeSource(Integer otherIncomeSource) {
+		this.otherIncomeSource = otherIncomeSource;
+	}
+
+	public String getOtherCertificationCourse() {
+		return otherCertificationCourse;
+	}
+
+	public void setOtherCertificationCourse(String otherCertificationCourse) {
+		this.otherCertificationCourse = otherCertificationCourse;
+	}
+	
 }

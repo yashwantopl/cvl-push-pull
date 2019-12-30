@@ -48,9 +48,10 @@ public class FundSeekerInputRequestResponse {
     private String msmeRegistrationNumber;
     
     private String castCategory;
+    
+    private String minorCastCategory;
 
     private Double loanAmount;
-
 
     private Integer purposeOfLoanId;
 
@@ -79,6 +80,9 @@ public class FundSeekerInputRequestResponse {
     private List<Long> sectorlist = Collections.emptyList();
 
     private List<Long> subsectors = Collections.emptyList();
+    
+    private List<Integer> govSchemes;
+    private List<Integer> certificationCourses;
     /////////
     private Double costOfMachinery;
     private Double incrementalTurnover;
@@ -724,8 +728,33 @@ public class FundSeekerInputRequestResponse {
     public void setNumberOfEmployee(Integer numberOfEmployee) {
         this.numberOfEmployee = numberOfEmployee;
     }
+    
+  
+	public List<Integer> getGovSchemes() {
+		return govSchemes;
+	}
 
-    @Override
+	public void setGovSchemes(List<Integer> govSchemes) {
+		this.govSchemes = govSchemes;
+	}
+
+	public List<Integer> getCertificationCourses() {
+		return certificationCourses;
+	}
+
+	public void setCertificationCourses(List<Integer> certificationCourses) {
+		this.certificationCourses = certificationCourses;
+	}
+	
+	public String getMinorCastCategory() {
+		return minorCastCategory;
+	}
+
+	public void setMinorCastCategory(String minorCastCategory) {
+		this.minorCastCategory = minorCastCategory;
+	}
+
+	@Override
 	public String toString() {
 		return "FundSeekerInputRequestResponse [userId=" + userId + ", clientId=" + clientId + ", applicationId="
 				+ applicationId + ", businessTypeId=" + businessTypeId + ", keyVericalFunding=" + keyVericalFunding

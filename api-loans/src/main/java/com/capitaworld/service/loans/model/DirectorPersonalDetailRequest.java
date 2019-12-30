@@ -22,7 +22,15 @@ public class DirectorPersonalDetailRequest implements Serializable {
     private Integer assessedForIt;
     private Integer haveLiPolicy;
     private String spouseName;
+    private Integer idProof;
+    private Integer dependent;
+    private Boolean isSameAddIdProof;
+    private Integer addressYears;
+    private Integer otherIncomeSource;
+    private String otherCertificationCourse;
+    
 
+    
     public Long getId() {
         return id;
     }
@@ -86,4 +94,55 @@ public class DirectorPersonalDetailRequest implements Serializable {
     public void setSpouseName(String spouseName) {
         this.spouseName = spouseName;
     }
+
+	public Integer getIdProof() {
+		return idProof;
+	}
+
+	public void setIdProof(Integer idProof) {
+		this.idProof = idProof;
+	}
+
+	public Integer getDependent() {
+		return dependent;
+	}
+
+	public void setDependent(Integer dependent) {
+		this.dependent = dependent;
+	}
+
+
+	public Boolean getIsSameAddIdProof() {
+		return isSameAddIdProof;
+	}
+
+	public void setIsSameAddIdProof(Boolean isSameAddIdProof) {
+		this.isSameAddIdProof = isSameAddIdProof;
+	}
+
+	public Integer getAddressYears() {
+		return addressYears;
+	}
+
+	public void setAddressYears(Integer addressYears) {
+		this.addressYears = addressYears;
+	}
+
+	public Integer getOtherIncomeSource() {
+		return otherIncomeSource;
+	}
+
+	public void setOtherIncomeSource(Integer otherIncomeSource) {
+		this.otherIncomeSource = otherIncomeSource;
+	}
+
+	public String getOtherCertificationCourse() {
+		return otherCertificationCourse;
+	}
+
+	public void setOtherCertificationCourse(String otherCertificationCourse) {
+		this.otherCertificationCourse = otherCertificationCourse;
+	}
+	
+	
 }

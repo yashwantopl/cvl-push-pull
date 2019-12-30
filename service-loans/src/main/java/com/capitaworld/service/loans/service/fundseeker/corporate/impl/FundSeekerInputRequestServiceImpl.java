@@ -66,6 +66,8 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.FinancialAr
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
+import com.capitaworld.service.loans.service.fundprovider.FPParameterMappingService;
+import com.capitaworld.service.loans.service.fundprovider.FSParameterMappingService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AssociatedConcernDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CollateralSecurityDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
@@ -87,6 +89,7 @@ import com.capitaworld.service.mca.model.verifyApi.VerifyAPIPara;
 import com.capitaworld.service.mca.model.verifyApi.VerifyAPIRequest;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.Constitution;
+import com.capitaworld.service.oneform.enums.FSParameterMst;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserOrganisationRequest;
 import com.capitaworld.service.users.model.UserResponse;
@@ -194,6 +197,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
 	@Autowired
 	private OneFormClient oneFormClient;
+	
+	@Autowired
+	private FSParameterMappingService fsParameterMappingService;
 
 	@Override
 	public boolean saveOrUpdate(FundSeekerInputRequestResponse fundSeekerInputRequest) throws LoansException {
@@ -452,6 +458,13 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
 			corporateApplicantDetail.setBusinessSinceYear(fundSeekerInputRequest.getSinceYear());
 			corporateApplicantDetail.setBusinessSinceMonth(fundSeekerInputRequest.getSinceMonth());
+			
+			// SAVE GOVERNMENT SCHEME
+			fsParameterMappingService.inactiveAndSave(fundSeekerInputRequest.getApplicationId(), FSParameterMst.GOV_SCHEMES.getId(), fundSeekerInputRequest.getGovSchemes());
+			
+			// CERTIFICATION COURSE
+			fsParameterMappingService.inactiveAndSave(fundSeekerInputRequest.getApplicationId(), FSParameterMst.CERTIFICATION_COURSE.getId(), fundSeekerInputRequest.getCertificationCourses()); 
+			
 			logger.info("Just Before Save ------------------------------------->" + corporateApplicantDetail.getConstitutionId());
 			corporateApplicantDetailRepository.save(corporateApplicantDetail);
 
@@ -600,11 +613,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				}
 			}
 			// === Director
-			List<DirectorBackgroundDetail> directorBackgroundDetailList = directorBackgroundDetailsRepository
-					.listPromotorBackgroundFromAppId(fundSeekerInputRequest.getApplicationId());
+			List<DirectorBackgroundDetail> directorBackgroundDetailList = directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(fundSeekerInputRequest.getApplicationId());
 
-			List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList = new ArrayList<DirectorBackgroundDetailRequest>(
-					directorBackgroundDetailList.size());
+			List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList = new ArrayList<DirectorBackgroundDetailRequest>(directorBackgroundDetailList.size());
 
 			Date dobOfProprietor = null;
 			DirectorBackgroundDetailRequest directorBackgroundDetailRequest = null;
@@ -623,6 +634,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				directorBackgroundDetailRequestList.add(directorBackgroundDetailRequest);
 			}
 			fundSeekerInputResponse.setDirectorBackgroundDetailRequestsList(directorBackgroundDetailRequestList);
+			fundSeekerInputResponse.setGovSchemes(fsParameterMappingService.getParameters(fundSeekerInputRequest.getApplicationId(), FSParameterMst.GOV_SCHEMES.getId()));
+			fundSeekerInputResponse.setCertificationCourses(fsParameterMappingService.getParameters(fundSeekerInputRequest.getApplicationId(), FSParameterMst.CERTIFICATION_COURSE.getId()));
+			
 
 			try {
 				LocalDate start = null;
