@@ -197,6 +197,9 @@ public class DirectorBackgroundDetail extends AuditActivity implements Serializa
 
 	@Column(name="district_mapping_id")
 	private Long districtMappingId;
+	
+	@Column(name="is_ongoing_mudra_loan")
+	private Boolean isOngoingMudraLoan;
 
 	@OneToOne
 	@JoinColumn(name="personal_detail_id")
@@ -665,4 +668,13 @@ public class DirectorBackgroundDetail extends AuditActivity implements Serializa
 	public void setPhysicallyHandicapped(Integer physicallyHandicapped) {
 		this.physicallyHandicapped = physicallyHandicapped;
 	}
+
+	public Boolean getIsOngoingMudraLoan() {
+		return isOngoingMudraLoan;
+	}
+
+	public void setIsOngoingMudraLoan(Boolean isOngoingMudraLoan) {
+		this.isOngoingMudraLoan = isOngoingMudraLoan;
+	}
+	
 }

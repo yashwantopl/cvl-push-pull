@@ -224,6 +224,9 @@ public class CorporateApplicantDetail implements Serializable {
     
     @Column(name="cast_category")
     private String castCategory;
+    
+    @Column(name="minor_cast_category")
+    private String minorCastCategory;
 
     @Column(name="is_noneof_related_party_selected")
     private Boolean isNoneOfRelatedPartySelected;;
@@ -772,4 +775,13 @@ public class CorporateApplicantDetail implements Serializable {
 	public void setNumberOfEmployee(Integer numberOfEmployee) {
 		this.numberOfEmployee = numberOfEmployee;
 	}
+
+	public String getMinorCastCategory() {
+		return minorCastCategory;
+	}
+
+	public void setMinorCastCategory(String minorCastCategory) {
+		this.minorCastCategory = minorCastCategory;
+	}
+	
 }
