@@ -462,7 +462,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			// SAVE GOVERNMENT SCHEME
 			fsParameterMappingService.inactiveAndSave(fundSeekerInputRequest.getApplicationId(), FSParameterMst.GOV_SCHEMES.getId(), fundSeekerInputRequest.getGovSchemes());
 			
-			// CERTIFICATION COURSE
+			// SAVE CERTIFICATION COURSE
 			fsParameterMappingService.inactiveAndSave(fundSeekerInputRequest.getApplicationId(), FSParameterMst.CERTIFICATION_COURSE.getId(), fundSeekerInputRequest.getCertificationCourses()); 
 			
 			logger.info("Just Before Save ------------------------------------->" + corporateApplicantDetail.getConstitutionId());
@@ -520,7 +520,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			return new ResponseEntity<LoansResponse>(res, HttpStatus.OK);
 		}finally {
 			try {
-				connectClient.saveAuditLog(new ConnectLogAuditRequest(fundSeekerInputRequest.getApplicationId(), ConnectStage.DIRECTOR_BACKGROUND.getId(),fundSeekerInputRequest.getUserId(),msg, ConnectAuditErrorCode.DIRECTOR_SUBMIT.toString(),CommonUtils.BusinessType.EXISTING_BUSINESS.getId()));
+				connectClient.saveAuditLog(new ConnectLogAuditRequest(fundSeekerInputRequest.getApplicationId(), ConnectStage.MUDRA_DIRECTOR_BACKGROUND.getId(),fundSeekerInputRequest.getUserId(),msg, ConnectAuditErrorCode.DIRECTOR_SUBMIT.toString(),CommonUtils.BusinessType.MUDRA_LOAN.getId()));
 			} catch (Exception e){
 				logger.error(CommonUtils.EXCEPTION,e);
 			}
