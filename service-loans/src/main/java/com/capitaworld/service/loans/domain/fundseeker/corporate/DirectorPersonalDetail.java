@@ -51,7 +51,12 @@ public class DirectorPersonalDetail extends AuditActivity implements Serializabl
     
     @Column(name="other_certification_course")
     private String otherCertificationCourse;
+    
+    @Column(name="is_ongoing_mudra_loan")
+    private Boolean isOngoingMudraLoan;
 
+    
+    
     public DirectorPersonalDetail(){
         // Do nothing because of X and Y.
     }
@@ -168,5 +173,14 @@ public class DirectorPersonalDetail extends AuditActivity implements Serializabl
 	public void setOtherCertificationCourse(String otherCertificationCourse) {
 		this.otherCertificationCourse = otherCertificationCourse;
 	}
+
+	public Boolean getIsOngoingMudraLoan() {
+		return isOngoingMudraLoan;
+	}
+
+	public void setIsOngoingMudraLoan(Boolean isOngoingMudraLoan) {
+		this.isOngoingMudraLoan = isOngoingMudraLoan;
+	}
+
 	
 }
