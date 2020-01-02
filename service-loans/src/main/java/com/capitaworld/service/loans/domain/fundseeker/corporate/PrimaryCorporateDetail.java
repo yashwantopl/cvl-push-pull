@@ -24,6 +24,10 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
     @OneToOne
     @JoinColumn(name = "application_id")
     private LoanApplicationMaster applicationId;
+    
+    @OneToOne
+    @JoinColumn(name = "mudra_loan_details_id")
+    private PrimaryCorporateDetailMudraLoan primaryCorporatedetailsMudraloanId;
 
     @Column(name = "loan_amount")
     private Double loanAmount;
@@ -438,6 +442,14 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
 
 	public void setBorrowerDcldProjectedSales(Double borrowerDcldProjectedSales) {
 		this.borrowerDcldProjectedSales = borrowerDcldProjectedSales;
+	}
+
+	public PrimaryCorporateDetailMudraLoan getPrimaryCorporatedetailsMudraloanId() {
+		return primaryCorporatedetailsMudraloanId;
+	}
+
+	public void setPrimaryCorporatedetailsMudraloanId(PrimaryCorporateDetailMudraLoan primaryCorporatedetailsMudraloanId) {
+		this.primaryCorporatedetailsMudraloanId = primaryCorporatedetailsMudraloanId;
 	}
     
 }
