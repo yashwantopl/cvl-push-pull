@@ -328,6 +328,18 @@ public class TermLoanParameterTemp extends ProductMasterTemp implements Serializ
 	@Column(name="is_msme_funding_mandatory")
 	private Boolean isMsmeFundingMandatory = false;
 	
+	@Column(name="is_msme_ranking_display")
+	private Boolean isMsmeRankingDisplay = false;
+
+	@Column(name="is_msme_ranking_mandatory")
+	private Boolean isMsmeRankingMandatory = false;
+	
+	@Column(name="msme_ranking")
+	private Integer msmeRanking;
+	
+	@Column(name="is_no_msme_ranking")
+	private Boolean isNoMsmeRanking = false;
+	
 	@Column(name="cgtmse_coverage")
 	private Integer cgtmseCoverage;
 
@@ -1989,15 +2001,37 @@ public class TermLoanParameterTemp extends ProductMasterTemp implements Serializ
 	public void setIsConstitutionMandatory(Boolean isConstitutionMandatory) {
 		this.isConstitutionMandatory = isConstitutionMandatory;
 	}
-	
-	
 
+	public Boolean getIsMsmeRankingDisplay() {
+		return isMsmeRankingDisplay;
+	}
 
-	
-	
-	
+	public void setIsMsmeRankingDisplay(Boolean isMsmeRankingDisplay) {
+		this.isMsmeRankingDisplay = isMsmeRankingDisplay;
+	}
 
-	
+	public Boolean getIsMsmeRankingMandatory() {
+		return isMsmeRankingMandatory;
+	}
 
+	public void setIsMsmeRankingMandatory(Boolean isMsmeRankingMandatory) {
+		this.isMsmeRankingMandatory = isMsmeRankingMandatory;
+	}
+
+	public Integer getMsmeRanking() {
+		return msmeRanking;
+	}
+
+	public void setMsmeRanking(Integer msmeRanking) {
+		this.msmeRanking = msmeRanking;
+	}
+
+	public Boolean getIsNoMsmeRanking() {
+		return isNoMsmeRanking;
+	}
+
+	public void setIsNoMsmeRanking(Boolean isNoMsmeRanking) {
+		this.isNoMsmeRanking = isNoMsmeRanking;
+	}
 }
 

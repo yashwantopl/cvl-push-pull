@@ -3,7 +3,6 @@ package com.capitaworld.service.loans.service.fundprovider.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -60,10 +59,6 @@ import com.capitaworld.service.loans.model.corporate.TermLoanParameterRequest;
 import com.capitaworld.service.loans.model.corporate.UnsecuredLoanParameterRequest;
 import com.capitaworld.service.loans.model.corporate.WcTlParameterRequest;
 import com.capitaworld.service.loans.model.corporate.WorkingCapitalParameterRequest;
-import com.capitaworld.service.loans.model.retail.AgriLoanParameterRequest;
-import com.capitaworld.service.loans.model.retail.AutoLoanParameterRequest;
-import com.capitaworld.service.loans.model.retail.EmiNmiDetailRequest;
-import com.capitaworld.service.loans.model.retail.HomeLoanParameterRequest;
 import com.capitaworld.service.loans.repository.common.LoanRepository;
 import com.capitaworld.service.loans.repository.fundprovider.AutoLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.FpGstTypeMappingRepository;
@@ -87,8 +82,6 @@ import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRe
 import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorTempRepository;
 import com.capitaworld.service.loans.service.common.FundProviderSequenceService;
-import com.capitaworld.service.loans.service.fundprovider.FPParameterMappingService;
-import com.capitaworld.service.loans.service.fundprovider.LoanPurposeAmountMappingService;
 import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.service.fundprovider.TermLoanParameterService;
 import com.capitaworld.service.loans.service.fundprovider.UnsecuredLoanParameterService;
@@ -96,7 +89,6 @@ import com.capitaworld.service.loans.service.fundprovider.WcTlParameterService;
 import com.capitaworld.service.loans.service.fundprovider.WorkingCapitalParameterService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.loans.utils.CommonUtils.UserMainType;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
 import com.capitaworld.service.matchengine.exception.MatchException;
@@ -212,13 +204,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
     @Autowired
     private ProposalDetailsRepository proposalDetailsRepository;
-    
-    @Autowired
-	private FPParameterMappingService fPParameterMappingService;
-    
-    @Autowired
-	private LoanPurposeAmountMappingService loanPurposeAmountMappingService; 
-    
+  
     @Autowired
     private  FpGstTypeMappingRepository fpGstTypeMappingRepository;
     
@@ -228,14 +214,9 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	@Autowired
 	private LoanRepository loanRepository;
 	
-    private Integer [] productIds = { CommonUtils.LoanType.HOME_LOAN.getValue(),CommonUtils.LoanType.PERSONAL_LOAN.getValue(),CommonUtils.LoanType.AUTO_LOAN.getValue()};
-    
 	@Override
 	public Boolean saveOrUpdate(AddProductRequest addProductRequest, Long userOrgId) {
 		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
-		HomeLoanParameterRequest homeLoanParameterRequest = null;
-		AgriLoanParameterRequest agriLoanParameterRequest = null;
-		AutoLoanParameterRequest autoLoanParameterRequest = null;
 		try {
 
 			if (!CommonUtils.isObjectNullOrEmpty(addProductRequest.getProductMappingId())) {
@@ -267,11 +248,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					productMasterTemp = new WorkingCapitalParameterTemp();
 					break;
 				case TERM_LOAN:
-					if (addProductRequest.getBusinessTypeId() == 2) {
-						productMasterTemp = new NtbTermLoanParameterTemp();
-					} else {
-						productMasterTemp = new TermLoanParameterTemp();
-					}
+					productMasterTemp = new TermLoanParameterTemp();
 					break;
 				case WCTL_LOAN:
 					productMasterTemp = new WcTlParameterTemp();
@@ -281,8 +258,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					break;
 				}
 				List<DataRequest> industrySecIdList = null,secIdList=null,geogaphicallyCountry=null,geogaphicallyState=null,geogaphicallyCity=null,negativeIndList=null;
-				List<EmiNmiDetailRequest> detailRequests = null;
-				List<Integer> salaryModeIds=null,empStatusIds=null,empWithIds=null;
 				if(!CommonUtils.isObjectNullOrEmpty(addProductRequest.getLoanId()))
 				{
 					switch (loanType) {
@@ -898,25 +873,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				case TERM_LOAN:
 					productMaster = termLoanParameterRepository.findOne(productMappingId);
 					break;
-				case HOME_LOAN:
-					productMaster = homeLoanParameterRepository.findOne(productMappingId);
-					break;
-				case AUTO_LOAN:
-					productMaster = carLoanParameterRepository.findOne(productMappingId);
-					break;
-				case PERSONAL_LOAN:
-					productMaster = personalLoanParameterRepository.findOne(productMappingId);
-					break;
-				case LOAN_AGAINST_PROPERTY:
-					productMaster = lapParameterRepository.findOne(productMappingId);
-					break;
-				case LOAN_AGAINST_SHARES_AND_SECUIRITIES:
-					productMaster = lasParameterRepository.findOne(productMappingId);
-					break;
-				case MFI_LOAN:
-					productMaster = mfiLoanParameterRepository.findOne(productMappingId);
-					break;
-
 				default:
 					break;
 			}
@@ -992,51 +948,28 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	public List<ProductMasterRequest> getListByUserType(Long userId, Integer userType, Integer stage, Long userOrgId,Integer productId) {
 		CommonDocumentUtils.startHook(logger, "getListByUserType");
 		List<ProductMasterRequest> productMasterRequests = new ArrayList<>();
-
 		if (!CommonUtils.isObjectNullOrEmpty(stage) && stage == 1) {
 			List<ProductMasterTemp> results = null;
-			if (userType == 1) {
-				if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
-					results = productMasterTempRepository.getUserRetailProductListByOrgId(userOrgId,Arrays.asList(productId));
-				} else {
-					results = productMasterTempRepository.getUserRetailProductList(userId,Arrays.asList(productId));
-				}
-				for (ProductMasterTemp productMaster : results) {
-					ProductMasterRequest productMasterRequest = new ProductMasterRequest();
-					BeanUtils.copyProperties(productMaster, productMasterRequest);
-					List<Integer> gstTypes = fpGstTypeMappingTempRepository.getIdsByFpProductId(productMaster.getId());
-					productMasterRequest.setGstType(gstTypes);
-					productMasterRequests.add(productMasterRequest);
+			Object[]  userObj= loanRepository.getUserDetails(userId);
+			if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
+				if(!CommonUtils.isObjectNullOrEmpty(userObj) && !CommonUtils.isObjectNullOrEmpty(userObj[0])) {
+					Long businessTypeId = Long.valueOf(userObj[0].toString());
+					results = productMasterTempRepository.getUserCorporateProductListByOrgIdByBusinessTypeId(userOrgId, businessTypeId);
+				}else{
+					results = productMasterTempRepository.getUserCorporateProductListByOrgId(userOrgId);
 				}
 			} else {
-				Object[]  userObj= loanRepository.getUserDetails(userId);
-				if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
-					if(!CommonUtils.isObjectNullOrEmpty(userObj) && !CommonUtils.isObjectNullOrEmpty(userObj[0])) {
-						Long businessTypeId = Long.valueOf(userObj[0].toString());
-						results = productMasterTempRepository.getUserCorporateProductListByOrgIdByBusinessTypeId(userOrgId, businessTypeId);
-					}else{
-						results = productMasterTempRepository.getUserCorporateProductListByOrgId(userOrgId);
-					}
-				} else {
-					results = productMasterTempRepository.getUserCorporateProductList(userId);
-				}
-				for (ProductMasterTemp productMaster : results) {
-					ProductMasterRequest productMasterRequest = new ProductMasterRequest();
-					BeanUtils.copyProperties(productMaster, productMasterRequest);
-					List<Integer> gstTypes = fpGstTypeMappingTempRepository.getIdsByFpProductId(productMaster.getId());
-					productMasterRequest.setGstType(gstTypes);
-					productMasterRequests.add(productMasterRequest);
-				}
+				results = productMasterTempRepository.getUserCorporateProductList(userId);
+			}
+			for (ProductMasterTemp productMaster : results) {
+				ProductMasterRequest productMasterRequest = new ProductMasterRequest();
+				BeanUtils.copyProperties(productMaster, productMasterRequest);
+				List<Integer> gstTypes = fpGstTypeMappingTempRepository.getIdsByFpProductId(productMaster.getId());
+				productMasterRequest.setGstType(gstTypes);
+				productMasterRequests.add(productMasterRequest);
 			}
 		} else {
 			List<ProductMaster> results = null;
-			if (userType == 1) {
-				if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
-					results = productMasterRepository.getUserRetailProductListByOrgId(userOrgId,Arrays.asList(productId));
-				} else {
-					results = productMasterRepository.getUserRetailProductList(userId,Arrays.asList(productId));
-				}
-			} else {
 				Object[]  userObj= loanRepository.getUserDetails(userId);
 				if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
 					if(!CommonUtils.isObjectNullOrEmpty(userObj) && !CommonUtils.isObjectNullOrEmpty(userObj[0])) {
@@ -1048,7 +981,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				} else {
 					results = productMasterRepository.getUserCorporateProductList(userId);
 				}
-			}
 			for (ProductMaster productMaster : results) {
 				ProductMasterRequest productMasterRequest = new ProductMasterRequest();
 				BeanUtils.copyProperties(productMaster, productMasterRequest);
@@ -1211,33 +1143,22 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	public Object getProductMasterWithAllData(Long id, Integer stage, Long role, Long userId) {
 
 		if (!CommonUtils.isObjectNullOrEmpty(stage) && stage == 1) {
-			ProductMasterTemp master = productMasterTempRepository.findOne(id);
-
-			if (master.getProductId() == 1) {
-				return workingCapitalParameterService.getWorkingCapitalParameterTemp(master.getId(), role, userId);
-			} else if (master.getProductId() == 2) {
-				if (master.getBusinessTypeId() != null && master.getBusinessTypeId() == 2) {
-					return termLoanParameterService.getNtbTermLoanParameterRequestTemp(id, role, userId);
-				} else {
-					return termLoanParameterService.getTermLoanParameterRequestTemp(master.getId(), role, userId);
-				}
+			Integer productId = productMasterTempRepository.getProductIdById(id);
+			if (productId == 1) {
+				return workingCapitalParameterService.getWorkingCapitalParameterTemp(id, role, userId);
+			} else if (productId == 2) {
+					return termLoanParameterService.getTermLoanParameterRequestTemp(id, role, userId);
 			}
 		} else {
-			ProductMaster master = productMasterRepository.findOne(id);
-
-			if (master.getProductId() == 1) {
-				return workingCapitalParameterService.getWorkingCapitalParameter(master.getId());
-			} else if (master.getProductId() == 2) {
-
-				if (master.getBusinessTypeId() != null && master.getBusinessTypeId() == 2) {
-					return termLoanParameterService.getNtbTermLoanParameterRequest(master.getId(),role);
-				} else {
-					return termLoanParameterService.getTermLoanParameterRequest(master.getId(),role);
-				}
-			} else if (master.getProductId() == 15) {
-				return unsecuredLoanParameterService.getUnsecuredLoanParameterRequest(master.getId());
-			} else if (master.getProductId() == 16) {
-				return wcTlParameterService.getWcTlRequest(master.getId(),role);
+			Integer productId = productMasterTempRepository.getProductIdById(id);
+			if (productId == 1) {
+				return workingCapitalParameterService.getWorkingCapitalParameter(id);
+			} else if (productId == 2) {
+				return termLoanParameterService.getTermLoanParameterRequest(id,role);
+			} else if (productId == 15) {
+				return unsecuredLoanParameterService.getUnsecuredLoanParameterRequest(id);
+			} else if (productId == 16) {
+				return wcTlParameterService.getWcTlRequest(id,role);
 			}			
 		}
 		return null;
@@ -1281,18 +1202,10 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					return workingCapitalParameterService.saveOrUpdateTemp(capitalParameterRequest);
 				}
 				else if (corporateProduct.getProductId() == CommonUtils.LoanType.TERM_LOAN.getValue()) {
-					if (corporateProduct.getBusinessTypeId() != null && corporateProduct.getBusinessTypeId() == 2) {
-						TermLoanParameterRequest loanParameterRequest = new TermLoanParameterRequest();
-						BeanUtils.copyProperties(corporateProduct, loanParameterRequest);
-						CommonDocumentUtils.endHook(logger, SAVE_CORPORATE_IN_TEMP);
-						return termLoanParameterService.saveOrUpdateNtbTemp(loanParameterRequest);
-					} else {
 						TermLoanParameterRequest loanParameterRequest = new TermLoanParameterRequest();
 						BeanUtils.copyProperties(corporateProduct, loanParameterRequest);
 						CommonDocumentUtils.endHook(logger, SAVE_CORPORATE_IN_TEMP);
 						return termLoanParameterService.saveOrUpdateTemp(loanParameterRequest);
-					}
-
 				} else if (corporateProduct.getProductId() == CommonUtils.LoanType.WCTL_LOAN.getValue()) {
 					WcTlParameterRequest wcTlParameterRequest = new WcTlParameterRequest();
 					BeanUtils.copyProperties(corporateProduct, wcTlParameterRequest);
@@ -1409,55 +1322,23 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	public List<ProductMasterRequest> getApprovedListByProductType(Long userId, Integer productId, Integer businessId,Long userOrgId) {
 
 		List<ProductMaster> results = null;
-		List<ProductMasterRequest> productMasterRequests = new ArrayList<>();
-		
-		if(CommonUtils.getUserMainType(productId)==UserMainType.RETAIL)
-		{
-			if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
-				results = productMasterRepository.getUserRetailProductListByOrgId(userOrgId,Arrays.asList(productIds));
-			} else {
-				results = productMasterRepository.getUserRetailProductList(userId,Arrays.asList(productIds));
-			}
-		}		
-		else
-		{
-			if(CommonUtils.getUserMainType(productId)== CommonUtils.UserMainType.RETAIL)
-			{
-				if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
-					results = productMasterRepository.getUserRetailProductListByOrgId(userOrgId,Arrays.asList(productIds));
-				} else {
-					results = productMasterRepository.getUserRetailProductList(userId,Arrays.asList(productIds));
-				}
-			}
-	
-			else
-			{
-	
-				if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
-					results = productMasterRepository.getUserCorporateProductListByOrgId(userOrgId);
-				} else {
-					results = productMasterRepository.getUserCorporateProductList(userId);
-				}
-	
-			}
-
+		if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
+			results = productMasterRepository.getUserCorporateProductListByOrgIdAndBusinessTypeId(userOrgId,businessId.longValue());
+		} else {
+			results = productMasterRepository.getUserCorporateProductListByBusinessTypeId(userId,businessId.longValue());
+		}
+		if(CommonUtils.isListNullOrEmpty(results)){
+			return Collections.emptyList();
 		}
 		
+		List<ProductMasterRequest> productMasterRequests = new ArrayList<>(results.size());
 		for (ProductMaster productMaster : results) {
-			if(productMaster.getProductId()!=productId)
-				continue;
-				
-			
-			if (!CommonUtils.isObjectNullOrEmpty(businessId) && productMaster.getProductId()==2 && !CommonUtils.isObjectNullOrEmpty(productMaster.getBusinessTypeId()) && !businessId.toString().equals(productMaster.getBusinessTypeId().toString()) ) {
-				continue;
-			}
 			ProductMasterRequest productMasterRequest = new ProductMasterRequest();
 			BeanUtils.copyProperties(productMaster, productMasterRequest);
 			List<Integer> gstTypes = fpGstTypeMappingRepository.getIdsByFpProductId(productMaster.getId());
 			productMasterRequest.setGstType(gstTypes);
 			productMasterRequests.add(productMasterRequest);
 		}
-		
 		return productMasterRequests;
 	}
 
