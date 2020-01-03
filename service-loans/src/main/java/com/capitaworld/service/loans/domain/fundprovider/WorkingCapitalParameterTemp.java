@@ -316,6 +316,18 @@ public class WorkingCapitalParameterTemp extends ProductMasterTemp implements Se
 
 	@Column(name = "is_msme_funding_mandatory")
 	private Boolean isMsmeFundingMandatory = false;
+	
+	@Column(name="is_msme_ranking_display")
+	private Boolean isMsmeRankingDisplay = false;
+
+	@Column(name="is_msme_ranking_mandatory")
+	private Boolean isMsmeRankingMandatory = false;
+	
+	@Column(name="msme_ranking")
+	private Integer msmeRanking;
+	
+	@Column(name="is_no_msme_ranking")
+	private Boolean isNoMsmeRanking = false;
 
 	// -----------------------added eligibility method for product
 	@Column(name = "assessment_method_id")
@@ -1948,11 +1960,36 @@ public class WorkingCapitalParameterTemp extends ProductMasterTemp implements Se
 		this.isConstitutionMandatory = isConstitutionMandatory;
 	}
 
+	public Boolean getIsMsmeRankingDisplay() {
+		return isMsmeRankingDisplay;
+	}
 
-	
-	
-	
+	public void setIsMsmeRankingDisplay(Boolean isMsmeRankingDisplay) {
+		this.isMsmeRankingDisplay = isMsmeRankingDisplay;
+	}
 
-	
+	public Boolean getIsMsmeRankingMandatory() {
+		return isMsmeRankingMandatory;
+	}
+
+	public void setIsMsmeRankingMandatory(Boolean isMsmeRankingMandatory) {
+		this.isMsmeRankingMandatory = isMsmeRankingMandatory;
+	}
+
+	public Integer getMsmeRanking() {
+		return msmeRanking;
+	}
+
+	public void setMsmeRanking(Integer msmeRanking) {
+		this.msmeRanking = msmeRanking;
+	}
+
+	public Boolean getIsNoMsmeRanking() {
+		return isNoMsmeRanking;
+	}
+
+	public void setIsNoMsmeRanking(Boolean isNoMsmeRanking) {
+		this.isNoMsmeRanking = isNoMsmeRanking;
+	}
 	
 }

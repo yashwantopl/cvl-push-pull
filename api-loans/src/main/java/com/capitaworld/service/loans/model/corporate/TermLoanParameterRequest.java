@@ -211,6 +211,10 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	private Boolean isCgtmseCoverageMandatory = false;
 	private Boolean isMsmeFundingDisplay = false;
 	private Boolean isMsmeFundingMandatory = false;
+	private Boolean isMsmeRankingDisplay = false;
+	private Boolean isMsmeRankingMandatory = false;
+	private Integer msmeRanking;
+	private Boolean isNoMsmeRanking = false;
 	private List<Integer> msmeFundingIds;
 
 	private BigDecimal minTenureNtb;
@@ -2167,12 +2171,35 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 		this.isConstitutionMandatory = isConstitutionMandatory;
 	}
 
+	public Boolean getIsMsmeRankingDisplay() {
+		return isMsmeRankingDisplay;
+	}
 
-	
-	
-	
-	
-	
-	
+	public void setIsMsmeRankingDisplay(Boolean isMsmeRankingDisplay) {
+		this.isMsmeRankingDisplay = isMsmeRankingDisplay;
+	}
 
+	public Boolean getIsMsmeRankingMandatory() {
+		return isMsmeRankingMandatory;
+	}
+
+	public void setIsMsmeRankingMandatory(Boolean isMsmeRankingMandatory) {
+		this.isMsmeRankingMandatory = isMsmeRankingMandatory;
+	}
+
+	public Integer getMsmeRanking() {
+		return msmeRanking;
+	}
+
+	public void setMsmeRanking(Integer msmeRanking) {
+		this.msmeRanking = msmeRanking;
+	}
+
+	public Boolean getIsNoMsmeRanking() {
+		return isNoMsmeRanking;
+	}
+
+	public void setIsNoMsmeRanking(Boolean isNoMsmeRanking) {
+		this.isNoMsmeRanking = isNoMsmeRanking;
+	}
 }
