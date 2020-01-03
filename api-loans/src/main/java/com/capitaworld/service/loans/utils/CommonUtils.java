@@ -1592,8 +1592,8 @@ public class CommonUtils {
 		ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS(4, "One Pager Eligibility For Existing Business"),
 		RETAIL_HOME_LOAN(5, "Retail Home Loan"), MFI(6, "Micro FInance Institute"), AGRICULTURE(7, "Agriculture"),
 		RETAIL_AUTO_LOAN(8, "Retail Auto Loan"),
-		MUDRA_LOAN(8, "Mudra Loan");
-
+		MUDRA_LOAN(10, "Mudra Loan");
+		
 		private Integer id;
 		private String value;
 

@@ -139,7 +139,6 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 	
 	private Long personalId;
 	private Double loanObligation;
-	private Boolean isOngoingMudraLoan;
 	
 	
 
@@ -666,13 +665,7 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 		this.physicallyHandicapped = physicallyHandicapped;
 	}
 	
-	public Boolean getIsOngoingMudraLoan() {
-		return isOngoingMudraLoan;
-	}
 
-	public void setIsOngoingMudraLoan(Boolean isOngoingMudraLoan) {
-		this.isOngoingMudraLoan = isOngoingMudraLoan;
-	}
 
 	@Override
 	public String toString() {

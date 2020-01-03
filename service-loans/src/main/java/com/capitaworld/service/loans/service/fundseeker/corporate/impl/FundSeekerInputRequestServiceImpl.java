@@ -46,6 +46,7 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplic
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorPersonalDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetailMudraLoan;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
@@ -64,6 +65,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBac
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorPersonalDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.FinancialArrangementDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailMudraLoanRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
 import com.capitaworld.service.loans.service.fundprovider.FPParameterMappingService;
@@ -194,6 +196,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	
 	@Autowired
 	private CollateralSecurityDetailRepository collateralSecurityDetailRepository;
+	
+	@Autowired
+	private PrimaryCorporateDetailMudraLoanRepository primaryCorporateDetailMudraLoanRepository; 
 
 	@Autowired
 	private OneFormClient oneFormClient;
@@ -270,6 +275,21 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			primaryCorporateDetail.setAdditionalLoanAmount(fundSeekerInputRequest.getAdditionalLoanAmount());
 			primaryCorporateDetail.setIsAdditionalAmount(fundSeekerInputRequest.getIsAdditionalAmount());
 			primaryCorporateDetail.setIsAllowSwitchExistingLender(fundSeekerInputRequest.getIsAllowSwitchExistingLender());
+			
+			/*mudra loan*/
+			PrimaryCorporateDetailMudraLoan corporateDetailMudraLoan = new PrimaryCorporateDetailMudraLoan();
+			if(!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequest.getApplicationId()))
+			{
+				corporateDetailMudraLoan = primaryCorporateDetailMudraLoanRepository.findByApplicationId(fundSeekerInputRequest.getApplicationId());
+				if (!CommonUtils.isObjectNullOrEmpty(corporateDetailMudraLoan)) {
+					BeanUtils.copyProperties(fundSeekerInputRequest, corporateDetailMudraLoan);
+					fsParameterMappingService.inactiveAndSave(fundSeekerInputRequest.getApplicationId(),
+							FSParameterMst.GOV_AUTHORITIES.getId(), fundSeekerInputRequest.getGovAuthorities());
+					primaryCorporateDetailMudraLoanRepository.saveAndFlush(corporateDetailMudraLoan);
+					/**/
+				}
+			}
+			primaryCorporateDetail.setPrimaryCorporatedetailsMudraloanId(corporateDetailMudraLoan);
 			primaryCorporateDetailRepository.saveAndFlush(primaryCorporateDetail);
 
 			List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestsList = fundSeekerInputRequest.getFinancialArrangementsDetailRequestsList();
@@ -462,7 +482,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			// SAVE GOVERNMENT SCHEME
 			fsParameterMappingService.inactiveAndSave(fundSeekerInputRequest.getApplicationId(), FSParameterMst.GOV_SCHEMES.getId(), fundSeekerInputRequest.getGovSchemes());
 			
-			// CERTIFICATION COURSE
+			// SAVE CERTIFICATION COURSE
 			fsParameterMappingService.inactiveAndSave(fundSeekerInputRequest.getApplicationId(), FSParameterMst.CERTIFICATION_COURSE.getId(), fundSeekerInputRequest.getCertificationCourses()); 
 			
 			logger.info("Just Before Save ------------------------------------->" + corporateApplicantDetail.getConstitutionId());
@@ -520,7 +540,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			return new ResponseEntity<LoansResponse>(res, HttpStatus.OK);
 		}finally {
 			try {
-				connectClient.saveAuditLog(new ConnectLogAuditRequest(fundSeekerInputRequest.getApplicationId(), ConnectStage.DIRECTOR_BACKGROUND.getId(),fundSeekerInputRequest.getUserId(),msg, ConnectAuditErrorCode.DIRECTOR_SUBMIT.toString(),CommonUtils.BusinessType.EXISTING_BUSINESS.getId()));
+				connectClient.saveAuditLog(new ConnectLogAuditRequest(fundSeekerInputRequest.getApplicationId(), ConnectStage.MUDRA_DIRECTOR_BACKGROUND.getId(),fundSeekerInputRequest.getUserId(),msg, ConnectAuditErrorCode.DIRECTOR_SUBMIT.toString(),CommonUtils.BusinessType.MUDRA_LOAN.getId()));
 			} catch (Exception e){
 				logger.error(CommonUtils.EXCEPTION,e);
 			}
@@ -570,7 +590,12 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
             List<Long> subSectorList = subSectorRepository.getSubSectorByApplicationId(fsInputReq.getApplicationId());
 			logger.info("TOTAL SUB SECTOR FOUND ------------->" + subSectorList.size() + "----------By APP Id ---------> " + fsInputReq.getApplicationId());
 			fsInputRes.setSubsectors(subSectorList);
-
+			
+			PrimaryCorporateDetailMudraLoan mudraLoan = primaryCorporateDetailMudraLoanRepository.findByApplicationId(fsInputRes.getApplicationId());
+			
+			fsInputRes.setGovAuthorities(fsParameterMappingService.getParameters(fsInputReq.getApplicationId(),FSParameterMst.GOV_AUTHORITIES.getId()));
+			BeanUtils.copyProperties(mudraLoan, fsInputRes);
+			
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse("One form data successfully fetched", HttpStatus.OK.value(), fsInputRes),
 					HttpStatus.OK);
