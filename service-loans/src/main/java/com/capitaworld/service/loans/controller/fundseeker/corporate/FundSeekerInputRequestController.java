@@ -473,7 +473,7 @@ public class FundSeekerInputRequestController {
             }
 
         } catch (Exception e) {
-            logger.error("Error while saving one form data : ",e);
+            logger.error("Error while saveMudraStatutoryDetails : ",e);
             return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
         }
     }
