@@ -1,94 +1,61 @@
-package com.capitaworld.service.loans.domain.fundseeker.corporate;
+package com.capitaworld.service.loans.model.corporate;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
-
-@Entity
-@Table(name = "fs_corporate_primary_details_mudra_loan")
-@NamedQuery(name = "PrimaryCorporateDetailMudraLoan.findAll", query = "SELECT p FROM PrimaryCorporateDetailMudraLoan p")
-public class PrimaryCorporateDetailMudraLoan implements Serializable {
-	
+public class PrimaryCorporateDetailMudraLoanReqRes  implements Serializable{
+		
 	private static final long serialVersionUID = 1L;
 	
-	@Id
-	@Column(name = "id")
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	
     private Integer id;
 	
-	@Column(name = "mrkt_arragement_finished_goods")
 	private Integer mrktArragementFinishedGoods;
 	
-	@Column (name = "tl_type_of_machine")
 	private String typeOfMachine;
 	
-	@Column (name = "tl_purpose_of_machine")
 	private String purposeOfMachine;
 	
-	@Column (name = "tl_name_of_supplier")
 	private String nameOfSupplier;
 	
-	@Column (name = "tl_total_cost_of_machine")
 	private Double totalCostOfMachine;
 	
-	@Column (name = "wc_avg_monthly_sale")
 	private Double avgMonthlySale;
 	
-	@Column (name = "wc_raw_materials_stock")
 	private Double rawMaterialsStock;
 	
-	@Column (name = "wc_wages_salaries")
 	private Double wagesSalaries;
 	
-	@Column (name = "wc_sustenance_of_proprietor_partner")
 	private Double sustenanceOfProprietorPartner;
 	
-	@Column (name = "wc_other_expenses")
 	private Double otherExpenses;
 	
-	@Column (name = "wc_total_expenses")
 	private Double totalExpenses;
 	
-	@Column (name = "wc_monthly_surplus")
 	private Double monthlySurplus;
 	
-	@Column (name = "ba_existing")
 	private Double existing;
 	
-	@Column (name = "ba_proposed")
 	private Double proposed;
 	
-	@Column (name = "gov_auth_other")
 	private String othergovauthorities;
 
-	@Column (name = "register_under_shop_est_act")
 	private String registerUnderShopEstAct;
-	
-	@Column (name = "register_under_msme")
+
 	private String registerUnderMsme;
-	
-	@Column (name = "drug_license")
+
 	private String drugLicense;
-	
-	@Column (name = "latest_gst_return_filled")
+
 	private String latestGstReturnFilled;
 	
-	@Column (name = "latest_itr_filled")
 	private String latestItrFilled;
 	
-	@Column (name = "other_statutory")
 	private String otherStatutory;
 	
-	@Column (name = "application_id")
 	private Long applicationId;
 	
-
+	private Long userId;
+	
+	
 	public Integer getId() {
 		return id;
 	}
@@ -272,5 +239,14 @@ public class PrimaryCorporateDetailMudraLoan implements Serializable {
 	public void setOtherStatutory(String otherStatutory) {
 		this.otherStatutory = otherStatutory;
 	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+
 	
 }
