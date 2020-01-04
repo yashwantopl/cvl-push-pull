@@ -177,8 +177,8 @@
 		</dependency>
 		<dependency>
 			<groupId>com.capitaworld.connect.client</groupId>
-			<artifactId>client-connect</artifactId>
-			<version>1.0.0</version>
+			<artifactId>client-connect-mudra</artifactId>
+			<version>3.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.capitaworld.client.thirdparty</groupId>
