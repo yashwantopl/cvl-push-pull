@@ -58,6 +58,7 @@ import com.capitaworld.service.loans.model.NTBRequest;
 import com.capitaworld.service.loans.model.common.HunterRequestDataResponse;
 import com.capitaworld.service.loans.model.corporate.CollateralSecurityDetailRequest;
 import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
+import com.capitaworld.service.loans.model.corporate.PrimaryCorporateDetailMudraLoanReqRes;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssociatedConcernDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CollateralSecurityDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
@@ -1293,6 +1294,43 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			logger.error(ERROR_WHILE_DELETING_EXISTING_DOCUMENTS_OF_GST_AND_ITR_MSG, e);
 		}
 		return new LoansResponse("Successfully Reset the Form.", HttpStatus.OK.value(), getDataForOnePagerOneForm(connectResponse.getApplicationId()));
+	}
+
+	/**
+	 * Save Statutory Obligation info for mudra loan
+	 */
+	@Override
+	public boolean saveOrUpdateStatutoryObligation(PrimaryCorporateDetailMudraLoanReqRes reqRes) throws LoansException {
+		try {
+			PrimaryCorporateDetailMudraLoan corporateDetailMudraLoan = primaryCorporateDetailMudraLoanRepository.findByApplicationId(reqRes.getApplicationId());
+			corporateDetailMudraLoan.setRegisterUnderShopEstAct(reqRes.getRegisterUnderShopEstAct());
+			corporateDetailMudraLoan.setRegisterUnderMsme(reqRes.getRegisterUnderMsme());
+			corporateDetailMudraLoan.setDrugLicense(reqRes.getDrugLicense());
+			corporateDetailMudraLoan.setLatestGstReturnFilled(reqRes.getLatestGstReturnFilled());
+			corporateDetailMudraLoan.setLatestItrFilled(reqRes.getLatestItrFilled());
+			corporateDetailMudraLoan.setOtherStatutory(reqRes.getOtherStatutory());
+			primaryCorporateDetailMudraLoanRepository.save(corporateDetailMudraLoan);
+			return true;
+		} catch (Exception e) {
+			logger.error("Throw Exception while save and update Statutory Obligation Fundseeker input request !!",e);
+			throw new LoansException(e);
+		}
+	}
+
+	@Override
+	public PrimaryCorporateDetailMudraLoanReqRes getStatutoryObligationByApplicationId(Long applicationId) throws LoansException {
+		
+		PrimaryCorporateDetailMudraLoanReqRes response = new PrimaryCorporateDetailMudraLoanReqRes();
+		try {
+			PrimaryCorporateDetailMudraLoan corporateDetailMudraLoan = primaryCorporateDetailMudraLoanRepository.findByApplicationId(applicationId);
+			if (!CommonUtils.isObjectNullOrEmpty(corporateDetailMudraLoan)) {
+				BeanUtils.copyProperties(corporateDetailMudraLoan,response);	
+			}
+		} catch (Exception e) {
+			logger.error("Throw Exception while getStatutoryObligationByApplicationId !!",e);
+			throw new LoansException(e);
+		}		
+		return response; 
 	}
 	
 }

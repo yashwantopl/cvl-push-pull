@@ -13,6 +13,7 @@ import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.NTBRequest;
 import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
+import com.capitaworld.service.loans.model.corporate.PrimaryCorporateDetailMudraLoanReqRes;
 
 public interface FundSeekerInputRequestService {
 
@@ -90,4 +91,21 @@ public interface FundSeekerInputRequestService {
 	 * @return
 	 */
 	public LoansResponse resetUniformApplication(ConnectResponse connectResponse);
+	
+	/**
+	 * Save Statutory Obligation info
+	 * @param reqRes
+	 * @return
+	 * @throws LoansException
+	 */
+	public boolean saveOrUpdateStatutoryObligation(PrimaryCorporateDetailMudraLoanReqRes reqRes) throws LoansException;
+	
+	/**
+	 * Get Statutory Obligation by applicationId
+	 * @param reqRes
+	 * @return
+	 * @throws LoansException
+	 */
+	public PrimaryCorporateDetailMudraLoanReqRes getStatutoryObligationByApplicationId(Long applicationId) throws LoansException;
+	
 }
