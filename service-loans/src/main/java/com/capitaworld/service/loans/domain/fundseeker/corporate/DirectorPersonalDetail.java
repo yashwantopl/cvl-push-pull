@@ -49,6 +49,9 @@ public class DirectorPersonalDetail extends AuditActivity implements Serializabl
     @Column(name="other_income_source")
     private Integer otherIncomeSource;
     
+    @Column(name="no_of_earning_member")
+    private Integer noOfEarningMember;
+    
     @Column(name="other_certification_course")
     private String otherCertificationCourse;
     
@@ -182,5 +185,13 @@ public class DirectorPersonalDetail extends AuditActivity implements Serializabl
 		this.isOngoingMudraLoan = isOngoingMudraLoan;
 	}
 
+	public Integer getNoOfEarningMember() {
+		return noOfEarningMember;
+	}
+
+	public void setNoOfEarningMember(Integer noOfEarningMember) {
+		this.noOfEarningMember = noOfEarningMember;
+	}
+	
 	
 }

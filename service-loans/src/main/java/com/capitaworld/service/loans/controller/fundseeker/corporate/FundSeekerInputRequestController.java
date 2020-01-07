@@ -25,6 +25,7 @@ import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.NTBRequest;
 import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
+import com.capitaworld.service.loans.model.corporate.PrimaryCorporateDetailMudraLoanReqRes;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FundSeekerInputRequestService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -73,7 +74,7 @@ public class FundSeekerInputRequestController {
         		
         		/*return null;*/
         		//harshit's client
-                connectClient.saveAuditLog(new ConnectLogAuditRequest(fundSeekerInputRequestResponse.getApplicationId(), ConnectStage.ONE_FORM.getId(),fundSeekerInputRequestResponse.getUserId(),response.getMessage(), ConnectAuditErrorCode.ONFORM_SUBMIT.toString(),CommonUtils.BusinessType.EXISTING_BUSINESS.getId()));
+                connectClient.saveAuditLog(new ConnectLogAuditRequest(fundSeekerInputRequestResponse.getApplicationId(), ConnectStage.MUDRA_ONE_FORM.getId(),fundSeekerInputRequestResponse.getUserId(),response.getMessage(), ConnectAuditErrorCode.ONFORM_SUBMIT.toString(),CommonUtils.BusinessType.MUDRA_LOAN.getId()));
         		return new ResponseEntity<LoansResponse>(response,HttpStatus.OK);
             } else {
                 logger.info("FUNDSEEKER INPUT NOT SAVED");
@@ -446,4 +447,59 @@ public class FundSeekerInputRequestController {
             return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
         }
     }
+    
+    @RequestMapping(value = "/statutoryObligation/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> saveMudraStatutoryDetails(@RequestBody PrimaryCorporateDetailMudraLoanReqRes statutoryRequest, HttpServletRequest request) throws LoansException
+    {
+        try {
+        	
+        	statutoryRequest.setUserId((Long) request.getAttribute(CommonUtils.USER_ID));        		
+
+        	logger.info("ENTER IN saveMudraStatutoryDetails----------------------------------->");
+
+            if (CommonUtils.isObjectNullOrEmpty(statutoryRequest.getUserId()) || CommonUtils.isObjectNullOrEmpty(statutoryRequest.getApplicationId())) {
+                logger.warn("userId/applicationId can not be empty");
+                return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+            }
+
+            logger.info("GOING TO SAVE STATUTORY OBLIGATION INPUT REQUEST-------------USERID--->" + statutoryRequest.getUserId() + "-------------APPLICATION ID --------------------->" + statutoryRequest.getApplicationId());
+            boolean result = fundSeekerInputRequestService.saveOrUpdateStatutoryObligation(statutoryRequest);
+
+        	if(result){
+        		return new ResponseEntity<LoansResponse>(new LoansResponse("Statutory Info Saved Successfully!", HttpStatus.OK.value(), result),HttpStatus.OK);
+            } else {
+                logger.info("FUNDSEEKER SAVE MUDRA STATUTORY DETAILS NOT SAVED");
+                return new ResponseEntity<LoansResponse>(new LoansResponse("Statutory Info Not Saved", HttpStatus.INTERNAL_SERVER_ERROR.value(), result),HttpStatus.OK);
+            }
+
+        } catch (Exception e) {
+            logger.error("Error while saveMudraStatutoryDetails : ",e);
+            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+        }
+    }
+    
+    @RequestMapping(value = "/statutoryObligation/getByAppId/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> getByAppId(@PathVariable("id") Long applicationId , HttpServletRequest request) throws LoansException {
+        try {
+        	
+        	Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+        	logger.info("ENTER IN statutoryObligation/getByAppId----------------------------------->");
+
+            if (CommonUtils.isObjectNullOrEmpty(applicationId) || CommonUtils.isObjectNullOrEmpty(userId)) {
+                logger.warn("applicationId/userId can not be empty");
+                return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+            }
+
+            logger.info("Get Statutory Obligation by applicationId-------------USERID--->" + userId + "-------------APPLICATION ID --------------------->" + applicationId);
+            PrimaryCorporateDetailMudraLoanReqRes result = fundSeekerInputRequestService.getStatutoryObligationByApplicationId(applicationId);
+    		return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Get Statutory Info!", HttpStatus.OK.value() , result),HttpStatus.OK);
+
+        } catch (Exception e) {
+            logger.error("Error while Get Statutory Obligation Data: ",e);
+            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+        }
+    }
+    
+    
+    
 }

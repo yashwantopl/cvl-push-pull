@@ -40,11 +40,17 @@ public interface ProductMasterRepository extends JpaRepository<ProductMaster, Lo
 	@Query("from ProductMaster pm where pm.userOrgId =:userOrgId")
 	public List<ProductMaster> getUserProductActiveInActiveListByOrgId(@Param("userOrgId") Long userOrgId);
 	
-	@Query("from ProductMaster pm where pm.userId =:userId  and productId in (1,2,15,16,17)")
+	@Query("from ProductMaster pm where pm.userId =:userId  and productId in (1,2,15,16,17) order by pm.id desc")
 	public List<ProductMaster> getUserCorporateProductList(@Param("userId") Long userId);
 	
-	@Query("from ProductMaster pm where pm.userOrgId =:userOrgId  and productId in (1,2,15,16,17)")
+	@Query("from ProductMaster pm where pm.userId =:userId  and productId in (1,2,15,16,17) and pm.businessTypeId =:businessTypeId")
+	public List<ProductMaster> getUserCorporateProductListByBusinessTypeId(@Param("userId") Long userId,@Param("businessTypeId")Long businessTypeId);
+	
+	@Query("from ProductMaster pm where pm.userOrgId =:userOrgId  and productId in (1,2,15,16,17) order by pm.id desc")
 	public List<ProductMaster> getUserCorporateProductListByOrgId(@Param("userOrgId") Long userOrgId);
+	
+	@Query("from ProductMaster pm where pm.userOrgId =:userOrgId  and pm.productId in (1,2,15,16,17) and pm.businessTypeId =:businessTypeId")
+	public List<ProductMaster> getUserCorporateProductListByOrgIdAndBusinessTypeId(@Param("userOrgId") Long userOrgId,@Param("businessTypeId")Long businessTypeId);
 	
 	@Query("from ProductMaster pm where pm.userId =:userId  and productId  in (:productIds)")
 	public List<ProductMaster> getUserRetailProductList(@Param("userId") Long userId,@Param("productIds") List<Integer> productIds);
@@ -171,6 +177,9 @@ public interface ProductMasterRepository extends JpaRepository<ProductMaster, Lo
 	@Query(value="select bureau_version from fp_product_master pm where pm.fp_product_id=:productId", nativeQuery=true)
 	public Integer findBureauVersionByFpProductId(@Param("productId") Long fpProductId);
 
-	@Query("from ProductMaster pm where pm.userOrgId =:userOrgId and pm.isActive = true and pm.businessTypeId=:businessTypeId")
+	@Query("from ProductMaster pm where pm.userOrgId =:userOrgId and pm.isActive = true and pm.businessTypeId=:businessTypeId order by pm.id desc")
 	public List<ProductMaster> getUserProductListByOrgIdByBusinessTypeId(@Param("userOrgId") Long userOrgId,@Param("businessTypeId") Long businessTypeId);
+	
+	@Query("SELECT o.productId FROM ProductMaster o WHERE o.id=:fpProductId")
+	public Integer getProductIdById(@Param("fpProductId")Long fpProductId);
 }

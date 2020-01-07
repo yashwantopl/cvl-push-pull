@@ -22,7 +22,8 @@ public interface ProductMasterTempRepository extends JpaRepository<ProductMaster
 	@Query("SELECT o FROM ProductMasterTemp o WHERE o.id=:fpProductId")
 	public ProductMasterTemp getProductMasterTemp(@Param("fpProductId")Long fpProductId);
 	
-	
+	@Query("SELECT o.productId FROM ProductMasterTemp o WHERE o.id=:fpProductId")
+	public Integer getProductIdById(@Param("fpProductId")Long fpProductId);
 	
 	@Modifying
 	@Query("update ProductMasterTemp pm set pm.isActive = false,pm.modifiedDate = NOW(),pm.modifiedBy =:userId  where pm.userId =:userId and pm.isActive = true")
@@ -46,10 +47,10 @@ public interface ProductMasterTempRepository extends JpaRepository<ProductMaster
 	@Query("from ProductMasterTemp pm where pm.userOrgId =:userOrgId and pm.isActive = true")
 	public List<ProductMasterTemp> getUserProductListByOrgId(@Param("userOrgId") Long userOrgId);
 	
-	@Query("from ProductMasterTemp pm where pm.userId =:userId and pm.isApproved!=true and isCopied=false and productId in (1,2,15,16,17)")
+	@Query("from ProductMasterTemp pm where pm.userId =:userId and pm.isApproved!=true and isCopied=false and productId in (1,2,15,16,17) order by pm.id desc")
 	public List<ProductMasterTemp> getUserCorporateProductList(@Param("userId") Long userId);
 	
-	@Query("from ProductMasterTemp pm where pm.userOrgId =:userOrgId  and isCopied=false and productId in (1,2,15,16,17)")
+	@Query("from ProductMasterTemp pm where pm.userOrgId =:userOrgId  and isCopied=false and productId in (1,2,15,16,17) order by pm.id desc")
 	public List<ProductMasterTemp> getUserCorporateProductListByOrgId(@Param("userOrgId") Long userOrgId);
 	
 	@Query("from ProductMasterTemp pm where pm.userId =:userId and pm.isApproved != true and pm.productId  IN (:productIds)")
@@ -119,6 +120,6 @@ public interface ProductMasterTempRepository extends JpaRepository<ProductMaster
 	@Query("select pm from ProductMasterTemp pm where pm.userId =:userId and pm.isCopied=false and pm.productId  IN (:productIds)")
 	public List<ProductMasterTemp> getProductListByUserId(@Param("userId") Long userId,@Param("productIds") List<Integer> productIds);
 
-	@Query("from ProductMasterTemp pm where pm.userOrgId =:userOrgId  and isCopied=false and productId in (1,2,15,16,17) and pm.businessTypeId=:businessTypeId")
+	@Query("from ProductMasterTemp pm where pm.userOrgId =:userOrgId  and isCopied=false and productId in (1,2,15,16,17) and pm.businessTypeId=:businessTypeId order by pm.id desc")
 	public List<ProductMasterTemp> getUserCorporateProductListByOrgIdByBusinessTypeId(@Param("userOrgId") Long userOrgId,@Param("businessTypeId") Long businessTypeId);
 }

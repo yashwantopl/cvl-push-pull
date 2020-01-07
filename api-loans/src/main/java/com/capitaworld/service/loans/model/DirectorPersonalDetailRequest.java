@@ -27,6 +27,7 @@ public class DirectorPersonalDetailRequest implements Serializable {
     private Boolean isSameAddIdProof;
     private Integer addressYears;
     private Integer otherIncomeSource;
+    private Integer noOfEarningMember;
     private String otherCertificationCourse;
     private Boolean isOngoingMudraLoan;
 
@@ -151,6 +152,13 @@ public class DirectorPersonalDetailRequest implements Serializable {
 	public void setIsOngoingMudraLoan(Boolean isOngoingMudraLoan) {
 		this.isOngoingMudraLoan = isOngoingMudraLoan;
 	}
-	
+
+	public Integer getNoOfEarningMember() {
+		return noOfEarningMember;
+	}
+
+	public void setNoOfEarningMember(Integer noOfEarningMember) {
+		this.noOfEarningMember = noOfEarningMember;
+	}
 	
 }

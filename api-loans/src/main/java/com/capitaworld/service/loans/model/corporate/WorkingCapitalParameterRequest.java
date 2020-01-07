@@ -5,8 +5,6 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 
-import javax.persistence.Column;
-
 import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -206,6 +204,14 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	private Boolean isCgtmseCoverageMandatory = false;
 	private Boolean isMsmeFundingDisplay = false;
 	private Boolean isMsmeFundingMandatory = false;
+	
+	private Boolean isMsmeRankingDisplay = false;
+	private Boolean isMsmeRankingMandatory = false;
+	
+	private Integer msmeRanking;
+	
+	private Boolean isNoMsmeRanking = false;
+	
     private List<Integer> msmeFundingIds;
     
     private Integer cgtmseCoverage;
@@ -287,6 +293,12 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
     private Boolean isCommercialCibilFor3MonthDisplay = false;
 
     private Boolean isCommercialCibilFor3MonthMandatory = false;
+    
+    private Integer individualCibilFor3Month;
+
+	private Boolean isIndividualCibilFor3MonthDisplay = false;
+
+	private Boolean isIndividualCibilFor3MonthMandatory = false;
     
   //co-origination new parameter
 	private Boolean isMinNoCreditTransactionDisplay=false;
@@ -1921,10 +1933,59 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 		this.isConstitutionMandatory = isConstitutionMandatory;
 	}
 
-	
-	
-	
-	
-	
-	
+	public Boolean getIsMsmeRankingDisplay() {
+		return isMsmeRankingDisplay;
+	}
+
+	public void setIsMsmeRankingDisplay(Boolean isMsmeRankingDisplay) {
+		this.isMsmeRankingDisplay = isMsmeRankingDisplay;
+	}
+
+	public Boolean getIsMsmeRankingMandatory() {
+		return isMsmeRankingMandatory;
+	}
+
+	public void setIsMsmeRankingMandatory(Boolean isMsmeRankingMandatory) {
+		this.isMsmeRankingMandatory = isMsmeRankingMandatory;
+	}
+
+	public Integer getMsmeRanking() {
+		return msmeRanking;
+	}
+
+	public void setMsmeRanking(Integer msmeRanking) {
+		this.msmeRanking = msmeRanking;
+	}
+
+	public Boolean getIsNoMsmeRanking() {
+		return isNoMsmeRanking;
+	}
+
+	public void setIsNoMsmeRanking(Boolean isNoMsmeRanking) {
+		this.isNoMsmeRanking = isNoMsmeRanking;
+	}
+
+	public Integer getIndividualCibilFor3Month() {
+		return individualCibilFor3Month;
+	}
+
+	public void setIndividualCibilFor3Month(Integer individualCibilFor3Month) {
+		this.individualCibilFor3Month = individualCibilFor3Month;
+	}
+
+	public Boolean getIsIndividualCibilFor3MonthDisplay() {
+		return isIndividualCibilFor3MonthDisplay;
+	}
+
+	public void setIsIndividualCibilFor3MonthDisplay(Boolean isIndividualCibilFor3MonthDisplay) {
+		this.isIndividualCibilFor3MonthDisplay = isIndividualCibilFor3MonthDisplay;
+	}
+
+	public Boolean getIsIndividualCibilFor3MonthMandatory() {
+		return isIndividualCibilFor3MonthMandatory;
+	}
+
+	public void setIsIndividualCibilFor3MonthMandatory(Boolean isIndividualCibilFor3MonthMandatory) {
+		this.isIndividualCibilFor3MonthMandatory = isIndividualCibilFor3MonthMandatory;
+	}
 }

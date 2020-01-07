@@ -59,4 +59,9 @@ public interface CorporateApplicantService {
     public JSONObject getOrgAndPanByAppId(Long applicationId);
 
     public Map getOrganizationNameFromApplicationId(Long applicationId);
+    
+    public boolean saveITRResponse(CorporateApplicantRequest applicantRequest) throws LoansException;
+    
+    public boolean saveSalesITRResponse(CorporateApplicantRequest applicantRequest) throws LoansException;
+    
 }
