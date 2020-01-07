@@ -191,7 +191,7 @@ public class CorporateProduct extends ProductMasterRequest implements Serializab
 	private Boolean isIndividualCibilMandatory = false;
 
 	private Integer commercialCibil;
-
+	
 	private Boolean isCommercialCibilDisplay = false;
 
 	private Boolean isCommercialCibilMandatory = false;
@@ -369,6 +369,12 @@ public class CorporateProduct extends ProductMasterRequest implements Serializab
 	private Boolean isCommercialCibilFor3MonthDisplay = false;
 
 	private Boolean isCommercialCibilFor3MonthMandatory = false;
+	
+	private Integer individualCibilFor3Month;
+
+	private Boolean isIndividualCibilFor3MonthDisplay = false;
+
+	private Boolean isIndividualCibilFor3MonthMandatory = false;
 
 	// mfi parameter
 
@@ -2387,5 +2393,29 @@ public class CorporateProduct extends ProductMasterRequest implements Serializab
 
 	public void setIsNoMsmeRanking(Boolean isNoMsmeRanking) {
 		this.isNoMsmeRanking = isNoMsmeRanking;
+	}
+
+	public Integer getIndividualCibilFor3Month() {
+		return individualCibilFor3Month;
+	}
+
+	public void setIndividualCibilFor3Month(Integer individualCibilFor3Month) {
+		this.individualCibilFor3Month = individualCibilFor3Month;
+	}
+
+	public Boolean getIsIndividualCibilFor3MonthDisplay() {
+		return isIndividualCibilFor3MonthDisplay;
+	}
+
+	public void setIsIndividualCibilFor3MonthDisplay(Boolean isIndividualCibilFor3MonthDisplay) {
+		this.isIndividualCibilFor3MonthDisplay = isIndividualCibilFor3MonthDisplay;
+	}
+
+	public Boolean getIsIndividualCibilFor3MonthMandatory() {
+		return isIndividualCibilFor3MonthMandatory;
+	}
+
+	public void setIsIndividualCibilFor3MonthMandatory(Boolean isIndividualCibilFor3MonthMandatory) {
+		this.isIndividualCibilFor3MonthMandatory = isIndividualCibilFor3MonthMandatory;
 	}
 }

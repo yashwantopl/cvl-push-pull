@@ -179,4 +179,7 @@ public interface ProductMasterRepository extends JpaRepository<ProductMaster, Lo
 
 	@Query("from ProductMaster pm where pm.userOrgId =:userOrgId and pm.isActive = true and pm.businessTypeId=:businessTypeId order by pm.id desc")
 	public List<ProductMaster> getUserProductListByOrgIdByBusinessTypeId(@Param("userOrgId") Long userOrgId,@Param("businessTypeId") Long businessTypeId);
+	
+	@Query("SELECT o.productId FROM ProductMaster o WHERE o.id=:fpProductId")
+	public Integer getProductIdById(@Param("fpProductId")Long fpProductId);
 }
