@@ -655,4 +655,48 @@ public class CorporateApplicantController {
 			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
 		}
 	}
+	
+	
+	@RequestMapping(value = "/saveMudraITRRes", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveMudraManualITRRes(@RequestBody CorporateApplicantRequest applicantRequest) {
+		logger.info("Enter in Save Profile Mudra Applicant Details From ITR Repsonse");
+		try {
+			if (applicantRequest.getApplicationId() == null) {
+				logger.warn("Application Id can not be empty ==>" + applicantRequest.getApplicationId());
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			applicantService.saveITRResponse(applicantRequest);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value()),
+					HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
+	
+	
+	@RequestMapping(value = "/update_mudra_sales_manual_form", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveMudraManualSalesITRRes(@RequestBody CorporateApplicantRequest applicantRequest) {
+		logger.info("Enter in Save Profile Mudra Applicant Details From ITR Repsonse");
+		try {
+			if (applicantRequest.getApplicationId() == null) {
+				logger.warn("Application Id can not be empty ==>" + applicantRequest.getApplicationId());
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			applicantService.saveSalesITRResponse(applicantRequest);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value()),
+					HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
 }
