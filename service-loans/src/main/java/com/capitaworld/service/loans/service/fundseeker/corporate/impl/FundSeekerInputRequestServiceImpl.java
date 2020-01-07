@@ -480,6 +480,10 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			corporateApplicantDetail.setBusinessSinceYear(fundSeekerInputRequest.getSinceYear());
 			corporateApplicantDetail.setBusinessSinceMonth(fundSeekerInputRequest.getSinceMonth());
 			
+			// Rohit
+			corporateApplicantDetail.setBusinessProspects(fundSeekerInputRequest.getBusinessProspects());
+			corporateApplicantDetail.setAccessInput(fundSeekerInputRequest.getAccessInput());
+			
 			// SAVE GOVERNMENT SCHEME
 			fsParameterMappingService.inactiveAndSave(fundSeekerInputRequest.getApplicationId(), FSParameterMst.GOV_SCHEMES.getId(), fundSeekerInputRequest.getGovSchemes());
 			
