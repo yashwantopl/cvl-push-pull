@@ -294,6 +294,12 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 
     private Boolean isCommercialCibilFor3MonthMandatory = false;
     
+    private Integer individualCibilFor3Month;
+
+	private Boolean isIndividualCibilFor3MonthDisplay = false;
+
+	private Boolean isIndividualCibilFor3MonthMandatory = false;
+    
   //co-origination new parameter
 	private Boolean isMinNoCreditTransactionDisplay=false;
 
@@ -1957,5 +1963,29 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 
 	public void setIsNoMsmeRanking(Boolean isNoMsmeRanking) {
 		this.isNoMsmeRanking = isNoMsmeRanking;
+	}
+
+	public Integer getIndividualCibilFor3Month() {
+		return individualCibilFor3Month;
+	}
+
+	public void setIndividualCibilFor3Month(Integer individualCibilFor3Month) {
+		this.individualCibilFor3Month = individualCibilFor3Month;
+	}
+
+	public Boolean getIsIndividualCibilFor3MonthDisplay() {
+		return isIndividualCibilFor3MonthDisplay;
+	}
+
+	public void setIsIndividualCibilFor3MonthDisplay(Boolean isIndividualCibilFor3MonthDisplay) {
+		this.isIndividualCibilFor3MonthDisplay = isIndividualCibilFor3MonthDisplay;
+	}
+
+	public Boolean getIsIndividualCibilFor3MonthMandatory() {
+		return isIndividualCibilFor3MonthMandatory;
+	}
+
+	public void setIsIndividualCibilFor3MonthMandatory(Boolean isIndividualCibilFor3MonthMandatory) {
+		this.isIndividualCibilFor3MonthMandatory = isIndividualCibilFor3MonthMandatory;
 	}
 }

@@ -1150,7 +1150,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					return termLoanParameterService.getTermLoanParameterRequestTemp(id, role, userId);
 			}
 		} else {
-			Integer productId = productMasterTempRepository.getProductIdById(id);
+			Integer productId = productMasterRepository.getProductIdById(id);
 			if (productId == 1) {
 				return workingCapitalParameterService.getWorkingCapitalParameter(id);
 			} else if (productId == 2) {
