@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import com.capitaworld.service.loans.model.Address;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -88,7 +89,21 @@ public class CorporateApplicantRequest implements Serializable {
     
     private Date loanApplicationCreatedDate;
     
+    private Long registeredCityId;
+
+	private Integer registeredCountryId;
+
+	private String registeredLandMark;
+
+	private Long registeredPincode;
+
+	private String registeredPremiseNumber;
+
+	private Integer registeredStateId;
+
+	private String registeredStreetName;
     
+    private Map<String, Object> incomeDetails;
     
     
 	/**
@@ -368,6 +383,70 @@ public class CorporateApplicantRequest implements Serializable {
 	
 	public void setLoanApplicationCreatedDate(Date loanApplicationCreatedDate) {
 		this.loanApplicationCreatedDate = loanApplicationCreatedDate;
+	}
+	
+	public Long getRegisteredCityId() {
+		return registeredCityId;
+	}
+
+	public void setRegisteredCityId(Long registeredCityId) {
+		this.registeredCityId = registeredCityId;
+	}
+
+	public Integer getRegisteredCountryId() {
+		return registeredCountryId;
+	}
+
+	public void setRegisteredCountryId(Integer registeredCountryId) {
+		this.registeredCountryId = registeredCountryId;
+	}
+
+	public String getRegisteredLandMark() {
+		return registeredLandMark;
+	}
+
+	public void setRegisteredLandMark(String registeredLandMark) {
+		this.registeredLandMark = registeredLandMark;
+	}
+
+	public Long getRegisteredPincode() {
+		return registeredPincode;
+	}
+
+	public void setRegisteredPincode(Long registeredPincode) {
+		this.registeredPincode = registeredPincode;
+	}
+
+	public String getRegisteredPremiseNumber() {
+		return registeredPremiseNumber;
+	}
+
+	public void setRegisteredPremiseNumber(String registeredPremiseNumber) {
+		this.registeredPremiseNumber = registeredPremiseNumber;
+	}
+
+	public Integer getRegisteredStateId() {
+		return registeredStateId;
+	}
+
+	public void setRegisteredStateId(Integer registeredStateId) {
+		this.registeredStateId = registeredStateId;
+	}
+
+	public String getRegisteredStreetName() {
+		return registeredStreetName;
+	}
+
+	public void setRegisteredStreetName(String registeredStreetName) {
+		this.registeredStreetName = registeredStreetName;
+	}
+	
+	public Map<String, Object> getIncomeDetails() {
+		return incomeDetails;
+	}
+
+	public void setIncomeDetails(Map<String, Object> incomeDetails) {
+		this.incomeDetails = incomeDetails;
 	}
 
 	@Override

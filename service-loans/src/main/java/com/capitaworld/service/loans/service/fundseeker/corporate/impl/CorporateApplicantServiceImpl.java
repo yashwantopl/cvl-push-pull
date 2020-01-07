@@ -1,10 +1,13 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
-import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
-import com.capitaworld.service.loans.exceptions.LoansException;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,10 +19,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.IndustrySectorDetail;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.LiabilitiesDetails;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatementDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PastFinancialEstimatesDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.SubsectorDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.common.GraphResponse;
@@ -28,9 +36,12 @@ import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateCoApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.SubSectorListRequest;
 import com.capitaworld.service.loans.repository.common.CommonRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LiabilitiesDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PastFinancialEstimateDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SectorIndustryMappingRepository;
@@ -91,10 +102,19 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	@Autowired
 	private CommonRepository commonRepository;
 	
+	@Autowired
+	private AssetsDetailsRepository assetsDetailsRepository;
+	
 	//private static final String SIDBI_AMOUNT = "com.capitaworld.sidbi.amount";
 	
 	@Autowired
 	private Environment environment;
+	
+	@Autowired
+	private LiabilitiesDetailsRepository liabilitiesDetailsRepository;
+	
+	@Autowired
+	private OperatingStatementDetailsRepository operatingStatementDetailsRepository;
 
 	@Override
 	public void saveITRMappingData (CorporateApplicantRequest applicantRequest) {
@@ -832,5 +852,182 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		map.put("organizationName",organizationName);
 		map.put("purposeOfLoanId",purposeOfLoanId);
 		return map;
+	}
+
+	@Override
+	public boolean saveITRResponse(CorporateApplicantRequest applicantRequest) throws LoansException {
+		try {
+			CorporateApplicantDetail applicantDetail = applicantRepository.findOneByApplicationIdId(applicantRequest.getApplicationId());
+			if (applicantDetail != null) {
+				applicantDetail.setModifiedBy(applicantRequest.getUserId());
+				applicantDetail.setModifiedDate(new Date());
+			} else {
+				applicantDetail = new CorporateApplicantDetail();
+				applicantDetail.setCreatedBy(applicantRequest.getUserId());
+				applicantDetail.setCreatedDate(new Date());
+				applicantDetail.setIsActive(true);
+				applicantDetail.setApplicationId(new LoanApplicationMaster(applicantRequest.getApplicationId()));
+			}
+//			BeanUtils.copyProperties(applicantRequest, applicantDetail);
+			applicantDetail.setEmail(applicantRequest.getEmail());
+			applicantDetail.setOrganisationName(applicantRequest.getOrganisationName());
+			applicantDetail.setPanNo(applicantRequest.getPanNo());
+			applicantDetail.setRegisteredCityId(applicantRequest.getRegisteredCityId());
+			applicantDetail.setRegisteredCountryId(applicantRequest.getRegisteredCountryId());
+			applicantDetail.setRegisteredLandMark(applicantRequest.getRegisteredLandMark());
+			applicantDetail.setRegisteredPincode(applicantRequest.getRegisteredPincode());
+			applicantDetail.setRegisteredPremiseNumber(applicantRequest.getRegisteredPremiseNumber());
+			applicantDetail.setRegisteredStateId(applicantRequest.getRegisteredStateId());
+			
+			applicantDetail = applicantRepository.save(applicantDetail);
+			
+			if (applicantDetail != null){
+				logger.info("applicantDetail is saved successfully");
+			}
+
+			
+			Map<String, Object> incomeDetails = applicantRequest.getIncomeDetails();
+			Map<String, Object> liability = (Map<String, Object>) incomeDetails.get("totalLiabilities");
+			Map<String, Object> sales = (Map<String, Object>) incomeDetails.get("sales");
+			Map<String, Object> networth = (Map<String, Object>) incomeDetails.get("networth");
+			Map<String, Object> profitAfterTax = (Map<String, Object>) incomeDetails.get("profitAfterTax");
+			Map<String, Object> totalAssets = (Map<String, Object>) incomeDetails.get("totalAssets");
+
+			Map<String, Object>	 yearMapLiability  = (Map<String, Object>) liability.get("year"); 
+    		for (Map.Entry<String,Object> yearEntry : yearMapLiability.entrySet()) {
+		    	LiabilitiesDetails liabilitiesDetails = new LiabilitiesDetails();
+		    	liabilitiesDetails.setYear(yearEntry.getKey());
+		    	liabilitiesDetails.setTotalLiability(Double.parseDouble(yearEntry.getValue().toString()));
+		    	liabilitiesDetails.setCreatedDate(new Date());
+		    	liabilitiesDetails.setCreatedBy(applicantRequest.getUserId());
+		    	liabilitiesDetails.setFsLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
+		    	liabilitiesDetailsRepository.save(liabilitiesDetails); 
+    		}
+    		
+    		Map<String, Object>	 yearMapSales  = (Map<String, Object>) liability.get("year"); 
+    		for (Map.Entry<String,Object> yearEntry : yearMapSales.entrySet()) {
+		    	OperatingStatementDetails operatingStatementDetails = new OperatingStatementDetails();
+		    	operatingStatementDetails.setYear(yearEntry.getKey());
+		    	operatingStatementDetails.setNetSales(Double.parseDouble(yearEntry.getValue().toString()));
+		    	operatingStatementDetails.setCreatedDate(new Date());
+		    	operatingStatementDetails.setCreatedBy(applicantRequest.getUserId());
+		    	operatingStatementDetails.setLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
+		    	operatingStatementDetailsRepository.save(operatingStatementDetails); 
+    		}
+    		
+//    		Map<String, Object>	 yearMapNetworth  = (Map<String, Object>) liability.get("year"); 
+//    		for (Map.Entry<String,Object> yearEntry : yearMapNetworth.entrySet()) {
+//		    	LiabilitiesDetails liabilitiesDetails = new LiabilitiesDetails();
+//		    	liabilitiesDetails.setYear(yearEntry.getKey());
+//		    	liabilitiesDetails.setTotalLiability(Double.parseDouble(yearEntry.getValue().toString()));
+//		    	liabilitiesDetails.setCreatedDate(new Date());
+//		    	liabilitiesDetails.setCreatedBy(applicantRequest.getUserId());
+//		    	liabilitiesDetails.setFsLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
+//		    	liabilitiesDetailsRepository.save(liabilitiesDetails); 
+//    		}
+//    		
+//    		Map<String, Object>	 yearMapProfitAfterTax  = (Map<String, Object>) liability.get("year"); 
+//    		for (Map.Entry<String,Object> yearEntry : yearMapProfitAfterTax.entrySet()) {
+//		    	LiabilitiesDetails liabilitiesDetails = new LiabilitiesDetails();
+//		    	liabilitiesDetails.setYear(yearEntry.getKey());
+//		    	liabilitiesDetails.setTotalLiability(Double.parseDouble(yearEntry.getValue().toString()));
+//		    	liabilitiesDetails.setCreatedDate(new Date());
+//		    	liabilitiesDetails.setCreatedBy(applicantRequest.getUserId());
+//		    	liabilitiesDetails.setFsLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
+//		    	liabilitiesDetailsRepository.save(liabilitiesDetails); 
+//    		}
+    		
+    		Map<String, Object>	 yearMapTotalAssets  = (Map<String, Object>) liability.get("year"); 
+    		for (Map.Entry<String,Object> yearEntry : yearMapTotalAssets.entrySet()) {
+    			AssetsDetails assetsDetails = new AssetsDetails();
+		    	assetsDetails.setYear(yearEntry.getKey());
+		    	assetsDetails.setTotalAssets(Double.parseDouble(yearEntry.getValue().toString()));
+		    	assetsDetails.setCreatedDate(new Date());
+		    	assetsDetails.setCreatedBy(applicantRequest.getUserId());
+		    	assetsDetails.setLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
+		    	assetsDetailsRepository.save(assetsDetails); 
+    		}
+    		
+    		
+    		
+			//SAVE INCOME DETAILS
+//			applicantIncomeService.saveAll(applicantRequest.getIncomeDetailsList());
+			return true;
+		} catch (Exception e) {
+			logger.error("error while saving mudra manaul itr form",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+
+	@Override
+	public boolean saveSalesITRResponse(CorporateApplicantRequest applicantRequest) throws LoansException {
+		try {
+			logger.info("Enter in saveSalesITRResponse");
+			Map<String, Object> incomeDetails = applicantRequest.getIncomeDetails();
+			Map<String, Object> liability = (Map<String, Object>) incomeDetails.get("totalLiabilities");
+			Map<String, Object> sales = (Map<String, Object>) incomeDetails.get("sales");
+			Map<String, Object> networth = (Map<String, Object>) incomeDetails.get("networth");
+			Map<String, Object> profitAfterTax = (Map<String, Object>) incomeDetails.get("profitAfterTax");
+			Map<String, Object> totalAssets = (Map<String, Object>) incomeDetails.get("totalAssets");
+
+			Map<String, Object>	 yearMapLiability  = (Map<String, Object>) liability.get("year"); 
+    		for (Map.Entry<String,Object> yearEntry : yearMapLiability.entrySet()) {
+		    	LiabilitiesDetails liabilitiesDetails = new LiabilitiesDetails();
+		    	liabilitiesDetails.setYear(yearEntry.getKey());
+		    	liabilitiesDetails.setTotalLiability(Double.parseDouble(yearEntry.getValue().toString()));
+		    	liabilitiesDetails.setCreatedDate(new Date());
+		    	liabilitiesDetails.setCreatedBy(applicantRequest.getUserId());
+		    	liabilitiesDetails.setFsLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
+		    	liabilitiesDetailsRepository.save(liabilitiesDetails); 
+    		}
+    		
+    		Map<String, Object>	 yearMapSales  = (Map<String, Object>) liability.get("year"); 
+    		for (Map.Entry<String,Object> yearEntry : yearMapSales.entrySet()) {
+		    	OperatingStatementDetails operatingStatementDetails = new OperatingStatementDetails();
+		    	operatingStatementDetails.setYear(yearEntry.getKey());
+		    	operatingStatementDetails.setNetSales(Double.parseDouble(yearEntry.getValue().toString()));
+		    	operatingStatementDetails.setCreatedDate(new Date());
+		    	operatingStatementDetails.setCreatedBy(applicantRequest.getUserId());
+		    	operatingStatementDetails.setLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
+		    	operatingStatementDetailsRepository.save(operatingStatementDetails); 
+    		}
+    		
+//    		Map<String, Object>	 yearMapNetworth  = (Map<String, Object>) liability.get("year"); 
+//    		for (Map.Entry<String,Object> yearEntry : yearMapNetworth.entrySet()) {
+//		    	LiabilitiesDetails liabilitiesDetails = new LiabilitiesDetails();
+//		    	liabilitiesDetails.setYear(yearEntry.getKey());
+//		    	liabilitiesDetails.setTotalLiability(Double.parseDouble(yearEntry.getValue().toString()));
+//		    	liabilitiesDetails.setCreatedDate(new Date());
+//		    	liabilitiesDetails.setCreatedBy(applicantRequest.getUserId());
+//		    	liabilitiesDetails.setFsLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
+//		    	liabilitiesDetailsRepository.save(liabilitiesDetails); 
+//    		}
+//    		
+//    		Map<String, Object>	 yearMapProfitAfterTax  = (Map<String, Object>) liability.get("year"); 
+//    		for (Map.Entry<String,Object> yearEntry : yearMapProfitAfterTax.entrySet()) {
+//		    	LiabilitiesDetails liabilitiesDetails = new LiabilitiesDetails();
+//		    	liabilitiesDetails.setYear(yearEntry.getKey());
+//		    	liabilitiesDetails.setTotalLiability(Double.parseDouble(yearEntry.getValue().toString()));
+//		    	liabilitiesDetails.setCreatedDate(new Date());
+//		    	liabilitiesDetails.setCreatedBy(applicantRequest.getUserId());
+//		    	liabilitiesDetails.setFsLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
+//		    	liabilitiesDetailsRepository.save(liabilitiesDetails); 
+//    		}
+    		
+    		Map<String, Object>	 yearMapTotalAssets  = (Map<String, Object>) liability.get("year"); 
+    		for (Map.Entry<String,Object> yearEntry : yearMapTotalAssets.entrySet()) {
+    			AssetsDetails assetsDetails = new AssetsDetails();
+		    	assetsDetails.setYear(yearEntry.getKey());
+		    	assetsDetails.setTotalAssets(Double.parseDouble(yearEntry.getValue().toString()));
+		    	assetsDetails.setCreatedDate(new Date());
+		    	assetsDetails.setCreatedBy(applicantRequest.getUserId());
+		    	assetsDetails.setLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
+		    	assetsDetailsRepository.save(assetsDetails); 
+    		}
+			return true;
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return false;
 	}
 }
