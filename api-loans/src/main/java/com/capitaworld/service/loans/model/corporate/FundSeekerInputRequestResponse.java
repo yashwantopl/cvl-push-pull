@@ -1,16 +1,13 @@
 package com.capitaworld.service.loans.model.corporate;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.AssociatedConcernDetailRequest;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
-import com.capitaworld.service.loans.model.GstRelatedPartyRequest;
 
 /**
  * @author akshay
@@ -200,6 +197,11 @@ public class FundSeekerInputRequestResponse {
 	private List<Integer> govAuthorities;
 	
 	private String othergovauthorities;
+	
+	private Integer businessProspects;
+	
+	private Integer accessInput;
+	
     /**/
     
     
@@ -915,6 +917,22 @@ public class FundSeekerInputRequestResponse {
 
 	public void setOthergovauthorities(String othergovauthorities) {
 		this.othergovauthorities = othergovauthorities;
+	}
+
+	public Integer getBusinessProspects() {
+		return businessProspects;
+	}
+
+	public void setBusinessProspects(Integer businessProspects) {
+		this.businessProspects = businessProspects;
+	}
+
+	public Integer getAccessInput() {
+		return accessInput;
+	}
+
+	public void setAccessInput(Integer accessInput) {
+		this.accessInput = accessInput;
 	}
 
 	@Override
