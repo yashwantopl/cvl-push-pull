@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.controller.scoring;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,6 +30,7 @@ import com.capitaworld.service.loans.model.score.ScoringRequestLoans;
 import com.capitaworld.service.loans.service.scoring.ScoringService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.rating.exception.RatingException;
+import com.capitaworld.service.scoring.model.GenericCheckerReqRes;
 import com.capitaworld.service.scoring.model.scoringmodel.ScoringModelReqRes;
 
 @RestController
@@ -221,6 +223,46 @@ public class ScoringController {
             ScoringModelReqRes res=new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
             logger.error("Error while getting scoring model detail : ",e);
             return new ResponseEntity<ScoringModelReqRes>(res,HttpStatus.OK);
+        }
+    }
+    
+    
+    @RequestMapping(value = "/sendToCheckerEBLR", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<GenericCheckerReqRes>> sendToCheckerEBLR(@RequestBody List<GenericCheckerReqRes> genericCheckerReqResList, HttpServletRequest httpRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
+        logger.info("==================Enter in sendToChecker(){} ================ genericCheckerReqResList size ==> ",genericCheckerReqResList.size());
+        try {
+            Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+
+            List<GenericCheckerReqRes> genericCheckerReqRes = scoringService.sendToCheckerEBLR(genericCheckerReqResList, userId);
+            logger.info("==================Exit from sendToChecker(){} ================ genericCheckerReqRes List  Size ==> ", genericCheckerReqRes.size());
+            return new ResponseEntity<List<GenericCheckerReqRes>>(genericCheckerReqRes, HttpStatus.OK);
+        } catch (Exception e) {
+            List<GenericCheckerReqRes> res = new ArrayList<GenericCheckerReqRes>();
+            GenericCheckerReqRes reqres = new GenericCheckerReqRes();
+            reqres.setActionFlag(false);
+            res.add(reqres);
+            logger.error("Error while saving scoring model detail : ", e);
+            return new ResponseEntity<List<GenericCheckerReqRes>>(res, HttpStatus.OK);
+        }
+    }
+    @RequestMapping(value = "/sendToChecker", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<GenericCheckerReqRes> > sendToChecker(@RequestBody List<GenericCheckerReqRes> genericCheckerReqResList, HttpServletRequest httpRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
+    	 logger.info ("==================Enter in sendToChecker(){} ================ genericCheckerReqResList size ==> " + genericCheckerReqResList.size());
+        try {
+        	Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);
+
+            List<GenericCheckerReqRes>  genericCheckerReqRes=scoringService.sendToChecker(genericCheckerReqResList , userId);
+            logger.info ("==================Exit from sendToChecker(){} ================ genericCheckerReqRes List  Size ==> " , genericCheckerReqRes.size());
+            return new ResponseEntity<List<GenericCheckerReqRes> >(genericCheckerReqRes ,HttpStatus.OK);
+        }
+        catch (Exception e)
+        {
+        	List<GenericCheckerReqRes>  res= new ArrayList<GenericCheckerReqRes >();
+        	GenericCheckerReqRes reqres= new GenericCheckerReqRes();
+        	reqres.setActionFlag(false);
+        	res.add(reqres);
+            logger.error("Error while saving scoring model detail : ",e);
+            return new ResponseEntity<List<GenericCheckerReqRes> >(res,HttpStatus.OK);
         }
     }
 }

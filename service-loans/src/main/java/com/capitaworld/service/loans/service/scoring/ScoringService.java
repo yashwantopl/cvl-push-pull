@@ -44,4 +44,9 @@ public interface ScoringService {
     public ScoringModelReqRes getScoringModelMasterDetail(ScoringModelReqRes scoringModelReqRes);
 
     public Integer getFinYear(Long applicationId);
+
+	public List<GenericCheckerReqRes> sendToCheckerEBLR(List<GenericCheckerReqRes> genericCheckerReqResList,
+			Long userId) throws ScoringException;
+
+	public List<GenericCheckerReqRes> sendToChecker(List<GenericCheckerReqRes> genericCheckerReqResList, Long userId) throws ScoringException;
 }

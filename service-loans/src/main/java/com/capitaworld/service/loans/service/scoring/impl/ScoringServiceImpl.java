@@ -95,7 +95,9 @@ import com.capitaworld.service.matchengine.model.BankBureauRequest;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.rating.RatingClient;
 import com.capitaworld.service.scoring.ScoringClient;
+import com.capitaworld.service.scoring.exception.ScoringException;
 import com.capitaworld.service.scoring.model.FundSeekerInputRequest;
+import com.capitaworld.service.scoring.model.GenericCheckerReqRes;
 import com.capitaworld.service.scoring.model.ModelParameterResponse;
 import com.capitaworld.service.scoring.model.ScoringParameterRequest;
 import com.capitaworld.service.scoring.model.ScoringRequest;
@@ -4062,4 +4064,15 @@ public class ScoringServiceImpl implements ScoringService {
         }
         return year + 1;
     }
+
+	@Override
+	public List<GenericCheckerReqRes> sendToCheckerEBLR(List<GenericCheckerReqRes> genericCheckerReqResList,
+			Long userId) throws ScoringException {
+		return scoringClient.sendToCheckerEBLR(genericCheckerReqResList, userId);
+	}
+
+	@Override
+	public List<GenericCheckerReqRes> sendToChecker(List<GenericCheckerReqRes> genericCheckerReqResList, Long userId) throws ScoringException {
+		   return scoringClient.sendToChecker(genericCheckerReqResList, userId);
+	}
 }
