@@ -231,9 +231,14 @@ public class CorporateApplicantDetail implements Serializable {
     @Column(name="is_noneof_related_party_selected")
     private Boolean isNoneOfRelatedPartySelected;;
 
-
 	@Column(name="number_of_employee")
 	private Integer numberOfEmployee;
+	
+	@Column(name="business_prospects")
+	private Integer businessProspects;
+	
+	@Column(name="access_input")
+	private Integer accessInput;
 
     
 	/**
@@ -782,6 +787,22 @@ public class CorporateApplicantDetail implements Serializable {
 
 	public void setMinorCastCategory(String minorCastCategory) {
 		this.minorCastCategory = minorCastCategory;
+	}
+
+	public Integer getBusinessProspects() {
+		return businessProspects;
+	}
+
+	public void setBusinessProspects(Integer businessProspects) {
+		this.businessProspects = businessProspects;
+	}
+
+	public Integer getAccessInput() {
+		return accessInput;
+	}
+
+	public void setAccessInput(Integer accessInput) {
+		this.accessInput = accessInput;
 	}
 	
 }
