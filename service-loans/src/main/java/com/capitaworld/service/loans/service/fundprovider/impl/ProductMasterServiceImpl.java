@@ -2,6 +2,7 @@
 package com.capitaworld.service.loans.service.fundprovider.impl;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -944,6 +945,76 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	}
 
+	public static List<ProductMasterTemp> getFromObjectArray(List<Object[]> array){
+		if(CommonUtils.isListNullOrEmpty(array)){
+			return Collections.emptyList();
+		}
+		List<ProductMasterTemp> result = new ArrayList<>(array.size());
+		ProductMasterTemp masterTemp = null;
+		for(Object [] arr : array){
+			masterTemp = new ProductMasterTemp();
+			if(!CommonUtils.isObjectNullOrEmpty(arr[0])){
+				masterTemp.setId(((BigInteger)arr[0]).longValue());
+			}
+			if(!CommonUtils.isObjectNullOrEmpty(arr[1])){
+				masterTemp.setProductId(((BigInteger)arr[1]).intValue());
+			}
+			if(!CommonUtils.isObjectNullOrEmpty(arr[2])){
+				masterTemp.setUserId(((BigInteger)arr[2]).longValue());
+			}
+			if(!CommonUtils.isObjectNullOrEmpty(arr[3])){
+				masterTemp.setFpName(arr[3].toString());
+			}
+			if(!CommonUtils.isObjectNullOrEmpty(arr[4])){
+				masterTemp.setName(arr[4].toString());
+			}
+			if(!CommonUtils.isObjectNullOrEmpty(arr[5])){
+				masterTemp.setIsParameterFilled((Boolean)arr[5]);
+			}
+			if(!CommonUtils.isObjectNullOrEmpty(arr[6])){
+				masterTemp.setIsActive((Boolean)arr[6]);
+			}
+			if(!CommonUtils.isObjectNullOrEmpty(arr[7])){
+				masterTemp.setProductCode(arr[7].toString());
+			}
+			if(!CommonUtils.isObjectNullOrEmpty(arr[8])){
+				masterTemp.setUserOrgId(((BigInteger)arr[8]).longValue());
+			}
+			if(!CommonUtils.isObjectNullOrEmpty(arr[9])){
+				masterTemp.setScoreModelId(((BigInteger)arr[9]).longValue());
+			}
+			if(!CommonUtils.isObjectNullOrEmpty(arr[10])){
+				masterTemp.setBusinessTypeId(((BigInteger)arr[10]).longValue());
+			}
+			if(!CommonUtils.isObjectNullOrEmpty(arr[11])){
+				masterTemp.setIsApproved((Boolean)arr[11]);
+			}
+			if(!CommonUtils.isObjectNullOrEmpty(arr[12])){
+				masterTemp.setIsDeleted((Boolean)arr[12]);
+			}
+			if(!CommonUtils.isObjectNullOrEmpty(arr[13])){
+				masterTemp.setIsCopied((Boolean)arr[13]);
+			}
+			if(!CommonUtils.isObjectNullOrEmpty(arr[14])){
+				masterTemp.setIsEdit((Boolean)arr[14]);
+			}
+			if(!CommonUtils.isObjectNullOrEmpty(arr[15])){
+				masterTemp.setStatusId(Integer.valueOf(arr[15].toString()));
+			}
+			if(!CommonUtils.isObjectNullOrEmpty(arr[16])){
+				masterTemp.setJobId(((BigInteger)arr[16]).longValue());
+			}
+			if(!CommonUtils.isObjectNullOrEmpty(arr[17])){
+				masterTemp.setFinId(Integer.valueOf(arr[17].toString()));
+			}
+			if(!CommonUtils.isObjectNullOrEmpty(arr[18])){
+				masterTemp.setCampaignCode(Integer.valueOf(arr[18].toString()));
+			}
+			result.add(masterTemp);
+		}
+		return result;
+	}
+	
 	@Override
 	public List<ProductMasterRequest> getListByUserType(Long userId, Integer userType, Integer stage, Long userOrgId,Integer productId) {
 		CommonDocumentUtils.startHook(logger, "getListByUserType");
@@ -954,7 +1025,9 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
 				if(!CommonUtils.isObjectNullOrEmpty(userObj) && !CommonUtils.isObjectNullOrEmpty(userObj[0])) {
 					Long businessTypeId = Long.valueOf(userObj[0].toString());
-					results = productMasterTempRepository.getUserCorporateProductListByOrgIdByBusinessTypeId(userOrgId, businessTypeId);
+					List<Object[]> arr =  (List<Object[]>)productMasterTempRepository.getProductListByBusinessTypeId(userOrgId, businessTypeId);
+					results = getFromObjectArray(arr);
+//					results = productMasterTempRepository.getUserCorporateProductListByOrgIdByBusinessTypeId(userOrgId, businessTypeId);
 				}else{
 					results = productMasterTempRepository.getUserCorporateProductListByOrgId(userOrgId);
 				}

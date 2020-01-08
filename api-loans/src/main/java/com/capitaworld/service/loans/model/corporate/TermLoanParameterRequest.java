@@ -189,6 +189,12 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	private Boolean isIndividualCibilDisplay = false;
 
 	private Boolean isIndividualCibilMandatory = false;
+	
+	private Integer individualCibilDpd;
+
+	private Boolean isIndividualCibilDpdDisplay = false;
+
+	private Boolean isIndividualCibilDpdMandatory = false;
 
 	private Integer commercialCibil;
 
@@ -2231,5 +2237,29 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 
 	public void setIsIndividualCibilFor3MonthMandatory(Boolean isIndividualCibilFor3MonthMandatory) {
 		this.isIndividualCibilFor3MonthMandatory = isIndividualCibilFor3MonthMandatory;
+	}
+
+	public Integer getIndividualCibilDpd() {
+		return individualCibilDpd;
+	}
+
+	public void setIndividualCibilDpd(Integer individualCibilDpd) {
+		this.individualCibilDpd = individualCibilDpd;
+	}
+
+	public Boolean getIsIndividualCibilDpdDisplay() {
+		return isIndividualCibilDpdDisplay;
+	}
+
+	public void setIsIndividualCibilDpdDisplay(Boolean isIndividualCibilDpdDisplay) {
+		this.isIndividualCibilDpdDisplay = isIndividualCibilDpdDisplay;
+	}
+
+	public Boolean getIsIndividualCibilDpdMandatory() {
+		return isIndividualCibilDpdMandatory;
+	}
+
+	public void setIsIndividualCibilDpdMandatory(Boolean isIndividualCibilDpdMandatory) {
+		this.isIndividualCibilDpdMandatory = isIndividualCibilDpdMandatory;
 	}
 }

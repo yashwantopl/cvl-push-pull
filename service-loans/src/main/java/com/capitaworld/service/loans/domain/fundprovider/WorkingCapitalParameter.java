@@ -299,6 +299,15 @@ public class WorkingCapitalParameter extends ProductMaster implements Serializab
 
 	@Column(name="is_individual_cibil_mandatory")
 	private Boolean isIndividualCibilMandatory = false;
+	
+	@Column(name="individual_cibil_dpd")
+	private Integer individualCibilDpd;
+
+	@Column(name="is_individual_cibil_dpd_display")
+	private Boolean isIndividualCibilDpdDisplay = false;
+
+	@Column(name="is_individual_cibil_dpd_mandatory")
+	private Boolean isIndividualCibilDpdMandatory = false;
 
     @Column(name="commercial_cibil")
     private Integer commercialCibil;
@@ -348,15 +357,18 @@ public class WorkingCapitalParameter extends ProductMaster implements Serializab
 	@Column(name="promoter_contri")
 	private BigDecimal promotorContri;
 	
+	@Column(name="wc_requirement")
+	private Double wcRequirement;
+	
 	// by rahul
 	@Column(name="manufacturing")
-	private BigDecimal manufacturing;
+	private BigDecimal manufacturing; // Consider as Sishu For Mudra
 	
 	@Column(name="service")
-	private BigDecimal service;
+	private BigDecimal service; // Consider as Kishor For Mudra
 	
 	@Column(name="trading")
-	private BigDecimal trading;
+	private BigDecimal trading; // Consider as Tarun For Mudra
 	
 	@Column(name="max_drop_in_turnover")
 	private BigDecimal maxDropInTurnover;
@@ -2060,5 +2072,36 @@ public class WorkingCapitalParameter extends ProductMaster implements Serializab
 	public void setIsIndividualCibilFor3MonthMandatory(Boolean isIndividualCibilFor3MonthMandatory) {
 		this.isIndividualCibilFor3MonthMandatory = isIndividualCibilFor3MonthMandatory;
 	}
-	
+
+	public Integer getIndividualCibilDpd() {
+		return individualCibilDpd;
+	}
+
+	public void setIndividualCibilDpd(Integer individualCibilDpd) {
+		this.individualCibilDpd = individualCibilDpd;
+	}
+
+	public Boolean getIsIndividualCibilDpdDisplay() {
+		return isIndividualCibilDpdDisplay;
+	}
+
+	public void setIsIndividualCibilDpdDisplay(Boolean isIndividualCibilDpdDisplay) {
+		this.isIndividualCibilDpdDisplay = isIndividualCibilDpdDisplay;
+	}
+
+	public Boolean getIsIndividualCibilDpdMandatory() {
+		return isIndividualCibilDpdMandatory;
+	}
+
+	public void setIsIndividualCibilDpdMandatory(Boolean isIndividualCibilDpdMandatory) {
+		this.isIndividualCibilDpdMandatory = isIndividualCibilDpdMandatory;
+	}
+
+	public Double getWcRequirement() {
+		return wcRequirement;
+	}
+
+	public void setWcRequirement(Double wcRequirement) {
+		this.wcRequirement = wcRequirement;
+	}
 }

@@ -189,6 +189,12 @@ public class CorporateProduct extends ProductMasterRequest implements Serializab
 	private Boolean isIndividualCibilDisplay = false;
 
 	private Boolean isIndividualCibilMandatory = false;
+	
+	private Integer individualCibilDpd;
+
+	private Boolean isIndividualCibilDpdDisplay = false;
+
+	private Boolean isIndividualCibilDpdMandatory = false;
 
 	private Integer commercialCibil;
 	
@@ -227,9 +233,10 @@ public class CorporateProduct extends ProductMasterRequest implements Serializab
 
 	private BigDecimal promotorContri;
 
-	private BigDecimal manufacturing;
-	private BigDecimal service;
-	private BigDecimal trading;
+	private BigDecimal manufacturing; // Consider as Sishu For Mudra
+	private BigDecimal service; // Consider as Kishor For Mudra
+	private BigDecimal trading; // Consider as Tarun For Mudra
+	private Double wcRequirement;
 
 	/* ntb */
 
@@ -2417,5 +2424,37 @@ public class CorporateProduct extends ProductMasterRequest implements Serializab
 
 	public void setIsIndividualCibilFor3MonthMandatory(Boolean isIndividualCibilFor3MonthMandatory) {
 		this.isIndividualCibilFor3MonthMandatory = isIndividualCibilFor3MonthMandatory;
+	}
+
+	public Integer getIndividualCibilDpd() {
+		return individualCibilDpd;
+	}
+
+	public void setIndividualCibilDpd(Integer individualCibilDpd) {
+		this.individualCibilDpd = individualCibilDpd;
+	}
+
+	public Boolean getIsIndividualCibilDpdDisplay() {
+		return isIndividualCibilDpdDisplay;
+	}
+
+	public void setIsIndividualCibilDpdDisplay(Boolean isIndividualCibilDpdDisplay) {
+		this.isIndividualCibilDpdDisplay = isIndividualCibilDpdDisplay;
+	}
+
+	public Boolean getIsIndividualCibilDpdMandatory() {
+		return isIndividualCibilDpdMandatory;
+	}
+
+	public void setIsIndividualCibilDpdMandatory(Boolean isIndividualCibilDpdMandatory) {
+		this.isIndividualCibilDpdMandatory = isIndividualCibilDpdMandatory;
+	}
+
+	public Double getWcRequirement() {
+		return wcRequirement;
+	}
+
+	public void setWcRequirement(Double wcRequirement) {
+		this.wcRequirement = wcRequirement;
 	}
 }
