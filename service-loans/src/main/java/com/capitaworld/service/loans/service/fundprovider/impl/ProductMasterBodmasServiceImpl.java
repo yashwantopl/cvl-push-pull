@@ -93,7 +93,7 @@ public class ProductMasterBodmasServiceImpl implements ProductMasterBodmasServic
                     productMasterTemp.setModifiedDate(new Date());
                     productMasterTemp.setModifiedBy(userId);
                 } else{
-                    productMasterTemp = new ProductMasterTemp();
+                    productMasterTemp = null;
                     LoanType loanType = LoanType.getById(Integer.parseInt(addProductRequest.getProductId().toString()));
                     WorkflowResponse workflowResponse = workflowClient.createJobForMasters(WorkflowUtils.Workflow.MASTER_DATA_APPROVAL_PROCESS, WorkflowUtils.Action.SEND_FOR_APPROVAL, userId);
 

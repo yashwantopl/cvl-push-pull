@@ -40,7 +40,6 @@ import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameter
 import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameterTemp;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.DataRequest;
-import com.capitaworld.service.loans.model.corporate.TermLoanParameterRequest;
 import com.capitaworld.service.loans.model.corporate.WorkingCapitalParameterRequest;
 import com.capitaworld.service.loans.repository.fundprovider.FpConstitutionMappingRepository;
 import com.capitaworld.service.loans.repository.fundprovider.FpConstitutionMappingTempRepository;

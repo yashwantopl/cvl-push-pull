@@ -37,8 +37,6 @@ import com.capitaworld.service.loans.domain.fundprovider.GeographicalStateDetail
 import com.capitaworld.service.loans.domain.fundprovider.LoanArrangementMapping;
 import com.capitaworld.service.loans.domain.fundprovider.LoanArrangementMappingTemp;
 import com.capitaworld.service.loans.domain.fundprovider.NTBParameter;
-import com.capitaworld.service.loans.domain.fundprovider.NbfcRatioMapping;
-import com.capitaworld.service.loans.domain.fundprovider.NbfcRatioMappingTemp;
 import com.capitaworld.service.loans.domain.fundprovider.NegativeIndustry;
 import com.capitaworld.service.loans.domain.fundprovider.NegativeIndustryTemp;
 import com.capitaworld.service.loans.domain.fundprovider.NtbTermLoanParameterTemp;
@@ -252,8 +250,6 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 
 		//save nbfc ratio mapping
 		nbfcRatioMappingRepository.inActiveByFpProductId(termLoanParameterRequest.getId());
-		saveNbfcRatioMapping(termLoanParameterRequest);
-		
 		//add duplicate productmaster entries based on nbfc ids
 		if(termLoanParameterRequest.getProductType()!=null && termLoanParameterRequest.getProductType()==2){
 			addduplicateEntriesForNbfc(termLoanParameterRequest,mappingId);
@@ -386,9 +382,6 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		
 		//save nbfc ratio mapping
 		nbfcRatioMappingRepository.inActiveByFpProductId(termLoanParameterRequest.getId());
-		saveNbfcRatioMapping(termLoanParameterRequest);
-
-
 		
 		
 		boolean isUpdate = msmeValueMappingService.updateMsmeValueMapping(false, mappingId, termLoanParameter2.getId());
@@ -989,7 +982,6 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		
 		//save nbfc ratio mapping
 		nbfcRatioMappingTempRepository.inActiveTempByFpProductId(termLoanParameter.getId());
-		saveNbfcRatioMappingTemp(termLoanParameterRequest);
 
 		boolean isUpdate = msmeValueMappingService.updateMsmeValueMappingTemp(
 				termLoanParameterRequest.getMsmeFundingIds(), termLoanParameterRequest.getId(),
@@ -1380,8 +1372,6 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		
 		//save nbfc ratio mapping
 		nbfcRatioMappingTempRepository.inActiveTempByFpProductId(termLoanParameter.getId());
-		saveNbfcRatioMappingTemp(termLoanParameterRequest);
-		
 		//save constitution mapping
 		fpConstitutionMappingTempRepository.inActiveMasterByFpProductId(termLoanParameterRequest.getId());
 		saveConstitutionTypeTemp(termLoanParameterRequest);
@@ -1395,45 +1385,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		CommonDocumentUtils.endHook(logger, CommonUtils.SAVE_OR_UPDATE);
 		return true;
 	}
-
-	private void saveNbfcRatioMappingTemp(TermLoanParameterRequest termLoanParameterRequest) {
-		// TODO Auto-generated method stub
-		CommonDocumentUtils.startHook(logger, "saveNbfcRatioMappingTemp");
-		NbfcRatioMappingTemp nbfc= null;
-		for (Long dataRequest : termLoanParameterRequest.getNbfcRatioIds()) {
-			nbfc = new NbfcRatioMappingTemp();
-			nbfc.setFpProductId(termLoanParameterRequest.getId());
-			nbfc.setRatioId(dataRequest);
-			
-			nbfc.setCreatedDate(new Date());
-			nbfc.setModifiedDate(new Date());
-			nbfc.setIsActive(true);
-			// create by and update
-			nbfcRatioMappingTempRepository.save(nbfc);
-		}
-		CommonDocumentUtils.endHook(logger, "saveNbfcRatioMappingTemp");
-		
-	}
 	
-	private void saveNbfcRatioMapping(TermLoanParameterRequest termLoanParameterRequest) {
-		// TODO Auto-generated method stub
-		CommonDocumentUtils.startHook(logger, "saveNbfcRatioMapping");
-		NbfcRatioMapping nbfc= null;
-		for (Long dataRequest : termLoanParameterRequest.getNbfcRatioIds()) {
-			nbfc = new NbfcRatioMapping();
-			nbfc.setFpProductId(termLoanParameterRequest.getId());
-			nbfc.setRatioId(dataRequest);
-			
-			nbfc.setCreatedDate(new Date());
-			nbfc.setModifiedDate(new Date());
-			nbfc.setIsActive(true);
-			// create by and update
-			nbfcRatioMappingRepository.save(nbfc);
-		}
-		CommonDocumentUtils.endHook(logger, "saveNbfcRatioMapping");
-		
-	}
-
 	@Override
 	public Boolean saveMasterFromNtbTempTl(Long mappingId) throws LoansException {
 		try {
@@ -1511,7 +1463,6 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		saveNegativeIndustry(termLoanParameterRequest);
 		
 		nbfcRatioMappingRepository.inActiveByFpProductId(termLoanParameterRequest.getId());
-		saveNbfcRatioMapping(termLoanParameterRequest);
 		
 		//save constitution mapping
 		fpConstitutionMappingRepository.inActiveMasterByFpProductId(termLoanParameterRequest.getId());
