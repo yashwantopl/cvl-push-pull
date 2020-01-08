@@ -1010,6 +1010,12 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			if(!CommonUtils.isObjectNullOrEmpty(arr[18])){
 				masterTemp.setCampaignCode(Integer.valueOf(arr[18].toString()));
 			}
+			if(!CommonUtils.isObjectNullOrEmpty(arr[20])){
+				masterTemp.setWcRenewalStatus(Integer.valueOf(arr[20].toString()));
+			}
+			if(!CommonUtils.isObjectNullOrEmpty(arr[21])){
+				masterTemp.setCreatedDate((Date)arr[21]);
+			}
 			result.add(masterTemp);
 		}
 		return result;
