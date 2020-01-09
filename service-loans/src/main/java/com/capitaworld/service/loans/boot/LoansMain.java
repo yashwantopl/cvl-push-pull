@@ -210,7 +210,7 @@ public class LoansMain {
 
 	@Bean
 	public ScoringClient scoringClient() {
-		ScoringClient scoringClient = new ScoringClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.scoring));
+		ScoringClient scoringClient = new ScoringClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.scoring_mudra));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(scoringClient);
 		return scoringClient;
 	}
