@@ -297,6 +297,24 @@ public class WcTlParameter extends ProductMaster implements Serializable {
 
 	@Column(name="is_individual_cibil_mandatory")
 	private Boolean isIndividualCibilMandatory = false;
+	
+	@Column(name="individual_cibil_dpd")
+	private Integer individualCibilDpd;
+
+	@Column(name="is_individual_cibil_dpd_display")
+	private Boolean isIndividualCibilDpdDisplay = false;
+
+	@Column(name="is_individual_cibil_dpd_mandatory")
+	private Boolean isIndividualCibilDpdMandatory = false;
+	
+	 @Column(name="individual_cibil_for_3_month")
+    private Integer individualCibilFor3Month;
+
+    @Column(name="is_individual_cibil_for_3_month_display")
+    private Boolean isIndividualCibilFor3MonthDisplay = false;
+
+    @Column(name="is_individual_cibil_for_3_month_mandatory")
+    private Boolean isIndividualCibilFor3MonthMandatory = false;
 
 	@Column(name="commercial_cibil")
 	private Integer commercialCibil;
@@ -1928,10 +1946,51 @@ public class WcTlParameter extends ProductMaster implements Serializable {
 		this.isConstitutionMandatory = isConstitutionMandatory;
 	}
 
-	
+	public Integer getIndividualCibilDpd() {
+		return individualCibilDpd;
+	}
 
-	
-	
-	
+	public void setIndividualCibilDpd(Integer individualCibilDpd) {
+		this.individualCibilDpd = individualCibilDpd;
+	}
 
+	public Boolean getIsIndividualCibilDpdDisplay() {
+		return isIndividualCibilDpdDisplay;
+	}
+
+	public void setIsIndividualCibilDpdDisplay(Boolean isIndividualCibilDpdDisplay) {
+		this.isIndividualCibilDpdDisplay = isIndividualCibilDpdDisplay;
+	}
+
+	public Boolean getIsIndividualCibilDpdMandatory() {
+		return isIndividualCibilDpdMandatory;
+	}
+
+	public void setIsIndividualCibilDpdMandatory(Boolean isIndividualCibilDpdMandatory) {
+		this.isIndividualCibilDpdMandatory = isIndividualCibilDpdMandatory;
+	}
+
+	public Integer getIndividualCibilFor3Month() {
+		return individualCibilFor3Month;
+	}
+
+	public void setIndividualCibilFor3Month(Integer individualCibilFor3Month) {
+		this.individualCibilFor3Month = individualCibilFor3Month;
+	}
+
+	public Boolean getIsIndividualCibilFor3MonthDisplay() {
+		return isIndividualCibilFor3MonthDisplay;
+	}
+
+	public void setIsIndividualCibilFor3MonthDisplay(Boolean isIndividualCibilFor3MonthDisplay) {
+		this.isIndividualCibilFor3MonthDisplay = isIndividualCibilFor3MonthDisplay;
+	}
+
+	public Boolean getIsIndividualCibilFor3MonthMandatory() {
+		return isIndividualCibilFor3MonthMandatory;
+	}
+
+	public void setIsIndividualCibilFor3MonthMandatory(Boolean isIndividualCibilFor3MonthMandatory) {
+		this.isIndividualCibilFor3MonthMandatory = isIndividualCibilFor3MonthMandatory;
+	}
 }
