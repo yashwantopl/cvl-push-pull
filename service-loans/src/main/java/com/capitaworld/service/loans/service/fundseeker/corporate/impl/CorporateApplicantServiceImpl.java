@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -901,10 +902,12 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		    	liabilitiesDetails.setCreatedDate(new Date());
 		    	liabilitiesDetails.setCreatedBy(applicantRequest.getUserId());
 		    	liabilitiesDetails.setFsLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
+		    	//For Project Sales
+	    		liabilitiesDetails.setFinancialYearlyStatement(yearEntry.getKey().toString().equals(""+Calendar.getInstance().get(Calendar.YEAR)) ? "Projected":"Audited");
 		    	liabilitiesDetailsRepository.save(liabilitiesDetails); 
     		}
     		
-    		Map<String, Object>	 yearMapSales  = (Map<String, Object>) liability.get("year"); 
+    		Map<String, Object>	 yearMapSales  = (Map<String, Object>) sales.get("year"); 
     		for (Map.Entry<String,Object> yearEntry : yearMapSales.entrySet()) {
 		    	OperatingStatementDetails operatingStatementDetails = new OperatingStatementDetails();
 		    	operatingStatementDetails.setYear(yearEntry.getKey());
@@ -912,32 +915,35 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		    	operatingStatementDetails.setCreatedDate(new Date());
 		    	operatingStatementDetails.setCreatedBy(applicantRequest.getUserId());
 		    	operatingStatementDetails.setLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
+		    	operatingStatementDetails.setFinancialYearlyStatement(yearEntry.getKey().toString().equals(""+Calendar.getInstance().get(Calendar.YEAR)) ? "Projected":"Audited");
 		    	operatingStatementDetailsRepository.save(operatingStatementDetails); 
     		}
     		
-//    		Map<String, Object>	 yearMapNetworth  = (Map<String, Object>) liability.get("year"); 
-//    		for (Map.Entry<String,Object> yearEntry : yearMapNetworth.entrySet()) {
-//		    	LiabilitiesDetails liabilitiesDetails = new LiabilitiesDetails();
-//		    	liabilitiesDetails.setYear(yearEntry.getKey());
-//		    	liabilitiesDetails.setTotalLiability(Double.parseDouble(yearEntry.getValue().toString()));
-//		    	liabilitiesDetails.setCreatedDate(new Date());
-//		    	liabilitiesDetails.setCreatedBy(applicantRequest.getUserId());
-//		    	liabilitiesDetails.setFsLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
-//		    	liabilitiesDetailsRepository.save(liabilitiesDetails); 
-//    		}
-//    		
-//    		Map<String, Object>	 yearMapProfitAfterTax  = (Map<String, Object>) liability.get("year"); 
-//    		for (Map.Entry<String,Object> yearEntry : yearMapProfitAfterTax.entrySet()) {
-//		    	LiabilitiesDetails liabilitiesDetails = new LiabilitiesDetails();
-//		    	liabilitiesDetails.setYear(yearEntry.getKey());
-//		    	liabilitiesDetails.setTotalLiability(Double.parseDouble(yearEntry.getValue().toString()));
-//		    	liabilitiesDetails.setCreatedDate(new Date());
-//		    	liabilitiesDetails.setCreatedBy(applicantRequest.getUserId());
-//		    	liabilitiesDetails.setFsLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
-//		    	liabilitiesDetailsRepository.save(liabilitiesDetails); 
-//    		}
+    		Map<String, Object>	 yearMapNetworth  = (Map<String, Object>) networth.get("year"); 
+    		for (Map.Entry<String,Object> yearEntry : yearMapNetworth.entrySet()) {
+		    	LiabilitiesDetails liabilitiesDetails = new LiabilitiesDetails();
+		    	liabilitiesDetails.setYear(yearEntry.getKey());
+		    	liabilitiesDetails.setNetWorth(Double.parseDouble(yearEntry.getValue().toString()));
+		    	liabilitiesDetails.setCreatedDate(new Date());
+		    	liabilitiesDetails.setCreatedBy(applicantRequest.getUserId());
+		    	liabilitiesDetails.setFsLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
+		    	liabilitiesDetails.setFinancialYearlyStatement(yearEntry.getKey().toString().equals(""+Calendar.getInstance().get(Calendar.YEAR)) ? "Projected":"Audited");
+		    	liabilitiesDetailsRepository.save(liabilitiesDetails); 
+    		}
     		
-    		Map<String, Object>	 yearMapTotalAssets  = (Map<String, Object>) liability.get("year"); 
+    		Map<String, Object>	 yearMapProfitAfterTax  = (Map<String, Object>) profitAfterTax.get("year"); 
+    		for (Map.Entry<String,Object> yearEntry : yearMapProfitAfterTax.entrySet()) {
+    			OperatingStatementDetails operatingStatementDetails = new OperatingStatementDetails();
+		    	operatingStatementDetails.setYear(yearEntry.getKey());
+		    	operatingStatementDetails.setNetProfitOrLoss(Double.parseDouble(yearEntry.getValue().toString()));
+		    	operatingStatementDetails.setCreatedDate(new Date());
+		    	operatingStatementDetails.setCreatedBy(applicantRequest.getUserId());
+		    	operatingStatementDetails.setLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
+		    	operatingStatementDetails.setFinancialYearlyStatement(yearEntry.getKey().toString().equals(""+Calendar.getInstance().get(Calendar.YEAR)) ? "Projected":"Audited");
+		    	operatingStatementDetailsRepository.save(operatingStatementDetails); 
+    		}
+    		
+    		Map<String, Object>	 yearMapTotalAssets  = (Map<String, Object>) totalAssets.get("year"); 
     		for (Map.Entry<String,Object> yearEntry : yearMapTotalAssets.entrySet()) {
     			AssetsDetails assetsDetails = new AssetsDetails();
 		    	assetsDetails.setYear(yearEntry.getKey());
@@ -945,6 +951,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		    	assetsDetails.setCreatedDate(new Date());
 		    	assetsDetails.setCreatedBy(applicantRequest.getUserId());
 		    	assetsDetails.setLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
+		    	assetsDetails.setFinancialYearlyStatement(yearEntry.getKey().toString().equals(""+Calendar.getInstance().get(Calendar.YEAR)) ? "Projected":"Audited");
 		    	assetsDetailsRepository.save(assetsDetails); 
     		}
     		
@@ -978,10 +985,12 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		    	liabilitiesDetails.setCreatedDate(new Date());
 		    	liabilitiesDetails.setCreatedBy(applicantRequest.getUserId());
 		    	liabilitiesDetails.setFsLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
+		    	//For Project Sales
+	    		liabilitiesDetails.setFinancialYearlyStatement(yearEntry.getKey().toString().equals(""+Calendar.getInstance().get(Calendar.YEAR)) ? "Projected":"Audited");
 		    	liabilitiesDetailsRepository.save(liabilitiesDetails); 
     		}
     		
-    		Map<String, Object>	 yearMapSales  = (Map<String, Object>) liability.get("year"); 
+    		Map<String, Object>	 yearMapSales  = (Map<String, Object>) sales.get("year"); 
     		for (Map.Entry<String,Object> yearEntry : yearMapSales.entrySet()) {
 		    	OperatingStatementDetails operatingStatementDetails = new OperatingStatementDetails();
 		    	operatingStatementDetails.setYear(yearEntry.getKey());
@@ -989,32 +998,35 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		    	operatingStatementDetails.setCreatedDate(new Date());
 		    	operatingStatementDetails.setCreatedBy(applicantRequest.getUserId());
 		    	operatingStatementDetails.setLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
+		    	operatingStatementDetails.setFinancialYearlyStatement(yearEntry.getKey().toString().equals(""+Calendar.getInstance().get(Calendar.YEAR)) ? "Projected":"Audited");
 		    	operatingStatementDetailsRepository.save(operatingStatementDetails); 
     		}
     		
-//    		Map<String, Object>	 yearMapNetworth  = (Map<String, Object>) liability.get("year"); 
-//    		for (Map.Entry<String,Object> yearEntry : yearMapNetworth.entrySet()) {
-//		    	LiabilitiesDetails liabilitiesDetails = new LiabilitiesDetails();
-//		    	liabilitiesDetails.setYear(yearEntry.getKey());
-//		    	liabilitiesDetails.setTotalLiability(Double.parseDouble(yearEntry.getValue().toString()));
-//		    	liabilitiesDetails.setCreatedDate(new Date());
-//		    	liabilitiesDetails.setCreatedBy(applicantRequest.getUserId());
-//		    	liabilitiesDetails.setFsLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
-//		    	liabilitiesDetailsRepository.save(liabilitiesDetails); 
-//    		}
-//    		
-//    		Map<String, Object>	 yearMapProfitAfterTax  = (Map<String, Object>) liability.get("year"); 
-//    		for (Map.Entry<String,Object> yearEntry : yearMapProfitAfterTax.entrySet()) {
-//		    	LiabilitiesDetails liabilitiesDetails = new LiabilitiesDetails();
-//		    	liabilitiesDetails.setYear(yearEntry.getKey());
-//		    	liabilitiesDetails.setTotalLiability(Double.parseDouble(yearEntry.getValue().toString()));
-//		    	liabilitiesDetails.setCreatedDate(new Date());
-//		    	liabilitiesDetails.setCreatedBy(applicantRequest.getUserId());
-//		    	liabilitiesDetails.setFsLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
-//		    	liabilitiesDetailsRepository.save(liabilitiesDetails); 
-//    		}
+    		Map<String, Object>	 yearMapNetworth  = (Map<String, Object>) networth.get("year"); 
+    		for (Map.Entry<String,Object> yearEntry : yearMapNetworth.entrySet()) {
+		    	LiabilitiesDetails liabilitiesDetails = new LiabilitiesDetails();
+		    	liabilitiesDetails.setYear(yearEntry.getKey());
+		    	liabilitiesDetails.setNetWorth(Double.parseDouble(yearEntry.getValue().toString()));
+		    	liabilitiesDetails.setCreatedDate(new Date());
+		    	liabilitiesDetails.setCreatedBy(applicantRequest.getUserId());
+		    	liabilitiesDetails.setFsLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
+		    	liabilitiesDetails.setFinancialYearlyStatement(yearEntry.getKey().toString().equals(""+Calendar.getInstance().get(Calendar.YEAR)) ? "Projected":"Audited");
+		    	liabilitiesDetailsRepository.save(liabilitiesDetails); 
+    		}
     		
-    		Map<String, Object>	 yearMapTotalAssets  = (Map<String, Object>) liability.get("year"); 
+    		Map<String, Object>	 yearMapProfitAfterTax  = (Map<String, Object>) profitAfterTax.get("year"); 
+    		for (Map.Entry<String,Object> yearEntry : yearMapProfitAfterTax.entrySet()) {
+    			OperatingStatementDetails operatingStatementDetails = new OperatingStatementDetails();
+		    	operatingStatementDetails.setYear(yearEntry.getKey());
+		    	operatingStatementDetails.setNetProfitOrLoss(Double.parseDouble(yearEntry.getValue().toString()));
+		    	operatingStatementDetails.setCreatedDate(new Date());
+		    	operatingStatementDetails.setCreatedBy(applicantRequest.getUserId());
+		    	operatingStatementDetails.setLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
+		    	operatingStatementDetails.setFinancialYearlyStatement(yearEntry.getKey().toString().equals(""+Calendar.getInstance().get(Calendar.YEAR)) ? "Projected":"Audited");
+		    	operatingStatementDetailsRepository.save(operatingStatementDetails); 
+    		}
+    		
+    		Map<String, Object>	 yearMapTotalAssets  = (Map<String, Object>) totalAssets.get("year"); 
     		for (Map.Entry<String,Object> yearEntry : yearMapTotalAssets.entrySet()) {
     			AssetsDetails assetsDetails = new AssetsDetails();
 		    	assetsDetails.setYear(yearEntry.getKey());
@@ -1022,6 +1034,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		    	assetsDetails.setCreatedDate(new Date());
 		    	assetsDetails.setCreatedBy(applicantRequest.getUserId());
 		    	assetsDetails.setLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
+		    	assetsDetails.setFinancialYearlyStatement(yearEntry.getKey().toString().equals(""+Calendar.getInstance().get(Calendar.YEAR)) ? "Projected":"Audited");
 		    	assetsDetailsRepository.save(assetsDetails); 
     		}
 			return true;
