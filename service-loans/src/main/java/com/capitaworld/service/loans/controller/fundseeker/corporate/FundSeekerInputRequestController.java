@@ -293,7 +293,10 @@ public class FundSeekerInputRequestController {
         		return new ResponseEntity<LoansResponse>(eligibility,HttpStatus.OK);
         	}
         		try {
-        			ConnectResponse postOneForm = connectClient.postOneForm(fundSeekerInputRequestResponse.getApplicationId(), userId, CommonUtils.BusinessType.ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS.getId(),false);
+        			ConnectResponse postOneForm = null;
+        			if(!CommonUtils.BusinessType.MUDRA_LOAN.getId().equals(fundSeekerInputRequestResponse.getBusinessTypeId())) {
+        				postOneForm = connectClient.postOneForm(fundSeekerInputRequestResponse.getApplicationId(), userId, CommonUtils.BusinessType.ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS.getId(),false);
+        			}
         			if (postOneForm != null) {
         				logger.info("postOneForm=======================>Client Connect Response Uniform Product=============>{}",
         						postOneForm.toString());
