@@ -5,8 +5,6 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 
-import javax.persistence.Column;
-
 import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -201,6 +199,18 @@ public class WcTlParameterRequest extends ProductMasterRequest implements Serial
 	private Boolean isCommercialCibilDisplay = false;
 
 	private Boolean isCommercialCibilMandatory = false;
+	
+	private Integer individualCibilDpd;
+
+	private Boolean isIndividualCibilDpdDisplay = false;
+
+	private Boolean isIndividualCibilDpdMandatory = false;
+	
+    private Integer individualCibilFor3Month;
+
+    private Boolean isIndividualCibilFor3MonthDisplay = false;
+
+    private Boolean isIndividualCibilFor3MonthMandatory = false;
 
 	private Long userOrgId;
 
@@ -1823,10 +1833,51 @@ public class WcTlParameterRequest extends ProductMasterRequest implements Serial
 		this.isConstitutionMandatory = isConstitutionMandatory;
 	}
 
+	public Integer getIndividualCibilDpd() {
+		return individualCibilDpd;
+	}
 
-	
-	
-	
-	
+	public void setIndividualCibilDpd(Integer individualCibilDpd) {
+		this.individualCibilDpd = individualCibilDpd;
+	}
 
+	public Boolean getIsIndividualCibilDpdDisplay() {
+		return isIndividualCibilDpdDisplay;
+	}
+
+	public void setIsIndividualCibilDpdDisplay(Boolean isIndividualCibilDpdDisplay) {
+		this.isIndividualCibilDpdDisplay = isIndividualCibilDpdDisplay;
+	}
+
+	public Boolean getIsIndividualCibilDpdMandatory() {
+		return isIndividualCibilDpdMandatory;
+	}
+
+	public void setIsIndividualCibilDpdMandatory(Boolean isIndividualCibilDpdMandatory) {
+		this.isIndividualCibilDpdMandatory = isIndividualCibilDpdMandatory;
+	}
+
+	public Integer getIndividualCibilFor3Month() {
+		return individualCibilFor3Month;
+	}
+
+	public void setIndividualCibilFor3Month(Integer individualCibilFor3Month) {
+		this.individualCibilFor3Month = individualCibilFor3Month;
+	}
+
+	public Boolean getIsIndividualCibilFor3MonthDisplay() {
+		return isIndividualCibilFor3MonthDisplay;
+	}
+
+	public void setIsIndividualCibilFor3MonthDisplay(Boolean isIndividualCibilFor3MonthDisplay) {
+		this.isIndividualCibilFor3MonthDisplay = isIndividualCibilFor3MonthDisplay;
+	}
+
+	public Boolean getIsIndividualCibilFor3MonthMandatory() {
+		return isIndividualCibilFor3MonthMandatory;
+	}
+
+	public void setIsIndividualCibilFor3MonthMandatory(Boolean isIndividualCibilFor3MonthMandatory) {
+		this.isIndividualCibilFor3MonthMandatory = isIndividualCibilFor3MonthMandatory;
+	}
 }
