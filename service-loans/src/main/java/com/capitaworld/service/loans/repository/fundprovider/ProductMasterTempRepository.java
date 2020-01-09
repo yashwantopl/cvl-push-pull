@@ -47,10 +47,10 @@ public interface ProductMasterTempRepository extends JpaRepository<ProductMaster
 	@Query("from ProductMasterTemp pm where pm.userOrgId =:userOrgId and pm.isActive = true")
 	public List<ProductMasterTemp> getUserProductListByOrgId(@Param("userOrgId") Long userOrgId);
 	
-	@Query("from ProductMasterTemp pm where pm.userId =:userId and pm.isApproved!=true and isCopied=false and productId in (1,2,15,16,17) order by pm.id desc")
+	@Query("from ProductMasterTemp pm where pm.userId =:userId and pm.isApproved!=true and isCopied=false and productId in (1,2) order by pm.id desc")
 	public List<ProductMasterTemp> getUserCorporateProductList(@Param("userId") Long userId);
 	
-	@Query("from ProductMasterTemp pm where pm.userOrgId =:userOrgId  and isCopied=false and productId in (1,2,15,16,17) order by pm.id desc")
+	@Query("from ProductMasterTemp pm where pm.userOrgId =:userOrgId  and isCopied=false and productId in (1,2) order by pm.id desc")
 	public List<ProductMasterTemp> getUserCorporateProductListByOrgId(@Param("userOrgId") Long userOrgId);
 	
 	@Query("from ProductMasterTemp pm where pm.userId =:userId and pm.isApproved != true and pm.productId  IN (:productIds)")
@@ -120,9 +120,9 @@ public interface ProductMasterTempRepository extends JpaRepository<ProductMaster
 	@Query("select pm from ProductMasterTemp pm where pm.userId =:userId and pm.isCopied=false and pm.productId  IN (:productIds)")
 	public List<ProductMasterTemp> getProductListByUserId(@Param("userId") Long userId,@Param("productIds") List<Integer> productIds);
 
-	@Query("from ProductMasterTemp pm where pm.userOrgId =:userOrgId  and pm.isCopied=false and pm.productId in (1,2,15,16,17) and pm.businessTypeId=:businessTypeId order by pm.id desc")
+	@Query("from ProductMasterTemp pm where pm.userOrgId =:userOrgId  and pm.isCopied=false and pm.productId in (1,2) and pm.businessTypeId=:businessTypeId order by pm.id desc")
 	public List<ProductMasterTemp> getUserCorporateProductListByOrgIdByBusinessTypeId(@Param("userOrgId") Long userOrgId,@Param("businessTypeId") Long businessTypeId);
 	
-	@Query(value =  "SELECT pm.fp_product_id,pm.product_id,pm.user_id,pm.fp_name,pm.name,pm.is_parameter_filled,pm.is_active,pm.product_code,pm.user_org_id,pm.score_model_id,pm.business_type_id,pm.is_approved,pm.is_deleted,pm.is_copied,pm.is_edit,pm.status_id,pm.job_id,pm.fin_type_id,pm.campaign_type,pm.gst_type,pm.wc_renewal_status,pm.created_date FROM `loan_application`.fp_product_master_temp pm WHERE pm.user_org_id =:userOrgId AND is_copied = FALSE AND product_id IN (1,2,15,16,17) AND pm.business_type_id=:businessTypeId ORDER BY pm.fp_product_id DESC",nativeQuery = true)
+	@Query(value =  "SELECT pm.fp_product_id,pm.product_id,pm.user_id,pm.fp_name,pm.name,pm.is_parameter_filled,pm.is_active,pm.product_code,pm.user_org_id,pm.score_model_id,pm.business_type_id,pm.is_approved,pm.is_deleted,pm.is_copied,pm.is_edit,pm.status_id,pm.job_id,pm.fin_type_id,pm.campaign_type,pm.gst_type,pm.wc_renewal_status,pm.created_date FROM `loan_application`.fp_product_master_temp pm WHERE pm.user_org_id =:userOrgId AND is_copied = FALSE AND product_id IN (1,2) AND pm.business_type_id=:businessTypeId ORDER BY pm.fp_product_id DESC",nativeQuery = true)
 	public List<Object[]> getProductListByBusinessTypeId(@Param("userOrgId") Long userOrgId,@Param("businessTypeId") Long businessTypeId);
 }

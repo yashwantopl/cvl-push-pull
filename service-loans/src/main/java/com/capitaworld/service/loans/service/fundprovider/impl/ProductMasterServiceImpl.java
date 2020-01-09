@@ -1033,7 +1033,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					Long businessTypeId = Long.valueOf(userObj[0].toString());
 					List<Object[]> arr =  (List<Object[]>)productMasterTempRepository.getProductListByBusinessTypeId(userOrgId, businessTypeId);
 					results = getFromObjectArray(arr);
-//					results = productMasterTempRepository.getUserCorporateProductListByOrgIdByBusinessTypeId(userOrgId, businessTypeId);
 				}else{
 					results = productMasterTempRepository.getUserCorporateProductListByOrgId(userOrgId);
 				}
@@ -1223,20 +1222,22 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 		if (!CommonUtils.isObjectNullOrEmpty(stage) && stage == 1) {
 			Integer productId = productMasterTempRepository.getProductIdById(id);
-			if (productId == 1) {
+			if (productId == CommonUtils.LoanType.WORKING_CAPITAL.getValue()) {
 				return workingCapitalParameterService.getWorkingCapitalParameterTemp(id, role, userId);
-			} else if (productId == 2) {
+			} else if (productId == CommonUtils.LoanType.TERM_LOAN.getValue()) {
 					return termLoanParameterService.getTermLoanParameterRequestTemp(id, role, userId);
+			} else if (productId == CommonUtils.LoanType.WCTL_LOAN.getValue()) {
+				return wcTlParameterService.getWcTlRequestTemp(id, role, userId);
 			}
 		} else {
 			Integer productId = productMasterRepository.getProductIdById(id);
-			if (productId == 1) {
+			if (productId == CommonUtils.LoanType.WORKING_CAPITAL.getValue()) {
 				return workingCapitalParameterService.getWorkingCapitalParameter(id);
-			} else if (productId == 2) {
+			} else if (productId == CommonUtils.LoanType.TERM_LOAN.getValue()) {
 				return termLoanParameterService.getTermLoanParameterRequest(id,role);
-			} else if (productId == 15) {
+			} else if (productId == CommonUtils.LoanType.UNSECURED_LOAN.getValue()) {
 				return unsecuredLoanParameterService.getUnsecuredLoanParameterRequest(id);
-			} else if (productId == 16) {
+			} else if (productId == CommonUtils.LoanType.WCTL_LOAN.getValue()) {
 				return wcTlParameterService.getWcTlRequest(id,role);
 			}			
 		}
