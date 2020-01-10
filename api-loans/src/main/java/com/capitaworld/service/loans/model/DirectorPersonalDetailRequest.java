@@ -27,10 +27,9 @@ public class DirectorPersonalDetailRequest implements Serializable {
     private Boolean isSameAddIdProof;
     private Integer addressYears;
     private Integer otherIncomeSource;
-    private Integer noOfEarningMember;
-    private String otherCertificationCourse;
-    private Boolean isOngoingMudraLoan;
-
+    private Integer certificationCourse;
+    private Integer ongoingMudraLoan;
+    
     
     public Long getId() {
         return id;
@@ -137,28 +136,20 @@ public class DirectorPersonalDetailRequest implements Serializable {
 		this.otherIncomeSource = otherIncomeSource;
 	}
 
-	public String getOtherCertificationCourse() {
-		return otherCertificationCourse;
+	public Integer getOngoingMudraLoan() {
+		return ongoingMudraLoan;
 	}
 
-	public void setOtherCertificationCourse(String otherCertificationCourse) {
-		this.otherCertificationCourse = otherCertificationCourse;
+	public void setOngoingMudraLoan(Integer ongoingMudraLoan) {
+		this.ongoingMudraLoan = ongoingMudraLoan;
 	}
 
-	public Boolean getIsOngoingMudraLoan() {
-		return isOngoingMudraLoan;
+	public Integer getCertificationCourse() {
+		return certificationCourse;
 	}
 
-	public void setIsOngoingMudraLoan(Boolean isOngoingMudraLoan) {
-		this.isOngoingMudraLoan = isOngoingMudraLoan;
+	public void setCertificationCourse(Integer certificationCourse) {
+		this.certificationCourse = certificationCourse;
 	}
-
-	public Integer getNoOfEarningMember() {
-		return noOfEarningMember;
-	}
-
-	public void setNoOfEarningMember(Integer noOfEarningMember) {
-		this.noOfEarningMember = noOfEarningMember;
-	}
-	
+		
 }

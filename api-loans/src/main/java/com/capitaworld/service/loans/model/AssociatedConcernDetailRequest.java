@@ -66,7 +66,11 @@ public class AssociatedConcernDetailRequest implements Serializable{
 	private Date dateOfIncorporation;
 
 	private String financialInstitutionName;
-
+	
+	private String address;
+	
+	private String extentOfInterest;
+	
 	private Double limitAvailed;
 
 	public Long getId() {
@@ -270,7 +274,23 @@ public class AssociatedConcernDetailRequest implements Serializable{
 		this.limitAvailed = limitAvailed;
 	}
 
-    public static void printFields(Object obj) throws LoansException {
+    public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public String getExtentOfInterest() {
+		return extentOfInterest;
+	}
+
+	public void setExtentOfInterest(String extentOfInterest) {
+		this.extentOfInterest = extentOfInterest;
+	}
+
+	public static void printFields(Object obj) throws LoansException {
         try {
             Field[] fields = AssociatedConcernDetailRequest.class.getDeclaredFields();
 

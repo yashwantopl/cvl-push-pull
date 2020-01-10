@@ -96,6 +96,13 @@ public class AssociatedConcernDetail implements Serializable {
 	
 	@Column(name = "limit_availed")
 	private Double limitAvailed;
+	
+	@Column(name = "address")
+	private String address;
+	
+	@Column(name = "extent_of_interest")
+	private String extentOfInterest;
+	
 
 	public AssociatedConcernDetail() {
 		// Do nothing because of X and Y.
@@ -300,4 +307,22 @@ public class AssociatedConcernDetail implements Serializable {
 	public void setApplicationProposalMapping(ApplicationProposalMapping applicationProposalMapping) {
 		this.applicationProposalMapping = applicationProposalMapping;
 	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public String getExtentOfInterest() {
+		return extentOfInterest;
+	}
+
+	public void setExtentOfInterest(String extentOfInterest) {
+		this.extentOfInterest = extentOfInterest;
+	}
+	
+	
 }

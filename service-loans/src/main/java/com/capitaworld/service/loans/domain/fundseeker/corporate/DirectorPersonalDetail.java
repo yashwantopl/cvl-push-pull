@@ -49,16 +49,12 @@ public class DirectorPersonalDetail extends AuditActivity implements Serializabl
     @Column(name="other_income_source")
     private Integer otherIncomeSource;
     
-    @Column(name="no_of_earning_member")
-    private Integer noOfEarningMember;
+    @Column(name="ongoing_mudra_loan")
+    private Integer ongoingMudraLoan;
     
-    @Column(name="other_certification_course")
-    private String otherCertificationCourse;
-    
-    @Column(name="is_ongoing_mudra_loan")
-    private Boolean isOngoingMudraLoan;
+    @Column(name="certification_course")
+    private Integer certificationCourse;
 
-    
     
     public DirectorPersonalDetail(){
         // Do nothing because of X and Y.
@@ -169,29 +165,20 @@ public class DirectorPersonalDetail extends AuditActivity implements Serializabl
 		this.otherIncomeSource = otherIncomeSource;
 	}
 
-	public String getOtherCertificationCourse() {
-		return otherCertificationCourse;
+	public Integer getOngoingMudraLoan() {
+		return ongoingMudraLoan;
 	}
 
-	public void setOtherCertificationCourse(String otherCertificationCourse) {
-		this.otherCertificationCourse = otherCertificationCourse;
+	public void setOngoingMudraLoan(Integer ongoingMudraLoan) {
+		this.ongoingMudraLoan = ongoingMudraLoan;
 	}
 
-	public Boolean getIsOngoingMudraLoan() {
-		return isOngoingMudraLoan;
+	public Integer getCertificationCourse() {
+		return certificationCourse;
 	}
 
-	public void setIsOngoingMudraLoan(Boolean isOngoingMudraLoan) {
-		this.isOngoingMudraLoan = isOngoingMudraLoan;
+	public void setCertificationCourse(Integer certificationCourse) {
+		this.certificationCourse = certificationCourse;
 	}
 
-	public Integer getNoOfEarningMember() {
-		return noOfEarningMember;
-	}
-
-	public void setNoOfEarningMember(Integer noOfEarningMember) {
-		this.noOfEarningMember = noOfEarningMember;
-	}
-	
-	
 }
