@@ -29,6 +29,7 @@ import com.capitaworld.service.loans.model.common.ProposalList;
 import com.capitaworld.service.loans.model.corporate.CorporateProduct;
 import com.capitaworld.service.loans.model.mobile.MLoanDetailsResponse;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
+import com.capitaworld.service.loans.model.retail.BankRelationshipRequest;
 import com.capitaworld.service.scoring.model.scoringmodel.ScoringModelReqRes;
 import com.capitaworld.service.users.model.FpProfileBasicDetailRequest;
 import com.capitaworld.service.users.model.RegisteredUserResponse;
@@ -288,5 +289,7 @@ public interface LoanApplicationService {
 	public Object getCampaignCodeAndIsBankSpecific(Long applicationId);
 
 	public UsersRequest getUserDetailsForUrlSepration(Long userId);
+	
+	public List<BankRelationshipRequest> getBankRelations(Long applicationId, Long coApplicantId);
 
 }

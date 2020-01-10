@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.repository.common;
 
+import com.capitaworld.service.loans.domain.fundseeker.retail.BankingRelation;
 import com.capitaworld.service.loans.model.TutorialsViewAudits;
 import com.capitaworld.service.loans.model.score.ScoringCibilRequest;
 
@@ -99,4 +100,8 @@ public interface LoanRepository{
 	public boolean getCibilBureauAPITrueOrFalse(Long orgId);
 	
 	public Object[] getBankBureauFlags(Long orgId);
+	
+	public List<BankingRelation> listBankRelationAppId(Long id);
+	
+    public List<BankingRelation> listBankRelationAppId(Long id,Long applicantId);
 }

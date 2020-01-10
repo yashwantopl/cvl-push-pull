@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.controller.common;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -29,6 +30,8 @@ import com.capitaworld.service.loans.model.common.CGTMSECalcDataResponse;
 import com.capitaworld.service.loans.model.common.HunterRequestDataResponse;
 import com.capitaworld.service.loans.model.common.LongitudeLatitudeRequest;
 import com.capitaworld.service.loans.model.common.MinMaxProductDetailRequest;
+import com.capitaworld.service.loans.model.retail.BankRelationshipRequest;
+import com.capitaworld.service.loans.service.common.CommonService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
@@ -506,5 +509,23 @@ public class CommonController {
 			return new ResponseEntity<>(new LoansResponse("Something went wrong !!",HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
+	@GetMapping(value = "/getBankRelations/{applicationId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> getBankRelations(@PathVariable("applicationId")  Long applicationId,@RequestParam(value = "coAppId", required = false) Long coAppId) {
+        try {
+            List<BankRelationshipRequest> bankRelations = new ArrayList<>();
+            if(coAppId != null){
+                bankRelations = applicationService.getBankRelations(applicationId,coAppId);
+            } else {
+                bankRelations = applicationService.getBankRelations(applicationId,null);
+            }
+
+            return new ResponseEntity<>(new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value(), bankRelations), HttpStatus.OK);
+
+        } catch (Exception e) {
+            logger.error(CommonUtils.EXCEPTION,e);
+            return new ResponseEntity<>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 }

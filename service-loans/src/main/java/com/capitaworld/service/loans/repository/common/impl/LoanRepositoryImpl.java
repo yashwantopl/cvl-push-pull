@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.repository.common.impl;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -13,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
+import com.capitaworld.service.loans.domain.fundseeker.retail.BankingRelation;
 import com.capitaworld.service.loans.model.TutorialsViewAudits;
 import com.capitaworld.service.loans.repository.common.LoanRepository;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -677,5 +679,26 @@ public class LoanRepositoryImpl implements LoanRepository {
 			logger.error("Exception while get Cibil bureau API true or false by OrgId " + orgId,e.getMessage());
 		}
 		return false;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<BankingRelation> listBankRelationAppId(Long id) {
+		List<BankingRelation> bankingRelations = new ArrayList<BankingRelation>();
+		bankingRelations = entityManager
+				.createQuery("SELECT o FROM BankingRelation o WHERE o.applicationId=:id AND o.isActive = TRUE AND o.coApplicantId IS NULL")
+				.setParameter("id", id).getResultList();
+		return bankingRelations;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<BankingRelation> listBankRelationAppId(Long id, Long applicantId) {
+		List<BankingRelation> bankingRelations = new ArrayList<BankingRelation>();
+		bankingRelations = entityManager
+				.createNativeQuery("SELECT o FROM BankingRelation o WHERE o.applicationId=:id AND o.isActive = TRUE  AND o.coApplicantId =:coAppId")
+				.setParameter("applicantId", applicantId)
+				.setParameter("id", id).getResultList();
+		return bankingRelations;
 	}
 }
