@@ -202,6 +202,8 @@ public class FundSeekerInputRequestResponse {
 	
 	private Integer accessInput;
 	
+	private AssociatedConcernDetailRequest associatedConcern;
+	
     /**/
     
     
@@ -933,6 +935,14 @@ public class FundSeekerInputRequestResponse {
 
 	public void setAccessInput(Integer accessInput) {
 		this.accessInput = accessInput;
+	}
+	
+	public AssociatedConcernDetailRequest getAssociatedConcern() {
+		return associatedConcern;
+	}
+
+	public void setAssociatedConcern(AssociatedConcernDetailRequest associatedConcern) {
+		this.associatedConcern = associatedConcern;
 	}
 
 	@Override

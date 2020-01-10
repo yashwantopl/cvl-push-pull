@@ -42,6 +42,7 @@ import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
 import com.capitaworld.service.loans.config.AsyncComponent;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.AssociatedConcernDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorPersonalDetail;
@@ -49,6 +50,7 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporat
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetailMudraLoan;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.Address;
+import com.capitaworld.service.loans.model.AssociatedConcernDetailRequest;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.DirectorPersonalDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
@@ -479,16 +481,23 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
 			corporateApplicantDetail.setBusinessSinceYear(fundSeekerInputRequest.getSinceYear());
 			corporateApplicantDetail.setBusinessSinceMonth(fundSeekerInputRequest.getSinceMonth());
-			
+
 			// Rohit
+			/*** SAVE ASSOCIATED CONCERN DETAILS***/
+			AssociatedConcernDetail associatedConcernDetail = new AssociatedConcernDetail();
+			BeanUtils.copyProperties(fundSeekerInputRequest.getAssociatedConcern(), associatedConcernDetail);
+			associatedConcernDetail.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
+			associatedConcernDetail.setCreatedBy(fundSeekerInputRequest.getUserId());
+			associatedConcernDetail.setCreatedDate(new Date());
+			associatedConcernDetailRepository.save(associatedConcernDetail); 
+			
 			corporateApplicantDetail.setBusinessProspects(fundSeekerInputRequest.getBusinessProspects());
 			corporateApplicantDetail.setAccessInput(fundSeekerInputRequest.getAccessInput());
 			
 			// SAVE GOVERNMENT SCHEME
 			fsParameterMappingService.inactiveAndSave(fundSeekerInputRequest.getApplicationId(), FSParameterMst.GOV_SCHEMES.getId(), fundSeekerInputRequest.getGovSchemes());
-			
-			// SAVE CERTIFICATION COURSE
-			fsParameterMappingService.inactiveAndSave(fundSeekerInputRequest.getApplicationId(), FSParameterMst.CERTIFICATION_COURSE.getId(), fundSeekerInputRequest.getCertificationCourses()); 
+//			// SAVE CERTIFICATION COURSE
+//			fsParameterMappingService.inactiveAndSave(fundSeekerInputRequest.getApplicationId(), FSParameterMst.CERTIFICATION_COURSE.getId(), fundSeekerInputRequest.getCertificationCourses()); 
 			
 			logger.info("Just Before Save ------------------------------------->" + corporateApplicantDetail.getConstitutionId());
 			corporateApplicantDetailRepository.save(corporateApplicantDetail);
@@ -596,10 +605,13 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			logger.info("TOTAL SUB SECTOR FOUND ------------->" + subSectorList.size() + "----------By APP Id ---------> " + fsInputReq.getApplicationId());
 			fsInputRes.setSubsectors(subSectorList);
 			
+			// GET MUDRA LOAN RELATED DETAILS
 			PrimaryCorporateDetailMudraLoan mudraLoan = primaryCorporateDetailMudraLoanRepository.findByApplicationId(fsInputRes.getApplicationId());
-			
 			fsInputRes.setGovAuthorities(fsParameterMappingService.getParameters(fsInputReq.getApplicationId(),FSParameterMst.GOV_AUTHORITIES.getId()));
-			BeanUtils.copyProperties(mudraLoan, fsInputRes);
+			
+			if (!CommonUtils.isObjectNullOrEmpty(mudraLoan)) {
+				BeanUtils.copyProperties(mudraLoan, fsInputRes);
+			}
 			
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse("One form data successfully fetched", HttpStatus.OK.value(), fsInputRes),
@@ -665,7 +677,15 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			}
 			fundSeekerInputResponse.setDirectorBackgroundDetailRequestsList(directorBackgroundDetailRequestList);
 			fundSeekerInputResponse.setGovSchemes(fsParameterMappingService.getParameters(fundSeekerInputRequest.getApplicationId(), FSParameterMst.GOV_SCHEMES.getId()));
-			fundSeekerInputResponse.setCertificationCourses(fsParameterMappingService.getParameters(fundSeekerInputRequest.getApplicationId(), FSParameterMst.CERTIFICATION_COURSE.getId()));
+//			fundSeekerInputResponse.setCertificationCourses(fsParameterMappingService.getParameters(fundSeekerInputRequest.getApplicationId(), FSParameterMst.CERTIFICATION_COURSE.getId()));
+
+			// GET ASSOCIATED CONCERN
+			AssociatedConcernDetailRequest asoConcernDetailRequest = new AssociatedConcernDetailRequest(); 
+			AssociatedConcernDetail associatedConcernDetail =  associatedConcernDetailRepository.findByApplicationId(fundSeekerInputRequest.getApplicationId());
+			if (!CommonUtils.isObjectNullOrEmpty(associatedConcernDetail)) {
+				BeanUtils.copyProperties(associatedConcernDetail, asoConcernDetailRequest);
+				fundSeekerInputResponse.setAssociatedConcern(asoConcernDetailRequest);
+			}
 			
 
 			try {
