@@ -102,7 +102,7 @@ public class CommonUtils {
 	public static final String SUCCESS_RESULT = "Success Result";
 	public static final String DATA_FOUND = "Data Found.";
 	public static final String DATA_NOT_FOUND = "Data Not Found.";
-	public static final String SUCCESSFULLY_SAVED = "Successfully Purpose of loan created";
+	public static final String SUCCESSFULLY_SAVED = "Successfully Saved";
 	public static final String SUCCESSFULLY_UPDATED = "Purpose of Loan Model sent for approval";
 	public static final String STATUS_UPDATED = "Purpose of Model Saved Successfully";
 

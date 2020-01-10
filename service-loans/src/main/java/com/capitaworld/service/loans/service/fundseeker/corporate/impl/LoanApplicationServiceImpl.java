@@ -78,6 +78,7 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.PromotorBackgro
 import com.capitaworld.service.loans.domain.fundseeker.corporate.ProposedProductDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.SecurityCorporateDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.TotalCostOfProject;
+import com.capitaworld.service.loans.domain.fundseeker.retail.BankingRelation;
 import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.GuarantorDetails;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryAutoLoanDetail;
@@ -129,6 +130,7 @@ import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateProduct;
 import com.capitaworld.service.loans.model.mobile.MLoanDetailsResponse;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
+import com.capitaworld.service.loans.model.retail.BankRelationshipRequest;
 import com.capitaworld.service.loans.repository.GstRelatedpartyRepository;
 import com.capitaworld.service.loans.repository.common.LoanRepository;
 import com.capitaworld.service.loans.repository.common.LogDetailsRepository;
@@ -8553,4 +8555,22 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 		return null;
 	}
+
+	@Override
+	public List<BankRelationshipRequest> getBankRelations(Long applicationId, Long coApplicantId) {
+    	List<BankRelationshipRequest> bankRelationshipRequests = new ArrayList<>();
+        List<BankingRelation> bankingRelations = new ArrayList<>();
+    	if(coApplicantId != null) {
+            bankingRelations = loanRepository.listBankRelationAppId(applicationId, coApplicantId);
+        } else{
+            bankingRelations = loanRepository.listBankRelationAppId(applicationId);
+        }
+        BankRelationshipRequest bankRelationshipRequest = null;
+        for(BankingRelation bankingRelation : bankingRelations) {
+        	bankRelationshipRequest = new BankRelationshipRequest();
+        	BeanUtils.copyProperties(bankingRelation, bankRelationshipRequest);
+        	bankRelationshipRequests.add(bankRelationshipRequest);
+        }
+    	return bankRelationshipRequests;
+    }
 }
