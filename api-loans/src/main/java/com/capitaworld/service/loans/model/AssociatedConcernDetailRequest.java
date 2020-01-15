@@ -72,6 +72,25 @@ public class AssociatedConcernDetailRequest implements Serializable{
 	private String extentOfInterest;
 	
 	private Double limitAvailed;
+	
+	private String premiseNumber;
+	
+	private String landMark;
+	
+	private Integer countryId;
+	
+	private Long cityId;
+	
+	private Integer stateId;
+	
+	private String subDistrict;
+	
+	private String district;
+	
+	private Long pincode;
+	
+	private Long districtMappingId;
+	
 
 	public Long getId() {
 		return id;
@@ -288,6 +307,78 @@ public class AssociatedConcernDetailRequest implements Serializable{
 
 	public void setExtentOfInterest(String extentOfInterest) {
 		this.extentOfInterest = extentOfInterest;
+	}
+
+	public String getPremiseNumber() {
+		return premiseNumber;
+	}
+
+	public void setPremiseNumber(String premiseNumber) {
+		this.premiseNumber = premiseNumber;
+	}
+
+	public String getLandMark() {
+		return landMark;
+	}
+
+	public void setLandMark(String landMark) {
+		this.landMark = landMark;
+	}
+
+	public Integer getCountryId() {
+		return countryId;
+	}
+
+	public void setCountryId(Integer countryId) {
+		this.countryId = countryId;
+	}
+
+	public Long getCityId() {
+		return cityId;
+	}
+
+	public void setCityId(Long cityId) {
+		this.cityId = cityId;
+	}
+
+	public Integer getStateId() {
+		return stateId;
+	}
+
+	public void setStateId(Integer stateId) {
+		this.stateId = stateId;
+	}
+
+	public String getSubDistrict() {
+		return subDistrict;
+	}
+
+	public void setSubDistrict(String subDistrict) {
+		this.subDistrict = subDistrict;
+	}
+
+	public String getDistrict() {
+		return district;
+	}
+
+	public void setDistrict(String district) {
+		this.district = district;
+	}
+
+	public Long getPincode() {
+		return pincode;
+	}
+
+	public void setPincode(Long pincode) {
+		this.pincode = pincode;
+	}
+
+	public Long getDistrictMappingId() {
+		return districtMappingId;
+	}
+
+	public void setDistrictMappingId(Long districtMappingId) {
+		this.districtMappingId = districtMappingId;
 	}
 
 	public static void printFields(Object obj) throws LoansException {

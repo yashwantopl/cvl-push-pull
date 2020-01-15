@@ -97,11 +97,35 @@ public class AssociatedConcernDetail implements Serializable {
 	@Column(name = "limit_availed")
 	private Double limitAvailed;
 	
-	@Column(name = "address")
-	private String address;
-	
 	@Column(name = "extent_of_interest")
 	private String extentOfInterest;
+	
+	@Column(name = "premise_number")
+	private String premiseNumber;
+	
+	@Column(name = "land_mark")
+	private String landMark;
+	
+	@Column(name = "country_id")
+	private Integer countryId;
+	
+	@Column(name = "city_id")
+	private Long cityId;
+	
+	@Column(name = "state_id")
+	private Integer stateId;
+	
+	@Column(name = "sub_district")
+	private String subDistrict;
+	
+	@Column(name = "district")
+	private String district;
+	
+	@Column(name = "district_mapping_id")
+	private Long districtMappingId; 
+	
+	@Column(name = "pincode")
+	private Long pincode;
 	
 
 	public AssociatedConcernDetail() {
@@ -308,14 +332,6 @@ public class AssociatedConcernDetail implements Serializable {
 		this.applicationProposalMapping = applicationProposalMapping;
 	}
 
-	public String getAddress() {
-		return address;
-	}
-
-	public void setAddress(String address) {
-		this.address = address;
-	}
-
 	public String getExtentOfInterest() {
 		return extentOfInterest;
 	}
@@ -323,6 +339,77 @@ public class AssociatedConcernDetail implements Serializable {
 	public void setExtentOfInterest(String extentOfInterest) {
 		this.extentOfInterest = extentOfInterest;
 	}
-	
+
+	public String getPremiseNumber() {
+		return premiseNumber;
+	}
+
+	public void setPremiseNumber(String premiseNumber) {
+		this.premiseNumber = premiseNumber;
+	}
+
+	public String getLandMark() {
+		return landMark;
+	}
+
+	public void setLandMark(String landMark) {
+		this.landMark = landMark;
+	}
+
+	public Integer getCountryId() {
+		return countryId;
+	}
+
+	public void setCountryId(Integer countryId) {
+		this.countryId = countryId;
+	}
+
+	public Long getCityId() {
+		return cityId;
+	}
+
+	public void setCityId(Long cityId) {
+		this.cityId = cityId;
+	}
+
+	public Integer getStateId() {
+		return stateId;
+	}
+
+	public void setStateId(Integer stateId) {
+		this.stateId = stateId;
+	}
+
+	public String getSubDistrict() {
+		return subDistrict;
+	}
+
+	public void setSubDistrict(String subDistrict) {
+		this.subDistrict = subDistrict;
+	}
+
+	public String getDistrict() {
+		return district;
+	}
+
+	public void setDistrict(String district) {
+		this.district = district;
+	}
+
+	public Long getDistrictMappingId() {
+		return districtMappingId;
+	}
+
+	public void setDistrictMappingId(Long districtMappingId) {
+		this.districtMappingId = districtMappingId;
+	}
+
+	public Long getPincode() {
+		return pincode;
+	}
+
+	public void setPincode(Long pincode) {
+		this.pincode = pincode;
+	}
 	
 }
