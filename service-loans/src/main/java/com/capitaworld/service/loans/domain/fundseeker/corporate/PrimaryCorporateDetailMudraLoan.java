@@ -20,7 +20,7 @@ public class PrimaryCorporateDetailMudraLoan implements Serializable {
 	@Id
 	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 	
 	@Column(name = "mrkt_arragement_finished_goods")
 	private Integer mrktArragementFinishedGoods;
@@ -87,14 +87,22 @@ public class PrimaryCorporateDetailMudraLoan implements Serializable {
 	
 	@Column (name = "application_id")
 	private Long applicationId;
-	
 
-	public Integer getId() {
+	
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public Double getCostOfMachinery() {
+		return costOfMachinery;
+	}
+
+	public void setCostOfMachinery(Double costOfMachinery) {
+		this.costOfMachinery = costOfMachinery;
 	}
 
 	public Integer getMrktArragementFinishedGoods() {

@@ -209,6 +209,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	@Autowired
 	private FSParameterMappingService fsParameterMappingService;
 
+	/**
+	 * Save oneform details
+	 */
 	@Override
 	public boolean saveOrUpdate(FundSeekerInputRequestResponse fundSeekerInputRequest) throws LoansException {
 		try {
@@ -279,21 +282,22 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			primaryCorporateDetail.setIsAdditionalAmount(fundSeekerInputRequest.getIsAdditionalAmount());
 			primaryCorporateDetail.setIsAllowSwitchExistingLender(fundSeekerInputRequest.getIsAllowSwitchExistingLender());
 			
-			/*mudra loan*/
-			PrimaryCorporateDetailMudraLoan corporateDetailMudraLoan = new PrimaryCorporateDetailMudraLoan();
-			if(!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequest.getApplicationId()))
-			{
-				corporateDetailMudraLoan = primaryCorporateDetailMudraLoanRepository.findByApplicationId(fundSeekerInputRequest.getApplicationId());
-				if (!CommonUtils.isObjectNullOrEmpty(corporateDetailMudraLoan)) {
-					BeanUtils.copyProperties(fundSeekerInputRequest, corporateDetailMudraLoan);
-					fsParameterMappingService.inactiveAndSave(fundSeekerInputRequest.getApplicationId(),
-							FSParameterMst.GOV_AUTHORITIES.getId(), fundSeekerInputRequest.getGovAuthorities());
-					primaryCorporateDetailMudraLoanRepository.saveAndFlush(corporateDetailMudraLoan);
-					/**/
-				}
+			
+			/****SAVE MUDRA LOAN DETAILS ****/
+			if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getPrimaryCorporatedetailsMudraloanId())) {
+				PrimaryCorporateDetailMudraLoan corporateDetailMudraLoan = primaryCorporateDetail.getPrimaryCorporatedetailsMudraloanId(); 
+				BeanUtils.copyProperties(fundSeekerInputRequest, corporateDetailMudraLoan, "id" , "applicationId");
+				primaryCorporateDetailMudraLoanRepository.save(corporateDetailMudraLoan);
+			} else {
+				PrimaryCorporateDetailMudraLoan mudraLoanDetails = new PrimaryCorporateDetailMudraLoan();				
+				BeanUtils.copyProperties(fundSeekerInputRequest, mudraLoanDetails);
+				primaryCorporateDetailMudraLoanRepository.save(mudraLoanDetails);
+				primaryCorporateDetail.setPrimaryCorporatedetailsMudraloanId(mudraLoanDetails);
 			}
-			primaryCorporateDetail.setPrimaryCorporatedetailsMudraloanId(corporateDetailMudraLoan);
+			
+
 			primaryCorporateDetailRepository.saveAndFlush(primaryCorporateDetail);
+			fsParameterMappingService.inactiveAndSave(fundSeekerInputRequest.getApplicationId(), FSParameterMst.GOV_AUTHORITIES.getId(), fundSeekerInputRequest.getGovAuthorities());
 
 			List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestsList = fundSeekerInputRequest.getFinancialArrangementsDetailRequestsList();
 			if(!CommonUtils.isListNullOrEmpty(financialArrangementsDetailRequestsList)) {
