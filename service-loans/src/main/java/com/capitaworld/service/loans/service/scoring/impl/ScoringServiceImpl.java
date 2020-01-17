@@ -1804,7 +1804,7 @@ public class ScoringServiceImpl implements ScoringService {
 
                                         CibilResponse cibilResponse = cibilClient.getDPDYears(applicationId);
                                         if (!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isObjectNullOrEmpty(cibilResponse.getData())) {
-                                            customer_ass_concern_year = (Double) cibilResponse.getData();
+                                            customer_ass_concern_year = Double.parseDouble(cibilResponse.getData().toString());
 
                                             scoringParameterRequest.setCustomerAssociateConcern(customer_ass_concern_year);
                                             scoringParameterRequest.setCustomerAsscociateConcern_p(true);
@@ -1828,8 +1828,8 @@ public class ScoringServiceImpl implements ScoringService {
                                         cibilRequest.setApplicationId(applicationId);
 
                                         CibilResponse cibilResponse = cibilClient.getCibilScore(cibilRequest);
-                                        if (!CommonUtils.isObjectNullOrEmpty(cibilResponse.getData())) {
-                                            cibil_score_avg_promotor = (Double) cibilResponse.getData();
+                                        if (!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isObjectNullOrEmpty(cibilResponse.getData())) {
+                                            cibil_score_avg_promotor = Double.parseDouble(cibilResponse.getData().toString());
                                             scoringParameterRequest.setCibilTransuniunScore(cibil_score_avg_promotor);
                                             scoringParameterRequest.setCibilTransunionScore_p(true);
                                         } else {
@@ -2360,7 +2360,7 @@ public class ScoringServiceImpl implements ScoringService {
                                  break;
                              }
                             case ScoreParameter.MudraLoan.MARKETING_ARRANGEMENT_FOR_FINISHED_GOODS_ML: {
-                            	if(corporateDetailMudraLoan.getMrktArragementFinishedGoods()!=null) {
+                            	if(!CommonUtils.isObjectNullOrEmpty(corporateDetailMudraLoan) && !CommonUtils.isObjectNullOrEmpty(corporateDetailMudraLoan.getMrktArragementFinishedGoods()) ) {
                             		scoringParameterRequest.setMarketingArrangmentForFinishedGoods(corporateDetailMudraLoan.getMrktArragementFinishedGoods());
                             		scoringParameterRequest.setMarketingArrangmentForFinishedGoods_p(true);
                             	}
