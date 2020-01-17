@@ -3,6 +3,9 @@ package com.capitaworld.service.loans.service.scoring.impl;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -35,7 +38,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.capitaworld.cibil.api.model.CibilRequest;
 import com.capitaworld.cibil.api.model.CibilResponse;
 import com.capitaworld.cibil.api.model.CibilScoreLogRequest;
-import com.capitaworld.cibil.api.utility.CibilUtils;
 import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.itr.api.model.ITRBasicDetailsResponse;
@@ -44,7 +46,6 @@ import com.capitaworld.itr.client.ITRClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
 import com.capitaworld.service.analyzer.model.common.Data;
-import com.capitaworld.service.analyzer.model.common.MonthlyDetail;
 import com.capitaworld.service.analyzer.model.common.ReportRequest;
 import com.capitaworld.service.analyzer.model.common.Xn;
 import com.capitaworld.service.gst.GstCalculation;
@@ -58,6 +59,8 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgro
 import com.capitaworld.service.loans.domain.fundseeker.corporate.LiabilitiesDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatementDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetailMudraLoan;
+import com.capitaworld.service.loans.domain.fundseeker.retail.BankingRelation;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.LoansResponse;
@@ -75,6 +78,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBac
 import com.capitaworld.service.loans.repository.fundseeker.corporate.FinancialArrangementDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LiabilitiesDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailMudraLoanRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.BankingRelationlRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.CoApplicantDetailRepository;
@@ -84,6 +88,7 @@ import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryHomeLoa
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantIncomeRepository;
 import com.capitaworld.service.loans.service.common.BankBureauResponseService;
+import com.capitaworld.service.loans.service.fundprovider.FSParameterMappingService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.scoring.ScoringService;
@@ -93,7 +98,13 @@ import com.capitaworld.service.loans.utils.scoreexcel.ScoreExcelFileGenerator;
 import com.capitaworld.service.loans.utils.scoreexcel.ScoreExcelReader;
 import com.capitaworld.service.matchengine.model.BankBureauRequest;
 import com.capitaworld.service.oneform.client.OneFormClient;
+import com.capitaworld.service.oneform.enums.FSParameterMst;
+import com.capitaworld.service.oneform.exceptions.OneFormException;
+import com.capitaworld.service.oneform.model.IrrBySectorAndSubSector;
 import com.capitaworld.service.rating.RatingClient;
+import com.capitaworld.service.rating.exception.RatingException;
+import com.capitaworld.service.rating.model.IndustryResponse;
+import com.capitaworld.service.rating.model.IrrRequest;
 import com.capitaworld.service.scoring.ScoringClient;
 import com.capitaworld.service.scoring.exception.ScoringException;
 import com.capitaworld.service.scoring.model.FundSeekerInputRequest;
@@ -213,10 +224,16 @@ public class ScoringServiceImpl implements ScoringService {
     private ProductMasterRepository productMasterRepository;
 
     @Autowired
-    private BankBureauResponseService bankBureauResponseService; 
+    private BankBureauResponseService bankBureauResponseService;
+    
+    @Autowired
+    private FSParameterMappingService fsParameterMappingService;
     
     @Autowired
     private CspCodeRepository cspCodeRepository;
+    
+    @Autowired
+    private PrimaryCorporateDetailMudraLoanRepository primaryCorporateDetailMudraLoanRepository;
     
     private static final String ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING = "Error while getting retail applicant detail for personal loan scoring : ";
     private static final String ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_HOME_LOAN_SCORING = "Error while getting retail applicant detail for Home loan scoring : ";
@@ -1607,7 +1624,7 @@ public class ScoringServiceImpl implements ScoringService {
             scoringRequest.setFpProductId(fpProductId);
             scoringRequest.setApplicationId(applicationId);
             scoringRequest.setUserId(scoringRequestLoans.getUserId());
-            scoringRequest.setBusinessTypeId(ScoreParameter.BusinessType.EXISTING_BUSINESS);
+            scoringRequest.setBusinessTypeId(ScoreParameter.BusinessType.MUDRA_LOAN);
             scoringRequest.setEligibleLoanAmountCircular(scoringRequestLoans.getEligibleLoanAmountCircular());
             scoringRequest.setMap(scoringRequestLoans.getMapList());
 
@@ -1742,6 +1759,10 @@ public class ScoringServiceImpl implements ScoringService {
 
                 PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateDetailRepository.findOneByApplicationIdId(applicationId);
 
+                
+                // Primary Corporate details for Mudra loans
+                
+                PrimaryCorporateDetailMudraLoan corporateDetailMudraLoan  = primaryCorporateDetailMudraLoanRepository.findByApplicationId(applicationId);
                 // GET SCORE CORPORATE LOAN PARAMETERS
 
 
@@ -1776,29 +1797,7 @@ public class ScoringServiceImpl implements ScoringService {
 
                         switch (modelParameterResponse.getName()) {
 
-                            case ScoreParameter.COMBINED_NETWORTH: {
-                                try {
-                                    Double networthSum = directorBackgroundDetailsRepository.getSumOfDirectorsNetworth(applicationId);
-                                    if (CommonUtils.isObjectNullOrEmpty(networthSum))
-                                        networthSum = 0.0;
-
-                                    Double termLoansTy = liabilitiesDetailsTY.getTermLoans();
-                                    if (CommonUtils.isObjectNullOrEmpty(termLoansTy))
-                                        termLoansTy = 0.0;
-
-                                    scoringParameterRequest.setNetworthSum(networthSum);
-                                    scoringParameterRequest.setTermLoanTy(termLoansTy);
-                                    scoringParameterRequest.setLoanAmount(loanAmount);
-                                    scoringParameterRequest.setCombinedNetworth_p(true);
-
-                                } catch (Exception e) {
-                                    logger.error("error while getting COMBINED_NETWORTH parameter : ",e);
-                                    scoringParameterRequest.setCombinedNetworth_p(false);
-                                }
-
-                                break;
-                            }
-                            case ScoreParameter.CUSTOMER_ASSOCIATE_CONCERN: {
+                            case ScoreParameter.MudraLoan.CUSTOMER_ASSOCIATE_CONCERN_ML: {
                             	if(!isCibilCheck) {
                             		Double customer_ass_concern_year = null;
                                     try {
@@ -1820,7 +1819,7 @@ public class ScoringServiceImpl implements ScoringService {
                             	}
                                 break;
                             }
-                            case ScoreParameter.CIBIL_TRANSUNION_SCORE: {
+                            case ScoreParameter.MudraLoan.CIBIL_TRANSUNION_SCORE_ML: {
                             	if(!isCibilCheck) {
                             		Double cibil_score_avg_promotor = null;
                                     try {
@@ -1843,582 +1842,8 @@ public class ScoringServiceImpl implements ScoringService {
                             	}
                                 break;
                             }
-
-                            case ScoreParameter.EXPERIENCE_IN_THE_BUSINESS: {
-                                Double directorExperience = directorBackgroundDetailsRepository.getMaxOfDirectorsExperience(applicationId);
-
-                                if (!CommonUtils.isObjectNullOrEmpty(directorExperience)) {
-                                    scoringParameterRequest.setExperienceInTheBusiness(directorExperience);
-                                    scoringParameterRequest.setExperienceInTheBusiness_p(true);
-                                } else {
-                                    scoringParameterRequest.setExperienceInTheBusiness_p(false);
-                                }
-
-                                break;
-                            }
-                            case ScoreParameter.DEBT_EQUITY_RATIO: {
-
-                                try {
-                            /*Double debt = liabilitiesDetailsTY.getSubTotalA() +
-                                    liabilitiesDetailsTY.getShortTermBorrowingFromOthers() +
-                                    liabilitiesDetailsTY.getTotalTermLiabilities() -
-                                    liabilitiesDetailsTY.getPreferencesShares() +
-                                    liabilitiesDetailsTY.getOtherNclUnsecuredLoansFromOther() +
-                                    liabilitiesDetailsTY.getOtherNclOthers() +
-                                    liabilitiesDetailsTY.getMinorityInterest() +
-                                    liabilitiesDetailsTY.getDeferredTaxLiability();*/
-
-                                    // 27-9-2018 9:19 PM Rahul Khudai Removed iabilitiesDetailsTY.getSubTotalA()
-                                    // + liabilitiesDetailsTY.getShortTermBorrowingFromOthers()  from Debt calculation
-
-                                    // Before central bank changes
-                                    /*Double debt = liabilitiesDetailsTY.getTotalTermLiabilities() -
-                                            liabilitiesDetailsTY.getPreferencesShares() +
-                                            liabilitiesDetailsTY.getOtherNclUnsecuredLoansFromOther() +
-                                            liabilitiesDetailsTY.getOtherNclOthers() +
-                                            liabilitiesDetailsTY.getMinorityInterest() +
-                                            liabilitiesDetailsTY.getDeferredTaxLiability();
-
-
-                                    if (CommonUtils.isObjectNullOrEmpty(debt))
-                                        debt = 0.0;
-
-
-                                    Double equity = liabilitiesDetailsTY.getPreferencesShares() +
-                                            liabilitiesDetailsTY.getNetWorth() -
-                                            liabilitiesDetailsTY.getMinorityInterest() -
-                                            liabilitiesDetailsTY.getDeferredTaxLiability();
-                                    if (CommonUtils.isObjectNullOrEmpty(debt))
-                                        equity = 0.0;*/
-
-                                    // After central bank changes
-                                    Double[] fyDebtAndEquityValues = getDebtAndEquityValue(liabilitiesDetailsFY);
-                                    Double[] syDebtAndEquityValues = getDebtAndEquityValue(liabilitiesDetailsSY);
-                                    Double[] tyDebtAndEquityValues = getDebtAndEquityValue(liabilitiesDetailsTY);
-
-                                    scoringParameterRequest.setDebtFY(fyDebtAndEquityValues[0]);
-                                    scoringParameterRequest.setDebtSY(syDebtAndEquityValues[0]);
-                                    scoringParameterRequest.setDebtTY(tyDebtAndEquityValues[0]);
-
-                                    scoringParameterRequest.setEquityFY(fyDebtAndEquityValues[1]);
-                                    scoringParameterRequest.setEquitySY(syDebtAndEquityValues[1]);
-                                    scoringParameterRequest.setEquityTY(tyDebtAndEquityValues[1]);
-
-                                    scoringParameterRequest.setDebtEquityRatio_p(true);
-
-                                } catch (Exception e) {
-                                    logger.error("error while getting DEBT_EQUITY_RATIO parameter : ",e);
-                                    scoringParameterRequest.setDebtEquityRatio_p(false);
-                                }
-
-                                break;
-                            }
-                            case ScoreParameter.TOL_TNW: {
-
-                                try {
-
-                                    //Before central bank changes
-                                    /*Double tol = liabilitiesDetailsTY.getTotalOutsideLiabilities();
-                                    if (CommonUtils.isObjectNullOrEmpty(tol))
-                                        tol = 0.0;
-
-                                    Double tnw = assetsDetailsTY.getTangibleNetWorth();
-                                    if (CommonUtils.isObjectNullOrEmpty(tnw))
-                                        tnw = 0.0;*/
-
-                                    //After central bank changes
-                                    Double[] fyTolTnwValues =getTolTnwValues(liabilitiesDetailsFY,assetsDetailsFY);
-                                    Double[] syTolTnwValues =getTolTnwValues(liabilitiesDetailsSY,assetsDetailsSY);
-                                    Double[] tyTolTnwValues =getTolTnwValues(liabilitiesDetailsTY,assetsDetailsTY);
-
-                                    scoringParameterRequest.setTolFY(fyTolTnwValues[0]);
-                                    scoringParameterRequest.setTolSY(syTolTnwValues[0]);
-                                    scoringParameterRequest.setTolTY(tyTolTnwValues[0]);
-
-                                    scoringParameterRequest.setTnwFY(fyTolTnwValues[1]);
-                                    scoringParameterRequest.setTnwSY(syTolTnwValues[1]);
-                                    scoringParameterRequest.setTnwTY(tyTolTnwValues[1]);
-
-                                    scoringParameterRequest.setTolTnw_p(true);
-                                    scoringParameterRequest.setLoanAmount(loanAmount);
-
-                                } catch (Exception e) {
-                                    logger.error("error while getting TOL_TNW parameter : ",e);
-                                    scoringParameterRequest.setTolTnw_p(false);
-                                }
-
-                                break;
-                            }
-                            case ScoreParameter.AVERAGE_CURRENT_RATIO: {
-                                try {
-
-                                    // Before central bank changes
-                                    /*Double currentRatio = (assetsDetailsTY.getCurrentRatio() + assetsDetailsSY.getCurrentRatio()) / 2;
-                                    if (CommonUtils.isObjectNullOrEmpty(currentRatio))
-                                        currentRatio = 0.0;*/
-
-                                    // After central bank changes/
-                                    Double currentRatioFY = (assetsDetailsFY.getCurrentRatio()) ;
-                                    Double currentRatioSY = (assetsDetailsSY.getCurrentRatio()) ;
-                                    Double currentRatioTY = (assetsDetailsTY.getCurrentRatio()) ;
-
-                                    if (CommonUtils.isObjectNullOrEmpty(currentRatioFY))
-                                        currentRatioFY = 0.0;
-                                    if (CommonUtils.isObjectNullOrEmpty(currentRatioSY))
-                                        currentRatioSY = 0.0;
-                                    if (CommonUtils.isObjectNullOrEmpty(currentRatioTY))
-                                        currentRatioTY = 0.0;
-
-                                    scoringParameterRequest.setAvgCurrentRatioFY(currentRatioFY);
-                                    scoringParameterRequest.setAvgCurrentRatioSY(currentRatioSY);
-                                    scoringParameterRequest.setAvgCurrentRatioTY(currentRatioTY);
-                                    scoringParameterRequest.setAvgCurrentRatio_p(true);
-
-                                } catch (Exception e) {
-                                    logger.error("error while getting AVERAGE_CURRENT_RATIO parameter : ",e);
-                                    scoringParameterRequest.setAvgCurrentRatio_p(false);
-                                }
-
-                                break;
-                            }
-                            case ScoreParameter.WORKING_CAPITAL_CYCLE: {
-
-                                try {
-
-                                    /*
-                                    *  Double debtorsDays = null;
-                                    if ((operatingStatementDetailsTY.getTotalGrossSales() - operatingStatementDetailsTY.getAddOtherRevenueIncome()) != 0.0) {
-                                        debtorsDays = ((assetsDetailsTY.getReceivableOtherThanDefferred() + assetsDetailsTY.getExportReceivables()) / (operatingStatementDetailsTY.getTotalGrossSales() - operatingStatementDetailsTY.getAddOtherRevenueIncome())) * 365;
-                                    }
-                                    if (CommonUtils.isObjectNullOrEmpty(debtorsDays))
-                                        debtorsDays = 0.0;
-
-
-                                    /////////////
-
-                                    Double averageInventory = (operatingStatementDetailsTY.getAddOperatingStockFg() + operatingStatementDetailsTY.getDeductClStockFg()) / 2;
-                                    if (CommonUtils.isObjectNullOrEmpty(averageInventory))
-                                        averageInventory = 0.0;
-
-                                    Double cogs = operatingStatementDetailsTY.getRawMaterials() + operatingStatementDetailsTY.getAddOperatingStockFg() - operatingStatementDetailsTY.getDeductClStockFg();
-                                    if (CommonUtils.isObjectNullOrEmpty(cogs))
-                                        cogs = 0.0;
-
-
-                                    /////////////
-
-                                    Double creditorsDays = null;
-                                    if ((operatingStatementDetailsTY.getTotalGrossSales() - operatingStatementDetailsTY.getAddOtherRevenueIncome()) != 0) {
-                                        creditorsDays = (liabilitiesDetailsTY.getSundryCreditors() / (operatingStatementDetailsTY.getTotalGrossSales() - operatingStatementDetailsTY.getAddOtherRevenueIncome())) * 365;
-                                    }
-                                    if (CommonUtils.isObjectNullOrEmpty(creditorsDays))
-                                        creditorsDays = 0.0;
-
-
-                                    scoringParameterRequest.setDebtorsDays(debtorsDays);
-                                    scoringParameterRequest.setAvgInventory(averageInventory);
-                                    scoringParameterRequest.setCogs(cogs);
-                                    scoringParameterRequest.setCreditorsDays(creditorsDays);
-                                    * */
-
-                                    Double[]  fyDebtorsCreditorsCogsAvgInvValues = getDebtorsCreditorsCogsAvgInvValues(operatingStatementDetailsFY,assetsDetailsFY,liabilitiesDetailsFY);
-                                    Double[]  syDebtorsCreditorsCogsAvgInvValues = getDebtorsCreditorsCogsAvgInvValues(operatingStatementDetailsSY,assetsDetailsSY,liabilitiesDetailsSY);
-                                    Double[]  tyDebtorsCreditorsCogsAvgInvValues = getDebtorsCreditorsCogsAvgInvValues(operatingStatementDetailsTY,assetsDetailsTY,liabilitiesDetailsTY);
-
-                                    scoringParameterRequest.setDebtorsDaysFY(fyDebtorsCreditorsCogsAvgInvValues[0]);
-                                    scoringParameterRequest.setAvgInventoryFY(fyDebtorsCreditorsCogsAvgInvValues[1]);
-                                    scoringParameterRequest.setCogsFY(fyDebtorsCreditorsCogsAvgInvValues[2]);
-                                    scoringParameterRequest.setCreditorsDaysFY(fyDebtorsCreditorsCogsAvgInvValues[3]);
-
-                                    scoringParameterRequest.setDebtorsDaysSY(syDebtorsCreditorsCogsAvgInvValues[0]);
-                                    scoringParameterRequest.setAvgInventorySY(syDebtorsCreditorsCogsAvgInvValues[1]);
-                                    scoringParameterRequest.setCogsSY(syDebtorsCreditorsCogsAvgInvValues[2]);
-                                    scoringParameterRequest.setCreditorsDaysSY(syDebtorsCreditorsCogsAvgInvValues[3]);
-
-                                    scoringParameterRequest.setDebtorsDaysTY(tyDebtorsCreditorsCogsAvgInvValues[0]);
-                                    scoringParameterRequest.setAvgInventoryTY(tyDebtorsCreditorsCogsAvgInvValues[1]);
-                                    scoringParameterRequest.setCogsTY(tyDebtorsCreditorsCogsAvgInvValues[2]);
-                                    scoringParameterRequest.setCreditorsDaysTY(tyDebtorsCreditorsCogsAvgInvValues[3]);
-
-                                    scoringParameterRequest.setWorkingCapitalCycle_p(true);
-                                } catch (Exception e) {
-                                    logger.error("error while getting WORKING_CAPITAL_CYCLE parameter : ",e);
-                                    scoringParameterRequest.setWorkingCapitalCycle_p(false);
-                                }
-
-                                break;
-                            }
-                            case ScoreParameter.AVERAGE_ANNUAL_GROWTH_GROSS_CASH: {
-                                try {
-                                    Double netProfitOrLossTY = operatingStatementDetailsTY.getNetProfitOrLoss();
-                                    if (CommonUtils.isObjectNullOrEmpty(netProfitOrLossTY))
-                                        netProfitOrLossTY = 0.0;
-                                    Double depreciationTy = operatingStatementDetailsTY.getDepreciation();
-                                    if (CommonUtils.isObjectNullOrEmpty(depreciationTy))
-                                        depreciationTy = 0.0;
-                                    Double interestTy = operatingStatementDetailsTY.getInterest();
-                                    if (CommonUtils.isObjectNullOrEmpty(interestTy))
-                                        interestTy = 0.0;
-
-                                    Double netProfitOrLossSY = operatingStatementDetailsSY.getNetProfitOrLoss();
-                                    if (CommonUtils.isObjectNullOrEmpty(netProfitOrLossSY))
-                                        netProfitOrLossSY = 0.0;
-                                    Double depreciationSy = operatingStatementDetailsSY.getDepreciation();
-                                    if (CommonUtils.isObjectNullOrEmpty(depreciationSy))
-                                        depreciationSy = 0.0;
-                                    Double interestSy = operatingStatementDetailsSY.getInterest();
-                                    if (CommonUtils.isObjectNullOrEmpty(interestSy))
-                                        interestSy = 0.0;
-
-                                    Double netProfitOrLossFY = operatingStatementDetailsFY.getNetProfitOrLoss();
-                                    if (CommonUtils.isObjectNullOrEmpty(netProfitOrLossFY))
-                                        netProfitOrLossFY = 0.0;
-                                    Double depreciationFy = operatingStatementDetailsFY.getDepreciation();
-                                    if (CommonUtils.isObjectNullOrEmpty(depreciationFy))
-                                        depreciationFy = 0.0;
-                                    Double interestFy = operatingStatementDetailsFY.getInterest();
-                                    if (CommonUtils.isObjectNullOrEmpty(interestFy))
-                                        interestFy = 0.0;
-
-                                    scoringParameterRequest.setNetProfitOrLossFY(netProfitOrLossFY);
-                                    scoringParameterRequest.setNetProfitOrLossSY(netProfitOrLossSY);
-                                    scoringParameterRequest.setNetProfitOrLossTY(netProfitOrLossTY);
-
-                                    scoringParameterRequest.setDepriciationFy(depreciationFy);
-                                    scoringParameterRequest.setDepriciationSy(depreciationSy);
-                                    scoringParameterRequest.setDepriciationTy(depreciationTy);
-
-                                    scoringParameterRequest.setInterestFy(interestFy);
-                                    scoringParameterRequest.setInterestSy(interestSy);
-                                    scoringParameterRequest.setInterestTy(interestTy);
-
-                                    scoringParameterRequest.setAvgAnnualGrowthGrossCash_p(true);
-
-                                } catch (Exception e) {
-                                    logger.error("error while getting AVERAGE_ANNUAL_GROWTH_GROSS_CASH parameter : ",e);
-                                    scoringParameterRequest.setAvgAnnualGrowthGrossCash_p(false);
-                                }
-                                break;
-                            }
-                            case ScoreParameter.AVERAGE_ANNUAL_GROWTH_NET_SALE: {
-
-                                try {
-                                    Double domesticSalesTy = operatingStatementDetailsTY.getDomesticSales();
-                                    if (CommonUtils.isObjectNullOrEmpty(domesticSalesTy))
-                                        domesticSalesTy = 0.0;
-                                    Double exportSalesTy = operatingStatementDetailsTY.getExportSales();
-                                    if (CommonUtils.isObjectNullOrEmpty(exportSalesTy))
-                                        exportSalesTy = 0.0;
-
-                                    Double domesticSalesSy = operatingStatementDetailsSY.getDomesticSales();
-                                    if (CommonUtils.isObjectNullOrEmpty(domesticSalesSy))
-                                        domesticSalesSy = 0.0;
-
-                                    Double exportSalesSy = operatingStatementDetailsSY.getExportSales();
-                                    if (CommonUtils.isObjectNullOrEmpty(exportSalesSy))
-                                        exportSalesSy = 0.0;
-
-
-                                    Double domesticSalesFy = operatingStatementDetailsFY.getDomesticSales();
-                                    if (CommonUtils.isObjectNullOrEmpty(domesticSalesFy))
-                                        domesticSalesFy = 0.0;
-
-                                    Double exportSalesFy = operatingStatementDetailsFY.getExportSales();
-                                    if (CommonUtils.isObjectNullOrEmpty(exportSalesFy))
-                                        exportSalesFy = 0.0;
-
-                                    Double totalSale_FY = 0.0;
-                                    if (domesticSalesFy + exportSalesFy == 0.0) {
-                                        totalSale_FY = 1.0;
-                                    } else {
-                                        totalSale_FY = domesticSalesFy + exportSalesFy;
-                                    }
-
-                                    Double totalSale_SY = 0.0;
-                                    if (domesticSalesSy + exportSalesSy == 0.0) {
-                                        totalSale_SY = 1.0;
-                                    } else {
-                                        totalSale_SY = domesticSalesSy + exportSalesSy;
-                                    }
-
-                                    Double totalSale_TY = 0.0;
-                                    if (domesticSalesTy + exportSalesTy == 0.0) {
-                                        totalSale_TY = 1.0;
-                                    } else {
-                                        totalSale_TY = domesticSalesTy + exportSalesTy;
-                                    }
-
-                                    scoringParameterRequest.setTotalSaleFy(totalSale_FY);
-                                    scoringParameterRequest.setTotalSaleSy(totalSale_SY);
-                                    scoringParameterRequest.setTotalSaleTy(totalSale_TY);
-                                    scoringParameterRequest.setAvgAnnualGrowthNetSale_p(true);
-                                } catch (Exception e) {
-                                    logger.error("error while getting AVERAGE_ANNUAL_GROWTH_NET_SALE parameter : ",e);
-                                    scoringParameterRequest.setAvgAnnualGrowthNetSale_p(false);
-                                }
-
-                                break;
-                            }
-                            case ScoreParameter.AVERAGE_EBIDTA: {
-
-                                try {
-
-                                    // Before central bank
-                                    /*Double profitBeforeTaxOrLossTy = operatingStatementDetailsTY.getProfitBeforeTaxOrLoss();
-                                    if (CommonUtils.isObjectNullOrEmpty(profitBeforeTaxOrLossTy))
-                                        profitBeforeTaxOrLossTy = 0.0;
-
-
-                                    Double interestTy = operatingStatementDetailsTY.getInterest();
-                                    if (CommonUtils.isObjectNullOrEmpty(interestTy))
-                                        interestTy = 0.0;
-
-
-                                    Double profitBeforeTaxOrLossSy = operatingStatementDetailsSY.getProfitBeforeTaxOrLoss();
-                                    if (CommonUtils.isObjectNullOrEmpty(profitBeforeTaxOrLossSy))
-                                        profitBeforeTaxOrLossSy = 0.0;
-
-
-                                    Double interestSy = operatingStatementDetailsSY.getInterest();
-                                    if (CommonUtils.isObjectNullOrEmpty(interestSy))
-                                        interestSy = 0.0;
-
-
-                                    Double depreciationTy = operatingStatementDetailsTY.getDepreciation();
-                                    if (CommonUtils.isObjectNullOrEmpty(depreciationTy))
-                                        depreciationTy = 0.0;
-
-
-                                    Double depreciationSy = operatingStatementDetailsSY.getDepreciation();
-                                    if (CommonUtils.isObjectNullOrEmpty(depreciationSy))
-                                        depreciationSy = 0.0;
-
-
-                                    Double termLoansTy = liabilitiesDetailsTY.getTermLoans();
-                                    if (CommonUtils.isObjectNullOrEmpty(termLoansTy))
-                                        termLoansTy = 0.0;*/
-
-                                    // After central bank
-                                    Double[] fyAvgEBIDTAValue = getAvgEBIDTAValue(operatingStatementDetailsFY,liabilitiesDetailsFY);
-                                    Double[] syAvgEBIDTAValue = getAvgEBIDTAValue(operatingStatementDetailsSY,liabilitiesDetailsSY);
-                                    Double[] tyAvgEBIDTAValue = getAvgEBIDTAValue(operatingStatementDetailsTY,liabilitiesDetailsTY);
-
-                                    scoringParameterRequest.setProfitBeforeTaxOrLossFy(fyAvgEBIDTAValue[0]);
-                                    scoringParameterRequest.setProfitBeforeTaxOrLossSy(syAvgEBIDTAValue[0]);
-                                    scoringParameterRequest.setProfitBeforeTaxOrLossTy(tyAvgEBIDTAValue[0]);
-
-                                    scoringParameterRequest.setInterestFy(fyAvgEBIDTAValue[1]);
-                                    scoringParameterRequest.setInterestSy(syAvgEBIDTAValue[1]);
-                                    scoringParameterRequest.setInterestTy(tyAvgEBIDTAValue[1]);
-
-                                    scoringParameterRequest.setDepriciationFy(fyAvgEBIDTAValue[2]);
-                                    scoringParameterRequest.setDepriciationTy(syAvgEBIDTAValue[2]);
-                                    scoringParameterRequest.setDepriciationSy(tyAvgEBIDTAValue[2]);
-
-                                    scoringParameterRequest.setTermLoanFy(fyAvgEBIDTAValue[3]);
-                                    scoringParameterRequest.setTermLoanSy(syAvgEBIDTAValue[3]);
-                                    scoringParameterRequest.setTermLoanTy(tyAvgEBIDTAValue[3]);
-
-                                    scoringParameterRequest.setLoanAmount(loanAmount);
-
-                                    scoringParameterRequest.setAvgEBIDTA_p(true);
-
-                                } catch (Exception e) {
-                                    logger.error("error while getting AVERAGE_EBIDTA parameter : ",e);
-                                    scoringParameterRequest.setAvgEBIDTA_p(false);
-                                }
-
-                                break;
-                            }
-                            case ScoreParameter.AVERAGE_ANNUAL_GROSS_CASH_ACCRUALS: {
-
-                                try {
-
-                                    // Before central bank changes
-                                    /*Double netProfitOrLossTY = operatingStatementDetailsTY.getNetProfitOrLoss();
-                                    if (CommonUtils.isObjectNullOrEmpty(netProfitOrLossTY))
-                                        netProfitOrLossTY = 0.0;
-
-                                    Double netProfitOrLossSY = operatingStatementDetailsSY.getNetProfitOrLoss();
-                                    if (CommonUtils.isObjectNullOrEmpty(netProfitOrLossSY))
-                                        netProfitOrLossSY = 0.0;
-
-                                    Double interestTy = operatingStatementDetailsTY.getInterest();
-                                    if (CommonUtils.isObjectNullOrEmpty(interestTy))
-                                        interestTy = 0.0;
-
-                                    Double interestSy = operatingStatementDetailsSY.getInterest();
-                                    if (CommonUtils.isObjectNullOrEmpty(interestSy))
-                                        interestSy = 0.0;
-
-                                    Double depreciationTy = operatingStatementDetailsTY.getDepreciation();
-                                    if (CommonUtils.isObjectNullOrEmpty(depreciationTy))
-                                        depreciationTy = 0.0;
-
-                                    Double depreciationSy = operatingStatementDetailsSY.getDepreciation();
-                                    if (CommonUtils.isObjectNullOrEmpty(depreciationSy))
-                                        depreciationSy = 0.0;
-
-                                    Double totalAsset = assetsDetailsTY.getTotalAssets();
-                                    if (CommonUtils.isObjectNullOrEmpty(totalAsset))
-                                        totalAsset = 0.0;*/
-
-                                    // After central bank changes
-                                    Double[] avgAnnualGrossCaseAccrualsValueFY = getAvgAnnualGrossCaseAccrualsValue(operatingStatementDetailsFY,assetsDetailsFY);
-                                    Double[] avgAnnualGrossCaseAccrualsValueSY = getAvgAnnualGrossCaseAccrualsValue(operatingStatementDetailsSY,assetsDetailsSY);
-                                    Double[] avgAnnualGrossCaseAccrualsValueTY = getAvgAnnualGrossCaseAccrualsValue(operatingStatementDetailsTY,assetsDetailsTY);
-
-                                    scoringParameterRequest.setNetProfitOrLossFY(avgAnnualGrossCaseAccrualsValueFY[0]);
-                                    scoringParameterRequest.setNetProfitOrLossSY(avgAnnualGrossCaseAccrualsValueSY[0]);
-                                    scoringParameterRequest.setNetProfitOrLossTY(avgAnnualGrossCaseAccrualsValueTY[0]);
-
-                                    scoringParameterRequest.setInterestFy(avgAnnualGrossCaseAccrualsValueFY[1]);
-                                    scoringParameterRequest.setInterestSy(avgAnnualGrossCaseAccrualsValueSY[1]);
-                                    scoringParameterRequest.setInterestTy(avgAnnualGrossCaseAccrualsValueTY[1]);
-
-                                    scoringParameterRequest.setDepriciationFy(avgAnnualGrossCaseAccrualsValueFY[2]);
-                                    scoringParameterRequest.setDepriciationSy(avgAnnualGrossCaseAccrualsValueSY[2]);
-                                    scoringParameterRequest.setDepriciationTy(avgAnnualGrossCaseAccrualsValueTY[2]);
-
-                                    scoringParameterRequest.setTotalAssetFy(avgAnnualGrossCaseAccrualsValueFY[3]);
-                                    scoringParameterRequest.setTotalAssetSy(avgAnnualGrossCaseAccrualsValueSY[3]);
-                                    scoringParameterRequest.setTotalAssetTy(avgAnnualGrossCaseAccrualsValueTY[3]);
-
-                                    scoringParameterRequest.setAvgAnnualGrossCashAccuruals_p(true);
-
-                                } catch (Exception e) {
-                                    logger.error("error while getting AVERAGE_ANNUAL_GROSS_CASH_ACCRUALS parameter : ",e);
-                                    scoringParameterRequest.setAvgAnnualGrossCashAccuruals_p(false);
-                                }
-
-                                break;
-                            }
-                            case ScoreParameter.AVERAGE_INTEREST_COV_RATIO: {
-                                try {
-                                    Double opProfitBeforeIntrestTy = operatingStatementDetailsTY.getOpProfitBeforeIntrest();
-                                    if (CommonUtils.isObjectNullOrEmpty(opProfitBeforeIntrestTy))
-                                        opProfitBeforeIntrestTy = 0.0;
-
-
-                                    Double opProfitBeforeIntrestSy = operatingStatementDetailsSY.getOpProfitBeforeIntrest();
-                                    if (CommonUtils.isObjectNullOrEmpty(opProfitBeforeIntrestSy))
-                                        opProfitBeforeIntrestSy = 0.0;
-
-                                    Double opProfitBeforeIntrestFy = operatingStatementDetailsFY.getOpProfitBeforeIntrest();
-                                    if (CommonUtils.isObjectNullOrEmpty(opProfitBeforeIntrestFy))
-                                        opProfitBeforeIntrestFy = 0.0;
-
-
-                                    Double interestTy = operatingStatementDetailsTY.getInterest();
-                                    if (CommonUtils.isObjectNullOrEmpty(interestTy))
-                                        interestTy = 0.0;
-
-                                    Double interestSy = operatingStatementDetailsSY.getInterest();
-                                    if (CommonUtils.isObjectNullOrEmpty(interestSy))
-                                        interestSy = 0.0;
-
-                                    Double interestFy = operatingStatementDetailsFY.getInterest();
-                                    if (CommonUtils.isObjectNullOrEmpty(interestFy))
-                                        interestFy = 0.0;
-
-                                    scoringParameterRequest.setOpProfitBeforeInterestFy(opProfitBeforeIntrestFy);
-                                    scoringParameterRequest.setOpProfitBeforeInterestTy(opProfitBeforeIntrestTy);
-                                    scoringParameterRequest.setOpProfitBeforeInterestSy(opProfitBeforeIntrestSy);
-                                    scoringParameterRequest.setInterestFy(interestFy);
-                                    scoringParameterRequest.setInterestTy(interestTy);
-                                    scoringParameterRequest.setInterestSy(interestSy);
-
-                                    scoringParameterRequest.setAvgInterestCovRatio_p(true);
-                                } catch (Exception e) {
-                                    logger.error("error while getting AVERAGE_INTEREST_COV_RATIO parameter : ",e);
-                                    scoringParameterRequest.setAvgInterestCovRatio_p(false);
-                                }
-
-                                break;
-                            }
-                            case ScoreParameter.NO_OF_CUSTOMER: {
-                                try {
-                                    if (!CommonUtils.isObjectNullOrEmpty(gstCalculation) && !CommonUtils.isObjectNullOrEmpty(gstCalculation.getNoOfCustomer())) {
-                                        scoringParameterRequest.setNoOfCustomenr(gstCalculation.getNoOfCustomer());
-                                        scoringParameterRequest.setNoOfCustomer_p(true);
-                                    } else {
-                                        scoringParameterRequest.setNoOfCustomer_p(false);
-                                    }
-                                } catch (Exception e) {
-                                    logger.error("error while getting NO_OF_CUSTOMER parameter : ",e);
-                                    scoringParameterRequest.setNoOfCustomer_p(false);
-                                    /*map.put("NO_OF_CUSTOMER",null);*/
-                                }
-                                break;
-                            }
-                            case ScoreParameter.CONCENTRATION_CUSTOMER: {
-                                try {
-                                    if (!CommonUtils.isObjectNullOrEmpty(gstCalculation) && !CommonUtils.isObjectNullOrEmpty(gstCalculation.getConcentration())) {
-                                        scoringParameterRequest.setConcentrationCustomer(gstCalculation.getConcentration());
-                                        scoringParameterRequest.setConcentrationCustomer_p(true);
-                                    } else {
-                                        scoringParameterRequest.setConcentrationCustomer_p(false);
-                                    }
-                                } catch (Exception e) {
-                                    logger.error("error while getting CONCENTRATION_CUSTOMER parameter : ",e);
-                                    scoringParameterRequest.setConcentrationCustomer_p(false);
-                                }
-                                break;
-                            }
-                            case ScoreParameter.CREDIT_SUMMATION: {
-
-                                Double totalCredit = null;
-                                Double projctedSales = null;
-                                Integer noOfMonths = 1;
-                                // start get total credit from Analyser
-                                ReportRequest reportRequest = new ReportRequest();
-                                reportRequest.setApplicationId(applicationId);
-                                try {
-                                    AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReport(reportRequest);
-                                    Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) analyzerResponse.getData(),
-                                            Data.class);
-
-
-                                    if(!CommonUtils.isListNullOrEmpty(data.getMonthlyDetailList().getMonthlyDetails())){
-                                        noOfMonths = data.getMonthlyDetailList().getMonthlyDetails().size();
-                                    }
-                                    if (!CommonUtils.isObjectNullOrEmpty(analyzerResponse.getData())) {
-                                        {
-                                            if (!CommonUtils.isObjectNullOrEmpty(data.getTotalCredit())) {
-                                                totalCredit = data.getTotalCredit();
-                                            } else {
-                                                totalCredit = 0.0;
-                                            }
-
-                                        }
-
-                                    }
-                                } catch (Exception e) {
-                                    totalCredit = 0.0;
-                                    logger.error("error while calling analyzer client : ",e);
-                                }
-
-                                // get get total credit from Analyser
-
-                                // start get projected sales from GST client
-
-                                if(!CommonUtils.isObjectNullOrEmpty(gstCalculation.getHistoricalSales())) {
-                                    projctedSales = gstCalculation.getHistoricalSales();
-                                }
-                                else
-                                {
-                                    projctedSales = gstCalculation.getProjectedSales();
-                                }
-
-                                // end get projected sales from GST client
-                                scoringParameterRequest.setNoOfMonths(noOfMonths);
-                                scoringParameterRequest.setTotalCredit(totalCredit);
-                                scoringParameterRequest.setProjectedSale(projctedSales);
-                                scoringParameterRequest.setCreditSummation_p(true);
-
-                                break;
-                            }
-                            case ScoreParameter.AGE: {
+                            
+                            case ScoreParameter.MudraLoan.AGE_ML: {
                                 try {
 
                                     if (!CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail.getDob())) {
@@ -2433,23 +1858,8 @@ public class ScoringServiceImpl implements ScoringService {
                                 }
                                 break;
                             }
-                            case ScoreParameter.NO_OF_CHILDREN: {
-
-                                try {
-
-                                    if (!CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getNoOfChildren())) {
-                                        scoringParameterRequest.setNoOfChildren(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getNoOfChildren().doubleValue());
-                                        scoringParameterRequest.setNoOfChildren_p(true);
-                                    } else {
-                                        scoringParameterRequest.setNoOfChildren_p(false);
-                                    }
-                                } catch (Exception e) {
-                                    logger.error("error while getting NO_OF_CHILDREN parameter : ",e);
-                                    scoringParameterRequest.setNoOfChildren_p(false);
-                                }
-                                break;
-                            }
-                            case ScoreParameter.OWNING_HOUSE: {
+                            
+                            case ScoreParameter.MudraLoan.OWNING_HOUSE_ML: {
 
                                 try {
 
@@ -2465,7 +1875,8 @@ public class ScoringServiceImpl implements ScoringService {
                                 }
                                 break;
                             }
-                            case ScoreParameter.ACADEMIC_QUALIFICATION: {
+                            
+                            case ScoreParameter.MudraLoan.ACADEMIC_QUALIFICATION_ML: {
 
                                 try {
 
@@ -2481,7 +1892,8 @@ public class ScoringServiceImpl implements ScoringService {
                                 }
                                 break;
                             }
-                            case ScoreParameter.EXPERIENCE_IN_THE_LINE_OF_TRADE: {
+                            
+                            case ScoreParameter.MudraLoan.EXPERIENCE_IN_THE_LINE_OF_TRADE_ML: {
 
                                 try {
 
@@ -2497,23 +1909,8 @@ public class ScoringServiceImpl implements ScoringService {
                                 }
                                 break;
                             }
-                            case ScoreParameter.SPOUSE_DETAILS: {
 
-                                try {
-
-                                    if (!CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getSpouseDetail())) {
-                                        scoringParameterRequest.setSpouceDetails(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getSpouseDetail().longValue());
-                                        scoringParameterRequest.setSpouseDetails_p(true);
-                                    } else {
-                                        scoringParameterRequest.setSpouseDetails_p(false);
-                                    }
-                                } catch (Exception e) {
-                                    logger.error("error while getting SPOUSE_DETAILS parameter : ",e);
-                                    scoringParameterRequest.setSpouseDetails_p(false);
-                                }
-                                break;
-                            }
-                            case ScoreParameter.ASSESSED_FOR_INCOME_TAX: {
+                            case ScoreParameter.MudraLoan.ASSESSED_FOR_INCOME_TAX_ML: {
 
                                 try {
 
@@ -2529,615 +1926,7 @@ public class ScoringServiceImpl implements ScoringService {
                                 }
                                 break;
                             }
-                            case ScoreParameter.HAVE_LIFE_INSURANCE_POLICY: {
-
-                                try {
-
-                                    if (!CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getHaveLiPolicy())) {
-                                        scoringParameterRequest.setHaveLIPolicy(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getHaveLiPolicy().longValue());
-                                        scoringParameterRequest.setHaveLifeIncPolicy_p(true);
-                                    } else {
-                                        scoringParameterRequest.setHaveLifeIncPolicy_p(false);
-                                    }
-                                } catch (Exception e) {
-                                    logger.error("error while getting HAVE_LIFE_INSURANCE_POLICY parameter : ",e);
-                                    scoringParameterRequest.setHaveLifeIncPolicy_p(false);
-                                }
-                                break;
-                            }
-                            case ScoreParameter.YEARS_IN_BUSINESS: {
-                                try {
-                                	Double yearsInBusiness = null;
-                                	Integer yearsInBetween = corporateApplicantDetail.getBusinessSinceYear();
-                                	Integer monthsDiff = null;
-                                	if(yearsInBetween == null) {
-                                		java.util.Calendar todayDate = java.util.Calendar.getInstance();
-                                        todayDate.setTime(new Date());
-
-                                        yearsInBetween = todayDate.get(java.util.Calendar.YEAR) - corporateApplicantDetail.getEstablishmentYear();
-
-                                        monthsDiff = todayDate.get(java.util.Calendar.MONTH) - corporateApplicantDetail.getEstablishmentMonth();
-
-                                        yearsInBusiness = (((double)yearsInBetween * 12 + (double)monthsDiff) / 12);
-                                	}else {
-                                		monthsDiff = corporateApplicantDetail.getBusinessSinceMonth();
-                                		if(monthsDiff > 6)
-                                			yearsInBusiness = (double)yearsInBetween + 1;
-                                		else
-                                			yearsInBusiness = (double)yearsInBetween;
-                                	}
-
-                                    scoringParameterRequest.setYearsInBusiness(yearsInBusiness);
-                                    scoringParameterRequest.setYearsInBusiness_p(true);
-                                } catch (Exception e) {
-                                    logger.error("error while getting YEARS_IN_BUSINESS parameter : ",e);
-                                    scoringParameterRequest.setYearsInBusiness_p(false);
-                                }
-                                break;
-                            }
-                            case ScoreParameter.REPAYMENT_PERIOD: {
-
-                                try {
-
-                                    // get repayment period from one form // remaining
-                                    scoringParameterRequest.setRepaymentPeriod(5.0);
-                                    scoringParameterRequest.setRepaymentPeriod_p(true);
-                                } catch (Exception e) {
-                                    logger.error("error while getting REPAYMENT_PERIOD parameter : ",e);
-                                    scoringParameterRequest.setRepaymentPeriod_p(false);
-                                }
-                                break;
-                            }
-                            case ScoreParameter.CONTINUOUS_NET_PROFIT: {
-
-                                try {
-
-                                    Double netProfitOrLossFY = operatingStatementDetailsFY.getProfitBeforeTaxOrLoss();
-                                    Double netProfitOrLossSY = operatingStatementDetailsSY.getProfitBeforeTaxOrLoss();
-                                    Double netProfitOrLossTY = operatingStatementDetailsTY.getProfitBeforeTaxOrLoss();
-
-                                    scoringParameterRequest.setContinuousNetProfitOrLossFY(netProfitOrLossFY);
-                                    scoringParameterRequest.setContinuousNetProfitOrLossSY(netProfitOrLossSY);
-                                    scoringParameterRequest.setContinuousNetProfitOrLossTY(netProfitOrLossTY);
-
-                                    scoringParameterRequest.setContinousNetProfit_p(true);
-
-                                } catch (Exception e) {
-                                    logger.error("error while getting CONTINUOUS_NET_PROFIT parameter : ",e);
-                                    scoringParameterRequest.setContinousNetProfit_p(false);
-                                }
-                                break;
-                            }
-                            case ScoreParameter.QUALITY_OF_RECEIVABLES: {
-
-                                try {
-
-                                    Double totalSaleTY = operatingStatementDetailsTY.getDomesticSales() + operatingStatementDetailsTY.getExportSales();
-                                    Double grossSaleTy = operatingStatementDetailsTY.getTotalGrossSales();
-
-                                    scoringParameterRequest.setTotalSaleTy(totalSaleTY);
-                                    scoringParameterRequest.setGrossSaleTy(grossSaleTy);
-
-                                    scoringParameterRequest.setQualityOfReceivable_p(true);
-
-                                } catch (Exception e) {
-                                    logger.error("error while getting QUALITY_OF_RECEIVABLES parameter : ",e);
-                                    scoringParameterRequest.setQualityOfReceivable_p(false);
-                                }
-                                break;
-                            }
-                            case ScoreParameter.QUALITY_OF_FINISHED_GOODS_INVENTORY: {
-
-                                try {
-
-                                    Double totalCostSaleTy = operatingStatementDetailsTY.getTotalCostSales();
-                                    Double finishedGoodTy = assetsDetailsTY.getFinishedGoods();
-
-                                    scoringParameterRequest.setTotalCostSaleTy(totalCostSaleTy);
-                                    scoringParameterRequest.setFinishedGoodTy(finishedGoodTy);
-
-                                    scoringParameterRequest.setQualityOfFinishedGood_p(true);
-
-                                } catch (Exception e) {
-                                    logger.error("error while getting QUALITY_OF_FINISHED_GOODS_INVENTORY parameter : ",e);
-                                    scoringParameterRequest.setQualityOfFinishedGood_p(false);
-                                }
-                                break;
-                            }
-                            case ScoreParameter.KNOW_HOW: {
-
-                                try {
-
-                                    if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getKnowHow())) {
-                                        scoringParameterRequest.setKnowHow(primaryCorporateDetail.getKnowHow().longValue());
-                                        scoringParameterRequest.setKnowHow_p(true);
-                                    } else {
-                                        scoringParameterRequest.setKnowHow_p(false);
-                                    }
-                                } catch (Exception e) {
-                                    logger.error("error while getting KNOW_HOW parameter : ",e);
-                                    scoringParameterRequest.setKnowHow_p(false);
-                                }
-                                break;
-                            }
-                            case ScoreParameter.LINE_OF_ACTIVITY: {
-                                scoringParameterRequest.setLineOfActivity(1l);
-                                scoringParameterRequest.setLineOfActivity_p(true);
-
-                                break;
-                            }
-                            case ScoreParameter.COMPETITION: {
-
-                                try {
-
-                                    if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCompetition())) {
-                                        scoringParameterRequest.setCompetition(primaryCorporateDetail.getCompetition().longValue());
-                                        scoringParameterRequest.setCompetition_p(true);
-                                    } else {
-                                        scoringParameterRequest.setCompetition_p(false);
-                                    }
-                                } catch (Exception e) {
-                                    logger.error("error while getting COMPETITION parameter : ",e);
-                                    scoringParameterRequest.setCompetition_p(false);
-                                }
-                                break;
-                            }
-                            case ScoreParameter.FACTORY_PREMISES: {
-                                try {
-
-                                    if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getFactoryPremise())) {
-                                        scoringParameterRequest.setFactoryPremises(primaryCorporateDetail.getFactoryPremise().longValue());
-                                        scoringParameterRequest.setFactoryPremises_p(true);
-                                    } else {
-                                        scoringParameterRequest.setFactoryPremises_p(false);
-                                    }
-                                } catch (Exception e) {
-                                    logger.error("error while getting FACTORY_PREMISES parameter : ",e);
-                                    scoringParameterRequest.setFactoryPremises_p(false);
-                                }
-                                break;
-                            }
-                            case ScoreParameter.SALES_SHOW_A_RISING_TREND: {
-
-                                try {
-
-                                    // getting Gst Current Year Sale from GST Client
-
-                                    if (!CommonUtils.isObjectNullOrEmpty(gstResponseScoring) && !CommonUtils.isObjectNullOrEmpty(gstResponseScoring.getData())) {
-                                        scoringParameterRequest.setGstSaleCurrentYear((Double) gstResponseScoring.getData());
-                                    } else {
-                                        scoringParameterRequest.setGstSaleCurrentYear(0.0);
-                                        logger.error("Error while getting Gst data for Scoring from GST client");
-                                    }
-
-                                    scoringParameterRequest.setNetSaleFy(operatingStatementDetailsFY.getNetSales());
-                                    scoringParameterRequest.setNetSaleSy(operatingStatementDetailsSY.getNetSales());
-                                    scoringParameterRequest.setNetSaleTy(operatingStatementDetailsTY.getNetSales());
-
-                                    scoringParameterRequest.setSalesShowArisingTrend_p(true);
-
-                                } catch (Exception e) {
-                                    logger.error("error while getting SALES_SHOW_A_RISING_TREND parameter : ",e);
-                                    scoringParameterRequest.setSalesShowArisingTrend_p(false);
-                                }
-                                break;
-                            }
-                            case ScoreParameter.UTILISATION_PERCENTAGE: {
-
-                                try {
-                                    Integer noOfMonths = 1;
-
-                                    ReportRequest reportRequest = new ReportRequest();
-                                    reportRequest.setApplicationId(applicationId);
-                                    AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReport(reportRequest);
-                                    Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) analyzerResponse.getData(),
-                                            Data.class);
-
-                                    if (!CommonUtils.isObjectNullOrEmpty(data)) {
-                                        {
-
-                                           /* if(!CommonUtils.isListNullOrEmpty(data.getMonthlyDetailList().getMonthlyDetails())){
-                                                noOfMonths = data.getMonthlyDetailList().getMonthlyDetails().size();
-                                            }
-
-                                            if(!CommonUtils.isObjectNullOrEmpty(data.getSummaryInfo().getSummaryInfoTotalDetails().getBalAvg()))
-                                            {
-                                                scoringParameterRequest.setAverageDailyBalance(Double.parseDouble(data.getSummaryInfo().getSummaryInfoTotalDetails().getBalAvg()) / noOfMonths);
-                                            }*/
-
-                                            Double avrgBalance=0.0;
-                                            if(!CommonUtils.isListNullOrEmpty(data.getMonthlyDetailList().getMonthlyDetails())){
-                                                noOfMonths = data.getMonthlyDetailList().getMonthlyDetails().size();
-                                                for (MonthlyDetail monthlyObj:data.getMonthlyDetailList().getMonthlyDetails()) {
-                                                    if(!CommonUtils.isObjectNullOrEmpty(monthlyObj.getBalAvg())){
-                                                        avrgBalance+=Math.abs(Double.valueOf(monthlyObj.getBalAvg()));
-                                                    }
-                                                }
-                                            }
-                                            scoringParameterRequest.setAverageDailyBalance(avrgBalance/noOfMonths);
-
-
-                                        }
-                                    }
-
-                                    List<String> loanTypeList=new ArrayList<String>();
-                                    loanTypeList.add(CibilUtils.CreditTypeEnum.CASH_CREDIT.getValue());
-                                    loanTypeList.add(CibilUtils.CreditTypeEnum.OVERDRAFT.getValue());
-                                    Double existingLimits = financialArrangementDetailsRepository.getExistingLimits(applicationId , loanTypeList );
-                                    if(isCibilCheck && !isBureauExistingLoansDisplayActive) {
-                                    	ScoringCibilRequest scoringCibilRequest = filterScore(scoringRequest.getMap(), null, modelParameterResponse.getFieldMasterId());
-                                    	if(!CommonUtils.isObjectNullOrEmpty(scoringCibilRequest)) {
-                                    		logger.info("Total Bureau Existing Limit ===>{} ===>{}",applicationId,scoringCibilRequest.getTotalExistingLimit());
-                                    		if(!CommonUtils.isObjectNullOrEmpty(scoringCibilRequest.getTotalExistingLimit())) {
-                                    			if(!CommonUtils.isObjectNullOrEmpty(existingLimits)) {
-                                    				existingLimits = existingLimits + scoringCibilRequest.getTotalExistingLimit();                                    				
-                                    			}else {
-                                    				existingLimits = scoringCibilRequest.getTotalExistingLimit();
-                                    			}
-                                    		}
-                                    	}
-                                    }
-                                    logger.info("existingLimits For UTILISATION_PERCENTAGE ApplicationId ==>{}",applicationId,existingLimits);
-                                    scoringParameterRequest.setLimitsInAccount(existingLimits);
-
-                                    scoringParameterRequest.setUtilisationPercentage_p(true);
-
-                                } catch (Exception e) {
-                                    logger.error("error while getting UTILISATION_PERCENTAGE parameter : ",e);
-                                    scoringParameterRequest.setUtilisationPercentage_p(false);
-                                }
-                                break;
-                            }
-                            case ScoreParameter.TURN_OVER_TO_LIMIT_RATIO: {
-
-                                try {
-
-                                    scoringParameterRequest.setTurnOver(operatingStatementDetailsTY.getDomesticSales() + operatingStatementDetailsTY.getExportSales());
-
-                                    scoringParameterRequest.setTurnOverToLimitRatio_p(true);
-
-                                } catch (Exception e) {
-                                    logger.error("error while getting TURN_OVER_TO_LIMIT_RATIO parameter : ",e);
-                                    scoringParameterRequest.setTurnOverToLimitRatio_p(false);
-                                }
-                                break;
-                            }
-                            case ScoreParameter.COLLATERAL_COVERAGE: {
-
-                                try {
-
-                                    if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCollateralSecurityAmount()))
-                                        scoringParameterRequest.setAmountOfCollateral(primaryCorporateDetail.getCollateralSecurityAmount());
-                                    else
-                                        scoringParameterRequest.setAmountOfCollateral(0.0);
-
-
-                                    scoringParameterRequest.setCollateralCoverage_p(true);
-
-                                } catch (Exception e) {
-                                    logger.error("error while getting COLLATERAL_COVERAGE parameter : ",e);
-                                    scoringParameterRequest.setCollateralCoverage_p(false);
-                                }
-                                break;
-                            }
-                            case ScoreParameter.DEBT_SERVICE_COVERAGE_RATIO: {
-
-                                try {
-
-                                    scoringParameterRequest.setEbitdaFY(operatingStatementDetailsFY.getOpProfitBeforeIntrest() + operatingStatementDetailsFY.getDepreciation());
-                                    scoringParameterRequest.setEbitdaSY(operatingStatementDetailsSY.getOpProfitBeforeIntrest() + operatingStatementDetailsSY.getDepreciation());
-                                    scoringParameterRequest.setEbitdaTY(operatingStatementDetailsTY.getOpProfitBeforeIntrest() + operatingStatementDetailsTY.getDepreciation());
-
-                                    Double totalExistingLoanObligation=0.0;
-
-                                    Double individualLoanObligation = financialArrangementDetailsRepository.getTotalEmiByApplicationId(applicationId);
-                                    Double commercialLoanObligation = financialArrangementDetailsService.getTotalEmiOfAllDirByApplicationId(applicationId);
-                                    if(isCibilCheck && !isBureauExistingLoansDisplayActive) {
-                                    	ScoringCibilRequest scoringCibilRequest = filterScore(scoringRequest.getMap(), null, modelParameterResponse.getFieldMasterId());
-                                    	if(!CommonUtils.isObjectNullOrEmpty(scoringCibilRequest)) {
-                                    		if(!CommonUtils.isObjectNullOrEmpty(scoringCibilRequest.getTotalEmiOfCompany())) {
-                                    			if(!CommonUtils.isObjectNullOrEmpty(individualLoanObligation)) {
-                                    				individualLoanObligation = individualLoanObligation + scoringCibilRequest.getTotalEmiOfCompany();                                    				
-                                    			}else {
-                                    				individualLoanObligation = scoringCibilRequest.getTotalEmiOfCompany();
-                                    			}
-                                    		}if(!CommonUtils.isObjectNullOrEmpty(scoringCibilRequest.getTotalEmiOfDirector())) {
-                                    			if(!CommonUtils.isObjectNullOrEmpty(commercialLoanObligation)) {
-                                    				commercialLoanObligation = commercialLoanObligation + scoringCibilRequest.getTotalEmiOfDirector();	
-                                    			}else {
-                                    				commercialLoanObligation = scoringCibilRequest.getTotalEmiOfDirector();
-                                    			}
-                                    			                                    			
-                                    		}
-                                    	}
-                                    }
-                                    if(!CommonUtils.isObjectNullOrEmpty(individualLoanObligation)){
-                                    	totalExistingLoanObligation+=(individualLoanObligation*12);
-                                    }
-
-                                    if(!CommonUtils.isObjectNullOrEmpty(commercialLoanObligation)) {
-                                    	totalExistingLoanObligation+=(commercialLoanObligation*12);
-                                    }
-                                    logger.info("totalExistingLoanObligation For DEBT_SERVICE_COVERAGE_RATIO ApplicationId ==>{}",applicationId,totalExistingLoanObligation);
-
-                                    scoringParameterRequest.setExistingLoanObligation(totalExistingLoanObligation);
-
-                                    if(primaryCorporateDetail.getPurposeOfLoanId() == 1) {
-                                    	scoringParameterRequest.setLoanType(2);
-                                    }else {
-                                    	scoringParameterRequest.setLoanType(1);
-                                    }
-                                        
-
-                                    scoringParameterRequest.setDebtServiceCoverageRatio_p(true);
-
-                                } catch (Exception e) {
-                                    logger.error("error while getting DEBT_SERVICE_COVERAGE_RATIO parameter : ",e);
-                                    scoringParameterRequest.setDebtServiceCoverageRatio_p(false);
-                                }
-                                break;
-                            }
-                            case ScoreParameter.PAST_YEAR_TURNOVER: {
-
-                                try {
-                                    Double domesticSales = operatingStatementDetailsTY.getDomesticSales();
-                                    Double exportSales = operatingStatementDetailsTY.getExportSales();
-                                    scoringParameterRequest.setPastYearTurnover_p(true);
-                                    scoringParameterRequest.setExportSalesTY(exportSales);
-                                    scoringParameterRequest.setDomesticSalesTY(domesticSales);
-                                    scoringParameterRequest.setPastYearTurnover(domesticSales + exportSales);
-                                } catch (Exception e) {
-                                    logger.error("error while getting PAST_YEAR_TURNOVER parameter : ",e);
-                                    scoringParameterRequest.setPastYearTurnover_p(false);
-                                }
-                                break;
-                            }
-                            case ScoreParameter.DEBT_EBITDA: {
-                                try {
-
-                                    //Before Central Bank changes
-                                    /*
-                                    *   //debt
-                                        scoringParameterRequest.setTotalTermLiabilities(liabilitiesDetailsTY.getTotalTermLiabilities());
-                                        scoringParameterRequest.setPreferenceShares(liabilitiesDetailsTY.getPreferencesShares());
-                                        scoringParameterRequest.setUnsecuredLoansFromOthers(liabilitiesDetailsTY.getOtherNclUnsecuredLoansFromOther());
-                                        scoringParameterRequest.setOthers(liabilitiesDetailsTY.getOthers());
-                                        scoringParameterRequest.setMinorityInterest(liabilitiesDetailsTY.getMinorityInterest());
-                                        scoringParameterRequest.setDeferredTaxLiability(liabilitiesDetailsTY.getDeferredTaxLiability());
-                                        scoringParameterRequest.setDeferredTaxAssets(assetsDetailsTY.getDeferredTaxAssets());
-
-                                        //EBITA
-                                        scoringParameterRequest.setProfitBeforeInterest(operatingStatementDetailsTY.getOpProfitBeforeIntrest());
-                                        scoringParameterRequest.setDepreciation(operatingStatementDetailsTY.getDepreciation());
-                                        scoringParameterRequest.setDebtEBITDA_p(true);
-
-                                    * */
-
-                                    //After Central Bank changes
-                                    //debt FY
-                                    Double[] fyDebtEbitdaValues = getDebtEbitdaValues(liabilitiesDetailsFY,assetsDetailsFY,operatingStatementDetailsFY);
-                                    Double[] syDebtEbitdaValues = getDebtEbitdaValues(liabilitiesDetailsSY,assetsDetailsSY,operatingStatementDetailsSY);
-                                    Double[] tyDebtEbitdaValues = getDebtEbitdaValues(liabilitiesDetailsTY,assetsDetailsTY,operatingStatementDetailsTY);
-
-                                    scoringParameterRequest.setTotalTermLiabilitiesFY(fyDebtEbitdaValues[0]);
-                                    scoringParameterRequest.setPreferenceSharesFY(fyDebtEbitdaValues[1]);
-                                    scoringParameterRequest.setOthersFY(fyDebtEbitdaValues[2]);
-                                    scoringParameterRequest.setMinorityInterestFY(fyDebtEbitdaValues[3]);
-                                    scoringParameterRequest.setDeferredTaxLiabilityFY(fyDebtEbitdaValues[4]);
-                                    scoringParameterRequest.setDeferredTaxAssetsFY(fyDebtEbitdaValues[5]);
-                                    scoringParameterRequest.setUnsecuredLoansFromOthersFY(fyDebtEbitdaValues[6]);
-
-                                    //EBITA FY
-                                    scoringParameterRequest.setProfitBeforeInterestFY(fyDebtEbitdaValues[7]);
-                                    scoringParameterRequest.setDepreciationFY(fyDebtEbitdaValues[8]);
-
-                                    //debt SY
-                                    scoringParameterRequest.setTotalTermLiabilitiesSY(syDebtEbitdaValues[0]);
-                                    scoringParameterRequest.setPreferenceSharesSY(syDebtEbitdaValues[1]);
-                                    scoringParameterRequest.setOthersSY(syDebtEbitdaValues[2]);
-                                    scoringParameterRequest.setMinorityInterestSY(syDebtEbitdaValues[3]);
-                                    scoringParameterRequest.setDeferredTaxLiabilitySY(syDebtEbitdaValues[4]);
-                                    scoringParameterRequest.setDeferredTaxAssetsSY(syDebtEbitdaValues[5]);
-                                    scoringParameterRequest.setUnsecuredLoansFromOthersSY(syDebtEbitdaValues[6]);
-
-                                    //EBITA SY
-                                    scoringParameterRequest.setProfitBeforeInterestSY(syDebtEbitdaValues[7]);
-                                    scoringParameterRequest.setDepreciationSY(syDebtEbitdaValues[8]);
-
-                                    //debt TY
-                                    scoringParameterRequest.setTotalTermLiabilitiesTY(tyDebtEbitdaValues[0]);
-                                    scoringParameterRequest.setPreferenceSharesTY(tyDebtEbitdaValues[1]);
-                                    scoringParameterRequest.setOthersTY(tyDebtEbitdaValues[2]);
-                                    scoringParameterRequest.setMinorityInterestTY(tyDebtEbitdaValues[3]);
-                                    scoringParameterRequest.setDeferredTaxLiabilityTY(tyDebtEbitdaValues[4]);
-                                    scoringParameterRequest.setDeferredTaxAssetsTY(tyDebtEbitdaValues[5]);
-                                    scoringParameterRequest.setUnsecuredLoansFromOthersTY(tyDebtEbitdaValues[6]);
-
-                                    //EBITA TY
-                                    scoringParameterRequest.setProfitBeforeInterestTY(tyDebtEbitdaValues[7]);
-                                    scoringParameterRequest.setDepreciationTY(tyDebtEbitdaValues[8]);
-
-                                    scoringParameterRequest.setDebtEBITDA_p(true);
-                                }catch (Exception e){
-                                    logger.error("error while getting DEBT_EBITDA parameter : ",e);
-                                    scoringParameterRequest.setDebtEBITDA_p(false);
-                                }
-                                break;
-                            }
-
-                            case ScoreParameter.TURNOVER_ATNW: {
-                                try {
-
-                                    /*    scoringParameterRequest.setLiabilitiesOrdinaryShareCapital(liabilitiesDetailsTY.getOrdinarySharesCapital());
-                                        scoringParameterRequest.setLiabilitiesGeneralReserve(liabilitiesDetailsTY.getGeneralReserve());
-                                        scoringParameterRequest.setDeficitInProfitANDLossAccount(liabilitiesDetailsTY.getSurplusOrDeficit());
-                                        scoringParameterRequest.setLiabilitiesUnsecuredLoansFromPpromoters(liabilitiesDetailsTY.getOtherNclUnsecuredLoansFromPromoters());
-                                        scoringParameterRequest.setLiabilitiesUnsecuredLoansFromOthers(liabilitiesDetailsTY.getOtherNclUnsecuredLoansFromOther());
-                                        scoringParameterRequest.setAssetsInvestmentsInSubsidiaryCosaffiliates(assetsDetailsTY.getInvestmentsInSubsidiary());
-                                        scoringParameterRequest.setDomesticSales(operatingStatementDetailsTY.getDomesticSales());
-                                        scoringParameterRequest.setExportSales(operatingStatementDetailsTY.getExportSales());*/
-
-                                    Double[] fyTurnOverATNWValue = getTurnOverATNWValue(operatingStatementDetailsFY, liabilitiesDetailsFY, assetsDetailsFY);
-                                    Double[] syTurnOverATNWValue = getTurnOverATNWValue(operatingStatementDetailsSY, liabilitiesDetailsSY, assetsDetailsSY);
-                                    Double[] tyTurnOverATNWValue = getTurnOverATNWValue(operatingStatementDetailsTY, liabilitiesDetailsTY, assetsDetailsTY);
-
-
-                                    //FY
-                                    scoringParameterRequest.setLiabilitiesOrdinaryShareCapitalFY(fyTurnOverATNWValue[0]);
-                                    scoringParameterRequest.setLiabilitiesGeneralReserveFY(fyTurnOverATNWValue[1]);
-                                    scoringParameterRequest.setDeficitInProfitANDLossAccountFY(fyTurnOverATNWValue[2]);
-                                    scoringParameterRequest.setLiabilitiesUnsecuredLoansFromPpromotersFY(fyTurnOverATNWValue[3]);
-                                    scoringParameterRequest.setLiabilitiesUnsecuredLoansFromOthersFY(fyTurnOverATNWValue[4]);
-                                    scoringParameterRequest.setAssetsInvestmentsInSubsidiaryCosaffiliatesFY(fyTurnOverATNWValue[5]);
-                                    scoringParameterRequest.setDomesticSalesFY(fyTurnOverATNWValue[6]);
-                                    scoringParameterRequest.setExportSalesFY(fyTurnOverATNWValue[7]);
-
-                                    //SY
-                                    scoringParameterRequest.setLiabilitiesOrdinaryShareCapitalSY(syTurnOverATNWValue[0]);
-                                    scoringParameterRequest.setLiabilitiesGeneralReserveSY(syTurnOverATNWValue[1]);
-                                    scoringParameterRequest.setDeficitInProfitANDLossAccountSY(syTurnOverATNWValue[2]);
-                                    scoringParameterRequest.setLiabilitiesUnsecuredLoansFromPpromotersSY(syTurnOverATNWValue[3]);
-                                    scoringParameterRequest.setLiabilitiesUnsecuredLoansFromOthersSY(syTurnOverATNWValue[4]);
-                                    scoringParameterRequest.setAssetsInvestmentsInSubsidiaryCosaffiliatesSY(syTurnOverATNWValue[5]);
-                                    scoringParameterRequest.setDomesticSalesSY(syTurnOverATNWValue[6]);
-                                    scoringParameterRequest.setExportSalesSY(syTurnOverATNWValue[7]);
-
-                                    //TY
-                                    scoringParameterRequest.setLiabilitiesOrdinaryShareCapitalTY(tyTurnOverATNWValue[0]);
-                                    scoringParameterRequest.setLiabilitiesGeneralReserveTY(tyTurnOverATNWValue[1]);
-                                    scoringParameterRequest.setDeficitInProfitANDLossAccountTY(tyTurnOverATNWValue[2]);
-                                    scoringParameterRequest.setLiabilitiesUnsecuredLoansFromPpromotersTY(tyTurnOverATNWValue[3]);
-                                    scoringParameterRequest.setLiabilitiesUnsecuredLoansFromOthersTY(tyTurnOverATNWValue[4]);
-                                    scoringParameterRequest.setAssetsInvestmentsInSubsidiaryCosaffiliatesTY(tyTurnOverATNWValue[5]);
-                                    scoringParameterRequest.setDomesticSalesTY(tyTurnOverATNWValue[6]);
-                                    scoringParameterRequest.setExportSalesTY(tyTurnOverATNWValue[7]);
-
-                                    scoringParameterRequest.setTurnoverATNW_p(true);
-
-                                }catch (Exception e){
-                                    logger.error("error while getting TURNOVER_ATNW parameter : ",e);
-                                    scoringParameterRequest.setTurnoverATNW_p(false);
-                                }
-                                break;
-                            }
-                            case ScoreParameter.NO_OF_CHEQUES_BOUNCED: {
-                                try{
-                                    Double noOfChequeBounce = 0.0;
-                                    ReportRequest reportRequest = new ReportRequest();
-                                    reportRequest.setApplicationId(applicationId);
-                                    reportRequest.setDirectorId(null);
-
-                                    AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportByDirector(reportRequest);
-
-                                    Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) analyzerResponse.getData(),
-                                            Data.class);
-                                    if (!CommonUtils.isObjectNullOrEmpty(data) && !CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast1Month())) {
-                                        {
-                                            if (!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast1Month().doubleValue())) {
-                                                noOfChequeBounce = data.getCheckBounceForLast1Month().doubleValue();
-                                            } else {
-                                                noOfChequeBounce = 0.0;
-                                            }
-                                        }
-                                    } else {
-                                        noOfChequeBounce = 0.0;
-                                    }
-                                    scoringParameterRequest.setNoOfChequesBouncedLastMonth(noOfChequeBounce);
-                                    scoringParameterRequest.setChequesBouncedLastMonth_p(true);
-                                }catch (Exception e){
-                                    logger.error("error while getting NO_OF_CHEQUES_BOUNCED parameter : ",e);
-                                    scoringParameterRequest.setChequesBouncedLastMonth_p(false);
-                                }
-                                break;
-                            }
-
-                            case ScoreParameter.NO_OF_CHEQUES_BOUNCED_LAST_SIX_MONTH: {
-                                try{
-                                    Double noOfChequeBounce = 0.0;
-                                    ReportRequest reportRequest = new ReportRequest();
-                                    reportRequest.setApplicationId(applicationId);
-                                    reportRequest.setDirectorId(null);
-
-                                    AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportByDirector(reportRequest);
-
-                                    Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) analyzerResponse.getData(),
-                                            Data.class);
-                                    if (!CommonUtils.isObjectNullOrEmpty(data) && !CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month())) {
-                                        {
-                                            if (!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month().doubleValue())) {
-                                                noOfChequeBounce = data.getCheckBounceForLast6Month().doubleValue();
-                                            } else {
-                                                noOfChequeBounce = 0.0;
-                                            }
-
-                                        }
-                                    } else {
-                                        noOfChequeBounce = 0.0;
-                                    }
-                                    scoringParameterRequest.setNoOfChequesBouncedLastSixMonth(noOfChequeBounce);
-                                    scoringParameterRequest.setChequesBouncedLastSixMonth_p(true);
-                                }catch (Exception e){
-                                    logger.error("error while getting NO_OF_CHEQUES_BOUNCED_LAST_SIX_MONTH parameter : ",e);
-                                    scoringParameterRequest.setChequesBouncedLastSixMonth_p(false);
-                                }
-                                break;
-                            }
-                            case ScoreParameter.PAT_NET_SALES_RATIO: {
-                                try {
-
-                                    Object[] itrResponse = moveAheadFromItr(applicationId);
-                                    Integer itrType = CommonUtils.isObjectNullOrEmpty(itrResponse[1]) ? null : Integer.parseInt(itrResponse[1].toString());
-
-                                    if(itrType !=null) {
-                                        scoringParameterRequest.setNetSaleTy(getOrDefauls(operatingStatementDetailsTY.getNetSales()));
-                                        scoringParameterRequest.setNetSaleSy(getOrDefauls(operatingStatementDetailsSY.getNetSales()));
-                                        scoringParameterRequest.setNetSaleFy(getOrDefauls(operatingStatementDetailsFY.getNetSales()));
-
-                                        scoringParameterRequest.setNetProfitOrLossFY(getOrDefauls(operatingStatementDetailsFY.getNetProfitOrLoss()));
-                                        scoringParameterRequest.setNetProfitOrLossSY(getOrDefauls(operatingStatementDetailsSY.getNetProfitOrLoss()));
-                                        scoringParameterRequest.setNetProfitOrLossTY(getOrDefauls(operatingStatementDetailsTY.getNetProfitOrLoss()));
-
-                                        scoringParameterRequest.setOtherRevenueIncomeFY(getOrDefauls(operatingStatementDetailsFY.getAddOtherRevenueIncome()));
-                                        scoringParameterRequest.setOtherRevenueIncomeSY(getOrDefauls(operatingStatementDetailsSY.getAddOtherRevenueIncome()));
-                                        scoringParameterRequest.setOtherRevenueIncomeTY(getOrDefauls(operatingStatementDetailsTY.getAddOtherRevenueIncome()));
-
-                                        scoringParameterRequest.setItyYearType(itrType);
-                                        scoringParameterRequest.setPatNetSalesRatio_p(true);
-                                    }else {
-                                        logger.error("error while getting PAT_NET_SALES_RATIO parameter :- Not able to find itr type.");
-                                        scoringParameterRequest.setPatNetSalesRatio_p(false);
-                                    }
-                                } catch (Exception e) {
-                                    logger.error("error while getting PAT_NET_SALES_RATIO parameter : ", e);
-                                    scoringParameterRequest.setPatNetSalesRatio_p(false);
-                                }
-                                break;
-                            }
-                            case ScoreParameter.STATUTORY_COMPLIANCE: {
-                                try {
-                                    ITRConnectionResponse itrBasicDetailsResponse = itrClient.getITRBasicDetails(applicationId);
-                                    boolean isITRAvailable  = false;
-                                    if(!CommonUtils.isObjectNullOrEmpty(itrBasicDetailsResponse)){
-                                        isITRAvailable = true;
-                                    }
-                                    boolean isGstAvailable = ((!CommonUtils.isObjectNullOrEmpty(gstResponse)) && (!CommonUtils.isObjectNullOrEmpty(gstResponse.getData())));
-                                    Integer id = 0;
-                                    if(isGstAvailable && isGstAvailable){
-                                        id = 3;
-                                    }else if(isITRAvailable){
-                                        id = 1;
-                                    }else if(isGstAvailable){
-                                        id = 2;
-                                    }
-                                    scoringParameterRequest.setStatutoryComplianceType(id);
-                                    scoringParameterRequest.setStatutoryCompliance_p(true);
-                                } catch (Exception e) {
-                                    logger.error("error while getting STATUTORY_COMPLIANCE parameter : ", e);
-                                    scoringParameterRequest.setStatutoryCompliance_p(false);
-                                }
-                                break;
-                            }
-                            case ScoreParameter.PAYMENT_RECORDS_WITH_LENDERS: {
+                            case ScoreParameter.MudraLoan.PAYMENT_RECORDS_WITH_LENDERS_ML: {
                             	if(!isCibilCheck) {
                             		  try {
                                           CibilResponse cibilResponse = cibilClient.getDPDLastXMonth(applicationId);
@@ -3173,98 +1962,452 @@ public class ScoringServiceImpl implements ScoringService {
                             	}
                                 break;
                             }
-                            case ScoreParameter.CMR_SCORE_MSME_RANKING: {  // CMR RATING FETCH FROM COMMERCIAL BUREAU
-                            	if(!isCibilCheck) {
-                            		try {
-                                    	String cmrScore = cibilClient.getCMRScore(applicationId);
-                                    	 	logger.info("{CMR_SCORE_MSME_RANKING}====={cmrScore}===={}=====>",cmrScore,"==={applicationId}===>"+applicationId);
-                                    	 	
-                                    		if(!CommonUtils.isObjectNullOrEmpty(cmrScore) && (!cmrScore.equals("NA"))){
-                                    			// String cmrValue = cmrScore.substring(4,6);
-                                    			String [] cmrValue = cmrScore.trim().split("-");
-        	                            			if(!CommonUtils.isObjectNullOrEmpty(cmrValue) && !CommonUtils.isObjectNullOrEmpty(cmrValue[1]))
-        	                            			{
-        	                            					scoringParameterRequest.setCmrScoreMsmeRanking(Double.valueOf(cmrValue[1]));
-        	                            			 }
-        	                            			else
-        	                            			{
-        	                            				scoringParameterRequest.setCmrScoreMsmeRanking(0.0);
-        	                            			}
-        	                            			scoringParameterRequest.setCmrScoreMsmeRanking_p(true);
-                                           }else{
-                                        	   scoringParameterRequest.setCmrScoreMsmeRanking_p(true);
-                                        	   scoringParameterRequest.setCmrScoreMsmeRanking(0.0);
-                                           }
-        								} catch (Exception e) {
-        									logger.error("Exception is getting while Get CMR Score CIBI:---->",e);
-        									e.printStackTrace();
-        								}
+                            
+                            case ScoreParameter.MudraLoan.ID_PROOF_ML: {
+
+                            	if(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getIdProof()!=null) {
+                            	scoringParameterRequest.setIdProof(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getIdProof());
+                            	scoringParameterRequest.setIdProof_p(true);
+                            	}
+                            	else {
+									scoringParameterRequest.setIdProof_p(false);
+								}
+                            	break;
+                            }
+                            case ScoreParameter.MudraLoan.NUMBER_OF_DEPENDENTS_ML: {
+                            	if(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getDependent()!=null) {
+                            		scoringParameterRequest.setNoOfDependents(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getDependent());
+                            		scoringParameterRequest.setNoOfDependents_p(true);
+                            	}
+                            	else {
+                            		scoringParameterRequest.setNoOfDependents_p(false);
+                            	}
+                            	break;
+                            }
+                            case ScoreParameter.MudraLoan.RESIDING_AT_THE_SAME_ADDRESS_ML: {
+                            	if(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getAddressYears()!=null) {
+                            		scoringParameterRequest.setAddressYear(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getAddressYears());
+                            		scoringParameterRequest.setAddressYear_p(true);
+                            	}
+                            	else {
+                            		scoringParameterRequest.setAddressYear_p(false);
+                            	}
+                            	break;
+                            }
+                            case ScoreParameter.MudraLoan.CERTIFICATION_ML: {
+                            		if(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getCertificationCourse()!=null) {
+                            			scoringParameterRequest.setCertification_p(true);
+                            			scoringParameterRequest.setCertification(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getCertificationCourse());
+                            		}
+                            		else {
+                            			scoringParameterRequest.setCertification_p(false);
+                            		}
+                            	
+                            	break;
+                            }
+                            case ScoreParameter.MudraLoan.MAIN_DIRECTOR_CATEGORY_ML: {
+                            	if(corporateApplicantDetail.getCastCategory()!=null) {
+                            		scoringParameterRequest.setCastCategory(corporateApplicantDetail.getCastCategory());
+                            		scoringParameterRequest.setCastCategory_p(true);
+                            	}
+                            	else {
+                            		scoringParameterRequest.setCastCategory_p(false);
                             	}
                             	
-                                break;
+                            	break;
                             }
-                            case ScoreParameter.ISO_CERTIFICATION: {
-                            	// One form ISO CERTIFIED
-                            	Boolean isoCertifiedResp = primaryCorporateDetail.getIsIsoCertified();
-                            	logger.info("ENTER HERE (ISO_CERTIFICATION)::::::::::{ISO_CERTIFICATION}======{}===>>>",isoCertifiedResp);
-                            	if(!CommonUtils.isObjectNullOrEmpty(isoCertifiedResp)){
-                            		
-                            		scoringParameterRequest.setIsoCertification_p(true);		
-                            		scoringParameterRequest.setIsoCertificationVal(isoCertifiedResp);
-                            	}else{
-                            		scoringParameterRequest.setIsoCertification_p(true);
-                            		scoringParameterRequest.setIsoCertificationVal(false);
-                            		
+                            case ScoreParameter.MudraLoan.COVERED_UNDER_DIFF_SCHEMES_ML: {
+                            	List<Integer> para = fsParameterMappingService.getParameters(applicationId, FSParameterMst.GOV_SCHEMES.getId() );
+                            	if(para!=null && !para.isEmpty()) {
+                            		scoringParameterRequest.setParameters(para);
+                            		scoringParameterRequest.setParameters_p(true);
                             	}
+                            	else {
+                            		scoringParameterRequest.setParameters_p(false);
+                            	}
+                            	
+                            	break;
+                            }
+                            case ScoreParameter.MudraLoan.OTHER_SOURCE_OF_INCOME_ML: {
+                            	if(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getOtherIncomeSource()!=null) {
+                            		scoringParameterRequest.setOtherSourceOfIncome(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getOtherIncomeSource());
+                            		scoringParameterRequest.setOtherSourceOfIncome_p(true);
+                            	}
+                            	else {
+                            		scoringParameterRequest.setOtherSourceOfIncome_p(false);
+                            	}
+                            	
+                            	break;
+                            }
+                            
+                            case ScoreParameter.MudraLoan.TOL_TNW_ML: {
+
+                                try {
+
+                                    //Before central bank changes
+                                    /*Double tol = liabilitiesDetailsTY.getTotalOutsideLiabilities();
+                                    if (CommonUtils.isObjectNullOrEmpty(tol))
+                                        tol = 0.0;
+
+                                    Double tnw = assetsDetailsTY.getTangibleNetWorth();
+                                    if (CommonUtils.isObjectNullOrEmpty(tnw))
+                                        tnw = 0.0;*/
+
+                                    //After central bank changes
+                                    Double[] fyTolTnwValues =getTolTnwValues(liabilitiesDetailsFY,assetsDetailsFY);
+                                    Double[] syTolTnwValues =getTolTnwValues(liabilitiesDetailsSY,assetsDetailsSY);
+                                    Double[] tyTolTnwValues =getTolTnwValues(liabilitiesDetailsTY,assetsDetailsTY);
+
+                                    scoringParameterRequest.setTolFY(fyTolTnwValues[0]);
+                                    scoringParameterRequest.setTolSY(syTolTnwValues[0]);
+                                    scoringParameterRequest.setTolTY(tyTolTnwValues[0]);
+
+                                    scoringParameterRequest.setTnwFY(fyTolTnwValues[1]);
+                                    scoringParameterRequest.setTnwSY(syTolTnwValues[1]);
+                                    scoringParameterRequest.setTnwTY(tyTolTnwValues[1]);
+
+                                    scoringParameterRequest.setTolTnw_p(true);
+                                    scoringParameterRequest.setLoanAmount(loanAmount);
+
+                                } catch (Exception e) {
+                                    logger.error("error while getting TOL_TNW parameter : ",e);
+                                    scoringParameterRequest.setTolTnw_p(false);
+                                }
+
                                 break;
                             }
-                            case ScoreParameter.TOTAL_NO_OF_INWARD_CHEQUE_BOUNCES_LAST_SIX_MONTHS: {
-                            	logger.info("TOTAL_NO_OF_INWARD_CHEQUE_BOUNCES_LAST_SIX_MONTHS::::::::::");
-                            	
-                            	try{
-                            		Double totalNoOfInwardChequeBouncesLatSixMonths = 0.0;
-                                    Double noOfChequeBounceLast6MonthsCount = 0.0;
-                                    Double noOfChequeIssuelastSixMonthsCount = 0.0d;
-                                    
-                                 // NO OF CHEQUE BOUNCES   && NO OF CHEQUE ISSUE IN LAST 6 MONTHS
+                            
+                            case ScoreParameter.MudraLoan.TENURE_ML: {
+                            	if(scoringRequestLoans.getTenureFS()!=null) {
+                            		scoringParameterRequest.setTenure(scoringRequestLoans.getTenureFS());
+                            	}
+                            	break;
+                            }
+                            
+                            case ScoreParameter.MudraLoan.PAST_YEAR_TURNOVER_ML: {
+
+                                try {
+                                    Double domesticSales = operatingStatementDetailsTY.getDomesticSales();
+                                    Double exportSales = operatingStatementDetailsTY.getExportSales();
+                                    scoringParameterRequest.setPastYearTurnover_p(true);
+                                    scoringParameterRequest.setExportSalesTY(exportSales);
+                                    scoringParameterRequest.setDomesticSalesTY(domesticSales);
+                                    scoringParameterRequest.setPastYearTurnover(domesticSales + exportSales);
+                                    scoringParameterRequest.setSales(operatingStatementDetailsTY.getNetSales());
+                                    scoringParameterRequest.setSales_p(true);
+                                } catch (Exception e) {
+                                    logger.error("error while getting PAST_YEAR_TURNOVER parameter : ",e);
+                                    scoringParameterRequest.setPastYearTurnover_p(false);
+                                    scoringParameterRequest.setSales_p(false);
+                                }
+                                break;
+                            }
+                            
+                            case ScoreParameter.MudraLoan.PAT_NET_SALES_RATIO_ML: {
+                                try {
+
+                                    Object[] itrResponse = moveAheadFromItr(applicationId);
+                                    Integer itrType = CommonUtils.isObjectNullOrEmpty(itrResponse[1]) ? null : Integer.parseInt(itrResponse[1].toString());
+
+                                    if(itrType !=null) {
+                                        scoringParameterRequest.setNetSaleTy(getOrDefauls(operatingStatementDetailsTY.getNetSales()));
+                                        scoringParameterRequest.setNetSaleSy(getOrDefauls(operatingStatementDetailsSY.getNetSales()));
+                                        scoringParameterRequest.setNetSaleFy(getOrDefauls(operatingStatementDetailsFY.getNetSales()));
+
+                                        scoringParameterRequest.setNetProfitOrLossFY(getOrDefauls(operatingStatementDetailsFY.getNetProfitOrLoss()));
+                                        scoringParameterRequest.setNetProfitOrLossSY(getOrDefauls(operatingStatementDetailsSY.getNetProfitOrLoss()));
+                                        scoringParameterRequest.setNetProfitOrLossTY(getOrDefauls(operatingStatementDetailsTY.getNetProfitOrLoss()));
+
+                                        scoringParameterRequest.setOtherRevenueIncomeFY(getOrDefauls(operatingStatementDetailsFY.getAddOtherRevenueIncome()));
+                                        scoringParameterRequest.setOtherRevenueIncomeSY(getOrDefauls(operatingStatementDetailsSY.getAddOtherRevenueIncome()));
+                                        scoringParameterRequest.setOtherRevenueIncomeTY(getOrDefauls(operatingStatementDetailsTY.getAddOtherRevenueIncome()));
+
+                                        scoringParameterRequest.setItyYearType(itrType);
+                                        scoringParameterRequest.setPatNetSalesRatio_p(true);
+                                    }else {
+                                        logger.error("error while getting PAT_NET_SALES_RATIO parameter :- Not able to find itr type.");
+                                        scoringParameterRequest.setPatNetSalesRatio_p(false);
+                                    }
+                                } catch (Exception e) {
+                                    logger.error("error while getting PAT_NET_SALES_RATIO parameter : ", e);
+                                    scoringParameterRequest.setPatNetSalesRatio_p(false);
+                                }
+                                break;
+                            }
+                            
+                            case ScoreParameter.MudraLoan.NO_OF_CUSTOMER_ML: {
+                                try {
+                                    if (!CommonUtils.isObjectNullOrEmpty(gstCalculation) && !CommonUtils.isObjectNullOrEmpty(gstCalculation.getNoOfCustomer())) {
+                                        scoringParameterRequest.setNoOfCustomenr(gstCalculation.getNoOfCustomer());
+                                        scoringParameterRequest.setNoOfCustomer_p(true);
+                                    } else {
+                                        scoringParameterRequest.setNoOfCustomer_p(false);
+                                    }
+                                } catch (Exception e) {
+                                    logger.error("error while getting NO_OF_CUSTOMER parameter : ",e);
+                                    scoringParameterRequest.setNoOfCustomer_p(false);
+                                    /*map.put("NO_OF_CUSTOMER",null);*/
+                                }
+                                break;
+                            }
+                            
+                            case ScoreParameter.MudraLoan.FACTORY_PREMISES_ML: {
+                                try {
+
+                                    if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getFactoryPremise())) {
+                                        scoringParameterRequest.setFactoryPremises(primaryCorporateDetail.getFactoryPremise().longValue());
+                                        scoringParameterRequest.setFactoryPremises_p(true);
+                                    } else {
+                                        scoringParameterRequest.setFactoryPremises_p(false);
+                                    }
+                                } catch (Exception e) {
+                                    logger.error("error while getting FACTORY_PREMISES parameter : ",e);
+                                    scoringParameterRequest.setFactoryPremises_p(false);
+                                }
+                                break;
+                            }
+                            case ScoreParameter.MudraLoan.YEARS_IN_BUSINESS_ML: {
+                                try {
+                                	Double yearsInBusiness = null;
+                                	Integer yearsInBetween = corporateApplicantDetail.getBusinessSinceYear();
+                                	Integer monthsDiff = null;
+                                	if(yearsInBetween == null) {
+                                		java.util.Calendar todayDate = java.util.Calendar.getInstance();
+                                        todayDate.setTime(new Date());
+
+                                        yearsInBetween = todayDate.get(java.util.Calendar.YEAR) - corporateApplicantDetail.getEstablishmentYear();
+
+                                        monthsDiff = todayDate.get(java.util.Calendar.MONTH) - corporateApplicantDetail.getEstablishmentMonth();
+
+                                        yearsInBusiness = (((double)yearsInBetween * 12 + (double)monthsDiff) / 12);
+                                	}else {
+                                		monthsDiff = corporateApplicantDetail.getBusinessSinceMonth();
+                                		if(monthsDiff > 6)
+                                			yearsInBusiness = (double)yearsInBetween + 1;
+                                		else
+                                			yearsInBusiness = (double)yearsInBetween;
+                                	}
+
+                                    scoringParameterRequest.setYearsInBusiness(yearsInBusiness);
+                                    scoringParameterRequest.setYearsInBusiness_p(true);
+                                } catch (Exception e) {
+                                    logger.error("error while getting YEARS_IN_BUSINESS parameter : ",e);
+                                    scoringParameterRequest.setYearsInBusiness_p(false);
+                                }
+                                break;
+                            }
+                            
+                            case ScoreParameter.MudraLoan.NO_OF_CHEQUES_BOUNCED_ML: {
+                                try{
+                                    Double noOfChequeBounce = 0.0;
                                     ReportRequest reportRequest = new ReportRequest();
                                     reportRequest.setApplicationId(applicationId);
-                                    AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
-                                    if(!CommonUtils.isObjectNullOrEmpty(analyzerResponse) && !CommonUtils.isObjectNullOrEmpty(analyzerResponse.getData())){
-                                    	
-                                    	for(Object object : (List)analyzerResponse.getData()) {
-                                    		try {
-                        						Data dataBs = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) object, Data.class);
-                        						
-                        					    noOfChequeBounceLast6MonthsCount = + Double.valueOf(dataBs.getSummaryInfo().getSummaryInfoTotalDetails().getInwBounces());
-                        						noOfChequeIssuelastSixMonthsCount = + Double.valueOf(dataBs.getSummaryInfo().getSummaryInfoTotalDetails().getChqIssues());
-                        						
-                        						
-                        						if(noOfChequeIssuelastSixMonthsCount!=0.0){
-                        							totalNoOfInwardChequeBouncesLatSixMonths  = (noOfChequeBounceLast6MonthsCount / noOfChequeIssuelastSixMonthsCount) * 100;
-                        						}else{
-                        							totalNoOfInwardChequeBouncesLatSixMonths = 0.0;
-                        						}
-                       							scoringParameterRequest.setTotalNoOfChequeBounceLastSixMonths_p(true);
-                       							scoringParameterRequest.setTotalNoOfInwardChequeBouncesLatSixMonths(totalNoOfInwardChequeBouncesLatSixMonths);
-                       							logger.info("{noOfChequeBounceLast6MonthsCount}::::::::::======{1}======{}===>>>"+noOfChequeBounceLast6MonthsCount);
-                       							logger.info("{noOfChequeIssuelastSixMonthsCount}::::::::::======{2}======{}===>>>"+noOfChequeIssuelastSixMonthsCount);
-                       							logger.info("{totalNoOfInwardChequeBouncesLatSixMonths}::::::::::======{3}======{}===>>>"+totalNoOfInwardChequeBouncesLatSixMonths);
-                        					}catch(Exception e) {
-                        						logger.error("EXCEPTION IS GETTING WHILE CALCULATE CHEQUE BOUNCES / ISSUE LOGIC=====>{}====>{}",noOfChequeIssuelastSixMonthsCount,noOfChequeBounceLast6MonthsCount,e);
-                        						scoringParameterRequest.setChequesBouncedLastSixMonth_p(false);
-                        					}
-                        				}
+                                    reportRequest.setDirectorId(null);
+
+                                    AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportByDirector(reportRequest);
+
+                                    Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) analyzerResponse.getData(),
+                                            Data.class);
+                                    if (!CommonUtils.isObjectNullOrEmpty(data) && !CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast1Month())) {
+                                        {
+                                            if (!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast1Month().doubleValue())) {
+                                                noOfChequeBounce = data.getCheckBounceForLast1Month().doubleValue();
+                                            } else {
+                                                noOfChequeBounce = 0.0;
+                                            }
+                                        }
+                                    } else {
+                                        noOfChequeBounce = 0.0;
                                     }
-                                   
+                                    scoringParameterRequest.setNoOfChequesBouncedLastMonth(noOfChequeBounce);
+                                    scoringParameterRequest.setChequesBouncedLastMonth_p(true);
+                                }catch (Exception e){
+                                    logger.error("error while getting NO_OF_CHEQUES_BOUNCED parameter : ",e);
+                                    scoringParameterRequest.setChequesBouncedLastMonth_p(false);
+                                }
+                                break;
+                            }
+
+                            case ScoreParameter.MudraLoan.NO_OF_CHEQUES_BOUNCED_LAST_SIX_MONTH_ML: {
+                                try{
+                                    Double noOfChequeBounce = 0.0;
+                                    ReportRequest reportRequest = new ReportRequest();
+                                    reportRequest.setApplicationId(applicationId);
+                                    reportRequest.setDirectorId(null);
+
+                                    AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportByDirector(reportRequest);
+
+                                    Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) analyzerResponse.getData(),
+                                            Data.class);
+                                    if (!CommonUtils.isObjectNullOrEmpty(data) && !CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month())) {
+                                        {
+                                            if (!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month().doubleValue())) {
+                                                noOfChequeBounce = data.getCheckBounceForLast6Month().doubleValue();
+                                            } else {
+                                                noOfChequeBounce = 0.0;
+                                            }
+
+                                        }
+                                    } else {
+                                        noOfChequeBounce = 0.0;
+                                    }
+                                    scoringParameterRequest.setNoOfChequesBouncedLastSixMonth(noOfChequeBounce);
+                                    scoringParameterRequest.setChequesBouncedLastSixMonth_p(true);
                                 }catch (Exception e){
                                     logger.error("error while getting NO_OF_CHEQUES_BOUNCED_LAST_SIX_MONTH parameter : ",e);
                                     scoringParameterRequest.setChequesBouncedLastSixMonth_p(false);
                                 }
-                                
                                 break;
                             }
+                            
+                            case ScoreParameter.MudraLoan.UDYOG_AADHAR_ML: {
+                            	if(corporateApplicantDetail.getAadhar()!=null) {
+                            	scoringParameterRequest.setAadhar(1L);
+                            	scoringParameterRequest.setAadhar_p(true);
+                            	}
+                            	else {
+                            		scoringParameterRequest.setAadhar(2L);
+                            		scoringParameterRequest.setAadhar_p(true);
+                            	}
+                            	
+                                break;
+                            }
+                            case ScoreParameter.MudraLoan.ITR_RETURN_FILED_ML: {
+                            	ITRBasicDetailsResponse arg0 = new ITRBasicDetailsResponse();
+                            	arg0.setApplicationId(applicationId);
+                            	ITRBasicDetailsResponse response  = itrClient.getAppOrCoAppBasicDetails(arg0);
+                            	if(response !=null && response.getIsFilledManual() !=null) {
+                            		if (response.getIsFilledManual()) {
+										scoringParameterRequest.setIsItReturnFiled(false);
+									}
+                            		else {
+                            			scoringParameterRequest.setIsItReturnFiled(true);
+                            		}
+                            		scoringParameterRequest.setIsItReturnFiled_p(true);
+                            	}
+                            	else {
+                            		scoringParameterRequest.setIsItReturnFiled_p(false);
+                            	}
+                            	
+                                 break;
+                             }
+                            
+                            case ScoreParameter.MudraLoan.TYPE_OF_ACTIVITY_ML: {
+                            	if(corporateApplicantDetail.getKeyVerticalSubsector()!=null) {
+                            		if (corporateApplicantDetail.getKeyVerticalSector() != null
+                    						&& corporateApplicantDetail.getKeyVerticalSubsector() != null) {
+                    					IrrBySectorAndSubSector irr = new IrrBySectorAndSubSector();
+                    					irr.setSectorId(corporateApplicantDetail.getKeyVerticalSector());
+                    					irr.setSubSectorId(corporateApplicantDetail.getKeyVerticalSubsector());
 
+                    					// IrrBySectorAndSubSector res
+                    					// =(IrrBySectorAndSubSector)oneFormClient.getIrrBySectorAndSubSector(irr).getData();
+                    					IrrBySectorAndSubSector res = null;
+                    					try {
+											res = (IrrBySectorAndSubSector) MultipleJSONObjectHelper.getObjectFromMap(
+													(Map<String, Object>) oneFormClient.getIrrBySectorAndSubSector(irr).getData(),
+													IrrBySectorAndSubSector.class);
+										} catch (IOException | OneFormException e) {
+											// TODO Auto-generated catch block
+	                    						scoringParameterRequest.setTypeOfActivity_p(false);
+										}
+                    					if(res!=null) {
+                    						IrrRequest irrIndustryRequest = new IrrRequest();
+                    						irrIndustryRequest.setIrrIndustryId(res.getIrr());
+                    						try {
+												irrIndustryRequest = ratingClient.getIrrIndustry(irrIndustryRequest);
+											} catch (RatingException e) {
+												// TODO Auto-generated catch block
+												e.printStackTrace();
+											}
+                    						IndustryResponse industryResponse = irrIndustryRequest.getIndustryResponse();
+                    						if (!CommonUtils.isObjectNullOrEmpty(industryResponse)) {
+
+                    							scoringParameterRequest.setTypeOfActivity_p(true);
+                    							scoringParameterRequest.setTypeOfActivity(industryResponse.getBusinessTypeId());
+                    						}
+                    						else {
+                        						scoringParameterRequest.setTypeOfActivity_p(false);
+                        					}
+                    						
+
+                    					}
+                    					else {
+                    						scoringParameterRequest.setTypeOfActivity_p(false);
+                    					}
+                            		}
+                            	}
+
+                                break;
+                            }
+                            case ScoreParameter.MudraLoan.RELATIONSHIP_WITH_BANK_ML: {
+                            	try {
+                            	List<BankingRelation> br = bankingRelationlRepository.listBankRelationAppId(applicationId);
+                            	if(br!=null && !br.isEmpty()) {
+                            		scoringParameterRequest.setBankRelation_p(true);
+                            		Long monthsBetween = ChronoUnit.MONTHS.between(
+                            		        LocalDate.parse(br.get(0).getSinceYear()+"-"+br.get(0).getSinceMonth()+"-"+"1").withDayOfMonth(1),
+                            		        LocalDate.parse(new SimpleDateFormat("yyyy-MM-dd").format(new Date())).withDayOfMonth(1));
+                            		scoringParameterRequest.setBankRelation(monthsBetween);
+                            	}
+                            	else {
+                            		scoringParameterRequest.setBankRelation_p(false);
+                            	}
+                            	}
+                            	catch (Exception e) {
+                            		scoringParameterRequest.setBankRelation_p(false);
+								}
+                                 break;
+                             }
+                            case ScoreParameter.MudraLoan.MARKETING_ARRANGEMENT_FOR_FINISHED_GOODS_ML: {
+                            	if(corporateDetailMudraLoan.getMrktArragementFinishedGoods()!=null) {
+                            		scoringParameterRequest.setMarketingArrangmentForFinishedGoods(corporateDetailMudraLoan.getMrktArragementFinishedGoods());
+                            		scoringParameterRequest.setMarketingArrangmentForFinishedGoods_p(true);
+                            	}
+                            	else {
+                            		scoringParameterRequest.setMarketingArrangmentForFinishedGoods_p(false);
+                            	}
+                            	
+                                 break;
+                             }
+                            case ScoreParameter.MudraLoan.REGISTRATION_WITH_GOVERNMENT_AUTHORITIES_ML: {
+                            	List<Integer> parameters = fsParameterMappingService.getParameters(applicationId, FSParameterMst.GOV_AUTHORITIES.getId());
+                            	if(parameters!=null && !parameters.isEmpty()) {
+                            		scoringParameterRequest.setRegistrationWithGovernmentAuthorities(parameters);
+                            		scoringParameterRequest.setRegistrationWithGovernmentAuthorities_p(true);
+                            	}
+                            	else {
+                            		scoringParameterRequest.setRegistrationWithGovernmentAuthorities_p(false);
+                            	}
+                                 break;
+                             }
+                            case ScoreParameter.MudraLoan.BUSINESS_PROSPECTS_OF_THE_ACTIVITY_TO_BE_UNDERTAKEN_ML: {
+                            	if(corporateApplicantDetail.getBusinessProspects()!=null) {
+                            		scoringParameterRequest.setBusinessProspects(corporateApplicantDetail.getBusinessProspects());
+                            		scoringParameterRequest.setBusinessProspects_p(true);
+                            	}
+                            	else {
+                            		scoringParameterRequest.setBusinessProspects_p(false);
+                            	}
+                                 break;
+                             }
+                            case ScoreParameter.MudraLoan.CREDIT_RELATION_WITH_BANK_ML: {
+                                // TODO
+//                            	corporateApplicantDetail.cre
+                                 break;
+                             }
+                            case ScoreParameter.MudraLoan.ACCESS_INPUTS_ML: {
+                            	
+                            	if(corporateApplicantDetail.getAccessInput()!=null) {
+                            		scoringParameterRequest.setAccessInputs(corporateApplicantDetail.getAccessInput());
+                            		scoringParameterRequest.setAccessInputs_p(true);
+                            	}
+                            	else {
+                            		scoringParameterRequest.setAccessInputs_p(false);
+                            	}
+                                 break;
+                             }
+                           
                             default:
                             	break;
                         }
