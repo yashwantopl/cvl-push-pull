@@ -34,9 +34,6 @@ public class PrimaryCorporateDetailMudraLoan implements Serializable {
 	@Column (name = "tl_name_of_supplier")
 	private String nameOfSupplier;
 	
-	@Column (name = "tl_total_cost_of_machine")
-	private Double costOfMachinery;
-	
 	@Column (name = "wc_avg_monthly_sale")
 	private Double avgMonthlySale;
 	
@@ -97,14 +94,6 @@ public class PrimaryCorporateDetailMudraLoan implements Serializable {
 		this.id = id;
 	}
 
-	public Double getCostOfMachinery() {
-		return costOfMachinery;
-	}
-
-	public void setCostOfMachinery(Double costOfMachinery) {
-		this.costOfMachinery = costOfMachinery;
-	}
-
 	public Integer getMrktArragementFinishedGoods() {
 		return mrktArragementFinishedGoods;
 	}
@@ -137,13 +126,6 @@ public class PrimaryCorporateDetailMudraLoan implements Serializable {
 		this.nameOfSupplier = nameOfSupplier;
 	}
 
-	public Double getTotalCostOfMachine() {
-		return costOfMachinery;
-	}
-
-	public void setTotalCostOfMachine(Double totalCostOfMachine) {
-		this.costOfMachinery = totalCostOfMachine;
-	}
 
 	public Double getAvgMonthlySale() {
 		return avgMonthlySale;
