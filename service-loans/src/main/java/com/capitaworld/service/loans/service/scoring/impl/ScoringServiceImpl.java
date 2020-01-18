@@ -1602,23 +1602,6 @@ public class ScoringServiceImpl implements ScoringService {
             Long applicationId = scoringRequestLoans.getApplicationId();
             Long fpProductId = scoringRequestLoans.getFpProductId();
 
-            ///////// Get Financial Type Id from ITR////////
-
-            //Integer financialTypeId = 3;
-
-          /*  List<ScoringRequestDetail> scoringRequestDetailList = scoringRequestDetailRepository.getScoringRequestDetailByApplicationIdAndIsActive(applicationId);
-
-
-            ScoringRequestDetail scoringRequestDetailSaved = new ScoringRequestDetail();
-
-            if (scoringRequestDetailList.size() > 0) {
-                logger.info("Getting Old Scoring request Data for  =====> " + applicationId);
-                scoringRequestDetailSaved = scoringRequestDetailList.get(0);
-                Gson gson = new Gson();
-                scoringParameterRequest = gson.fromJson(scoringRequestDetailSaved.getRequest(), ScoringParameterRequest.class);
-            }*/
-
-
             ScoringRequest scoringRequest = new ScoringRequest();
             scoringRequest.setScoringModelId(scoreModelId);
             scoringRequest.setFpProductId(fpProductId);
@@ -1645,19 +1628,55 @@ public class ScoringServiceImpl implements ScoringService {
 			}
 			
 			CibilResponse cibilResponseDPD = null;
+			int maxDpd = 0;
 			try {
 				cibilResponseDPD = cibilClient.getDPDLastXMonth(applicationId);
+				 if(!CommonUtils.isObjectNullOrEmpty(cibilResponseDPD) && !CommonUtils.isObjectNullOrEmpty(cibilResponseDPD.getListData())){
+                     List cibilDirectorsResponseList = cibilResponseDPD.getListData();
+                     int commercialVal = 0;
+                     for (int j = 0; j < cibilDirectorsResponseList.size(); j++) {
+                         String cibilResponseObj = cibilDirectorsResponseList.get(j).toString();
+                         if(cibilResponseObj.contains("|")){
+                             String[] cibilDpdVal = cibilResponseObj.split(Pattern.quote("|"));
+                             if(!CommonUtils.isObjectNullOrEmpty(cibilDpdVal[1]))
+                                 commercialVal = Integer.parseInt(cibilDpdVal[1]);
+                         }else {
+                             commercialVal = Integer.parseInt(cibilDirectorsResponseList.get(j).toString());
+                         }
+                         logger.info("commercialVal1::::::::::::::::::::::::::::::::::::::::::::::::::::::::"+commercialVal);
+                         if(maxDpd <= commercialVal){
+                             maxDpd = commercialVal;
+                         }
+                         logger.info("maxDpd::::::::::::::::::::::::::::::::::::::::::::::::::::::::"+maxDpd);
+                         scoringParameterRequest.setDpd(maxDpd);
+                         scoringParameterRequest.setPaymentRecordsWithLenders_p(true);
+                     }
+                 }
 			} catch (Exception e) {
 				logger.error("Error while getting Score from CIBIL = >",e);
 			}
 			
 			
 			AnalyzerResponse analyzerResponse = null;
+			Double noOfChequeBounce1Month = 0.0;
+			Double noOfChequeBounce6Month = 0.0;
 			try {
 				ReportRequest reportRequest = new ReportRequest();
                 reportRequest.setApplicationId(applicationId);
                 reportRequest.setDirectorId(null);
 				analyzerResponse = analyzerClient.getDetailsFromReportByDirector(reportRequest);
+                if(!CommonUtils.isObjectNullOrEmpty(analyzerResponse)){
+                	Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) analyzerResponse.getData(),
+                            Data.class);
+                	if(!CommonUtils.isObjectNullOrEmpty(data)){
+                		if (!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast1Month())) {
+                            noOfChequeBounce1Month = data.getCheckBounceForLast1Month().doubleValue();
+	                    }
+	                    if (!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month())) {
+	                         noOfChequeBounce6Month = data.getCheckBounceForLast6Month().doubleValue();
+	                    }                		
+                	}
+                }
 			} catch (Exception e) {
 				logger.error("Error while getting Bank Statement Response = >",e);
 			}
@@ -1699,10 +1718,30 @@ public class ScoringServiceImpl implements ScoringService {
                 Double loanAmount = primaryCorporateDetailRepository.getLoanAmountByApplication(applicationId);
 
                 CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+                Double yearsInBusiness = null;
+                if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)){
+                	Integer yearsInBetween = corporateApplicantDetail.getBusinessSinceYear();
+                	Integer monthsDiff = null;
+                	if(yearsInBetween == null) {
+                		java.util.Calendar todayDate = java.util.Calendar.getInstance();
+                        todayDate.setTime(new Date());
+
+                        yearsInBetween = todayDate.get(java.util.Calendar.YEAR) - corporateApplicantDetail.getEstablishmentYear();
+
+                        monthsDiff = todayDate.get(java.util.Calendar.MONTH) - corporateApplicantDetail.getEstablishmentMonth();
+
+                        yearsInBusiness = (((double)yearsInBetween * 12 + (double)monthsDiff) / 12);
+                	}else {
+                		monthsDiff = corporateApplicantDetail.getBusinessSinceMonth();
+                		if(monthsDiff > 6)
+                			yearsInBusiness = (double)yearsInBetween + 1;
+                		else
+                			yearsInBusiness = (double)yearsInBetween;
+                	}
+                }
 
 
                 GstResponse gstResponse = null;
-                GstResponse gstResponseScoring = null;
                 GstCalculation gstCalculation = new GstCalculation();
 
                 try {
@@ -1718,18 +1757,6 @@ public class ScoringServiceImpl implements ScoringService {
 
                 } catch (Exception e) {
                     logger.error("error while getting GST parameter : ",e);
-                }
-
-
-                // get GST Data for Sales Show A Rising Trend
-
-                try {
-                    GSTR1Request gstr1Request = new GSTR1Request();
-                    gstr1Request.setGstin(gstNumber);
-                    gstr1Request.setApplicationId(applicationId);
-                    gstResponseScoring = gstClient.getCalculationForScoring(gstr1Request);
-                } catch (Exception e) {
-                    logger.error("error while getting GST parameter for GST Sales Show A Rising Trend : ",e);
                 }
 
                 // end Get GST Parameter
@@ -1780,8 +1807,11 @@ public class ScoringServiceImpl implements ScoringService {
                 ///////////////
 
                 // Get Director Background detail
-
+                Double age = 0.0d;
                 DirectorBackgroundDetail mainDirectorBackgroundDetail = directorBackgroundDetailsRepository.getMainDirectorByApplicationId(applicationId);
+                if(!CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail) && !CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail.getDob()) ){
+                	age = Math.ceil(CommonUtils.getAgeFromBirthDate(mainDirectorBackgroundDetail.getDob()).doubleValue());
+                }
 
                 // get Primary Corporate Detail
 
@@ -1866,13 +1896,8 @@ public class ScoringServiceImpl implements ScoringService {
                             
                             case ScoreParameter.MudraLoan.AGE_ML: {
                                 try {
-
-                                    if (!CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail.getDob())) {
-                                        scoringParameterRequest.setAge(Math.ceil(CommonUtils.getAgeFromBirthDate(mainDirectorBackgroundDetail.getDob()).doubleValue()));
-                                        scoringParameterRequest.setAge_p(true);
-                                    } else {
-                                        scoringParameterRequest.setAge_p(false);
-                                    }
+                                    scoringParameterRequest.setAge(age);
+                                    scoringParameterRequest.setAge_p(true);
                                 } catch (Exception e) {
                                     logger.error("error while getting AGE parameter : ",e);
                                     scoringParameterRequest.setAge_p(false);
@@ -1950,31 +1975,8 @@ public class ScoringServiceImpl implements ScoringService {
                             case ScoreParameter.MudraLoan.PAYMENT_RECORDS_WITH_LENDERS_ML: {
                             	if(!isCibilCheck) {
                             		  try {
-                                          if(!CommonUtils.isObjectNullOrEmpty(cibilResponseDPD) && !CommonUtils.isObjectNullOrEmpty(cibilResponseDPD.getListData())){
-                                              List cibilDirectorsResponseList = cibilResponseDPD.getListData();
-                                              int commercialVal = 0;
-                                              int maxDpd = 0;
-                                              for (int j = 0; j < cibilDirectorsResponseList.size(); j++) {
-                                                  String cibilResponseObj = cibilDirectorsResponseList.get(j).toString();
-                                                  if(cibilResponseObj.contains("|")){
-                                                      String[] cibilDpdVal = cibilResponseObj.split(Pattern.quote("|"));
-                                                      if(!CommonUtils.isObjectNullOrEmpty(cibilDpdVal[1]))
-                                                          commercialVal = Integer.parseInt(cibilDpdVal[1]);
-                                                  }else {
-                                                      commercialVal = Integer.parseInt(cibilDirectorsResponseList.get(i).toString());
-                                                  }
-                                                  logger.info("commercialVal1::::::::::::::::::::::::::::::::::::::::::::::::::::::::"+commercialVal);
-                                                  if(maxDpd <= commercialVal){
-                                                      maxDpd = commercialVal;
-                                                  }
-                                                  logger.info("maxDpd::::::::::::::::::::::::::::::::::::::::::::::::::::::::"+maxDpd);
-                                                  scoringParameterRequest.setDpd(maxDpd);
-                                                  scoringParameterRequest.setPaymentRecordsWithLenders_p(true);
-                                              }
-                                          }else {
-                                              logger.error("error while getting PAYMENT_RECORDS_WITH_LENDERS parameter :- Unable to fetch DPD details");
-                                              scoringParameterRequest.setPaymentRecordsWithLenders_p(false);
-                                          }
+                                    	  scoringParameterRequest.setDpd(maxDpd);
+                                          scoringParameterRequest.setPaymentRecordsWithLenders_p(true);
                                       } catch (Exception e) {
                                           logger.error("error while getting PAYMENT_RECORDS_WITH_LENDERS parameter : ", e);
                                           scoringParameterRequest.setPaymentRecordsWithLenders_p(false);
@@ -2176,28 +2178,12 @@ public class ScoringServiceImpl implements ScoringService {
                             }
                             case ScoreParameter.MudraLoan.YEARS_IN_BUSINESS_ML: {
                                 try {
-                                	Double yearsInBusiness = null;
-                                	Integer yearsInBetween = corporateApplicantDetail.getBusinessSinceYear();
-                                	Integer monthsDiff = null;
-                                	if(yearsInBetween == null) {
-                                		java.util.Calendar todayDate = java.util.Calendar.getInstance();
-                                        todayDate.setTime(new Date());
-
-                                        yearsInBetween = todayDate.get(java.util.Calendar.YEAR) - corporateApplicantDetail.getEstablishmentYear();
-
-                                        monthsDiff = todayDate.get(java.util.Calendar.MONTH) - corporateApplicantDetail.getEstablishmentMonth();
-
-                                        yearsInBusiness = (((double)yearsInBetween * 12 + (double)monthsDiff) / 12);
-                                	}else {
-                                		monthsDiff = corporateApplicantDetail.getBusinessSinceMonth();
-                                		if(monthsDiff > 6)
-                                			yearsInBusiness = (double)yearsInBetween + 1;
-                                		else
-                                			yearsInBusiness = (double)yearsInBetween;
+                                	if(!CommonUtils.isObjectNullOrEmpty(yearsInBusiness)){
+                                		scoringParameterRequest.setYearsInBusiness(yearsInBusiness);
+                                        scoringParameterRequest.setYearsInBusiness_p(true);                                		
+                                	}else{
+                                		scoringParameterRequest.setYearsInBusiness_p(false);
                                 	}
-
-                                    scoringParameterRequest.setYearsInBusiness(yearsInBusiness);
-                                    scoringParameterRequest.setYearsInBusiness_p(true);
                                 } catch (Exception e) {
                                     logger.error("error while getting YEARS_IN_BUSINESS parameter : ",e);
                                     scoringParameterRequest.setYearsInBusiness_p(false);
@@ -2207,23 +2193,7 @@ public class ScoringServiceImpl implements ScoringService {
                             
                             case ScoreParameter.MudraLoan.NO_OF_CHEQUES_BOUNCED_ML: {
                                 try{
-                                    Double noOfChequeBounce = 0.0;
-                                    if(!CommonUtils.isObjectNullOrEmpty(analyzerResponse)){
-                                    	Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) analyzerResponse.getData(),
-                                                Data.class);
-                                        if (!CommonUtils.isObjectNullOrEmpty(data) && !CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast1Month())) {
-                                            {
-                                                if (!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast1Month().doubleValue())) {
-                                                    noOfChequeBounce = data.getCheckBounceForLast1Month().doubleValue();
-                                                } else {
-                                                    noOfChequeBounce = 0.0;
-                                                }
-                                            }
-                                        } else {
-                                            noOfChequeBounce = 0.0;
-                                        }                                    	
-                                    }
-                                    scoringParameterRequest.setNoOfChequesBouncedLastMonth(noOfChequeBounce);
+                                    scoringParameterRequest.setNoOfChequesBouncedLastMonth(noOfChequeBounce1Month);
                                     scoringParameterRequest.setChequesBouncedLastMonth_p(true);
                                 }catch (Exception e){
                                     logger.error("error while getting NO_OF_CHEQUES_BOUNCED parameter : ",e);
@@ -2234,25 +2204,7 @@ public class ScoringServiceImpl implements ScoringService {
 
                             case ScoreParameter.MudraLoan.NO_OF_CHEQUES_BOUNCED_LAST_SIX_MONTH_ML: {
                                 try{
-                                    Double noOfChequeBounce = 0.0;
-                                    if(!CommonUtils.isObjectNullOrEmpty(analyzerResponse)){
-                                    	  Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) analyzerResponse.getData(),
-                                                  Data.class);
-                                          if (!CommonUtils.isObjectNullOrEmpty(data) && !CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month())) {
-                                              {
-                                                  if (!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month().doubleValue())) {
-                                                      noOfChequeBounce = data.getCheckBounceForLast6Month().doubleValue();
-                                                  } else {
-                                                      noOfChequeBounce = 0.0;
-                                                  }
-
-                                              }
-                                          } else {
-                                              noOfChequeBounce = 0.0;
-                                          }
-                                    }
-
-                                    scoringParameterRequest.setNoOfChequesBouncedLastSixMonth(noOfChequeBounce);
+                                    scoringParameterRequest.setNoOfChequesBouncedLastSixMonth(noOfChequeBounce6Month);
                                     scoringParameterRequest.setChequesBouncedLastSixMonth_p(true);
                                 }catch (Exception e){
                                     logger.error("error while getting NO_OF_CHEQUES_BOUNCED_LAST_SIX_MONTH parameter : ",e);
@@ -2327,8 +2279,6 @@ public class ScoringServiceImpl implements ScoringService {
                     						else {
                         						scoringParameterRequest.setTypeOfActivity_p(false);
                         					}
-                    						
-
                     					}
                     					else {
                     						scoringParameterRequest.setTypeOfActivity_p(false);
