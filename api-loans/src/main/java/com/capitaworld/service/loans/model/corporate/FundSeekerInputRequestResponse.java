@@ -203,10 +203,12 @@ public class FundSeekerInputRequestResponse {
 	private Integer accessInput;
 	
 	private AssociatedConcernDetailRequest associatedConcern;
+		
+	private List<MachineDetailMudraLoanRequestResponse> machineDetails;
 	
-    /**/
-    
-    
+	private List<Long> deletedMachine;
+	
+	
 	public Boolean getIsIsoCertified() {
 		return isIsoCertified;
 	}
@@ -943,6 +945,22 @@ public class FundSeekerInputRequestResponse {
 
 	public void setAssociatedConcern(AssociatedConcernDetailRequest associatedConcern) {
 		this.associatedConcern = associatedConcern;
+	}
+
+	public List<MachineDetailMudraLoanRequestResponse> getMachineDetails() {
+		return machineDetails;
+	}
+
+	public void setMachineDetails(List<MachineDetailMudraLoanRequestResponse> machineDetails) {
+		this.machineDetails = machineDetails;
+	}
+	
+	public List<Long> getDeletedMachine() {
+		return deletedMachine;
+	}
+
+	public void setDeletedMachine(List<Long> deletedMachine) {
+		this.deletedMachine = deletedMachine;
 	}
 
 	@Override
