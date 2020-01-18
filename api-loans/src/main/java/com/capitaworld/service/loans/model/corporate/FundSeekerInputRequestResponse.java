@@ -190,9 +190,9 @@ public class FundSeekerInputRequestResponse {
 	
 	private Double monthlySurplus;
 	
-	private Double existing;
+	private String existing;
 	
-	private Double proposed;
+	private String proposed;
 	
 	private List<Integer> govAuthorities;
 	
@@ -890,23 +890,23 @@ public class FundSeekerInputRequestResponse {
 	public void setMonthlySurplus(Double monthlySurplus) {
 		this.monthlySurplus = monthlySurplus;
 	}
-
-	public Double getExisting() {
+	
+	public String getExisting() {
 		return existing;
 	}
 
-	public void setExisting(Double existing) {
+	public void setExisting(String existing) {
 		this.existing = existing;
 	}
-
-	public Double getProposed() {
+	
+	public String getProposed() {
 		return proposed;
 	}
 
-	public void setProposed(Double proposed) {
+	public void setProposed(String proposed) {
 		this.proposed = proposed;
 	}
-	
+
 	public List<Integer> getGovAuthorities() {
 		return govAuthorities;
 	}
