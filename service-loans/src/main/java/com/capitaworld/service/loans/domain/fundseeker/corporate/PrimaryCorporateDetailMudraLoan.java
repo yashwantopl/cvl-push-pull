@@ -56,10 +56,10 @@ public class PrimaryCorporateDetailMudraLoan implements Serializable {
 	private Double monthlySurplus;
 	
 	@Column (name = "ba_existing")
-	private Double existing;
+	private String existing;
 	
 	@Column (name = "ba_proposed")
-	private Double proposed;
+	private String proposed;
 	
 	@Column (name = "gov_auth_other")
 	private String othergovauthorities;
@@ -183,19 +183,19 @@ public class PrimaryCorporateDetailMudraLoan implements Serializable {
 		this.monthlySurplus = monthlySurplus;
 	}
 
-	public Double getExisting() {
+	public String getExisting() {
 		return existing;
 	}
 
-	public void setExisting(Double existing) {
+	public void setExisting(String existing) {
 		this.existing = existing;
 	}
 
-	public Double getProposed() {
+	public String getProposed() {
 		return proposed;
 	}
 
-	public void setProposed(Double proposed) {
+	public void setProposed(String proposed) {
 		this.proposed = proposed;
 	}
 
