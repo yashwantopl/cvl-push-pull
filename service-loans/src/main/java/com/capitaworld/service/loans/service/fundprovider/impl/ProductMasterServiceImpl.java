@@ -1403,9 +1403,9 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 		List<ProductMaster> results = null;
 		if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
-			results = productMasterRepository.getUserCorporateProductListByOrgIdAndBusinessTypeId(userOrgId,businessId.longValue());
+			results = productMasterRepository.getUserCorporateProductListByOrgIdAndBusinessTypeIdAndProductId(userOrgId,businessId.longValue(),productId);
 		} else {
-			results = productMasterRepository.getUserCorporateProductListByBusinessTypeId(userId,businessId.longValue());
+			results = productMasterRepository.getUserCorporateProductListByBusinessTypeIdAndProductId(userId,businessId.longValue(),productId);
 		}
 		if(CommonUtils.isListNullOrEmpty(results)){
 			return Collections.emptyList();

@@ -43,14 +43,14 @@ public interface ProductMasterRepository extends JpaRepository<ProductMaster, Lo
 	@Query("from ProductMaster pm where pm.userId =:userId  and productId in (1,2) order by pm.id desc")
 	public List<ProductMaster> getUserCorporateProductList(@Param("userId") Long userId);
 	
-	@Query("from ProductMaster pm where pm.userId =:userId  and productId in (1,2) and pm.businessTypeId =:businessTypeId")
-	public List<ProductMaster> getUserCorporateProductListByBusinessTypeId(@Param("userId") Long userId,@Param("businessTypeId")Long businessTypeId);
+	@Query("from ProductMaster pm where pm.userId =:userId  and pm.productId =:productId and pm.businessTypeId =:businessTypeId")
+	public List<ProductMaster> getUserCorporateProductListByBusinessTypeIdAndProductId(@Param("userId") Long userId,@Param("businessTypeId")Long businessTypeId,@Param("productId") Integer productId);
 	
 	@Query("from ProductMaster pm where pm.userOrgId =:userOrgId  and productId in (1,2) order by pm.id desc")
 	public List<ProductMaster> getUserCorporateProductListByOrgId(@Param("userOrgId") Long userOrgId);
 	
-	@Query("from ProductMaster pm where pm.userOrgId =:userOrgId  and pm.productId in (1,2) and pm.businessTypeId =:businessTypeId")
-	public List<ProductMaster> getUserCorporateProductListByOrgIdAndBusinessTypeId(@Param("userOrgId") Long userOrgId,@Param("businessTypeId")Long businessTypeId);
+	@Query("from ProductMaster pm where pm.userOrgId =:userOrgId  and pm.productId =:productId and pm.businessTypeId =:businessTypeId")
+	public List<ProductMaster> getUserCorporateProductListByOrgIdAndBusinessTypeIdAndProductId(@Param("userOrgId") Long userOrgId,@Param("businessTypeId")Long businessTypeId,@Param("productId") Integer productId);
 	
 	@Query("from ProductMaster pm where pm.userId =:userId  and productId  in (:productIds)")
 	public List<ProductMaster> getUserRetailProductList(@Param("userId") Long userId,@Param("productIds") List<Integer> productIds);
