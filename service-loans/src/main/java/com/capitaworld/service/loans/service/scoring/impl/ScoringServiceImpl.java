@@ -2299,7 +2299,7 @@ public class ScoringServiceImpl implements ScoringService {
                             		logger.info("Relationship With Bank :: "+br.get(0).getSinceYear()+"-"+br.get(0).getSinceMonth()+"-"+"1");
                             		scoringParameterRequest.setBankRelation_p(true);
                             		Long monthsBetween = ChronoUnit.MONTHS.between(
-                            		        LocalDate.parse(br.get(0).getSinceYear()+"-"+br.get(0).getSinceMonth()+"-"+"1").withDayOfMonth(1),
+                            		        LocalDate.parse(br.get(0).getSinceYear()+"-"+String.format("%02d", br.get(0).getSinceMonth())+"-"+"01").withDayOfMonth(1),
                             		        LocalDate.parse(new SimpleDateFormat("yyyy-MM-dd").format(new Date())).withDayOfMonth(1));
                             		scoringParameterRequest.setBankRelation(monthsBetween);
                             	}
@@ -2356,8 +2356,8 @@ public class ScoringServiceImpl implements ScoringService {
                              }
                             case ScoreParameter.MudraLoan.ACCESS_INPUTS_ML: {
                             	
+                            	logger.info("corporateApplicantDetail.getAccessInput() : " +corporateApplicantDetail.getAccessInput());
                             	if(corporateApplicantDetail.getAccessInput()!=null) {
-                            		logger.info("corporateApplicantDetail.getAccessInput() : " +corporateApplicantDetail.getAccessInput());
                             		scoringParameterRequest.setAccessInputs(corporateApplicantDetail.getAccessInput());
                             		scoringParameterRequest.setAccessInputs_p(true);
                             	}
