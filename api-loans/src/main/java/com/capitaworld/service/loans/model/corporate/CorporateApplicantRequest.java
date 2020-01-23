@@ -105,6 +105,26 @@ public class CorporateApplicantRequest implements Serializable {
     
     private Map<String, Object> incomeDetails;
     
+    private String dob;
+    
+    private String premiseNo;
+    
+    private String  streetName;
+    
+    private String  landmark;
+    
+    private Integer CountryId;
+    
+    private Integer stateId;
+    
+    private Integer cityId;
+    
+    private Integer pincode;
+    
+    private String  pan;
+    
+    
+    
     
 	/**
 	 * @return the isMultiGST
@@ -447,6 +467,78 @@ public class CorporateApplicantRequest implements Serializable {
 
 	public void setIncomeDetails(Map<String, Object> incomeDetails) {
 		this.incomeDetails = incomeDetails;
+	}
+
+	public String getDob() {
+		return dob;
+	}
+
+	public void setDob(String dob) {
+		this.dob = dob;
+	}
+
+	public String getPremiseNo() {
+		return premiseNo;
+	}
+
+	public void setPremiseNo(String premiseNo) {
+		this.premiseNo = premiseNo;
+	}
+
+	public String getStreetName() {
+		return streetName;
+	}
+
+	public void setStreetName(String streetName) {
+		this.streetName = streetName;
+	}
+
+	public String getLandmark() {
+		return landmark;
+	}
+
+	public void setLandmark(String landmark) {
+		this.landmark = landmark;
+	}
+
+	public Integer getCountryId() {
+		return CountryId;
+	}
+
+	public void setCountryId(Integer countryId) {
+		CountryId = countryId;
+	}
+
+	public Integer getStateId() {
+		return stateId;
+	}
+
+	public void setStateId(Integer stateId) {
+		this.stateId = stateId;
+	}
+
+	public Integer getCityId() {
+		return cityId;
+	}
+
+	public void setCityId(Integer cityId) {
+		this.cityId = cityId;
+	}
+
+	public Integer getPincode() {
+		return pincode;
+	}
+
+	public void setPincode(Integer pincode) {
+		this.pincode = pincode;
+	}
+
+	public String getPan() {
+		return pan;
+	}
+
+	public void setPan(String pan) {
+		this.pan = pan;
 	}
 
 	@Override
