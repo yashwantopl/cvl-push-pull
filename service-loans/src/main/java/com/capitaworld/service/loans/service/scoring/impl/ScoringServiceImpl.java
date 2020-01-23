@@ -1985,6 +1985,7 @@ public class ScoringServiceImpl implements ScoringService {
                             	break;
                             }
                             case ScoreParameter.MudraLoan.RESIDING_AT_THE_SAME_ADDRESS_ML: {
+                            	logger.info("RESIDING_AT_THE_SAME_ADDRESS_ML Table data ::" +mainDirectorBackgroundDetail.getDirectorPersonalDetail().getAddressYears());
                             	if(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getAddressYears()!=null) {
                             		scoringParameterRequest.setAddressYear(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getAddressYears());
                             		scoringParameterRequest.setAddressYear_p(true);
@@ -1992,6 +1993,8 @@ public class ScoringServiceImpl implements ScoringService {
                             	else {
                             		scoringParameterRequest.setAddressYear_p(false);
                             	}
+                            	logger.info("RESIDING_AT_THE_SAME_ADDRESS_ML :: "+scoringParameterRequest.getAddressYear());
+                            	logger.info("RESIDING_AT_THE_SAME_ADDRESS_ML :: "+scoringParameterRequest.getAddressYear_p());
                             	break;
                             }
                             case ScoreParameter.MudraLoan.CERTIFICATION_ML: {
@@ -2357,6 +2360,9 @@ public class ScoringServiceImpl implements ScoringService {
                             	catch (Exception e) {
                             		scoringParameterRequest.setBankRelation_p(false);
 								}
+                            	
+                            	logger.info("Relationship With Bank :: "+scoringParameterRequest.getBankRelation_p());
+                            	logger.info("Relationship With Bank Data :: "+scoringParameterRequest.getBankRelation());
                                  break;
                              }
                             case ScoreParameter.MudraLoan.MARKETING_ARRANGEMENT_FOR_FINISHED_GOODS_ML: {
@@ -2399,12 +2405,14 @@ public class ScoringServiceImpl implements ScoringService {
                             case ScoreParameter.MudraLoan.ACCESS_INPUTS_ML: {
                             	
                             	if(corporateApplicantDetail.getAccessInput()!=null) {
+                            		logger.info("corporateApplicantDetail.getAccessInput() : " +corporateApplicantDetail.getAccessInput());
                             		scoringParameterRequest.setAccessInputs(corporateApplicantDetail.getAccessInput());
                             		scoringParameterRequest.setAccessInputs_p(true);
                             	}
                             	else {
                             		scoringParameterRequest.setAccessInputs_p(false);
                             	}
+                            	logger.info("AccessInputs :" + scoringParameterRequest.getAccessInputs());
                                  break;
                              }
                            
