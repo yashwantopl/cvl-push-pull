@@ -1717,7 +1717,7 @@ public class ScoringServiceImpl implements ScoringService {
                 String gstNumber = corporateApplicantDetailRepository.getGstInByApplicationId(applicationId);
                 Double loanAmount = primaryCorporateDetailRepository.getLoanAmountByApplication(applicationId);
 
-                CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+                CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.getCorporateApplicantDetailByApplicationId(applicationId);
                 Double yearsInBusiness = null;
                 if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)){
                 	Integer yearsInBetween = corporateApplicantDetail.getBusinessSinceYear();
@@ -2013,7 +2013,9 @@ public class ScoringServiceImpl implements ScoringService {
                             		scoringParameterRequest.setAddressYear_p(true);
                             	}
                             	else {
-                            		scoringParameterRequest.setAddressYear_p(false);
+
+                            		scoringParameterRequest.setAddressYear(2);
+                            		scoringParameterRequest.setAddressYear_p(true);
                             	}
                             	logger.info("RESIDING_AT_THE_SAME_ADDRESS_ML :: "+scoringParameterRequest.getAddressYear());
                             	logger.info("RESIDING_AT_THE_SAME_ADDRESS_ML :: "+scoringParameterRequest.getAddressYear_p());
@@ -2220,7 +2222,7 @@ public class ScoringServiceImpl implements ScoringService {
                             	if(corporateApplicantDetail.getAadhar()!=null) {
                             	scoringParameterRequest.setAadhar(1L);
                             	scoringParameterRequest.setAadhar_p(true);
-                            	}
+                            	}	
                             	else {
                             		scoringParameterRequest.setAadhar(2L);
                             		scoringParameterRequest.setAadhar_p(true);
@@ -2294,6 +2296,7 @@ public class ScoringServiceImpl implements ScoringService {
                             case ScoreParameter.MudraLoan.RELATIONSHIP_WITH_BANK_ML: {
                             	try {
                             	if(br!=null && !br.isEmpty()) {
+                            		logger.info("Relationship With Bank :: "+br.get(0).getSinceYear()+"-"+br.get(0).getSinceMonth()+"-"+"1");
                             		scoringParameterRequest.setBankRelation_p(true);
                             		Long monthsBetween = ChronoUnit.MONTHS.between(
                             		        LocalDate.parse(br.get(0).getSinceYear()+"-"+br.get(0).getSinceMonth()+"-"+"1").withDayOfMonth(1),
@@ -2301,10 +2304,13 @@ public class ScoringServiceImpl implements ScoringService {
                             		scoringParameterRequest.setBankRelation(monthsBetween);
                             	}
                             	else {
+                            		logger.info("in Else");
                             		scoringParameterRequest.setBankRelation_p(false);
                             	}
                             	}
                             	catch (Exception e) {
+                            		e.printStackTrace();
+                            		logger.info("in Caatch");
                             		scoringParameterRequest.setBankRelation_p(false);
 								}
                             	
