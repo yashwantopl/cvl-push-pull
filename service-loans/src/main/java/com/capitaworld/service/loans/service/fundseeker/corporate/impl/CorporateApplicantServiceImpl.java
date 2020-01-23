@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.text.DecimalFormat;
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -903,7 +904,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		    	liabilitiesDetails.setCreatedBy(applicantRequest.getUserId());
 		    	liabilitiesDetails.setFsLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
 		    	//For Project Sales
-	    		liabilitiesDetails.setFinancialYearlyStatement(yearEntry.getKey().toString().equals(""+Calendar.getInstance().get(Calendar.YEAR)) ? "Projected":"Audited");
+	    		liabilitiesDetails.setFinancialYearlyStatement(yearEntry.getKey().equals(""+Year.now().minusYears(1)) ? "Projected":"Audited");
 		    	liabilitiesDetailsRepository.save(liabilitiesDetails); 
     		}
     		
@@ -915,7 +916,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		    	operatingStatementDetails.setCreatedDate(new Date());
 		    	operatingStatementDetails.setCreatedBy(applicantRequest.getUserId());
 		    	operatingStatementDetails.setLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
-		    	operatingStatementDetails.setFinancialYearlyStatement(yearEntry.getKey().toString().equals(""+Calendar.getInstance().get(Calendar.YEAR)) ? "Projected":"Audited");
+		    	operatingStatementDetails.setFinancialYearlyStatement(yearEntry.getKey().equals(""+Year.now().minusYears(1)) ? "Projected":"Audited");
 		    	operatingStatementDetailsRepository.save(operatingStatementDetails); 
     		}
     		
@@ -927,7 +928,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		    	liabilitiesDetails.setCreatedDate(new Date());
 		    	liabilitiesDetails.setCreatedBy(applicantRequest.getUserId());
 		    	liabilitiesDetails.setFsLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
-		    	liabilitiesDetails.setFinancialYearlyStatement(yearEntry.getKey().toString().equals(""+Calendar.getInstance().get(Calendar.YEAR)) ? "Projected":"Audited");
+		    	liabilitiesDetails.setFinancialYearlyStatement(yearEntry.getKey().equals(""+Year.now().minusYears(1)) ? "Projected":"Audited");
 		    	liabilitiesDetailsRepository.save(liabilitiesDetails); 
     		}
     		
@@ -939,7 +940,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		    	operatingStatementDetails.setCreatedDate(new Date());
 		    	operatingStatementDetails.setCreatedBy(applicantRequest.getUserId());
 		    	operatingStatementDetails.setLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
-		    	operatingStatementDetails.setFinancialYearlyStatement(yearEntry.getKey().toString().equals(""+Calendar.getInstance().get(Calendar.YEAR)) ? "Projected":"Audited");
+		    	operatingStatementDetails.setFinancialYearlyStatement(yearEntry.getKey().equals(""+Year.now().minusYears(1)) ? "Projected":"Audited");
 		    	operatingStatementDetailsRepository.save(operatingStatementDetails); 
     		}
     		
@@ -951,7 +952,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		    	assetsDetails.setCreatedDate(new Date());
 		    	assetsDetails.setCreatedBy(applicantRequest.getUserId());
 		    	assetsDetails.setLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
-		    	assetsDetails.setFinancialYearlyStatement(yearEntry.getKey().toString().equals(""+Calendar.getInstance().get(Calendar.YEAR)) ? "Projected":"Audited");
+		    	assetsDetails.setFinancialYearlyStatement(yearEntry.getKey().equals(""+Year.now().minusYears(1)) ? "Projected":"Audited");
 		    	assetsDetailsRepository.save(assetsDetails); 
     		}
     		
@@ -986,7 +987,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		    	liabilitiesDetails.setCreatedBy(applicantRequest.getUserId());
 		    	liabilitiesDetails.setFsLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
 		    	//For Project Sales
-	    		liabilitiesDetails.setFinancialYearlyStatement(yearEntry.getKey().toString().equals(""+Calendar.getInstance().get(Calendar.YEAR)) ? "Projected":"Audited");
+	    		liabilitiesDetails.setFinancialYearlyStatement(yearEntry.getKey().equals(""+Year.now().minusYears(1)) ? "Projected":"Audited");
 		    	liabilitiesDetailsRepository.save(liabilitiesDetails); 
     		}
     		
@@ -998,7 +999,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		    	operatingStatementDetails.setCreatedDate(new Date());
 		    	operatingStatementDetails.setCreatedBy(applicantRequest.getUserId());
 		    	operatingStatementDetails.setLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
-		    	operatingStatementDetails.setFinancialYearlyStatement(yearEntry.getKey().toString().equals(""+Calendar.getInstance().get(Calendar.YEAR)) ? "Projected":"Audited");
+		    	operatingStatementDetails.setFinancialYearlyStatement(yearEntry.getKey().equals(""+Year.now().minusYears(1)) ? "Projected":"Audited");
 		    	operatingStatementDetailsRepository.save(operatingStatementDetails); 
     		}
     		
@@ -1010,7 +1011,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		    	liabilitiesDetails.setCreatedDate(new Date());
 		    	liabilitiesDetails.setCreatedBy(applicantRequest.getUserId());
 		    	liabilitiesDetails.setFsLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
-		    	liabilitiesDetails.setFinancialYearlyStatement(yearEntry.getKey().toString().equals(""+Calendar.getInstance().get(Calendar.YEAR)) ? "Projected":"Audited");
+		    	liabilitiesDetails.setFinancialYearlyStatement(yearEntry.getKey().equals(""+Year.now().minusYears(1)) ? "Projected":"Audited");
 		    	liabilitiesDetailsRepository.save(liabilitiesDetails); 
     		}
     		
@@ -1022,7 +1023,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		    	operatingStatementDetails.setCreatedDate(new Date());
 		    	operatingStatementDetails.setCreatedBy(applicantRequest.getUserId());
 		    	operatingStatementDetails.setLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
-		    	operatingStatementDetails.setFinancialYearlyStatement(yearEntry.getKey().toString().equals(""+Calendar.getInstance().get(Calendar.YEAR)) ? "Projected":"Audited");
+		    	operatingStatementDetails.setFinancialYearlyStatement(yearEntry.getKey().equals(""+Year.now().minusYears(1)) ? "Projected":"Audited");
 		    	operatingStatementDetailsRepository.save(operatingStatementDetails); 
     		}
     		
@@ -1034,7 +1035,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		    	assetsDetails.setCreatedDate(new Date());
 		    	assetsDetails.setCreatedBy(applicantRequest.getUserId());
 		    	assetsDetails.setLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
-		    	assetsDetails.setFinancialYearlyStatement(yearEntry.getKey().toString().equals(""+Calendar.getInstance().get(Calendar.YEAR)) ? "Projected":"Audited");
+		    	assetsDetails.setFinancialYearlyStatement(yearEntry.getKey().equals(""+Year.now().minusYears(1)) ? "Projected":"Audited");
 		    	assetsDetailsRepository.save(assetsDetails); 
     		}
 			return true;
