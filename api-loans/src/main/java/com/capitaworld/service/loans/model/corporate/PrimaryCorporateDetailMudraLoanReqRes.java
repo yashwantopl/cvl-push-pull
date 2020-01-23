@@ -17,8 +17,6 @@ public class PrimaryCorporateDetailMudraLoanReqRes  implements Serializable{
 	
 	private String nameOfSupplier;
 	
-	private Double totalCostOfMachine;
-	
 	private Double avgMonthlySale;
 	
 	private Double rawMaterialsStock;
@@ -94,14 +92,6 @@ public class PrimaryCorporateDetailMudraLoanReqRes  implements Serializable{
 
 	public void setNameOfSupplier(String nameOfSupplier) {
 		this.nameOfSupplier = nameOfSupplier;
-	}
-
-	public Double getTotalCostOfMachine() {
-		return totalCostOfMachine;
-	}
-
-	public void setTotalCostOfMachine(Double totalCostOfMachine) {
-		this.totalCostOfMachine = totalCostOfMachine;
 	}
 
 	public Double getAvgMonthlySale() {

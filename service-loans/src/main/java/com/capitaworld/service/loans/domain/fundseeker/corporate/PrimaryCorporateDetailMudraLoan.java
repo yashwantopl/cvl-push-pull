@@ -34,9 +34,6 @@ public class PrimaryCorporateDetailMudraLoan implements Serializable {
 	@Column (name = "tl_name_of_supplier")
 	private String nameOfSupplier;
 	
-	@Column (name = "tl_total_cost_of_machine")
-	private Double costOfMachinery;
-	
 	@Column (name = "wc_avg_monthly_sale")
 	private Double avgMonthlySale;
 	
@@ -59,10 +56,10 @@ public class PrimaryCorporateDetailMudraLoan implements Serializable {
 	private Double monthlySurplus;
 	
 	@Column (name = "ba_existing")
-	private Double existing;
+	private String existing;
 	
 	@Column (name = "ba_proposed")
-	private Double proposed;
+	private String proposed;
 	
 	@Column (name = "gov_auth_other")
 	private String othergovauthorities;
@@ -97,14 +94,6 @@ public class PrimaryCorporateDetailMudraLoan implements Serializable {
 		this.id = id;
 	}
 
-	public Double getCostOfMachinery() {
-		return costOfMachinery;
-	}
-
-	public void setCostOfMachinery(Double costOfMachinery) {
-		this.costOfMachinery = costOfMachinery;
-	}
-
 	public Integer getMrktArragementFinishedGoods() {
 		return mrktArragementFinishedGoods;
 	}
@@ -137,13 +126,6 @@ public class PrimaryCorporateDetailMudraLoan implements Serializable {
 		this.nameOfSupplier = nameOfSupplier;
 	}
 
-	public Double getTotalCostOfMachine() {
-		return costOfMachinery;
-	}
-
-	public void setTotalCostOfMachine(Double totalCostOfMachine) {
-		this.costOfMachinery = totalCostOfMachine;
-	}
 
 	public Double getAvgMonthlySale() {
 		return avgMonthlySale;
@@ -201,19 +183,19 @@ public class PrimaryCorporateDetailMudraLoan implements Serializable {
 		this.monthlySurplus = monthlySurplus;
 	}
 
-	public Double getExisting() {
+	public String getExisting() {
 		return existing;
 	}
 
-	public void setExisting(Double existing) {
+	public void setExisting(String existing) {
 		this.existing = existing;
 	}
 
-	public Double getProposed() {
+	public String getProposed() {
 		return proposed;
 	}
 
-	public void setProposed(Double proposed) {
+	public void setProposed(String proposed) {
 		this.proposed = proposed;
 	}
 

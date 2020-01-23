@@ -6,6 +6,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -46,6 +47,7 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.AssociatedConce
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorPersonalDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.MachineDetailMudraLoan;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetailMudraLoan;
 import com.capitaworld.service.loans.exceptions.LoansException;
@@ -60,6 +62,7 @@ import com.capitaworld.service.loans.model.NTBRequest;
 import com.capitaworld.service.loans.model.common.HunterRequestDataResponse;
 import com.capitaworld.service.loans.model.corporate.CollateralSecurityDetailRequest;
 import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
+import com.capitaworld.service.loans.model.corporate.MachineDetailMudraLoanRequestResponse;
 import com.capitaworld.service.loans.model.corporate.PrimaryCorporateDetailMudraLoanReqRes;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssociatedConcernDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CollateralSecurityDetailRepository;
@@ -68,6 +71,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBac
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorPersonalDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.FinancialArrangementDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.MachineDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailMudraLoanRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
@@ -208,6 +212,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	
 	@Autowired
 	private FSParameterMappingService fsParameterMappingService;
+	
+	@Autowired
+	private MachineDetailsRepository machineDetailsRepository;
 
 	/**
 	 * Save oneform details
@@ -281,7 +288,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			primaryCorporateDetail.setAdditionalLoanAmount(fundSeekerInputRequest.getAdditionalLoanAmount());
 			primaryCorporateDetail.setIsAdditionalAmount(fundSeekerInputRequest.getIsAdditionalAmount());
 			primaryCorporateDetail.setIsAllowSwitchExistingLender(fundSeekerInputRequest.getIsAllowSwitchExistingLender());
-			
+			primaryCorporateDetail.setCostOfMachinery(fundSeekerInputRequest.getCostOfMachinery());
 			
 			/****SAVE MUDRA LOAN DETAILS ****/
 			if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getPrimaryCorporatedetailsMudraloanId())) {
@@ -295,7 +302,23 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				primaryCorporateDetail.setPrimaryCorporatedetailsMudraloanId(mudraLoanDetails);
 			}
 			
-
+			// Save or update machine details
+			if (!CommonUtils.isListNullOrEmpty(fundSeekerInputRequest.getMachineDetails())) {
+				for (MachineDetailMudraLoanRequestResponse obj : fundSeekerInputRequest.getMachineDetails()) {
+					MachineDetailMudraLoan machineDetailMudraLoan = new MachineDetailMudraLoan();
+					BeanUtils.copyProperties(obj, machineDetailMudraLoan);
+					machineDetailMudraLoan.setApplicationId(fundSeekerInputRequest.getApplicationId());
+					machineDetailsRepository.save(machineDetailMudraLoan);
+				}
+			}
+			
+			// Delete machines
+			if (!CommonUtils.isListNullOrEmpty(fundSeekerInputRequest.getDeletedMachine())) {
+				for (Long machineId : fundSeekerInputRequest.getDeletedMachine()) {
+					machineDetailsRepository.delete(machineId);
+				}
+			}
+			
 			primaryCorporateDetailRepository.saveAndFlush(primaryCorporateDetail);
 			fsParameterMappingService.inactiveAndSave(fundSeekerInputRequest.getApplicationId(), FSParameterMst.GOV_AUTHORITIES.getId(), fundSeekerInputRequest.getGovAuthorities());
 
@@ -565,6 +588,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		}
 	}
 
+	/**
+	 * Get one form details
+	 */
 	@Override
 	public ResponseEntity<LoansResponse> get(FundSeekerInputRequestResponse fsInputReq) {
 
@@ -613,13 +639,21 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			PrimaryCorporateDetailMudraLoan mudraLoan = primaryCorporateDetailMudraLoanRepository.findByApplicationId(fsInputRes.getApplicationId());
 			fsInputRes.setGovAuthorities(fsParameterMappingService.getParameters(fsInputReq.getApplicationId(),FSParameterMst.GOV_AUTHORITIES.getId()));
 			
+			// GET COST OF MACHINARY DETAILS
+			List<MachineDetailMudraLoan> detailMudraLoans =  machineDetailsRepository.findByApplicationId(fsInputReq.getApplicationId());
+			List<MachineDetailMudraLoanRequestResponse> machineDetails = new ArrayList<MachineDetailMudraLoanRequestResponse>(detailMudraLoans.size()); 
+			for (MachineDetailMudraLoan machineDetailMudraLoan : detailMudraLoans) {
+				MachineDetailMudraLoanRequestResponse machineDetailsRes = new MachineDetailMudraLoanRequestResponse(); 
+				BeanUtils.copyProperties(machineDetailMudraLoan, machineDetailsRes);
+				machineDetails.add(machineDetailsRes); 
+			}
+			fsInputRes.setMachineDetails(machineDetails);
+			
 			if (!CommonUtils.isObjectNullOrEmpty(mudraLoan)) {
 				BeanUtils.copyProperties(mudraLoan, fsInputRes);
 			}
 			
-			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("One form data successfully fetched", HttpStatus.OK.value(), fsInputRes),
-					HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>( new LoansResponse("One form data successfully fetched", HttpStatus.OK.value(), fsInputRes), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while fetching one form data : ",e);
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Error while fetching one form input data",
