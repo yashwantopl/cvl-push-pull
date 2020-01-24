@@ -7,8 +7,12 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 
 @Entity
 @Table(name = "fs_corporate_primary_details_mudra_loan")
@@ -84,7 +88,10 @@ public class PrimaryCorporateDetailMudraLoan implements Serializable {
 	
 	@Column (name = "application_id")
 	private Long applicationId;
-
+	
+	@OneToOne
+	@JoinColumn(name = "proposal_mapping_id")
+	private ApplicationProposalMapping applicationProposalMapping;
 	
 	public Long getId() {
 		return id;
@@ -262,5 +269,12 @@ public class PrimaryCorporateDetailMudraLoan implements Serializable {
 	public void setOtherStatutory(String otherStatutory) {
 		this.otherStatutory = otherStatutory;
 	}
-	
+
+	public ApplicationProposalMapping getApplicationProposalMapping() {
+		return applicationProposalMapping;
+	}
+
+	public void setApplicationProposalMapping(ApplicationProposalMapping applicationProposalMapping) {
+		this.applicationProposalMapping = applicationProposalMapping;
+	}
 }

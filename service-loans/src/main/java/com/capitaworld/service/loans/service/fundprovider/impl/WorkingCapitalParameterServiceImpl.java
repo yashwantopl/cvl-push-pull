@@ -25,7 +25,6 @@ import com.capitaworld.service.loans.domain.IndustrySectorDetailTemp;
 import com.capitaworld.service.loans.domain.fundprovider.ConstitutionMapping;
 import com.capitaworld.service.loans.domain.fundprovider.ConstitutionMappingTemp;
 import com.capitaworld.service.loans.domain.fundprovider.FpGstTypeMapping;
-import com.capitaworld.service.loans.domain.fundprovider.FpGstTypeMappingTemp;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalCityDetail;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalCityDetailTemp;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalCountryDetail;
@@ -280,27 +279,6 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		CommonDocumentUtils.endHook(logger, "saveGstTypeTemp");
 		
 	}
-	
-	private void saveLoanGstTypeTemp(WorkingCapitalParameterRequest workingCapitalParameterRequest) {
-		// TODO Auto-generated method stub
-		CommonDocumentUtils.startHook(logger, "saveGstTypeTemp");
-		FpGstTypeMappingTemp fpGstTypeMappingTemp= null;
-		for (Integer dataRequest : workingCapitalParameterRequest.getGstType()) {
-			fpGstTypeMappingTemp = new FpGstTypeMappingTemp();
-			fpGstTypeMappingTemp.setFpProductId(workingCapitalParameterRequest.getId());
-			fpGstTypeMappingTemp.setGstTypeId(dataRequest);
-			fpGstTypeMappingTemp.setCreatedBy(workingCapitalParameterRequest.getUserId());
-			fpGstTypeMappingTemp.setModifiedBy(workingCapitalParameterRequest.getUserId());
-			fpGstTypeMappingTemp.setCreatedDate(new Date());
-			fpGstTypeMappingTemp.setModifiedDate(new Date());
-			fpGstTypeMappingTemp.setIsActive(true);
-			// create by and update
-			fpGstTypeMappingTempRepository.save(fpGstTypeMappingTemp);
-		}
-		CommonDocumentUtils.endHook(logger, "saveGstTypeTemp");
-		
-	}
-
 	private void saveLoanArrangements(WorkingCapitalParameterRequest workingCapitalParameterRequest) {
 		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "saveLoanArrangements");
@@ -321,6 +299,7 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public WorkingCapitalParameterRequest getWorkingCapitalParameter(Long id) {
 		logger.info("start getWorkingCapitalParameter");
@@ -578,6 +557,7 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 
 	}
 
+	@SuppressWarnings("unchecked")
 	public WorkingCapitalParameterRequest getWorkingCapitalParameterTemp(Long id,Long role,Long userId) {
 		logger.info("start getWorkingCapitalParameterTemp");
 		WorkingCapitalParameterRequest workingCapitalParameterRequest = new WorkingCapitalParameterRequest();
