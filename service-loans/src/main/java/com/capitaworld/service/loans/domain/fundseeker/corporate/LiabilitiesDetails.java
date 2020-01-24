@@ -166,6 +166,9 @@ public class LiabilitiesDetails implements Serializable{
 	@Column(name = "other_income_need_to_chek_lia")
 	private Double otherIncomeNeedTocCheckLia;
 	
+	@Column(name = "creditors")
+	private Double creditors;
+	
 	
 	public LiabilitiesDetails() {
 		super();
@@ -651,5 +654,13 @@ public class LiabilitiesDetails implements Serializable{
 
 	public void setApplicationProposalMapping(ApplicationProposalMapping applicationProposalMapping) {
 		this.applicationProposalMapping = applicationProposalMapping;
+	}
+
+	public Double getCreditors() {
+		return creditors;
+	}
+
+	public void setCreditors(Double creditors) {
+		this.creditors = creditors;
 	}
 }
