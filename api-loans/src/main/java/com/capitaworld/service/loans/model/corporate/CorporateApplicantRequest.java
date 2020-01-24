@@ -123,6 +123,9 @@ public class CorporateApplicantRequest implements Serializable {
     
     private String  pan;
     
+    private Long distId;
+    
+    private Long registeredDistMappingId;
     
     
     
@@ -539,6 +542,22 @@ public class CorporateApplicantRequest implements Serializable {
 
 	public void setPan(String pan) {
 		this.pan = pan;
+	}
+
+	public Long getDistId() {
+		return distId;
+	}
+
+	public void setDistId(Long distId) {
+		this.distId = distId;
+	}
+
+	public Long getRegisteredDistMappingId() {
+		return registeredDistMappingId;
+	}
+
+	public void setRegisteredDistMappingId(Long registeredDistMappingId) {
+		this.registeredDistMappingId = registeredDistMappingId;
 	}
 
 	@Override

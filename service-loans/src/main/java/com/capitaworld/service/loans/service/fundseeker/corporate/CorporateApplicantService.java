@@ -64,4 +64,6 @@ public interface CorporateApplicantService {
     
     public boolean saveSalesITRResponse(CorporateApplicantRequest applicantRequest) throws LoansException;
     
+    public CorporateApplicantRequest getCorporateApplicantDetails(Long applicationId);
+    
 }

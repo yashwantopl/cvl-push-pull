@@ -871,9 +871,10 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			applicantDetails.setRegisteredStreetName(applicantRequest.getStreetName());
 			applicantDetails.setOrganisationName(applicantRequest.getOrganisationName());
 			applicantDetails.setRegisteredStateId(applicantRequest.getStateId());
-			applicantDetails.setPanNo(applicantRequest.getPan());
+			applicantDetails.setPanNo(applicantRequest.getPanNo());
 			applicantDetails.setCreatedDate(new Date());
 			applicantDetails.setIsActive(true);
+			applicantDetails.setRegisteredDistMappingId(applicantRequest.getDistId());
 			corporateApplicantDetailRepository.save(applicantDetails);
     		saveSalesITRResponse(applicantRequest);
 			}
@@ -1042,5 +1043,19 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			// TODO: handle exception
 		}
 		return false;
+	}
+
+	@Override
+	public CorporateApplicantRequest getCorporateApplicantDetails(Long applicationId) {
+		
+		CorporateApplicantDetail  applicantRequest =  corporateApplicantDetailRepository.findByApplicationIdIdAndIsActive(applicationId, true);
+		
+		CorporateApplicantRequest corporateApplicantRequest = new CorporateApplicantRequest();
+		
+		if(!CommonUtils.isObjectNullOrEmpty(applicantRequest)) {
+			BeanUtils.copyProperties(applicantRequest, corporateApplicantRequest);
+		}
+		
+		return corporateApplicantRequest;
 	}
 }
