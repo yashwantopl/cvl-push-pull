@@ -2354,7 +2354,7 @@ public class ScoringServiceImpl implements ScoringService {
 //                            	corporateApplicantDetail.cre
                                  break;
                              }
-                            case ScoreParameter.MudraLoan.ACCESS_INPUTS_ML: {
+                            case ScoreParameter.MudraLoan.ACCESS_TO_INPUTS_ML: {
                             	
                             	logger.info("corporateApplicantDetail.getAccessInput() : " +corporateApplicantDetail.getAccessInput());
                             	if(corporateApplicantDetail.getAccessInput()!=null) {
