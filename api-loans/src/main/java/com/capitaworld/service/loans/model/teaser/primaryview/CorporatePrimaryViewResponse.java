@@ -3,17 +3,18 @@ package com.capitaworld.service.loans.model.teaser.primaryview;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.model.AssociatedConcernDetailRequest;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
 import com.capitaworld.service.loans.model.GstRelatedPartyRequest;
 import com.capitaworld.service.loans.model.corporate.CollateralSecurityDetailRequest;
+import com.capitaworld.service.loans.model.corporate.PrimaryCorporateDetailMudraLoanReqRes;
 
 public class CorporatePrimaryViewResponse {
 
     private List<?> matchesList;
-
-
-
+    
+    
     private String organisationName;
     private String aboutUs;
     private String panNo;
@@ -167,7 +168,11 @@ public class CorporatePrimaryViewResponse {
     private List<Object> nbfcPANReport;
 	private List<Object> nbfcAddressProofReport;
 	private List<Object> nbfcProjectedFinancials;
-    
+	private  PrimaryCorporateDetailMudraLoanReqRes mlDetail; 
+	private Map matchesMap;
+	private String regiterWithGovAuthorities ; 
+	private AssociatedConcernDetailRequest associatedConcernDetail;
+	
 	public CorporatePrimaryViewResponseNbfc getNbfcData() {
 		return nbfcData;
 	}
@@ -1357,9 +1362,30 @@ public class CorporatePrimaryViewResponse {
 	public void setNoteOfBorrower(String noteOfBorrower) {
 		this.noteOfBorrower = noteOfBorrower;
 	}
-	
-	
-	
+	public Map getMatchesMap() {
+		return matchesMap;
+	}
+	public void setMatchesMap(Map matchesMap) {
+		this.matchesMap = matchesMap;
+	}
+	public PrimaryCorporateDetailMudraLoanReqRes getMlDetail() {
+		return mlDetail;
+	}
+	public void setMlDetail(PrimaryCorporateDetailMudraLoanReqRes mlDetail) {
+		this.mlDetail = mlDetail;
+	}
+	public String getRegiterWithGovAuthorities() {
+		return regiterWithGovAuthorities;
+	}
+	public void setRegiterWithGovAuthorities(String regiterWithGovAuthorities) {
+		this.regiterWithGovAuthorities = regiterWithGovAuthorities;
+	}
+	public AssociatedConcernDetailRequest getAssociatedConcernDetail() {
+		return associatedConcernDetail;
+	}
+	public void setAssociatedConcernDetail(AssociatedConcernDetailRequest associatedConcernDetail) {
+		this.associatedConcernDetail = associatedConcernDetail;
+	}
 	
 	/*
 	 * public List<CorporatePrimaryViewResponseNbfc> getNbfcListList() { return

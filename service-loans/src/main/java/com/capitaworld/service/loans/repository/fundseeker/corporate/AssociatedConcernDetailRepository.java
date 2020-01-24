@@ -21,6 +21,8 @@ public interface AssociatedConcernDetailRepository extends JpaRepository<Associa
 	@Query("select o from AssociatedConcernDetail o where o.applicationId.id = :id and o.isActive = true")
 	public AssociatedConcernDetail findByApplicationId(@Param("id") Long id);
 	
+	public AssociatedConcernDetail findFirstByApplicationIdIdAndIsActiveOrderByIdDesc(Long applicationId, Boolean isActive);
+	
 	@Query("select o from AssociatedConcernDetail o where o.applicationId.id = :id and o.isActive = true")
 	public List<AssociatedConcernDetail> listAssociatedConcernFromAppId(@Param("id")Long id);
 
