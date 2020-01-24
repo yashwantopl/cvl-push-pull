@@ -242,6 +242,9 @@ public class AssetsDetails implements Serializable {
 	@Column(name = "other_income_need_to_chek_asset")
 	private Double otherIncomeNeedTocCheckAsset;
 	
+	@Column(name = "debtors")
+	private Double debtors;
+	
 
 //	@Column(name = "gross_block_5")
 //	private Double GrossBlock5;
@@ -935,5 +938,13 @@ public class AssetsDetails implements Serializable {
 
 	public void setApplicationProposalMapping(ApplicationProposalMapping applicationProposalMapping) {
 		this.applicationProposalMapping = applicationProposalMapping;
+	}
+
+	public Double getDebtors() {
+		return debtors;
+	}
+
+	public void setDebtors(Double debtors) {
+		this.debtors = debtors;
 	}
 }
