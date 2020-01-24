@@ -27,7 +27,6 @@ import com.capitaworld.service.loans.domain.fundprovider.CoLendingRatio;
 import com.capitaworld.service.loans.domain.fundprovider.ConstitutionMapping;
 import com.capitaworld.service.loans.domain.fundprovider.ConstitutionMappingTemp;
 import com.capitaworld.service.loans.domain.fundprovider.FpGstTypeMapping;
-import com.capitaworld.service.loans.domain.fundprovider.FpGstTypeMappingTemp;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalCityDetail;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalCityDetailTemp;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalCountryDetail;
@@ -379,18 +378,15 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		fpConstitutionMappingRepository.inActiveMasterByFpProductId(termLoanParameterRequest.getId());
 		saveConstitutionType(termLoanParameterRequest);
 		
-		
 		//save nbfc ratio mapping
-		nbfcRatioMappingRepository.inActiveByFpProductId(termLoanParameterRequest.getId());
-		
-		
-		boolean isUpdate = msmeValueMappingService.updateMsmeValueMapping(false, mappingId, termLoanParameter2.getId());
+		msmeValueMappingService.updateMsmeValueMapping(false, mappingId, termLoanParameter2.getId());
 		}
 		
 		
 		
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public TermLoanParameterRequest getTermLoanParameterRequest(Long id, Long role) {
 		CommonDocumentUtils.startHook(logger, GET_TERM_LOAN_PARAMETER_REQUEST);
@@ -698,6 +694,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public TermLoanParameterRequest getTermLoanParameterRequestTemp(Long id, Long role, Long userId) {
 		CommonDocumentUtils.startHook(logger, GET_TERM_LOAN_PARAMETER_REQUEST);
@@ -1106,6 +1103,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public TermLoanParameterRequest getNtbTermLoanParameterRequestTemp(Long id, Long role, Long userId) {
 		CommonDocumentUtils.startHook(logger, "getNtbTermLoanParameterRequestTemp");
@@ -1474,6 +1472,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		return true;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public TermLoanParameterRequest getNtbTermLoanParameterRequest(Long id, Long role) {
 
@@ -1698,26 +1697,4 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		CommonDocumentUtils.endHook(logger, "saveGstTypeTemp");
 		
 	}
-	
-	private void saveLoanGstTypeTemp(TermLoanParameterRequest termLoanParameterRequest) {
-		// TODO Auto-generated method stub
-		CommonDocumentUtils.startHook(logger, "saveGstTypeTemp");
-		FpGstTypeMappingTemp fpGstTypeMappingTemp= null;
-		for (Integer dataRequest : termLoanParameterRequest.getGstType()) {
-			fpGstTypeMappingTemp = new FpGstTypeMappingTemp();
-			fpGstTypeMappingTemp.setFpProductId(termLoanParameterRequest.getId());
-			fpGstTypeMappingTemp.setGstTypeId(dataRequest);
-			fpGstTypeMappingTemp.setCreatedBy(termLoanParameterRequest.getUserId());
-			fpGstTypeMappingTemp.setModifiedBy(termLoanParameterRequest.getUserId());
-			fpGstTypeMappingTemp.setCreatedDate(new Date());
-			fpGstTypeMappingTemp.setModifiedDate(new Date());
-			fpGstTypeMappingTemp.setIsActive(true);
-			// create by and update
-			fpGstTypeMappingTempRepository.save(fpGstTypeMappingTemp);
-		}
-		CommonDocumentUtils.endHook(logger, "saveGstTypeTemp");
-		
-	}
-
-
 }

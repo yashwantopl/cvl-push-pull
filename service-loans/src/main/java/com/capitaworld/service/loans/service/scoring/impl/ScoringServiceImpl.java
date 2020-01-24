@@ -1570,10 +1570,11 @@ public class ScoringServiceImpl implements ScoringService {
         boolean isCibilCheck = false;
         boolean result = false;
 		Boolean isBureauExistingLoansDisplayActive = false;
+		Long applicationId = null;
         try {                                            
         	if(!scoringRequestLoansList.isEmpty()) {
         		logger.info("Enter in calculateExistingBusinessScoringList for check If Cibil API check or not");
-        		Long applicationId = scoringRequestLoansList.get(0).getApplicationId();
+        		applicationId = scoringRequestLoansList.get(0).getApplicationId();
         		//GET CAMPAIGN BANK ID FROM APPLICATION ID
         		Long orgId = loanRepository.getCampaignOrgIdByApplicationId(applicationId);
         		if(orgId == null)
@@ -1594,12 +1595,161 @@ public class ScoringServiceImpl implements ScoringService {
 			logger.error("Exeption while set Bureau score " + e.getMessage());
             return new ResponseEntity<LoansResponse>(new LoansResponse("Application has encountered error while check CIBIL bureau score.", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-        
+        CibilResponse cibilResponseNillDPD = null;
+		try {
+			cibilResponseNillDPD = cibilClient.getDPDYears(applicationId);
+		} catch (Exception e) {
+			logger.error("Error while getting DPD years from CIBIL = >",e);
+		}
+     			
+		CibilResponse cibilResponseScore = null;
+		try {
+			CibilRequest cibilRequest = new CibilRequest();
+             cibilRequest.setApplicationId(applicationId);
+             cibilResponseScore = cibilClient.getCibilScore(cibilRequest);
+		} catch (Exception e) {
+			logger.error("Error while getting Score from CIBIL = >",e);
+		}
+		
+		CibilResponse cibilResponseDPD = null;
+		int maxDpd = 0;
+		try {
+			cibilResponseDPD = cibilClient.getDPDLastXMonth(applicationId);
+			 if(!CommonUtils.isObjectNullOrEmpty(cibilResponseDPD) && !CommonUtils.isObjectNullOrEmpty(cibilResponseDPD.getListData())){
+                 List cibilDirectorsResponseList = cibilResponseDPD.getListData();
+                 int commercialVal = 0;
+                 for (int j = 0; j < cibilDirectorsResponseList.size(); j++) {
+                     String cibilResponseObj = cibilDirectorsResponseList.get(j).toString();
+                     if(cibilResponseObj.contains("|")){
+                         String[] cibilDpdVal = cibilResponseObj.split(Pattern.quote("|"));
+                         if(!CommonUtils.isObjectNullOrEmpty(cibilDpdVal[1]))
+                             commercialVal = Integer.parseInt(cibilDpdVal[1]);
+                     }else {
+                         commercialVal = Integer.parseInt(cibilDirectorsResponseList.get(j).toString());
+                     }
+                     logger.info("commercialVal1::::::::::::::::::::::::::::::::::::::::::::::::::::::::"+commercialVal);
+                     if(maxDpd <= commercialVal){
+                         maxDpd = commercialVal;
+                     }
+                     logger.info("maxDpd::::::::::::::::::::::::::::::::::::::::::::::::::::::::"+maxDpd);
+                 }
+             }
+		} catch (Exception e) {
+			logger.error("Error while getting Score from CIBIL = >",e);
+		}
+		
+		AnalyzerResponse analyzerResponse = null;
+		Double noOfChequeBounce1Month = 0.0;
+		Double noOfChequeBounce6Month = 0.0;
+		try {
+			ReportRequest reportRequest = new ReportRequest();
+            reportRequest.setApplicationId(applicationId);
+            reportRequest.setDirectorId(null);
+			analyzerResponse = analyzerClient.getDetailsFromReportByDirector(reportRequest);
+            if(!CommonUtils.isObjectNullOrEmpty(analyzerResponse)){
+            	Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) analyzerResponse.getData(),
+                        Data.class);
+            	if(!CommonUtils.isObjectNullOrEmpty(data)){
+            		if (!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast1Month())) {
+                        noOfChequeBounce1Month = data.getCheckBounceForLast1Month().doubleValue();
+                    }
+                    if (!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month())) {
+                         noOfChequeBounce6Month = data.getCheckBounceForLast6Month().doubleValue();
+                    }                		
+            	}
+            }
+		} catch (Exception e) {
+			logger.error("Error while getting Bank Statement Response = >",e);
+		}
+		
+		ITRBasicDetailsResponse itrClientResponse = null;
+		try {
+			ITRBasicDetailsResponse arg0 = new ITRBasicDetailsResponse();
+        	arg0.setApplicationId(applicationId);
+        	itrClientResponse = itrClient.getAppOrCoAppBasicDetails(arg0);
+		} catch (Exception e) {
+			logger.error("Error while getting Bank Statement Response = >",e);
+		}
+		
+		List<Integer> paraGovScheme = fsParameterMappingService.getParameters(applicationId, FSParameterMst.GOV_SCHEMES.getId() );
+		List<Integer> parametersGovAuthorities = fsParameterMappingService.getParameters(applicationId, FSParameterMst.GOV_AUTHORITIES.getId());
+		List<BankingRelation> br = bankingRelationlRepository.listBankRelationAppId(applicationId);
 
+		// start Get GST Parameter
+
+        String gstNumber = corporateApplicantDetailRepository.getGstInByApplicationId(applicationId);
+        Double loanAmount = primaryCorporateDetailRepository.getLoanAmountByApplication(applicationId);
+
+        CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.getCorporateApplicantDetailByApplicationId(applicationId);
+        Double yearsInBusiness = null;
+        if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)){
+        	Integer yearsInBetween = corporateApplicantDetail.getBusinessSinceYear();
+        	Integer monthsDiff = null;
+        	if(yearsInBetween == null) {
+        		java.util.Calendar todayDate = java.util.Calendar.getInstance();
+                todayDate.setTime(new Date());
+
+                yearsInBetween = todayDate.get(java.util.Calendar.YEAR) - corporateApplicantDetail.getEstablishmentYear();
+
+                monthsDiff = todayDate.get(java.util.Calendar.MONTH) - corporateApplicantDetail.getEstablishmentMonth();
+
+                yearsInBusiness = (((double)yearsInBetween * 12 + (double)monthsDiff) / 12);
+        	}else {
+        		monthsDiff = corporateApplicantDetail.getBusinessSinceMonth();
+        		if(monthsDiff > 6)
+        			yearsInBusiness = (double)yearsInBetween + 1;
+        		else
+        			yearsInBusiness = (double)yearsInBetween;
+        	}
+        }
+        
+        GstResponse gstResponse = null;
+        GstCalculation gstCalculation = new GstCalculation();
+
+        try {
+            GSTR1Request gstr1Request = new GSTR1Request();
+            gstr1Request.setGstin(gstNumber);
+            gstr1Request.setApplicationId(applicationId);
+            gstResponse = gstClient.getCalculations(gstr1Request);
+
+            if (!CommonUtils.isObjectNullOrEmpty(gstResponse) && !CommonUtils.isObjectNullOrEmpty(gstResponse.getData())) {
+                gstCalculation = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) gstResponse.getData(),
+                        GstCalculation.class);
+            }
+
+        } catch (Exception e) {
+            logger.error("error while getting GST parameter : ",e);
+        }
+
+        // end Get GST Parameter
+        
+        // Get Director Background detail
+        Double age = 0.0d;
+        DirectorBackgroundDetail mainDirectorBackgroundDetail = directorBackgroundDetailsRepository.getMainDirectorByApplicationId(applicationId);
+        if(!CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail) && !CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail.getDob()) ){
+        	age = Math.ceil(CommonUtils.getAgeFromBirthDate(mainDirectorBackgroundDetail.getDob()).doubleValue());
+        }
+
+        // get Primary Corporate Detail
+
+        PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateDetailRepository.findOneByApplicationIdId(applicationId);
+
+        
+        // Primary Corporate details for Mudra loans
+        
+        PrimaryCorporateDetailMudraLoan corporateDetailMudraLoan  = primaryCorporateDetailMudraLoanRepository.findByApplicationId(applicationId);
+        // GET SCORE CORPORATE LOAN PARAMETERS
+        
+        int currentYear = getFinYear(applicationId);
+        if (CommonUtils.isObjectNullOrEmpty(currentYear)) {
+            logger.error("error while getting current year from itr");
+            LoansResponse loansResponse = new LoansResponse("error while getting current year from itr.", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+        }
+		
         for(ScoringRequestLoans scoringRequestLoans:scoringRequestLoansList)
         {
             Long scoreModelId = scoringRequestLoans.getScoringModelId();
-            Long applicationId = scoringRequestLoans.getApplicationId();
             Long fpProductId = scoringRequestLoans.getFpProductId();
 
             ScoringRequest scoringRequest = new ScoringRequest();
@@ -1610,89 +1760,7 @@ public class ScoringServiceImpl implements ScoringService {
             scoringRequest.setBusinessTypeId(ScoreParameter.BusinessType.MUDRA_LOAN);
             scoringRequest.setEligibleLoanAmountCircular(scoringRequestLoans.getEligibleLoanAmountCircular());
             scoringRequest.setMap(scoringRequestLoans.getMapList());
-
-            CibilResponse cibilResponseNillDPD = null;
-			try {
-				cibilResponseNillDPD = cibilClient.getDPDYears(applicationId);
-			} catch (Exception e) {
-				logger.error("Error while getting DPD years from CIBIL = >",e);
-			}
 			
-			CibilResponse cibilResponseScore = null;
-			try {
-				CibilRequest cibilRequest = new CibilRequest();
-                cibilRequest.setApplicationId(applicationId);
-                cibilResponseScore = cibilClient.getCibilScore(cibilRequest);
-			} catch (Exception e) {
-				logger.error("Error while getting Score from CIBIL = >",e);
-			}
-			
-			CibilResponse cibilResponseDPD = null;
-			int maxDpd = 0;
-			try {
-				cibilResponseDPD = cibilClient.getDPDLastXMonth(applicationId);
-				 if(!CommonUtils.isObjectNullOrEmpty(cibilResponseDPD) && !CommonUtils.isObjectNullOrEmpty(cibilResponseDPD.getListData())){
-                     List cibilDirectorsResponseList = cibilResponseDPD.getListData();
-                     int commercialVal = 0;
-                     for (int j = 0; j < cibilDirectorsResponseList.size(); j++) {
-                         String cibilResponseObj = cibilDirectorsResponseList.get(j).toString();
-                         if(cibilResponseObj.contains("|")){
-                             String[] cibilDpdVal = cibilResponseObj.split(Pattern.quote("|"));
-                             if(!CommonUtils.isObjectNullOrEmpty(cibilDpdVal[1]))
-                                 commercialVal = Integer.parseInt(cibilDpdVal[1]);
-                         }else {
-                             commercialVal = Integer.parseInt(cibilDirectorsResponseList.get(j).toString());
-                         }
-                         logger.info("commercialVal1::::::::::::::::::::::::::::::::::::::::::::::::::::::::"+commercialVal);
-                         if(maxDpd <= commercialVal){
-                             maxDpd = commercialVal;
-                         }
-                         logger.info("maxDpd::::::::::::::::::::::::::::::::::::::::::::::::::::::::"+maxDpd);
-                         scoringParameterRequest.setDpd(maxDpd);
-                         scoringParameterRequest.setPaymentRecordsWithLenders_p(true);
-                     }
-                 }
-			} catch (Exception e) {
-				logger.error("Error while getting Score from CIBIL = >",e);
-			}
-			
-			
-			AnalyzerResponse analyzerResponse = null;
-			Double noOfChequeBounce1Month = 0.0;
-			Double noOfChequeBounce6Month = 0.0;
-			try {
-				ReportRequest reportRequest = new ReportRequest();
-                reportRequest.setApplicationId(applicationId);
-                reportRequest.setDirectorId(null);
-				analyzerResponse = analyzerClient.getDetailsFromReportByDirector(reportRequest);
-                if(!CommonUtils.isObjectNullOrEmpty(analyzerResponse)){
-                	Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) analyzerResponse.getData(),
-                            Data.class);
-                	if(!CommonUtils.isObjectNullOrEmpty(data)){
-                		if (!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast1Month())) {
-                            noOfChequeBounce1Month = data.getCheckBounceForLast1Month().doubleValue();
-	                    }
-	                    if (!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month())) {
-	                         noOfChequeBounce6Month = data.getCheckBounceForLast6Month().doubleValue();
-	                    }                		
-                	}
-                }
-			} catch (Exception e) {
-				logger.error("Error while getting Bank Statement Response = >",e);
-			}
-			
-			ITRBasicDetailsResponse itrClientResponse = null;
-			try {
-				ITRBasicDetailsResponse arg0 = new ITRBasicDetailsResponse();
-            	arg0.setApplicationId(applicationId);
-            	itrClientResponse = itrClient.getAppOrCoAppBasicDetails(arg0);
-			} catch (Exception e) {
-				logger.error("Error while getting Bank Statement Response = >",e);
-			}
-			
-			List<Integer> paraGovScheme = fsParameterMappingService.getParameters(applicationId, FSParameterMst.GOV_SCHEMES.getId() );
-			List<Integer> parametersGovAuthorities = fsParameterMappingService.getParameters(applicationId, FSParameterMst.GOV_AUTHORITIES.getId());
-			List<BankingRelation> br = bankingRelationlRepository.listBankRelationAppId(applicationId);
 
             if (CommonUtils.isObjectNullOrEmpty(scoringParameterRequest)) {
                 if (CommonUtils.isObjectNullOrEmpty(scoringRequestLoans.getFinancialTypeIdProduct())) {
@@ -1705,68 +1773,14 @@ public class ScoringServiceImpl implements ScoringService {
                 logger.info("Financial Type Id ::::::::::::::::================>" + scoringRequest.getFinancialTypeId());
 
                 scoringParameterRequest=new ScoringParameterRequest();
+                scoringParameterRequest.setDpd(maxDpd);
+                scoringParameterRequest.setPaymentRecordsWithLenders_p(true);
 
                 logger.info("Scoring Data Fetched First Time  =====> " + applicationId);
 
                 logger.info("----------------------------START EXISTING LOAN ------------------------------");
 
                 logger.info(MSG_APPLICATION_ID + applicationId + MSG_FP_PRODUCT_ID + fpProductId + MSG_SCORING_MODEL_ID + scoreModelId);
-
-                // start Get GST Parameter
-
-                String gstNumber = corporateApplicantDetailRepository.getGstInByApplicationId(applicationId);
-                Double loanAmount = primaryCorporateDetailRepository.getLoanAmountByApplication(applicationId);
-
-                CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.getCorporateApplicantDetailByApplicationId(applicationId);
-                Double yearsInBusiness = null;
-                if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)){
-                	Integer yearsInBetween = corporateApplicantDetail.getBusinessSinceYear();
-                	Integer monthsDiff = null;
-                	if(yearsInBetween == null) {
-                		java.util.Calendar todayDate = java.util.Calendar.getInstance();
-                        todayDate.setTime(new Date());
-
-                        yearsInBetween = todayDate.get(java.util.Calendar.YEAR) - corporateApplicantDetail.getEstablishmentYear();
-
-                        monthsDiff = todayDate.get(java.util.Calendar.MONTH) - corporateApplicantDetail.getEstablishmentMonth();
-
-                        yearsInBusiness = (((double)yearsInBetween * 12 + (double)monthsDiff) / 12);
-                	}else {
-                		monthsDiff = corporateApplicantDetail.getBusinessSinceMonth();
-                		if(monthsDiff > 6)
-                			yearsInBusiness = (double)yearsInBetween + 1;
-                		else
-                			yearsInBusiness = (double)yearsInBetween;
-                	}
-                }
-
-
-                GstResponse gstResponse = null;
-                GstCalculation gstCalculation = new GstCalculation();
-
-                try {
-                    GSTR1Request gstr1Request = new GSTR1Request();
-                    gstr1Request.setGstin(gstNumber);
-                    gstr1Request.setApplicationId(applicationId);
-                    gstResponse = gstClient.getCalculations(gstr1Request);
-
-                    if (!CommonUtils.isObjectNullOrEmpty(gstResponse) && !CommonUtils.isObjectNullOrEmpty(gstResponse.getData())) {
-                        gstCalculation = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) gstResponse.getData(),
-                                GstCalculation.class);
-                    }
-
-                } catch (Exception e) {
-                    logger.error("error while getting GST parameter : ",e);
-                }
-
-                // end Get GST Parameter
-
-                int currentYear = getFinYear(applicationId);
-                if (CommonUtils.isObjectNullOrEmpty(currentYear)) {
-                    logger.error("error while getting current year from itr");
-                    LoansResponse loansResponse = new LoansResponse("error while getting current year from itr.", HttpStatus.INTERNAL_SERVER_ERROR.value());
-                    return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
-                }
 
                 // CMA
                 OperatingStatementDetails operatingStatementDetailsFY = new OperatingStatementDetails();
@@ -1803,25 +1817,6 @@ public class ScoringServiceImpl implements ScoringService {
                     liabilitiesDetailsTY = liabilitiesDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 1 + "");
                     assetsDetailsTY = assetsDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 1 + "");
                 }
-
-                ///////////////
-
-                // Get Director Background detail
-                Double age = 0.0d;
-                DirectorBackgroundDetail mainDirectorBackgroundDetail = directorBackgroundDetailsRepository.getMainDirectorByApplicationId(applicationId);
-                if(!CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail) && !CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail.getDob()) ){
-                	age = Math.ceil(CommonUtils.getAgeFromBirthDate(mainDirectorBackgroundDetail.getDob()).doubleValue());
-                }
-
-                // get Primary Corporate Detail
-
-                PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateDetailRepository.findOneByApplicationIdId(applicationId);
-
-                
-                // Primary Corporate details for Mudra loans
-                
-                PrimaryCorporateDetailMudraLoan corporateDetailMudraLoan  = primaryCorporateDetailMudraLoanRepository.findByApplicationId(applicationId);
-                // GET SCORE CORPORATE LOAN PARAMETERS
 
 
                 if (!CommonUtils.isObjectNullOrEmpty(scoreModelId)) {
