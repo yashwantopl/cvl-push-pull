@@ -1827,6 +1827,7 @@ public class ScoringServiceImpl implements ScoringService {
                     assetsDetailsTY = assetsDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 1 + "");
                 }
                 IndustryResponse industryResponse =null;
+                logger.info("corporateApplicantDetail.getKeyVerticalSubsector()"+corporateApplicantDetail.getKeyVerticalSubsector());
                 if(corporateApplicantDetail.getKeyVerticalSubsector()!=null) {
 	                IrrRequest irrIndustryRequest = new IrrRequest();
 					irrIndustryRequest.setIrrIndustryId(corporateApplicantDetail.getKeyVerticalSubsector());
@@ -1837,6 +1838,7 @@ public class ScoringServiceImpl implements ScoringService {
 						e.printStackTrace();
 					}
 					industryResponse = irrIndustryRequest.getIndustryResponse();
+					logger.info("::::::industryResponse.getBusinessTypeId()::::::"+industryResponse.getBusinessTypeId());
                 }
                 if (!CommonUtils.isObjectNullOrEmpty(scoreModelId)) {
                     // GET ALL FIELDS FOR CALCULATE SCORE BY MODEL ID
