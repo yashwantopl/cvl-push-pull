@@ -1828,9 +1828,26 @@ public class ScoringServiceImpl implements ScoringService {
                 }
                 IndustryResponse industryResponse =null;
                 logger.info("corporateApplicantDetail.getKeyVerticalSubsector()"+corporateApplicantDetail.getKeyVerticalSubsector());
-                if(corporateApplicantDetail.getKeyVerticalSubsector()!=null) {
+                if(corporateApplicantDetail.getKeyVerticalSector()!=null && corporateApplicantDetail.getKeyVerticalSubsector()!=null) {
+                	
+                	IrrBySectorAndSubSector irr = new IrrBySectorAndSubSector();
+					irr.setSectorId(corporateApplicantDetail.getKeyVerticalSector());
+					irr.setSubSectorId(corporateApplicantDetail.getKeyVerticalSubsector());
+
+					// IrrBySectorAndSubSector res
+					// =(IrrBySectorAndSubSector)oneFormClient.getIrrBySectorAndSubSector(irr).getData();
+					IrrBySectorAndSubSector res = null;
+					try {
+						res = (IrrBySectorAndSubSector) MultipleJSONObjectHelper.getObjectFromMap(
+								(Map<String, Object>) oneFormClient.getIrrBySectorAndSubSector(irr).getData(),
+								IrrBySectorAndSubSector.class);
+					} catch (IOException | OneFormException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					
 	                IrrRequest irrIndustryRequest = new IrrRequest();
-					irrIndustryRequest.setIrrIndustryId(corporateApplicantDetail.getKeyVerticalSubsector());
+					irrIndustryRequest.setIrrIndustryId( res.getIrr());
 					try {
 						irrIndustryRequest = ratingClient.getIrrIndustry(irrIndustryRequest);
 					} catch (RatingException e) {
