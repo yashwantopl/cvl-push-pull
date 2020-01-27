@@ -60,7 +60,6 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.LiabilitiesDeta
 import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatementDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetailMudraLoan;
-import com.capitaworld.service.loans.domain.fundseeker.retail.BankingRelation;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.LoansResponse;
@@ -98,6 +97,7 @@ import com.capitaworld.service.loans.utils.scoreexcel.ScoreExcelFileGenerator;
 import com.capitaworld.service.loans.utils.scoreexcel.ScoreExcelReader;
 import com.capitaworld.service.matchengine.model.BankBureauRequest;
 import com.capitaworld.service.oneform.client.OneFormClient;
+import com.capitaworld.service.oneform.enums.BankList;
 import com.capitaworld.service.oneform.enums.FSParameterMst;
 import com.capitaworld.service.oneform.exceptions.OneFormException;
 import com.capitaworld.service.oneform.model.IrrBySectorAndSubSector;
@@ -1673,7 +1673,7 @@ public class ScoringServiceImpl implements ScoringService {
 		
 		List<Integer> paraGovScheme = fsParameterMappingService.getParameters(applicationId, FSParameterMst.GOV_SCHEMES.getId() );
 		List<Integer> parametersGovAuthorities = fsParameterMappingService.getParameters(applicationId, FSParameterMst.GOV_AUTHORITIES.getId());
-		List<BankingRelation> br = bankingRelationlRepository.listBankRelationAppId(applicationId);
+//		List<BankingRelation> br = bankingRelationlRepository.listBankRelationAppId(applicationId);
 
 		// start Get GST Parameter
 
@@ -1749,6 +1749,15 @@ public class ScoringServiceImpl implements ScoringService {
 		
         for(ScoringRequestLoans scoringRequestLoans:scoringRequestLoansList)
         {
+        	Integer minBankRelationshipInMonths = null;
+        	  if(scoringRequestLoans.getOrgId() != null) {
+              	BankList bankEnum = BankList.fromOrgId(scoringRequestLoans.getOrgId().toString());
+              	if(bankEnum != null) {
+              		logger.info("Bank Name====>{}==>Application Id===>{}===> Fp Product Id===>{}",bankEnum.getName(),applicationId,scoringRequestLoans.getFpProductId());
+              		minBankRelationshipInMonths = bankingRelationlRepository.getMinRelationshipInMonthByApplicationAndOrgName(applicationId, bankEnum.getName());
+              	}
+              	logger.info("Min Banking Relationship in Month === >{}",minBankRelationshipInMonths);
+              }
             Long scoreModelId = scoringRequestLoans.getScoringModelId();
             Long fpProductId = scoringRequestLoans.getFpProductId();
 
@@ -2088,8 +2097,13 @@ public class ScoringServiceImpl implements ScoringService {
                             }
                             
                             case ScoreParameter.MudraLoan.TENURE_ML: {
+                            	logger.info("scoringRequestLoans.getTenureFS() :: "+ scoringRequestLoans.getTenureFS());
                             	if(scoringRequestLoans.getTenureFS()!=null) {
                             		scoringParameterRequest.setTenure(scoringRequestLoans.getTenureFS());
+                            		scoringParameterRequest.setTenure_p(true);
+                            	}
+                            	else {
+                            		scoringParameterRequest.setTenure_p(false);
                             	}
                             	break;
                             }
@@ -2290,17 +2304,18 @@ public class ScoringServiceImpl implements ScoringService {
                             }
                             case ScoreParameter.MudraLoan.RELATIONSHIP_WITH_BANK_ML: {
                             	try {
-                            	if(br!=null && !br.isEmpty()) {
-                            		logger.info("Relationship With Bank :: "+br.get(0).getSinceYear()+"-"+br.get(0).getSinceMonth()+"-"+"1");
+                            	if(minBankRelationshipInMonths!=null) {
+                            		logger.info("Relationship With Bank :: "+minBankRelationshipInMonths);
                             		scoringParameterRequest.setBankRelation_p(true);
-                            		Long monthsBetween = ChronoUnit.MONTHS.between(
+                            		/*Long monthsBetween = ChronoUnit.MONTHS.between(
                             		        LocalDate.parse(br.get(0).getSinceYear()+"-"+String.format("%02d", br.get(0).getSinceMonth())+"-"+"01").withDayOfMonth(1),
-                            		        LocalDate.parse(new SimpleDateFormat("yyyy-MM-dd").format(new Date())).withDayOfMonth(1));
-                            		scoringParameterRequest.setBankRelation(monthsBetween);
+                            		        LocalDate.parse(new SimpleDateFormat("yyyy-MM-dd").format(new Date())).withDayOfMonth(1));*/
+                            		scoringParameterRequest.setBankRelation(Long.valueOf(minBankRelationshipInMonths));
                             	}
                             	else {
                             		logger.info("in Else");
-                            		scoringParameterRequest.setBankRelation_p(false);
+                            		scoringParameterRequest.setBankRelation(0L);
+                            		scoringParameterRequest.setBankRelation_p(true);
                             	}
                             	}
                             	catch (Exception e) {
