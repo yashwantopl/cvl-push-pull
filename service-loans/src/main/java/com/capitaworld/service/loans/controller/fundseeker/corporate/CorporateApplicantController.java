@@ -699,4 +699,27 @@ public class CorporateApplicantController {
 		}
 
 	}
+	
+	@RequestMapping(value = "/getMudraManualITRpremisesData/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getMudraManualITRpremisesData(@PathVariable("applicationId") Long applicationId) {
+		logger.info("Enter in GET Profile Mudra Applicant Details From ITR Repsonse");
+		try {
+			if (applicationId == null) {
+				logger.warn("Application Id can not be empty ==>" + applicationId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			CorporateApplicantRequest response = applicantService.getCorporateApplicantDetails(applicationId);
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
+			loansResponse.setData(response);
+			CommonDocumentUtils.endHook(logger, "get");
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
 }

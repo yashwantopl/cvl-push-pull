@@ -511,12 +511,14 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
 			// Rohit
 			/*** SAVE ASSOCIATED CONCERN DETAILS***/
-			AssociatedConcernDetail associatedConcernDetail = new AssociatedConcernDetail();
-			BeanUtils.copyProperties(fundSeekerInputRequest.getAssociatedConcern(), associatedConcernDetail);
-			associatedConcernDetail.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
-			associatedConcernDetail.setCreatedBy(fundSeekerInputRequest.getUserId());
-			associatedConcernDetail.setCreatedDate(new Date());
-			associatedConcernDetailRepository.save(associatedConcernDetail); 
+			if (!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequest.getAssociatedConcern())) {			
+				AssociatedConcernDetail associatedConcernDetail = new AssociatedConcernDetail();
+				BeanUtils.copyProperties(fundSeekerInputRequest.getAssociatedConcern(), associatedConcernDetail);
+				associatedConcernDetail.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
+				associatedConcernDetail.setCreatedBy(fundSeekerInputRequest.getUserId());
+				associatedConcernDetail.setCreatedDate(new Date());
+				associatedConcernDetailRepository.save(associatedConcernDetail); 
+			}
 			
 			corporateApplicantDetail.setBusinessProspects(fundSeekerInputRequest.getBusinessProspects());
 			corporateApplicantDetail.setAccessInput(fundSeekerInputRequest.getAccessInput());
@@ -719,7 +721,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
 			// GET ASSOCIATED CONCERN
 			AssociatedConcernDetailRequest asoConcernDetailRequest = new AssociatedConcernDetailRequest(); 
-			AssociatedConcernDetail associatedConcernDetail =  associatedConcernDetailRepository.findByApplicationId(fundSeekerInputRequest.getApplicationId());
+			AssociatedConcernDetail associatedConcernDetail =  associatedConcernDetailRepository.findFirstByApplicationIdIdAndIsActiveOrderByIdDesc(fundSeekerInputRequest.getApplicationId() , true);
 			if (!CommonUtils.isObjectNullOrEmpty(associatedConcernDetail)) {
 				BeanUtils.copyProperties(associatedConcernDetail, asoConcernDetailRequest);
 				fundSeekerInputResponse.setAssociatedConcern(asoConcernDetailRequest);

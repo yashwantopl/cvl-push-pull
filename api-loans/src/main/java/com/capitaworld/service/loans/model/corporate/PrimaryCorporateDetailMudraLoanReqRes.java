@@ -11,6 +11,8 @@ public class PrimaryCorporateDetailMudraLoanReqRes  implements Serializable{
 	
 	private Integer mrktArragementFinishedGoods;
 	
+	private String mrktArragementFinishedGoodsValue;
+	
 	private String typeOfMachine;
 	
 	private String purposeOfMachine;
@@ -236,6 +238,14 @@ public class PrimaryCorporateDetailMudraLoanReqRes  implements Serializable{
 
 	public void setUserId(Long userId) {
 		this.userId = userId;
+	}
+
+	public String getMrktArragementFinishedGoodsValue() {
+		return mrktArragementFinishedGoodsValue;
+	}
+
+	public void setMrktArragementFinishedGoodsValue(String mrktArragementFinishedGoodsValue) {
+		this.mrktArragementFinishedGoodsValue = mrktArragementFinishedGoodsValue;
 	}
 
 	
