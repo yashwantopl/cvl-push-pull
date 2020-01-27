@@ -239,6 +239,9 @@ public class CorporateApplicantDetail implements Serializable {
 	
 	@Column(name="access_input")
 	private Integer accessInput;
+	
+	@Column(name="dob")
+	private Date dob;
 
     
 	/**
@@ -804,5 +807,14 @@ public class CorporateApplicantDetail implements Serializable {
 	public void setAccessInput(Integer accessInput) {
 		this.accessInput = accessInput;
 	}
+
+	public Date getDob() {
+		return dob;
+	}
+
+	public void setDob(Date dob) {
+		this.dob = dob;
+	}
+	
 	
 }

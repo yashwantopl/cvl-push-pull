@@ -875,6 +875,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			applicantDetails.setCreatedDate(new Date());
 			applicantDetails.setIsActive(true);
 			applicantDetails.setRegisteredDistMappingId(applicantRequest.getDistId());
+			applicantDetails.setDob(applicantRequest.getDob());
 			corporateApplicantDetailRepository.save(applicantDetails);
     		saveSalesITRResponse(applicantRequest);
 			}
@@ -889,18 +890,23 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public boolean saveSalesITRResponse(CorporateApplicantRequest applicantRequest) throws LoansException {
 		try {
 			logger.info("Enter in saveSalesITRResponse");
 			Map<String, Object> incomeDetails = applicantRequest.getIncomeDetails();
+			
 			Map<String, Object> liability = (Map<String, Object>) incomeDetails.get("totalLiabilities");
-			Map<String, Object> sales = (Map<String, Object>) incomeDetails.get("sales");
 			Map<String, Object> networth = (Map<String, Object>) incomeDetails.get("networth");
+			Map<String, Object> creditors = (Map<String, Object>) incomeDetails.get("creditors");
+			
+			Map<String, Object> sales = (Map<String, Object>) incomeDetails.get("sales");
 			Map<String, Object> profitAfterTax = (Map<String, Object>) incomeDetails.get("profitAfterTax");
+			
 			Map<String, Object> totalAssets = (Map<String, Object>) incomeDetails.get("totalAssets");
 			Map<String, Object> inventory = (Map<String, Object>) incomeDetails.get("inventory");
 			Map<String, Object> debtors = (Map<String, Object>) incomeDetails.get("debtors");
-			Map<String, Object> creditors = (Map<String, Object>) incomeDetails.get("creditors");
+			Map<String, Object> investmentInPlantMachinery = (Map<String, Object>) incomeDetails.get("investmentInPlantMachinery");
 			
 			Map<String, Object>	 yearMapLiability  = (Map<String, Object>) liability.get("year"); 
     		for (Map.Entry<String,Object> yearEntry : yearMapLiability.entrySet()) {
@@ -1022,6 +1028,23 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		    	assetsDetailsRepository.save(assetsDetails); 
     		}
     		
+    		Map<String, Object>	 yearInvestmentInPlantMachinery  = (Map<String, Object>) investmentInPlantMachinery.get("year"); 
+    		for (Map.Entry<String,Object> yearEntry : yearInvestmentInPlantMachinery.entrySet()) {
+    			String finYearStmt = yearEntry.getKey().equals(""+Year.now().minusYears(1)) ? "Projected":"Audited";
+    			AssetsDetails assetsDetails = assetsDetailsRepository.findByLoanApplicationMasterIdAndYearAndFinancialYearlyStatementAndIsActive(applicantRequest.getApplicationId(), yearEntry.getKey(), finYearStmt, true);
+    			if(CommonUtils.isObjectNullOrEmpty(assetsDetails)) {
+    				assetsDetails = new AssetsDetails();
+    			}
+    			assetsDetails.setYear(yearEntry.getKey());
+    			assetsDetails.setInvestmentInPlantMachinery(Double.parseDouble(yearEntry.getValue().toString()));
+    			assetsDetails.setCreatedDate(new Date());
+    			assetsDetails.setCreatedBy(applicantRequest.getUserId());
+    			assetsDetails.setLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
+    			assetsDetails.setFinancialYearlyStatement(finYearStmt);
+    			assetsDetails.setIsActive(true);
+    			assetsDetailsRepository.save(assetsDetails); 
+    		}
+    		
     		Map<String, Object>	 yearMapcreditors  = (Map<String, Object>) creditors.get("year"); 
     		for (Map.Entry<String,Object> yearEntry : yearMapcreditors.entrySet()) {
     			String finYearStmt = yearEntry.getKey().equals(""+Year.now().minusYears(1)) ? "Projected":"Audited";
@@ -1049,13 +1072,42 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	public CorporateApplicantRequest getCorporateApplicantDetails(Long applicationId) {
 		
 		CorporateApplicantDetail  applicantRequest =  corporateApplicantDetailRepository.findByApplicationIdIdAndIsActive(applicationId, true);
-		
 		CorporateApplicantRequest corporateApplicantRequest = new CorporateApplicantRequest();
-		
 		if(!CommonUtils.isObjectNullOrEmpty(applicantRequest)) {
 			BeanUtils.copyProperties(applicantRequest, corporateApplicantRequest);
 		}
 		
+		/******* GET INCOME DETAILS *******/
+		Map<String, Object> incomeDetails = new HashMap<>();
+		
+		String liability = liabilitiesDetailsRepository.getTotalLiability(applicationId);
+		incomeDetails.put("totalLiabilities", liability);
+		
+		String networth = liabilitiesDetailsRepository.getNetWorth(applicationId);
+		incomeDetails.put("networth", networth);
+		
+		String creditors = liabilitiesDetailsRepository.getCreditors(applicationId);
+		incomeDetails.put("creditors", creditors);
+		
+		String profitAfterTax = operatingStatementDetailsRepository.getNetProfitOrLoss(applicationId);
+		incomeDetails.put("profitAfterTax", profitAfterTax);
+		
+		String sales = operatingStatementDetailsRepository.getNetSales(applicationId );
+		incomeDetails.put("sales", sales);
+		
+		String totalAssets = assetsDetailsRepository.getTotalAssets(applicationId);
+		incomeDetails.put("totalAssets", totalAssets);
+		
+		String inventory = assetsDetailsRepository.getInventory(applicationId);
+		incomeDetails.put("inventory", inventory);
+		
+		String debtors = assetsDetailsRepository.getDebtors(applicationId);
+		incomeDetails.put("debtors", debtors);
+		
+		String investmentInPlantMachinery = assetsDetailsRepository.getInvestmentInPlantMachinery(applicationId);
+		incomeDetails.put("investmentInPlantMachinery", investmentInPlantMachinery);
+		
+		corporateApplicantRequest.setIncomeDetails(incomeDetails);
 		return corporateApplicantRequest;
 	}
 }

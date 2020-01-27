@@ -80,4 +80,47 @@ public interface AssetsDetailsRepository extends JpaRepository<AssetsDetails, Lo
 	public int inActiveByAppIdAndProposalIdAndFinancialYearlyStatementAndIsActive(@Param("applicationId") Long applicationId  , @Param("proposalId") Long proposalId);
 	
 	public List<AssetsDetails> findByLoanApplicationMasterIdAndYearAndIsActive(Long applicationId , String year , Boolean isActive);
+	
+	/**
+	 * get total_assets 
+	 * @param applicationId
+	 * @param key
+	 * @return String 
+	 * @author rohit.chaudhary
+	 */
+	@Query(value="SELECT CAST(JSON_OBJECT('year', JSON_OBJECTAGG(YEAR, total_assets)) AS CHAR) AS YEAR FROM `loan_application`.`fs_corporate_cma_assets_details` WHERE application_id=:applicationId", nativeQuery=true)
+	public String getTotalAssets(@Param("applicationId") Long applicationId );
+	
+	/**
+	 * get Inventory 
+	 * @param applicationId
+	 * @param key
+	 * @return String 
+	 * @author rohit.chaudhary
+	 */
+	@Query(value="SELECT CAST(JSON_OBJECT('year', JSON_OBJECTAGG(YEAR, inventory)) AS CHAR) AS YEAR FROM `loan_application`.`fs_corporate_cma_assets_details` WHERE application_id=:applicationId", nativeQuery=true)
+	public String getInventory(@Param("applicationId") Long applicationId );
+	
+	/**
+	 * get debtors 
+	 * @param applicationId
+	 * @param key
+	 * @return String 
+	 * @author rohit.chaudhary
+	 */
+	@Query(value="SELECT CAST(JSON_OBJECT('year', JSON_OBJECTAGG(YEAR, debtors)) AS CHAR) AS YEAR FROM `loan_application`.`fs_corporate_cma_assets_details` WHERE application_id=:applicationId", nativeQuery=true)
+	public String getDebtors(@Param("applicationId") Long applicationId );
+	
+	/**
+	 * get investmentInPlantMachinery 
+	 * @param applicationId
+	 * @param key
+	 * @return String 
+	 * @author rohit.chaudhary
+	 */
+	@Query(value="SELECT CAST(JSON_OBJECT('year', JSON_OBJECTAGG(year, investment_in_plant_machinery)) AS CHAR) AS YEAR FROM `loan_application`.`fs_corporate_cma_assets_details` WHERE application_id=:applicationId", nativeQuery=true)
+	public String getInvestmentInPlantMachinery(@Param("applicationId") Long applicationId );
+	
+	
+	
 }
