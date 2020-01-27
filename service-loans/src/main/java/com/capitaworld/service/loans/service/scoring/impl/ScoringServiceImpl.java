@@ -1826,8 +1826,18 @@ public class ScoringServiceImpl implements ScoringService {
                     liabilitiesDetailsTY = liabilitiesDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 1 + "");
                     assetsDetailsTY = assetsDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 1 + "");
                 }
-
-
+                IndustryResponse industryResponse =null;
+                if(corporateApplicantDetail.getKeyVerticalSubsector()!=null) {
+	                IrrRequest irrIndustryRequest = new IrrRequest();
+					irrIndustryRequest.setIrrIndustryId(corporateApplicantDetail.getKeyVerticalSubsector());
+					try {
+						irrIndustryRequest = ratingClient.getIrrIndustry(irrIndustryRequest);
+					} catch (RatingException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					industryResponse = irrIndustryRequest.getIndustryResponse();
+                }
                 if (!CommonUtils.isObjectNullOrEmpty(scoreModelId)) {
                     // GET ALL FIELDS FOR CALCULATE SCORE BY MODEL ID
                     ScoringResponse scoringResponse = null;
@@ -2257,48 +2267,14 @@ public class ScoringServiceImpl implements ScoringService {
                              }
                             
                             case ScoreParameter.MudraLoan.TYPE_OF_ACTIVITY_ML: {
-                            	if(corporateApplicantDetail.getKeyVerticalSubsector()!=null) {
-                            		if (corporateApplicantDetail.getKeyVerticalSector() != null
-                    						&& corporateApplicantDetail.getKeyVerticalSubsector() != null) {
-                    					IrrBySectorAndSubSector irr = new IrrBySectorAndSubSector();
-                    					irr.setSectorId(corporateApplicantDetail.getKeyVerticalSector());
-                    					irr.setSubSectorId(corporateApplicantDetail.getKeyVerticalSubsector());
+        						if (!CommonUtils.isObjectNullOrEmpty(industryResponse)) {
 
-                    					// IrrBySectorAndSubSector res
-                    					// =(IrrBySectorAndSubSector)oneFormClient.getIrrBySectorAndSubSector(irr).getData();
-                    					IrrBySectorAndSubSector res = null;
-                    					try {
-											res = (IrrBySectorAndSubSector) MultipleJSONObjectHelper.getObjectFromMap(
-													(Map<String, Object>) oneFormClient.getIrrBySectorAndSubSector(irr).getData(),
-													IrrBySectorAndSubSector.class);
-										} catch (IOException | OneFormException e) {
-											// TODO Auto-generated catch block
-	                    						scoringParameterRequest.setTypeOfActivity_p(false);
-										}
-                    					if(res!=null) {
-                    						IrrRequest irrIndustryRequest = new IrrRequest();
-                    						irrIndustryRequest.setIrrIndustryId(res.getIrr());
-                    						try {
-												irrIndustryRequest = ratingClient.getIrrIndustry(irrIndustryRequest);
-											} catch (RatingException e) {
-												// TODO Auto-generated catch block
-												e.printStackTrace();
-											}
-                    						IndustryResponse industryResponse = irrIndustryRequest.getIndustryResponse();
-                    						if (!CommonUtils.isObjectNullOrEmpty(industryResponse)) {
-
-                    							scoringParameterRequest.setTypeOfActivity_p(true);
-                    							scoringParameterRequest.setTypeOfActivity(industryResponse.getBusinessTypeId());
-                    						}
-                    						else {
-                        						scoringParameterRequest.setTypeOfActivity_p(false);
-                        					}
-                    					}
-                    					else {
-                    						scoringParameterRequest.setTypeOfActivity_p(false);
-                    					}
-                            		}
-                            	}
+        							scoringParameterRequest.setTypeOfActivity_p(true);
+        							scoringParameterRequest.setTypeOfActivity(industryResponse.getBusinessTypeId());
+        						}
+        						else {
+            						scoringParameterRequest.setTypeOfActivity_p(false);
+            					}
 
                                 break;
                             }
