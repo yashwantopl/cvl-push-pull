@@ -245,6 +245,9 @@ public class AssetsDetails implements Serializable {
 	@Column(name = "debtors")
 	private Double debtors;
 	
+	@Column(name = "investment_in_plant_machinery")
+	private Double investmentInPlantMachinery;
+	
 
 //	@Column(name = "gross_block_5")
 //	private Double GrossBlock5;
@@ -947,4 +950,13 @@ public class AssetsDetails implements Serializable {
 	public void setDebtors(Double debtors) {
 		this.debtors = debtors;
 	}
+
+	public Double getInvestmentInPlantMachinery() {
+		return investmentInPlantMachinery;
+	}
+
+	public void setInvestmentInPlantMachinery(Double investmentInPlantMachinery) {
+		this.investmentInPlantMachinery = investmentInPlantMachinery;
+	}
+	
 }

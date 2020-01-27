@@ -511,14 +511,15 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
 			// Rohit
 			/*** SAVE ASSOCIATED CONCERN DETAILS***/
-			if (!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequest.getAssociatedConcern())) {			
+			for (AssociatedConcernDetailRequest associateDetail : fundSeekerInputRequest.getAssociatedConcernDetailRequestsList()) {
 				AssociatedConcernDetail associatedConcernDetail = new AssociatedConcernDetail();
-				BeanUtils.copyProperties(fundSeekerInputRequest.getAssociatedConcern(), associatedConcernDetail);
+				BeanUtils.copyProperties(associateDetail, associatedConcernDetail);
 				associatedConcernDetail.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
 				associatedConcernDetail.setCreatedBy(fundSeekerInputRequest.getUserId());
 				associatedConcernDetail.setCreatedDate(new Date());
 				associatedConcernDetailRepository.save(associatedConcernDetail); 
 			}
+			
 			
 			corporateApplicantDetail.setBusinessProspects(fundSeekerInputRequest.getBusinessProspects());
 			corporateApplicantDetail.setAccessInput(fundSeekerInputRequest.getAccessInput());
@@ -720,14 +721,18 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 //			fundSeekerInputResponse.setCertificationCourses(fsParameterMappingService.getParameters(fundSeekerInputRequest.getApplicationId(), FSParameterMst.CERTIFICATION_COURSE.getId()));
 
 			// GET ASSOCIATED CONCERN
-			AssociatedConcernDetailRequest asoConcernDetailRequest = new AssociatedConcernDetailRequest(); 
-			AssociatedConcernDetail associatedConcernDetail =  associatedConcernDetailRepository.findFirstByApplicationIdIdAndIsActiveOrderByIdDesc(fundSeekerInputRequest.getApplicationId() , true);
-			if (!CommonUtils.isObjectNullOrEmpty(associatedConcernDetail)) {
-				BeanUtils.copyProperties(associatedConcernDetail, asoConcernDetailRequest);
-				fundSeekerInputResponse.setAssociatedConcern(asoConcernDetailRequest);
-			}
+			List<AssociatedConcernDetailRequest> associatedConcernResList = new ArrayList<>(); 
+			List<AssociatedConcernDetail> associatedConcernDetailList =  associatedConcernDetailRepository.listAssociatedConcernFromAppId(fundSeekerInputRequest.getApplicationId());
 			
-
+			if (!CommonUtils.isListNullOrEmpty(associatedConcernDetailList)) {
+				for (AssociatedConcernDetail associatedConcern : associatedConcernDetailList) {
+					AssociatedConcernDetailRequest assoConcernDetailRes = new AssociatedConcernDetailRequest(); 
+					BeanUtils.copyProperties(associatedConcern, assoConcernDetailRes);
+					associatedConcernResList.add(assoConcernDetailRes);
+				}
+			}
+			fundSeekerInputResponse.setAssociatedConcernDetailRequestsList(associatedConcernResList);
+			
 			try {
 				LocalDate start = null;
 				if(corporateApplicantDetail.getConstitutionId() == 7) {
