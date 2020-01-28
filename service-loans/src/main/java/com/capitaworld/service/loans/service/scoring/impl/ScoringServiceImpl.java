@@ -2066,6 +2066,7 @@ public class ScoringServiceImpl implements ScoringService {
                             	break;
                             }
                             case ScoreParameter.MudraLoan.MAIN_DIRECTOR_CATEGORY_ML: {
+                            	logger.info("corporateApplicantDetail.getCastCategory():::::::"+ corporateApplicantDetail.getCastCategory());
                             	if(corporateApplicantDetail.getCastCategory()!=null) {
                             		scoringParameterRequest.setCastCategory(corporateApplicantDetail.getCastCategory());
                             		scoringParameterRequest.setCastCategory_p(true);
