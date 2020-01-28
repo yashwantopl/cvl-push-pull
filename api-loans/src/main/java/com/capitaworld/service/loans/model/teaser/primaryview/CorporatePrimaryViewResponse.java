@@ -171,7 +171,7 @@ public class CorporatePrimaryViewResponse {
 	private  PrimaryCorporateDetailMudraLoanReqRes mlDetail; 
 	private Map matchesMap;
 	private String regiterWithGovAuthorities ; 
-	private AssociatedConcernDetailRequest associatedConcernDetail;
+	private List<AssociatedConcernDetailRequest> associatedConcernDetail;
 	
 	public CorporatePrimaryViewResponseNbfc getNbfcData() {
 		return nbfcData;
@@ -1380,12 +1380,13 @@ public class CorporatePrimaryViewResponse {
 	public void setRegiterWithGovAuthorities(String regiterWithGovAuthorities) {
 		this.regiterWithGovAuthorities = regiterWithGovAuthorities;
 	}
-	public AssociatedConcernDetailRequest getAssociatedConcernDetail() {
+	public List<AssociatedConcernDetailRequest> getAssociatedConcernDetail() {
 		return associatedConcernDetail;
 	}
-	public void setAssociatedConcernDetail(AssociatedConcernDetailRequest associatedConcernDetail) {
+	public void setAssociatedConcernDetail(List<AssociatedConcernDetailRequest> associatedConcernDetail) {
 		this.associatedConcernDetail = associatedConcernDetail;
 	}
+	
 	
 	/*
 	 * public List<CorporatePrimaryViewResponseNbfc> getNbfcListList() { return

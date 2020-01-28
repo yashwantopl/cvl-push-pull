@@ -1080,32 +1080,32 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		/******* GET INCOME DETAILS *******/
 		Map<String, Object> incomeDetails = new HashMap<>();
 		
-		String liability = liabilitiesDetailsRepository.getTotalLiability(applicationId);
-		incomeDetails.put("totalLiabilities", liability);
-		
-		String networth = liabilitiesDetailsRepository.getNetWorth(applicationId);
-		incomeDetails.put("networth", networth);
-		
-		String creditors = liabilitiesDetailsRepository.getCreditors(applicationId);
-		incomeDetails.put("creditors", creditors);
-		
-		String profitAfterTax = operatingStatementDetailsRepository.getNetProfitOrLoss(applicationId);
-		incomeDetails.put("profitAfterTax", profitAfterTax);
-		
 		String sales = operatingStatementDetailsRepository.getNetSales(applicationId );
 		incomeDetails.put("sales", sales);
 		
-		String totalAssets = assetsDetailsRepository.getTotalAssets(applicationId);
-		incomeDetails.put("totalAssets", totalAssets);
-		
+		String profitAfterTax = operatingStatementDetailsRepository.getNetProfitOrLoss(applicationId);
+		incomeDetails.put("profitAfterTax", profitAfterTax);
+
 		String inventory = assetsDetailsRepository.getInventory(applicationId);
 		incomeDetails.put("inventory", inventory);
 		
 		String debtors = assetsDetailsRepository.getDebtors(applicationId);
 		incomeDetails.put("debtors", debtors);
 		
+		String creditors = liabilitiesDetailsRepository.getCreditors(applicationId);
+		incomeDetails.put("creditors", creditors);
+
 		String investmentInPlantMachinery = assetsDetailsRepository.getInvestmentInPlantMachinery(applicationId);
 		incomeDetails.put("investmentInPlantMachinery", investmentInPlantMachinery);
+		
+		String networth = liabilitiesDetailsRepository.getNetWorth(applicationId);
+		incomeDetails.put("networth", networth);
+		
+		String totalAssets = assetsDetailsRepository.getTotalAssets(applicationId);
+		incomeDetails.put("totalAssets", totalAssets);
+		
+		String liability = liabilitiesDetailsRepository.getTotalLiability(applicationId);
+		incomeDetails.put("totalLiabilities", liability);
 		
 		corporateApplicantRequest.setIncomeDetails(incomeDetails);
 		return corporateApplicantRequest;

@@ -588,13 +588,21 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				}
 				corporatePrimaryViewResponse.setRegiterWithGovAuthorities(govAuthValue);
 			}
+			
 			// GET ASSOCIATE CONCERN DETAILS
-			AssociatedConcernDetail associateDetails = associatedConcernDetailRepository.findFirstByApplicationIdIdAndIsActiveOrderByIdDesc(applicationId, true);
-			if (!CommonUtils.isObjectNullOrEmpty(associateDetails)) {
-				AssociatedConcernDetailRequest associateRes = new AssociatedConcernDetailRequest();  
-				BeanUtils.copyProperties(associateDetails, associateRes);
-				corporatePrimaryViewResponse.setAssociatedConcernDetail(associateRes);
+			List<AssociatedConcernDetailRequest> associatedConcernResList = new ArrayList<>(); 
+			List<AssociatedConcernDetail> associatedConcernDetailList =  associatedConcernDetailRepository.listAssociatedConcernFromAppId(applicationId);
+			
+			if (!CommonUtils.isListNullOrEmpty(associatedConcernDetailList)) {
+				for (AssociatedConcernDetail associatedConcern : associatedConcernDetailList) {
+					AssociatedConcernDetailRequest assoConcernDetailRes = new AssociatedConcernDetailRequest(); 
+					BeanUtils.copyProperties(associatedConcern, assoConcernDetailRes);
+					// SET ADDRESS
+					setAssociateAddress(assoConcernDetailRes);
+					associatedConcernResList.add(assoConcernDetailRes);
+				}
 			}
+			corporatePrimaryViewResponse.setAssociatedConcernDetail(associatedConcernResList);
 		}
 
 		try {
@@ -1768,6 +1776,41 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		}
 		return response;
 	}
-	 
 	
+	public void setAssociateAddress(AssociatedConcernDetailRequest asso) {
+		String address = "";
+		
+		if (!CommonUtils.isObjectListNull(asso.getPremiseNumber())) {
+			address = address + asso.getPremiseNumber();
+		}
+		
+		if (!CommonUtils.isObjectListNull(asso.getLandMark())) {
+			address = address + ", " + asso.getLandMark();
+		}
+		
+		Long cityId = asso.getCityId() ;
+		Integer stateId = asso.getStateId();
+		Integer countryId = asso.getCountryId();
+		
+		if(cityId != null || stateId != null || countryId != null) {
+			Map<String ,Object> mapData = commonService.getCityStateCountryNameFromOneForm(cityId, stateId, countryId);
+			
+			if(mapData != null) {	
+				String cityName = mapData.get(CommonUtils.CITY_NAME).toString();
+				String stateName = mapData.get(CommonUtils.STATE_NAME).toString();
+				String countryName = mapData.get(CommonUtils.COUNTRY_NAME).toString();
+				
+				if (cityName != null) {					
+					address = address + ", " + cityName; 
+				}
+				if (stateName != null) {					
+					address = address + ", " + stateName; 
+				}
+				if (countryName != null) {					
+					address = address + ", " + countryName; 
+				}
+			}
+		}
+		asso.setAddress(address);
+	}	
 }
