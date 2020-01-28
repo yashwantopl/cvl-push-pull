@@ -82,4 +82,35 @@ public interface LiabilitiesDetailsRepository  extends JpaRepository<Liabilities
 	public int inActiveByAppIdAndProposalIdAndFinancialYearlyStatementAndIsActive(@Param("applicationId") Long applicationId , @Param("proposalId") Long  proposalId);
 	
 	public List<LiabilitiesDetails> findByFsLoanApplicationMasterIdAndYearAndIsActive(Long applicationId , String year , Boolean isActive);
+	
+	/**
+	 * get total_liability 
+	 * @param applicationId
+	 * @param key
+	 * @return String 
+	 * @author rohit.chaudhary
+	 */
+	@Query(value = "SELECT CAST(JSON_OBJECT('year', JSON_OBJECTAGG(year, total_liability)) AS CHAR) AS year FROM `loan_application`.`fs_corporate_cma_liabilities_details` WHERE application_id=:applicationId" , nativeQuery=true)
+	public String getTotalLiability(@Param("applicationId") Long applicationId);
+	
+	/**
+	 * get net_worth 
+	 * @param applicationId
+	 * @param key
+	 * @return String 
+	 * @author rohit.chaudhary
+	 */
+	@Query(value = "SELECT CAST(JSON_OBJECT('year', JSON_OBJECTAGG(year, net_worth)) AS CHAR) AS year FROM `loan_application`.`fs_corporate_cma_liabilities_details` WHERE application_id=:applicationId" , nativeQuery=true)
+	public String getNetWorth(@Param("applicationId") Long applicationId);
+	
+	/**
+	 * get creditors 
+	 * @param applicationId
+	 * @param key
+	 * @return String 
+	 * @author rohit.chaudhary
+	 */
+	@Query(value = "SELECT CAST(JSON_OBJECT('year', JSON_OBJECTAGG(year, creditors)) AS CHAR) AS year FROM `loan_application`.`fs_corporate_cma_liabilities_details` WHERE application_id=:applicationId" , nativeQuery=true)
+	public String getCreditors(@Param("applicationId") Long applicationId);
+	
 }

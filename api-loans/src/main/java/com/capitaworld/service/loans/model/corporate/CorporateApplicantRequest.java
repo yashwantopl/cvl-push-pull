@@ -105,7 +105,7 @@ public class CorporateApplicantRequest implements Serializable {
     
     private Map<String, Object> incomeDetails;
     
-    private String dob;
+    private Date dob;
     
     private String premiseNo;
     
@@ -472,11 +472,11 @@ public class CorporateApplicantRequest implements Serializable {
 		this.incomeDetails = incomeDetails;
 	}
 
-	public String getDob() {
+	public Date getDob() {
 		return dob;
 	}
 
-	public void setDob(String dob) {
+	public void setDob(Date dob) {
 		this.dob = dob;
 	}
 

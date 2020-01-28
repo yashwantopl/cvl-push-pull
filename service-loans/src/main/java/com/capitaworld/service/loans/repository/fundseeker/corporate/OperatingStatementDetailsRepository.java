@@ -89,4 +89,28 @@ public interface OperatingStatementDetailsRepository  extends JpaRepository<Oper
 	public int inActiveByAppIdAndProposalIdAndFinancialYearlyStatementAndIsActive(@Param("applicationId") Long applicationId , @Param("proposalId") Long proposalId);
 	
 	public List<OperatingStatementDetails> findByLoanApplicationMasterIdAndYearAndIsActive(Long applicationId , String year , Boolean isActive);
+
+	/**
+	 * get net_profit_or_loss
+	 * @param applicationId
+	 * @param key
+	 * @return String 
+	 * @author rohit.chaudhary
+	 */
+	@Query(value="SELECT CAST(JSON_OBJECT('year', JSON_OBJECTAGG(YEAR, net_profit_or_loss)) AS CHAR) AS YEAR FROM `loan_application`.`fs_corporate_cma_operating_statement_details` WHERE application_id=:applicationId", nativeQuery=true)
+	public String getNetProfitOrLoss(@Param("applicationId") Long applicationId);
+	
+	/**
+	 * get net_profit_or_loss
+	 * @param applicationId
+	 * @param key
+	 * @return String 
+	 * @author rohit.chaudhary
+	 */
+	@Query(value="SELECT CAST(JSON_OBJECT('year', JSON_OBJECTAGG(YEAR, net_sales)) AS CHAR) AS YEAR FROM `loan_application`.`fs_corporate_cma_operating_statement_details` WHERE application_id=:applicationId", nativeQuery=true)
+	public String getNetSales(@Param("applicationId") Long applicationId);
+	
+	
+	
+		
 }
