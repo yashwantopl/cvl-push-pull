@@ -8,4 +8,6 @@ public interface PrimaryCorporateDetailMudraLoanRepository  extends JpaRepositor
 	
 	PrimaryCorporateDetailMudraLoan findByApplicationId(Long applicationId);
 	
+	PrimaryCorporateDetailMudraLoan findByApplicationIdAndIsActive(Long applicationId,Boolean isActive);
+	
 }
