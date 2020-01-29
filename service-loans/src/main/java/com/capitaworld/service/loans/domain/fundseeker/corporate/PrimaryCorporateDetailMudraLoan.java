@@ -93,6 +93,9 @@ public class PrimaryCorporateDetailMudraLoan implements Serializable {
 	@JoinColumn(name = "proposal_mapping_id")
 	private ApplicationProposalMapping applicationProposalMapping;
 	
+	@Column(name = "is_active")
+	private Boolean isActive;
+	
 	public Long getId() {
 		return id;
 	}
@@ -277,4 +280,13 @@ public class PrimaryCorporateDetailMudraLoan implements Serializable {
 	public void setApplicationProposalMapping(ApplicationProposalMapping applicationProposalMapping) {
 		this.applicationProposalMapping = applicationProposalMapping;
 	}
+
+	public Boolean getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
+	}
+	
 }
