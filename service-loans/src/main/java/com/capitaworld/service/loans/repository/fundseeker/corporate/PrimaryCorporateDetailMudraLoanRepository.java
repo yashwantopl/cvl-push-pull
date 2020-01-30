@@ -6,9 +6,11 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporat
 
 public interface PrimaryCorporateDetailMudraLoanRepository  extends JpaRepository<PrimaryCorporateDetailMudraLoan, Long>{
 	
-	PrimaryCorporateDetailMudraLoan findByApplicationIdAndApplicationProposalMappingProposalId(Long applicationId, Long proposalId);
+//	PrimaryCorporateDetailMudraLoan findByApplicationIdAndApplicationProposalMappingProposalId(Long applicationId, Long proposalId);
 	
-	PrimaryCorporateDetailMudraLoan findByApplicationIdAndApplicationProposalMappingProposalIdIsNull(Long applicationId);
+	PrimaryCorporateDetailMudraLoan findFirstByApplicationIdAndApplicationProposalMappingProposalIdOrderByIdDesc(Long applicationId, Long proposalId);
+	
+	PrimaryCorporateDetailMudraLoan findFirstByApplicationIdAndApplicationProposalMappingProposalIdIsNullOrderByIdDesc(Long applicationId);
 	
 	PrimaryCorporateDetailMudraLoan findByApplicationIdAndIsActive(Long applicationId,Boolean isActive);
 	

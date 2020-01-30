@@ -1370,7 +1370,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	@Override
 	public boolean saveOrUpdateStatutoryObligation(PrimaryCorporateDetailMudraLoanReqRes reqRes) throws LoansException {
 		try {
-			PrimaryCorporateDetailMudraLoan corporateDetailMudraLoan = primaryCorporateDetailMudraLoanRepository.findByApplicationIdAndApplicationProposalMappingProposalIdIsNull(reqRes.getApplicationId());
+			PrimaryCorporateDetailMudraLoan corporateDetailMudraLoan = primaryCorporateDetailMudraLoanRepository.findFirstByApplicationIdAndApplicationProposalMappingProposalIdIsNullOrderByIdDesc(reqRes.getApplicationId());
 			corporateDetailMudraLoan.setRegisterUnderShopEstAct(reqRes.getRegisterUnderShopEstAct());
 			corporateDetailMudraLoan.setRegisterUnderMsme(reqRes.getRegisterUnderMsme());
 			corporateDetailMudraLoan.setDrugLicense(reqRes.getDrugLicense());
@@ -1390,7 +1390,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		
 		PrimaryCorporateDetailMudraLoanReqRes response = new PrimaryCorporateDetailMudraLoanReqRes();
 		try {
-			PrimaryCorporateDetailMudraLoan corporateDetailMudraLoan = primaryCorporateDetailMudraLoanRepository.findByApplicationIdAndApplicationProposalMappingProposalIdIsNull(applicationId);
+			PrimaryCorporateDetailMudraLoan corporateDetailMudraLoan = primaryCorporateDetailMudraLoanRepository.findFirstByApplicationIdAndApplicationProposalMappingProposalIdIsNullOrderByIdDesc(applicationId);
 			if (!CommonUtils.isObjectNullOrEmpty(corporateDetailMudraLoan)) {
 				BeanUtils.copyProperties(corporateDetailMudraLoan,response);	
 			}
