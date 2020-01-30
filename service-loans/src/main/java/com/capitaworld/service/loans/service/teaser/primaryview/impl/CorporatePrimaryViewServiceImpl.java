@@ -569,7 +569,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			corporatePrimaryViewResponse.setCompetition(primaryCorporateDetail.getCompetition()  != null ? CompetitionMst_SBI.getById(primaryCorporateDetail.getCompetition()).getValue().toString() : "-");
 			
 			// MUDRA LOAN DETAILS
-			PrimaryCorporateDetailMudraLoan mlDetail = 	mudraLoanRepo.findByApplicationId(applicationId); 
+			PrimaryCorporateDetailMudraLoan mlDetail = 	mudraLoanRepo.findByApplicationIdAndApplicationProposalMappingProposalId(applicationId, proposalId); 
 			if (!CommonUtils.isObjectNullOrEmpty(mlDetail)) {			
 				PrimaryCorporateDetailMudraLoanReqRes mlDetailsRes = new PrimaryCorporateDetailMudraLoanReqRes();
 				BeanUtils.copyProperties(mlDetail, mlDetailsRes);

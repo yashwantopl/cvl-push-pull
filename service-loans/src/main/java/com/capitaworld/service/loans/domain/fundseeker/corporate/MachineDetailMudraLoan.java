@@ -37,6 +37,9 @@ public class MachineDetailMudraLoan implements Serializable {
 	
 	@Column (name = "application_id")
 	private Long applicationId;
+	
+	@Column (name = "is_active")
+	private Boolean isActive;
 
 	public Long getId() {
 		return id;
@@ -85,4 +88,13 @@ public class MachineDetailMudraLoan implements Serializable {
 	public void setApplicationId(Long applicationId) {
 		this.applicationId = applicationId;
 	}
+
+	public Boolean getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
+	}
+	
 }

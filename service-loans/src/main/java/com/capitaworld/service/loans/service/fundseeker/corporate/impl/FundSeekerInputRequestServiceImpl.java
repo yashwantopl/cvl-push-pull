@@ -6,10 +6,8 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -76,7 +74,6 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.MachineDeta
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailMudraLoanRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
-import com.capitaworld.service.loans.service.fundprovider.FPParameterMappingService;
 import com.capitaworld.service.loans.service.fundprovider.FSParameterMappingService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AssociatedConcernDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CollateralSecurityDetailService;
@@ -291,15 +288,6 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			primaryCorporateDetail.setCostOfMachinery(fundSeekerInputRequest.getCostOfMachinery());
 			
 			/****SAVE MUDRA LOAN DETAILS ****/
-			
-//			PrimaryCorporateDetailMudraLoan corporateDetailMudraLoan = primaryCorporateDetailMudraLoanRepository.findByApplicationId(fundSeekerInputRequest.getApplicationId());
-//			if(CommonUtils.isObjectNullOrEmpty(corporateDetailMudraLoan)) {
-//				corporateDetailMudraLoan = new PrimaryCorporateDetailMudraLoan();				
-//				BeanUtils.copyProperties(fundSeekerInputRequest, corporateDetailMudraLoan);
-//			}
-//			primaryCorporateDetailMudraLoanRepository.save(corporateDetailMudraLoan);
-//			primaryCorporateDetail.setPrimaryCorporatedetailsMudraloanId(corporateDetailMudraLoan);
-			
 			if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getPrimaryCorporatedetailsMudraloanId())) {
 				// UPDATE
 				PrimaryCorporateDetailMudraLoan corporateDetailMudraLoan = primaryCorporateDetail.getPrimaryCorporatedetailsMudraloanId(); 
@@ -314,13 +302,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			}
 			
 			// Save or update machine details
-			
-			
 			inactiveAndSave(fundSeekerInputRequest, fundSeekerInputRequest.getApplicationId());
-			
-			// inactive
-			
-			
 			// Delete machines
 			if (!CommonUtils.isListNullOrEmpty(fundSeekerInputRequest.getDeletedMachine())) {
 				for (Long machineId : fundSeekerInputRequest.getDeletedMachine()) {
@@ -1388,7 +1370,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	@Override
 	public boolean saveOrUpdateStatutoryObligation(PrimaryCorporateDetailMudraLoanReqRes reqRes) throws LoansException {
 		try {
-			PrimaryCorporateDetailMudraLoan corporateDetailMudraLoan = primaryCorporateDetailMudraLoanRepository.findByApplicationId(reqRes.getApplicationId());
+			PrimaryCorporateDetailMudraLoan corporateDetailMudraLoan = primaryCorporateDetailMudraLoanRepository.findByApplicationIdAndApplicationProposalMappingProposalIdIsNull(reqRes.getApplicationId());
 			corporateDetailMudraLoan.setRegisterUnderShopEstAct(reqRes.getRegisterUnderShopEstAct());
 			corporateDetailMudraLoan.setRegisterUnderMsme(reqRes.getRegisterUnderMsme());
 			corporateDetailMudraLoan.setDrugLicense(reqRes.getDrugLicense());
@@ -1408,7 +1390,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		
 		PrimaryCorporateDetailMudraLoanReqRes response = new PrimaryCorporateDetailMudraLoanReqRes();
 		try {
-			PrimaryCorporateDetailMudraLoan corporateDetailMudraLoan = primaryCorporateDetailMudraLoanRepository.findByApplicationId(applicationId);
+			PrimaryCorporateDetailMudraLoan corporateDetailMudraLoan = primaryCorporateDetailMudraLoanRepository.findByApplicationIdAndApplicationProposalMappingProposalIdIsNull(applicationId);
 			if (!CommonUtils.isObjectNullOrEmpty(corporateDetailMudraLoan)) {
 				BeanUtils.copyProperties(corporateDetailMudraLoan,response);	
 			}
@@ -1421,14 +1403,15 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	
 	public void inactiveAndSave(FundSeekerInputRequestResponse fundSeekerInputRequest ,Long appliationId) {
 		
-		//inactive records which is already saved
-		machineDetailsRepository.inActive(fundSeekerInputRequest.getUserId(), fundSeekerInputRequest.getApplicationId());
+		// inactive records
+		machineDetailsRepository.inactiveMachineDetails(fundSeekerInputRequest.getApplicationId());
 		
 		// save fresh records
 		if (!CommonUtils.isListNullOrEmpty(fundSeekerInputRequest.getMachineDetails())) {
 			for (MachineDetailMudraLoanRequestResponse obj : fundSeekerInputRequest.getMachineDetails()) {
 				MachineDetailMudraLoan machineDetailMudraLoan = new MachineDetailMudraLoan();
-				BeanUtils.copyProperties(obj, machineDetailMudraLoan);
+				BeanUtils.copyProperties(obj, machineDetailMudraLoan, "id");
+				machineDetailMudraLoan.setIsActive(true);
 				machineDetailMudraLoan.setApplicationId(fundSeekerInputRequest.getApplicationId());
 				machineDetailsRepository.save(machineDetailMudraLoan);
 			}
