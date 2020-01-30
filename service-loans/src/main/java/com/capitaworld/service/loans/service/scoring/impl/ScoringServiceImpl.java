@@ -1737,7 +1737,7 @@ public class ScoringServiceImpl implements ScoringService {
         
         // Primary Corporate details for Mudra loans
         
-        PrimaryCorporateDetailMudraLoan corporateDetailMudraLoan  = primaryCorporateDetailMudraLoanRepository.findByApplicationId(applicationId);
+        PrimaryCorporateDetailMudraLoan corporateDetailMudraLoan  = primaryCorporateDetailMudraLoanRepository.findByApplicationIdAndApplicationProposalMappingProposalIdIsNull(applicationId);
         // GET SCORE CORPORATE LOAN PARAMETERS
         
         int currentYear = getFinYear(applicationId);
