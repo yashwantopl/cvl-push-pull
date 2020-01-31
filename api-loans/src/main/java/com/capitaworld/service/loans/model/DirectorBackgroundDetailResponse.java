@@ -107,7 +107,7 @@ public class DirectorBackgroundDetailResponse implements Serializable{
 		private Object residentStatus;
 		private Boolean isGuarantor;
                 private Double loanObligation;
-		
+        private String physicallyHandicapped;
 		
 		
 
@@ -626,10 +626,14 @@ public class DirectorBackgroundDetailResponse implements Serializable{
         public void setLoanObligation(Double loanObligation) {
         this.loanObligation = loanObligation;
         }
-        
-        
-        
-        
-	
+
+		public String getPhysicallyHandicapped() {
+			return physicallyHandicapped;
+		}
+
+		public void setPhysicallyHandicapped(String physicallyHandicapped) {
+			this.physicallyHandicapped = physicallyHandicapped;
+		}
+
 	
 }
