@@ -19,6 +19,8 @@ public interface MachineDetailsRepository extends JpaRepository<MachineDetailMud
 	
 	public void deleteById(Long id); 
 	
-	public void deleteByApplicationId(Long applicationId); 
+	public void deleteByApplicationId(Long applicationId);
+	
+	public List<MachineDetailMudraLoan> findByApplicationIdAndIsActive(Long applicationId, Boolean isactive);
 	
 }

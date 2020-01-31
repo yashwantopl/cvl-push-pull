@@ -634,7 +634,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			fsInputRes.setGovAuthorities(fsParameterMappingService.getParameters(fsInputReq.getApplicationId(),FSParameterMst.GOV_AUTHORITIES.getId()));
 			
 			// GET COST OF MACHINARY DETAILS
-			List<MachineDetailMudraLoan> detailMudraLoans =  machineDetailsRepository.findByApplicationId(fsInputReq.getApplicationId());
+			List<MachineDetailMudraLoan> detailMudraLoans =  machineDetailsRepository.findByApplicationIdAndIsActive(fsInputReq.getApplicationId(), true);
 			List<MachineDetailMudraLoanRequestResponse> machineDetails = new ArrayList<MachineDetailMudraLoanRequestResponse>(detailMudraLoans.size()); 
 			for (MachineDetailMudraLoan machineDetailMudraLoan : detailMudraLoans) {
 				MachineDetailMudraLoanRequestResponse machineDetailsRes = new MachineDetailMudraLoanRequestResponse(); 
@@ -651,6 +651,11 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
         		fsInputRes.setAvgMonthlySale((Double.valueOf(calculationForScoring.getData().toString()) / 12));	
         	}
 			
+        	PrimaryCorporateDetailMudraLoan corporateDetailMudraLoan = primaryCorporateDetailMudraLoanRepository.findByApplicationIdAndIsActive(fsInputReq.getApplicationId(), true);
+        	fsInputRes.setMrktArragementFinishedGoods(corporateDetailMudraLoan.getMrktArragementFinishedGoods());
+        	fsInputRes.setExisting(corporateDetailMudraLoan.getExisting());
+        	fsInputRes.setProposed(corporateDetailMudraLoan.getProposed());
+        	
 //			if (!CommonUtils.isObjectNullOrEmpty(mudraLoan)) {
 //				BeanUtils.copyProperties(mudraLoan, fsInputRes);
 //			}
@@ -1412,6 +1417,10 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				MachineDetailMudraLoan machineDetailMudraLoan = new MachineDetailMudraLoan();
 				BeanUtils.copyProperties(obj, machineDetailMudraLoan, "id");
 				machineDetailMudraLoan.setIsActive(true);
+				machineDetailMudraLoan.setCreatedBy(fundSeekerInputRequest.getUserId());
+				machineDetailMudraLoan.setCreatedDate(new Date());
+				machineDetailMudraLoan.setModifiedBy(fundSeekerInputRequest.getUserId());
+				machineDetailMudraLoan.setModifiedDate(new Date());
 				machineDetailMudraLoan.setApplicationId(fundSeekerInputRequest.getApplicationId());
 				machineDetailsRepository.save(machineDetailMudraLoan);
 			}
