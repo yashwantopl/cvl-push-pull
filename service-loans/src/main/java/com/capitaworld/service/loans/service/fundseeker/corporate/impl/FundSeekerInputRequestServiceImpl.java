@@ -653,9 +653,11 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
         	}
 			
         	PrimaryCorporateDetailMudraLoan corporateDetailMudraLoan = primaryCorporateDetailMudraLoanRepository.findByApplicationIdAndIsActive(fsInputReq.getApplicationId(), true);
-        	fsInputRes.setMrktArragementFinishedGoods(corporateDetailMudraLoan.getMrktArragementFinishedGoods());
-        	fsInputRes.setExisting(corporateDetailMudraLoan.getExisting());
-        	fsInputRes.setProposed(corporateDetailMudraLoan.getProposed());
+        	if(!CommonUtils.isObjectNullOrEmpty(corporateDetailMudraLoan)) {
+        		fsInputRes.setMrktArragementFinishedGoods(corporateDetailMudraLoan.getMrktArragementFinishedGoods());
+        		fsInputRes.setExisting(corporateDetailMudraLoan.getExisting());
+        		fsInputRes.setProposed(corporateDetailMudraLoan.getProposed());
+        	}
         	
 //			if (!CommonUtils.isObjectNullOrEmpty(mudraLoan)) {
 //				BeanUtils.copyProperties(mudraLoan, fsInputRes);
