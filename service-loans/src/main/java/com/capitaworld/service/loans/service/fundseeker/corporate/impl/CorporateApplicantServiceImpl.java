@@ -871,7 +871,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			applicantDetails.setRegisteredStreetName(applicantRequest.getStreetName());
 			applicantDetails.setOrganisationName(applicantRequest.getOrganisationName());
 			applicantDetails.setRegisteredStateId(applicantRequest.getStateId());
-			applicantDetails.setPanNo(applicantRequest.getPanNo());
+			applicantDetails.setPanNo(applicantRequest.getPan());
 			applicantDetails.setCreatedDate(new Date());
 			applicantDetails.setIsActive(true);
 			applicantDetails.setRegisteredDistMappingId(applicantRequest.getDistId());
