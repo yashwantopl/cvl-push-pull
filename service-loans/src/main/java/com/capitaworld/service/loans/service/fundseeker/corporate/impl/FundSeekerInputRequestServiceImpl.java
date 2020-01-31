@@ -647,8 +647,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	        gstr1Request.setApplicationId(fsInputReq.getApplicationId());
 	        gstr1Request.setGstin(fsInputReq.getGstIn());
 			GstResponse calculationForScoring = gstClient.getCalculationForScoring(gstr1Request);
+			
         	if(!CommonUtils.isObjectNullOrEmpty(calculationForScoring) && !CommonUtils.isObjectNullOrEmpty(calculationForScoring.getData())){
-        		fsInputRes.setAvgMonthlySale((Double.valueOf(calculationForScoring.getData().toString()) / 12));	
+        		fsInputRes.setAvgMonthlySale(Double.valueOf(String.format("%.2f", (Double.valueOf(calculationForScoring.getData().toString()) / 12))));	
         	}
 			
         	PrimaryCorporateDetailMudraLoan corporateDetailMudraLoan = primaryCorporateDetailMudraLoanRepository.findByApplicationIdAndIsActive(fsInputReq.getApplicationId(), true);
