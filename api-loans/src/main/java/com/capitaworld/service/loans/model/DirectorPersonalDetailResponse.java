@@ -19,6 +19,7 @@ public class DirectorPersonalDetailResponse {
 	    private Integer otherIncomeSource;
 	    private String certificationCourse;
 	    private String ongoingMudraLoan;
+	    private String govScheme;
 	    
 	    
 	    
@@ -114,5 +115,12 @@ public class DirectorPersonalDetailResponse {
 		public String getIdProof() {
 			return idProof;
 		}
+		public String getGovScheme() {
+			return govScheme;
+		}
+		public void setGovScheme(String govScheme) {
+			this.govScheme = govScheme;
+		}
+		
 		
 }

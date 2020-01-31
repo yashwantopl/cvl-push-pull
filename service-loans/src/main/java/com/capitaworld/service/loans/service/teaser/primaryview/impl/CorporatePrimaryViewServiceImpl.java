@@ -615,7 +615,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			if (!CommonUtils.isListNullOrEmpty(govAuthorities)) {
 				String govAuthValue  = ""; 
 				for (int i = 0; i < govAuthorities.size(); i++) {
-					String authority = 	GovSchemesMst.getById(govAuthorities.get(i)).getValue();
+					String authority = 	RegistrationWithGovernmentAuthoritiesList.fromId(govAuthorities.get(i)).getValue();
 					govAuthValue = govAuthValue + ((i != 0) ? ", " : "" )+ authority;
 				}
 				corporatePrimaryViewResponse.setRegiterWithGovAuthorities(govAuthValue);
@@ -770,7 +770,18 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 							directorPersonalDetail.setAddressYears(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getAddressYears());
 							directorPersonalDetail.setOtherIncomeSource(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOtherIncomeSource());
 							directorPersonalDetail.setCertificationCourse(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getCertificationCourse() != null ? CertificationCourseMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getCertificationCourse()).getValue() : "-"  );
-							directorPersonalDetail.setOngoingMudraLoan(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOngoingMudraLoan() != null ? OngoingMudraLoan.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOngoingMudraLoan()).getValue() : "-"  ); 
+							directorPersonalDetail.setOngoingMudraLoan(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOngoingMudraLoan() != null ? OngoingMudraLoan.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOngoingMudraLoan()).getValue() : "-"  );
+							
+							// COVERED IN GOV_SCHEMES
+							List<Integer> govSchemes = fsParameterMappingRepository.getParametersByApplicationIdAndType(applicationId, FSParameterMst.GOV_SCHEMES.getId());
+							if (!CommonUtils.isListNullOrEmpty(govSchemes)) {
+								String govScheme  = ""; 
+								for (int i = 0; i < govSchemes.size(); i++) {
+									String scheme = GovSchemesMst.getById(govSchemes.get(i)).getValue();
+									govScheme = govScheme + ((i != 0) ? ", " : "" )+ scheme;
+								}
+								directorPersonalDetail.setGovScheme(govScheme);
+							}
 						
 						directorBackgroundDetailResponse.setDirectorPersonalInfo(directorPersonalDetail);
 						}
