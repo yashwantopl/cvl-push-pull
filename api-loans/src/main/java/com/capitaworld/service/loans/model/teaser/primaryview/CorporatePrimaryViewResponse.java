@@ -9,6 +9,7 @@ import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
 import com.capitaworld.service.loans.model.GstRelatedPartyRequest;
 import com.capitaworld.service.loans.model.corporate.CollateralSecurityDetailRequest;
 import com.capitaworld.service.loans.model.corporate.PrimaryCorporateDetailMudraLoanReqRes;
+import com.capitaworld.service.loans.model.retail.BankRelationshipRequest;
 
 public class CorporatePrimaryViewResponse {
 
@@ -172,6 +173,7 @@ public class CorporatePrimaryViewResponse {
 	private Map matchesMap;
 	private String regiterWithGovAuthorities ; 
 	private List<AssociatedConcernDetailRequest> associatedConcernDetail;
+	List<BankRelationshipRequest> bankingRelationshipList; 
 	
 	public CorporatePrimaryViewResponseNbfc getNbfcData() {
 		return nbfcData;
@@ -1386,8 +1388,13 @@ public class CorporatePrimaryViewResponse {
 	public void setAssociatedConcernDetail(List<AssociatedConcernDetailRequest> associatedConcernDetail) {
 		this.associatedConcernDetail = associatedConcernDetail;
 	}
-	
-	
+	public List<BankRelationshipRequest> getBankingRelationshipList() {
+		return bankingRelationshipList;
+	}
+	public void setBankingRelationshipList(List<BankRelationshipRequest> bankingRelationshipList) {
+		this.bankingRelationshipList = bankingRelationshipList;
+	}
+
 	/*
 	 * public List<CorporatePrimaryViewResponseNbfc> getNbfcListList() { return
 	 * nbfcListList; } public void

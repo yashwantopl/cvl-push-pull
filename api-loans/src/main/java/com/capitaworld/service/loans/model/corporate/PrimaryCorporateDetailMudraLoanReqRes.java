@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.model.corporate;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class PrimaryCorporateDetailMudraLoanReqRes  implements Serializable{
 		
@@ -50,6 +51,8 @@ public class PrimaryCorporateDetailMudraLoanReqRes  implements Serializable{
 	private String latestItrFilled;
 	
 	private String otherStatutory;
+	
+	private List<MachineDetailMudraLoanRequestResponse> machineDetails; 
 	
 	private Long applicationId;
 	
@@ -246,6 +249,14 @@ public class PrimaryCorporateDetailMudraLoanReqRes  implements Serializable{
 
 	public void setMrktArragementFinishedGoodsValue(String mrktArragementFinishedGoodsValue) {
 		this.mrktArragementFinishedGoodsValue = mrktArragementFinishedGoodsValue;
+	}
+
+	public List<MachineDetailMudraLoanRequestResponse> getMachineDetails() {
+		return machineDetails;
+	}
+
+	public void setMachineDetails(List<MachineDetailMudraLoanRequestResponse> machineDetails) {
+		this.machineDetails = machineDetails;
 	}
 
 	

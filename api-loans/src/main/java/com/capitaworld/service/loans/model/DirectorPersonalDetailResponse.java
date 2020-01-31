@@ -11,6 +11,17 @@ public class DirectorPersonalDetailResponse {
 	    private String assessedForIt;
 	    private String haveLiPolicy;
 	    private String spouseName;
+	    
+	    private String idProof;
+	    private Integer dependent;
+	    private String isSameAddIdProof;
+	    private Integer addressYears;
+	    private Integer otherIncomeSource;
+	    private String certificationCourse;
+	    private String ongoingMudraLoan;
+	    
+	    
+	    
 		public Long getId() {
 			return id;
 		}
@@ -60,8 +71,48 @@ public class DirectorPersonalDetailResponse {
 		public void setSpouseName(String spouseName) {
 			this.spouseName = spouseName;
 		}
-	    
-	    
-	    
-
+		
+		public Integer getDependent() {
+			return dependent;
+		}
+		public void setDependent(Integer dependent) {
+			this.dependent = dependent;
+		}
+		public String getIsSameAddIdProof() {
+			return isSameAddIdProof;
+		}
+		public void setIsSameAddIdProof(String isSameAddIdProof) {
+			this.isSameAddIdProof = isSameAddIdProof;
+		}
+		public Integer getAddressYears() {
+			return addressYears;
+		}
+		public void setAddressYears(Integer addressYears) {
+			this.addressYears = addressYears;
+		}
+		public Integer getOtherIncomeSource() {
+			return otherIncomeSource;
+		}
+		public void setOtherIncomeSource(Integer otherIncomeSource) {
+			this.otherIncomeSource = otherIncomeSource;
+		}
+		public String getCertificationCourse() {
+			return certificationCourse;
+		}
+		public void setCertificationCourse(String certificationCourse) {
+			this.certificationCourse = certificationCourse;
+		}
+		public String getOngoingMudraLoan() {
+			return ongoingMudraLoan;
+		}
+		public void setOngoingMudraLoan(String ongoingMudraLoan) {
+			this.ongoingMudraLoan = ongoingMudraLoan;
+		}
+		public void setIdProof(String idProof) {
+			this.idProof = idProof;
+		}
+		public String getIdProof() {
+			return idProof;
+		}
+		
 }
