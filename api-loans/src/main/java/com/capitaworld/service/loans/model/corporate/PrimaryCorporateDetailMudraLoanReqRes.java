@@ -34,9 +34,9 @@ public class PrimaryCorporateDetailMudraLoanReqRes  implements Serializable{
 	
 	private Double monthlySurplus;
 	
-	private Double existing;
+	private String existing;
 	
-	private Double proposed;
+	private String proposed;
 	
 	private String othergovauthorities;
 
@@ -155,19 +155,19 @@ public class PrimaryCorporateDetailMudraLoanReqRes  implements Serializable{
 		this.monthlySurplus = monthlySurplus;
 	}
 
-	public Double getExisting() {
+	public String getExisting() {
 		return existing;
 	}
 
-	public void setExisting(Double existing) {
+	public void setExisting(String existing) {
 		this.existing = existing;
 	}
 
-	public Double getProposed() {
+	public String getProposed() {
 		return proposed;
 	}
 
-	public void setProposed(Double proposed) {
+	public void setProposed(String proposed) {
 		this.proposed = proposed;
 	}
 
