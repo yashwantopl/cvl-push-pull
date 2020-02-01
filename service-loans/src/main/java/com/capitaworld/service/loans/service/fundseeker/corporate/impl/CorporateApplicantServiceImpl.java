@@ -918,7 +918,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
     				liabilitiesDetails = new LiabilitiesDetails();
     			}
 		    	liabilitiesDetails.setYear(yearEntry.getKey());
-		    	liabilitiesDetails.setTotalLiability(Double.parseDouble(yearEntry.getValue().toString()));
+		    	liabilitiesDetails.setTotalLiability(yearEntry.getValue() != null ? Double.parseDouble(yearEntry.getValue().toString()) : null);
 		    	liabilitiesDetails.setCreatedDate(new Date());
 		    	liabilitiesDetails.setCreatedBy(applicantRequest.getUserId());
 		    	liabilitiesDetails.setFsLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
@@ -936,7 +936,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		    		operatingStatementDetails = new OperatingStatementDetails();
 		    	}
 		    	operatingStatementDetails.setYear(yearEntry.getKey());
-		    	operatingStatementDetails.setNetSales(Double.parseDouble(yearEntry.getValue().toString()));
+		    	operatingStatementDetails.setNetSales(yearEntry.getValue() != null ? Double.parseDouble(yearEntry.getValue().toString()) : null);
 		    	operatingStatementDetails.setCreatedDate(new Date());
 		    	operatingStatementDetails.setCreatedBy(applicantRequest.getUserId());
 		    	operatingStatementDetails.setLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
@@ -953,7 +953,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
     				liabilitiesDetails = new LiabilitiesDetails();
     			}
 		    	liabilitiesDetails.setYear(yearEntry.getKey());
-		    	liabilitiesDetails.setNetWorth(Double.parseDouble(yearEntry.getValue().toString()));
+		    	liabilitiesDetails.setNetWorth(yearEntry.getValue() != null ? Double.parseDouble(yearEntry.getValue().toString()) : null);
 		    	liabilitiesDetails.setCreatedDate(new Date());
 		    	liabilitiesDetails.setCreatedBy(applicantRequest.getUserId());
 		    	liabilitiesDetails.setFsLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
@@ -970,7 +970,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		    		operatingStatementDetails = new OperatingStatementDetails();
 		    	}
 		    	operatingStatementDetails.setYear(yearEntry.getKey());
-		    	operatingStatementDetails.setNetProfitOrLoss(Double.parseDouble(yearEntry.getValue().toString()));
+		    	operatingStatementDetails.setNetProfitOrLoss(yearEntry.getValue() != null ? Double.parseDouble(yearEntry.getValue().toString()) : null);
 		    	operatingStatementDetails.setCreatedDate(new Date());
 		    	operatingStatementDetails.setCreatedBy(applicantRequest.getUserId());
 		    	operatingStatementDetails.setLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
@@ -987,7 +987,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
     				assetsDetails = new AssetsDetails();
     			}
 		    	assetsDetails.setYear(yearEntry.getKey());
-		    	assetsDetails.setTotalAssets(Double.parseDouble(yearEntry.getValue().toString()));
+		    	assetsDetails.setTotalAssets(yearEntry.getValue() != null ? Double.parseDouble(yearEntry.getValue().toString()) : null);
 		    	assetsDetails.setCreatedDate(new Date());
 		    	assetsDetails.setCreatedBy(applicantRequest.getUserId());
 		    	assetsDetails.setLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
@@ -1004,7 +1004,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
     				assetsDetails = new AssetsDetails();
     			}
 		    	assetsDetails.setYear(yearEntry.getKey());
-		    	assetsDetails.setInventory(Double.parseDouble(yearEntry.getValue().toString()));
+		    	assetsDetails.setInventory(yearEntry.getValue() != null ? Double.parseDouble(yearEntry.getValue().toString()) : null);
 		    	assetsDetails.setCreatedDate(new Date());
 		    	assetsDetails.setCreatedBy(applicantRequest.getUserId());
 		    	assetsDetails.setLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
@@ -1021,7 +1021,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
     				assetsDetails = new AssetsDetails();
     			}
 		    	assetsDetails.setYear(yearEntry.getKey());
-		    	assetsDetails.setDebtors(Double.parseDouble(yearEntry.getValue().toString()));
+		    	assetsDetails.setDebtors(yearEntry.getValue() != null ? Double.parseDouble(yearEntry.getValue().toString()) : null);
 		    	assetsDetails.setCreatedDate(new Date());
 		    	assetsDetails.setCreatedBy(applicantRequest.getUserId());
 		    	assetsDetails.setLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
@@ -1038,7 +1038,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
     				assetsDetails = new AssetsDetails();
     			}
     			assetsDetails.setYear(yearEntry.getKey());
-    			assetsDetails.setInvestmentInPlantMachinery(Double.parseDouble(yearEntry.getValue().toString()));
+    			assetsDetails.setInvestmentInPlantMachinery(yearEntry.getValue() != null ? Double.parseDouble(yearEntry.getValue().toString()) : null);
     			assetsDetails.setCreatedDate(new Date());
     			assetsDetails.setCreatedBy(applicantRequest.getUserId());
     			assetsDetails.setLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
@@ -1055,7 +1055,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
     				liabilitiesDetails = new LiabilitiesDetails();
     			}
 		    	liabilitiesDetails.setYear(yearEntry.getKey());
-		    	liabilitiesDetails.setCreditors(Double.parseDouble(yearEntry.getValue().toString()));
+		    	liabilitiesDetails.setCreditors(yearEntry.getValue() != null ? Double.parseDouble(yearEntry.getValue().toString()) : null);
 		    	liabilitiesDetails.setCreatedDate(new Date());
 		    	liabilitiesDetails.setCreatedBy(applicantRequest.getUserId());
 		    	liabilitiesDetails.setFsLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
@@ -1065,9 +1065,9 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
     		}
 			return true;
 		} catch (Exception e) {
-			// TODO: handle exception
+			logger.error("error while saving Projected Sales details mudra itr",e);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
-		return false;
 	}
 
 	@Override
