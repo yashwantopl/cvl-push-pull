@@ -132,154 +132,154 @@ public class LoansMain {
 
 	@Bean
 	public GatewayClient gatewayClient() {
-		GatewayClient gatewayClient = new GatewayClient(CommonUtils.getDomainSpecificUrl(CommonUtils.DomainUrlType.domainUrlgateway));
+		GatewayClient gatewayClient = new GatewayClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.gateway));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(gatewayClient);
 		return gatewayClient;
 	}
 	
 	@Bean
 	public EPFClient epfClient() {
-		EPFClient epfClient = new EPFClient(CommonUtils.getDomainSpecificUrl(CommonUtils.DomainUrlType.domainUrlekyc));
+		EPFClient epfClient = new EPFClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.ekyc));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(epfClient);
 		return epfClient;
 	}
 	
 	@Bean
 	public DMSClient dmsMasterClient() {
-		DMSClient dmsClient = new DMSClient(CommonUtils.getDomainSpecificUrl(CommonUtils.DomainUrlType.domainUrldms));
+		DMSClient dmsClient = new DMSClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.dms));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(dmsClient);
 		return dmsClient;
 	}
 
 	@Bean
 	public NotificationClient notificationMasterClient() {
-		NotificationClient notificationClient = new NotificationClient(CommonUtils.getDomainSpecificUrl(CommonUtils.DomainUrlType.domainUrlnotification));
+		NotificationClient notificationClient = new NotificationClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.notification));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(notificationClient);
 		return notificationClient;
 	}
 
 	@Bean
 	public UsersClient userMasterClient() {
-		UsersClient usersClient = new UsersClient(CommonUtils.getDomainSpecificUrl(CommonUtils.DomainUrlType.domainUrlusers));
+		UsersClient usersClient = new UsersClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.users));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(usersClient);
 		return usersClient;
 	}
 
 	@Bean
 	public OneFormClient oneFormClient() {
-		OneFormClient oneFormClient = new OneFormClient(CommonUtils.getDomainSpecificUrl(CommonUtils.DomainUrlType.domainUrloneform));
+		OneFormClient oneFormClient = new OneFormClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.oneform));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(oneFormClient);
 		return oneFormClient;
 	}
 
 	@Bean
 	public MatchEngineClient matchEngineClient() {
-		MatchEngineClient matchEngineClient = new MatchEngineClient(CommonUtils.getDomainSpecificUrl(CommonUtils.DomainUrlType.domainUrlmatch_engine_mudra));
+		MatchEngineClient matchEngineClient = new MatchEngineClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.match_engine_mudra));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(matchEngineClient);
 		return matchEngineClient;
 	}
 
 	@Bean
 	public ProposalDetailsClient proposalDetailsClient() {
-		ProposalDetailsClient proposalDetailsClient = new ProposalDetailsClient(CommonUtils.getDomainSpecificUrl(CommonUtils.DomainUrlType.domainUrlmatch_engine_mudra));
+		ProposalDetailsClient proposalDetailsClient = new ProposalDetailsClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.match_engine_mudra));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(proposalDetailsClient);
 		return proposalDetailsClient;
 	}
 
 	@Bean
 	public CIBILClient cibilClient() {
-		CIBILClient cibilClient = new CIBILClient(CommonUtils.getDomainSpecificUrl(CommonUtils.DomainUrlType.domainUrlcibil));
+		CIBILClient cibilClient = new CIBILClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.cibil));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(cibilClient);
 		return cibilClient;
 	}
 
 	@Bean
 	public RatingClient ratingClient() {
-		RatingClient ratingClient = new RatingClient(CommonUtils.getDomainSpecificUrl(CommonUtils.DomainUrlType.domainUrlrating));
+		RatingClient ratingClient = new RatingClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.rating));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(ratingClient);
 		return ratingClient;
 	}
 
 	@Bean
 	public ReportsClient reportsClient() {
-		ReportsClient reportsClient = new ReportsClient(CommonUtils.getDomainSpecificUrl(CommonUtils.DomainUrlType.domainUrlreports_mudra));
+		ReportsClient reportsClient = new ReportsClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.reports_mudra));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(reportsClient);
 		return reportsClient;
 	}
 
 	@Bean
 	public ScoringClient scoringClient() {
-		ScoringClient scoringClient = new ScoringClient(CommonUtils.getDomainSpecificUrl(CommonUtils.DomainUrlType.domainUrlscoring_mudra));
+		ScoringClient scoringClient = new ScoringClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.scoring_mudra));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(scoringClient);
 		return scoringClient;
 	}
 
 	@Bean
 	public GstClient gstClient() {
-		GstClient gstClient = new GstClient(CommonUtils.getDomainSpecificUrl(CommonUtils.DomainUrlType.domainUrlgst));
+		GstClient gstClient = new GstClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.gst));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(gstClient);
 		return gstClient;
 	}
 
 	@Bean
 	public AnalyzerClient analyzerClient() {
-		AnalyzerClient analyzerClient = new AnalyzerClient(CommonUtils.getDomainSpecificUrl(CommonUtils.DomainUrlType.domainUrlanalyzer));
+		AnalyzerClient analyzerClient = new AnalyzerClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.analyzer));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(analyzerClient);
 		return analyzerClient;
 	}
 
 	@Bean
 	public ConnectClient connectClient() {
-		ConnectClient connectClient = new ConnectClient(CommonUtils.getDomainSpecificUrl(CommonUtils.DomainUrlType.domainUrlconnect_mudra));
+		ConnectClient connectClient = new ConnectClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.connect_mudra));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(connectClient);
 		return connectClient;
 	}
 
 	@Bean
 	public ThirdPartyClient thirdPartyClient() {
-		ThirdPartyClient thirdPartyClient = new ThirdPartyClient(CommonUtils.getDomainSpecificUrl(CommonUtils.DomainUrlType.domainUrlthirdparty));
+		ThirdPartyClient thirdPartyClient = new ThirdPartyClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.thirdparty));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(thirdPartyClient);
 		return thirdPartyClient;
 	}
 
 	@Bean
 	public McaClient mcaClient() {
-		McaClient mcaClient = new McaClient(CommonUtils.getDomainSpecificUrl(CommonUtils.DomainUrlType.domainUrlmca));
+		McaClient mcaClient = new McaClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.mca));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(mcaClient);
 		return mcaClient;
 	}
 
 	@Bean
 	public WorkflowClient workFlowClient() {
-		WorkflowClient workflowClient = new WorkflowClient(CommonUtils.getDomainSpecificUrl(CommonUtils.DomainUrlType.domainUrlworkflow));
+		WorkflowClient workflowClient = new WorkflowClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.workflow));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(workflowClient);
 		return workflowClient;
 	}
 
 	@Bean
 	public EligibilityClient eligibilityClient() {
-		EligibilityClient eligibilityClient = new EligibilityClient(CommonUtils.getDomainSpecificUrl(CommonUtils.DomainUrlType.domainUrleligibility_mudra));
+		EligibilityClient eligibilityClient = new EligibilityClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.eligibility_mudra));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(eligibilityClient);
 		return eligibilityClient;
 	}
 
 	@Bean
 	public FraudAnalyticsClient fraudAnalyticsClient() {
-		FraudAnalyticsClient fraudAnalyticsClient = new FraudAnalyticsClient(CommonUtils.getDomainSpecificUrl(CommonUtils.DomainUrlType.domainUrlfraudanalytics));
+		FraudAnalyticsClient fraudAnalyticsClient = new FraudAnalyticsClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.fraudanalytics));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(fraudAnalyticsClient);
 		return fraudAnalyticsClient;
 	}
 
 	@Bean
 	public ITRClient itrClient() {
-		ITRClient itrClient = new ITRClient(CommonUtils.getDomainSpecificUrl(CommonUtils.DomainUrlType.domainUrlitr));
+		ITRClient itrClient = new ITRClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.itr));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(itrClient);
 		return itrClient;
 	}
 	
 	@Bean
 	public AuthClient authClient() {
-		AuthClient authClient = new AuthClient(CommonUtils.getDomainSpecificUrl(CommonUtils.DomainUrlType.domainUrlauth));
+		AuthClient authClient = new AuthClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.auth));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(authClient);
 		return authClient;
 	}
