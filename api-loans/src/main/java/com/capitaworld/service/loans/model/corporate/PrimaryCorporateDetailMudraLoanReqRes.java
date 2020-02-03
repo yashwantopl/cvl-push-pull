@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.model.corporate;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class PrimaryCorporateDetailMudraLoanReqRes  implements Serializable{
 		
@@ -33,9 +34,9 @@ public class PrimaryCorporateDetailMudraLoanReqRes  implements Serializable{
 	
 	private Double monthlySurplus;
 	
-	private Double existing;
+	private String existing;
 	
-	private Double proposed;
+	private String proposed;
 	
 	private String othergovauthorities;
 
@@ -50,6 +51,8 @@ public class PrimaryCorporateDetailMudraLoanReqRes  implements Serializable{
 	private String latestItrFilled;
 	
 	private String otherStatutory;
+	
+	private List<MachineDetailMudraLoanRequestResponse> machineDetails; 
 	
 	private Long applicationId;
 	
@@ -152,19 +155,19 @@ public class PrimaryCorporateDetailMudraLoanReqRes  implements Serializable{
 		this.monthlySurplus = monthlySurplus;
 	}
 
-	public Double getExisting() {
+	public String getExisting() {
 		return existing;
 	}
 
-	public void setExisting(Double existing) {
+	public void setExisting(String existing) {
 		this.existing = existing;
 	}
 
-	public Double getProposed() {
+	public String getProposed() {
 		return proposed;
 	}
 
-	public void setProposed(Double proposed) {
+	public void setProposed(String proposed) {
 		this.proposed = proposed;
 	}
 
@@ -246,6 +249,14 @@ public class PrimaryCorporateDetailMudraLoanReqRes  implements Serializable{
 
 	public void setMrktArragementFinishedGoodsValue(String mrktArragementFinishedGoodsValue) {
 		this.mrktArragementFinishedGoodsValue = mrktArragementFinishedGoodsValue;
+	}
+
+	public List<MachineDetailMudraLoanRequestResponse> getMachineDetails() {
+		return machineDetails;
+	}
+
+	public void setMachineDetails(List<MachineDetailMudraLoanRequestResponse> machineDetails) {
+		this.machineDetails = machineDetails;
 	}
 
 	

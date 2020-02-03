@@ -112,6 +112,7 @@ public class DirectorBackgroundDetailResponseString implements Serializable{
 	private Boolean isGuarantor;
 	private Double loanObligation;
 	private DirectorPersonalDetailRequest directorPersonalDetailRequest;
+	private String isPhysicallyhandicapped;
 	
 	public Double getLoanObligation() {
 		return loanObligation;
@@ -535,4 +536,14 @@ public class DirectorBackgroundDetailResponseString implements Serializable{
 	public void setHighmarkScore(String highmarkScore) {
 		this.highmarkScore = highmarkScore;
 	}
+
+	public String getIsPhysicallyhandicapped() {
+		return isPhysicallyhandicapped;
+	}
+
+	public void setIsPhysicallyhandicapped(String isPhysicallyhandicapped) {
+		this.isPhysicallyhandicapped = isPhysicallyhandicapped;
+	}
+	
+	
 }

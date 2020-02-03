@@ -76,8 +76,8 @@ public class CamReportPdfDetailsController {
 			Map<String,Object> response = camReportPdfDetailsService.getCamReportPrimaryDetails(applicationId,productId,proposalId,false);
 			ReportRequest reportRequest = new ReportRequest();
 			reportRequest.setParams(response);
-			reportRequest.setTemplate("CAMREPORTPRIMARYSIDBI");
-			reportRequest.setType("CAMREPORTPRIMARYSIDBI");
+			reportRequest.setTemplate("MUDRALOANPRIMARYCAM");
+			reportRequest.setType("MUDRALOANPRIMARYCAM");
 			byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
 			MultipartFile multipartFile = new DDRMultipart(byteArr);			  
 			  JSONObject jsonObj = new JSONObject();
