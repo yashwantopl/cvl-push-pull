@@ -207,5 +207,15 @@ public class CommonRepositoryImpl  implements CommonRepository {
                  "LEFT JOIN users.`fund_provider_details` f ON f.user_id=u.user_id " +
                  "WHERE u.branch_id=:branchId AND u.user_role_id=9 ORDER BY u.user_id DESC Limit 1;").setParameter("branchId", branchId).getSingleResult();
     }
+
+	/**
+	 * GET STATE  NAME BY STATE CODE
+	 */
+	@Override
+	@SuppressWarnings("unchecked")
+	public String getStateByStateCode(Long id) {
+		List<String> states =  manager.createNativeQuery("SELECT state_name FROM one_form.state WHERE id =:id").setParameter("id", id).getResultList();
+		return 	!CommonUtils.isListNullOrEmpty(states) ? states.get(0) : "";  
+	}
 	
 }
