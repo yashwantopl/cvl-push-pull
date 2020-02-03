@@ -773,6 +773,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 							directorPersonalDetail.setOtherIncomeSource(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOtherIncomeSource());
 							directorPersonalDetail.setCertificationCourse(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getCertificationCourse() != null ? CertificationCourseMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getCertificationCourse()).getValue() : "-"  );
 							directorPersonalDetail.setOngoingMudraLoan(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOngoingMudraLoan() != null ? OngoingMudraLoan.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOngoingMudraLoan()).getValue() : "-"  );
+							corporatePrimaryViewResponse.setOngoingMudraLoan(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOngoingMudraLoan() != null ? OngoingMudraLoan.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOngoingMudraLoan()).getValue() : "-"  );
 							
 							// COVERED IN GOV_SCHEMES
 							List<Integer> govSchemes = fsParameterMappingRepository.getParametersByApplicationIdAndType(applicationId, FSParameterMst.GOV_SCHEMES.getId());
@@ -783,6 +784,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 									govScheme = govScheme + ((i != 0) ? ", " : "" )+ authority;
 								}
 								directorPersonalDetail.setGovScheme(govScheme);
+								corporatePrimaryViewResponse.setGovScheme(govScheme);
 							}
 						
 						directorBackgroundDetailResponse.setDirectorPersonalInfo(directorPersonalDetail);
