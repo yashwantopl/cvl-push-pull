@@ -173,7 +173,9 @@ public class CorporatePrimaryViewResponse {
 	private Map matchesMap;
 	private String regiterWithGovAuthorities ; 
 	private List<AssociatedConcernDetailRequest> associatedConcernDetail;
-	List<BankRelationshipRequest> bankingRelationshipList; 
+	private List<BankRelationshipRequest> bankingRelationshipList; 
+	private String govScheme; 
+	private String ongoingMudraLoan; 
 	
 	public CorporatePrimaryViewResponseNbfc getNbfcData() {
 		return nbfcData;
@@ -1393,6 +1395,18 @@ public class CorporatePrimaryViewResponse {
 	}
 	public void setBankingRelationshipList(List<BankRelationshipRequest> bankingRelationshipList) {
 		this.bankingRelationshipList = bankingRelationshipList;
+	}
+	public String getGovScheme() {
+		return govScheme;
+	}
+	public void setGovScheme(String govScheme) {
+		this.govScheme = govScheme;
+	}
+	public String getOngoingMudraLoan() {
+		return ongoingMudraLoan;
+	}
+	public void setOngoingMudraLoan(String ongoingMudraLoan) {
+		this.ongoingMudraLoan = ongoingMudraLoan;
 	}
 
 	/*
