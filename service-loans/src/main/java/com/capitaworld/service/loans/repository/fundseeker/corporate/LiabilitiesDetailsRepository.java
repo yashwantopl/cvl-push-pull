@@ -90,7 +90,7 @@ public interface LiabilitiesDetailsRepository  extends JpaRepository<Liabilities
 	 * @return String 
 	 * @author rohit.chaudhary
 	 */
-	@Query(value = "SELECT CAST(JSON_OBJECT('year', JSON_OBJECTAGG(year, total_liability)) AS CHAR) AS year FROM `loan_application`.`fs_corporate_cma_liabilities_details` WHERE application_id=:applicationId" , nativeQuery=true)
+	@Query(value = "SELECT CAST(JSON_OBJECT('year', JSON_OBJECTAGG(year, total_liability)) AS CHAR) AS year FROM `loan_application`.`fs_corporate_cma_liabilities_details` WHERE application_id=:applicationId and is_active = true" , nativeQuery=true)
 	public String getTotalLiability(@Param("applicationId") Long applicationId);
 	
 	/**
@@ -100,7 +100,7 @@ public interface LiabilitiesDetailsRepository  extends JpaRepository<Liabilities
 	 * @return String 
 	 * @author rohit.chaudhary
 	 */
-	@Query(value = "SELECT CAST(JSON_OBJECT('year', JSON_OBJECTAGG(year, net_worth)) AS CHAR) AS year FROM `loan_application`.`fs_corporate_cma_liabilities_details` WHERE application_id=:applicationId" , nativeQuery=true)
+	@Query(value = "SELECT CAST(JSON_OBJECT('year', JSON_OBJECTAGG(year, net_worth)) AS CHAR) AS year FROM `loan_application`.`fs_corporate_cma_liabilities_details` WHERE application_id=:applicationId and is_active = true" , nativeQuery=true)
 	public String getNetWorth(@Param("applicationId") Long applicationId);
 	
 	/**
@@ -110,7 +110,7 @@ public interface LiabilitiesDetailsRepository  extends JpaRepository<Liabilities
 	 * @return String 
 	 * @author rohit.chaudhary
 	 */
-	@Query(value = "SELECT CAST(JSON_OBJECT('year', JSON_OBJECTAGG(year, creditors)) AS CHAR) AS year FROM `loan_application`.`fs_corporate_cma_liabilities_details` WHERE application_id=:applicationId" , nativeQuery=true)
+	@Query(value = "SELECT CAST(JSON_OBJECT('year', JSON_OBJECTAGG(year, creditors)) AS CHAR) AS year FROM `loan_application`.`fs_corporate_cma_liabilities_details` WHERE application_id=:applicationId and is_active = true" , nativeQuery=true)
 	public String getCreditors(@Param("applicationId") Long applicationId);
 	
 }

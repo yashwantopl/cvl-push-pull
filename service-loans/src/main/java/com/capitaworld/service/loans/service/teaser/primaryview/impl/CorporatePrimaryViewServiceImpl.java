@@ -598,7 +598,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				}
 				
 				// GET MACHINE DETAILS
-				List<MachineDetailMudraLoan> machineDetails = machineDetailsRepo.findByApplicationId(toApplicationId);
+				List<MachineDetailMudraLoan> machineDetails = machineDetailsRepo.findByApplicationIdAndIsActive(toApplicationId, true);
 				if (!CommonUtils.isListNullOrEmpty(machineDetails)) {
 					List<MachineDetailMudraLoanRequestResponse> machineDetailsRes =  new ArrayList<>(machineDetails.size());
 					for (MachineDetailMudraLoan machineDetailMudraLoan : machineDetails) {
@@ -720,6 +720,8 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				directorBackgroundDetailResponse.setVisuallyImpaired(directorBackgroundDetailRequest.getVisuallyImpaired() != null ? VisuallyImpairedMst.getById(directorBackgroundDetailRequest.getVisuallyImpaired()).getValue().toString() : "-");
 				directorBackgroundDetailResponse.setResidentStatus(directorBackgroundDetailRequest.getResidentStatus() != null ? ResidentStatusMst.getById(directorBackgroundDetailRequest.getResidentStatus()).getValue().toString() : "-");
 				directorBackgroundDetailResponse.setDirectorPersonalInfo(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest() != null ? directorBackgroundDetailRequest.getDirectorPersonalDetailRequest() : " " );
+				String stateName = commonRepository.getStateByStateCode(directorBackgroundDetailRequest.getStateId().longValue()); 
+				directorBackgroundDetailResponse.setStateCode(stateName);
 				
 				//nationality
 				
@@ -777,8 +779,8 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 							if (!CommonUtils.isListNullOrEmpty(govSchemes)) {
 								String govScheme  = ""; 
 								for (int i = 0; i < govSchemes.size(); i++) {
-									String scheme = GovSchemesMst.getById(govSchemes.get(i)).getValue();
-									govScheme = govScheme + ((i != 0) ? ", " : "" )+ scheme;
+									String authority = GovSchemesMst.getById(govSchemes.get(i)).getValue();
+									govScheme = govScheme + ((i != 0) ? ", " : "" )+ authority;
 								}
 								directorPersonalDetail.setGovScheme(govScheme);
 							}

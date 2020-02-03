@@ -1033,7 +1033,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
     		Map<String, Object>	 yearInvestmentInPlantMachinery  = (Map<String, Object>) investmentInPlantMachinery.get("year"); 
     		for (Map.Entry<String,Object> yearEntry : yearInvestmentInPlantMachinery.entrySet()) {
     			String finYearStmt = yearEntry.getKey().equals(""+currentYear) ? "Projected":"Audited";
-    			 	AssetsDetails assetsDetails = assetsDetailsRepository.findByLoanApplicationMasterIdAndYearAndFinancialYearlyStatementAndIsActive(applicantRequest.getApplicationId(), yearEntry.getKey(), finYearStmt, true);
+    			AssetsDetails assetsDetails = assetsDetailsRepository.findByLoanApplicationMasterIdAndYearAndFinancialYearlyStatementAndIsActive(applicantRequest.getApplicationId(), yearEntry.getKey(), finYearStmt, true);
     			if(CommonUtils.isObjectNullOrEmpty(assetsDetails)) {
     				assetsDetails = new AssetsDetails();
     			}
