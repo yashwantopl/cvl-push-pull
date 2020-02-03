@@ -155,8 +155,8 @@
 		</dependency>
 		<dependency>
 			<groupId>com.capitaworld.service.reports</groupId>
-			<artifactId>client-reports</artifactId>
-			<version>0.0.1</version>
+			<artifactId>client-reports-mudra</artifactId>
+			<version>3.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.capitaworld.client.analyzer</groupId>
