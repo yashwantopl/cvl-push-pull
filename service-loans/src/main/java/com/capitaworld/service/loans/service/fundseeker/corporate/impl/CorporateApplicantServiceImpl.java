@@ -945,22 +945,22 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		    	operatingStatementDetailsRepository.save(operatingStatementDetails); 
     		}
     		
-    		Map<String, Object>	 yearMapNetworth  = (Map<String, Object>) networth.get("year"); 
-    		for (Map.Entry<String,Object> yearEntry : yearMapNetworth.entrySet()) {
-    			String finYearStmt = yearEntry.getKey().equals(""+currentYear) ? "Projected":"Audited";
-    			LiabilitiesDetails liabilitiesDetails = liabilitiesDetailsRepository.findByFsLoanApplicationMasterIdAndYearAndFinancialYearlyStatementAndIsActive(applicantRequest.getApplicationId(), yearEntry.getKey(), finYearStmt, true);
-    			if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails)) {
-    				liabilitiesDetails = new LiabilitiesDetails();
-    			}
-		    	liabilitiesDetails.setYear(yearEntry.getKey());
-		    	liabilitiesDetails.setNetWorth(yearEntry.getValue() != null ? Double.parseDouble(yearEntry.getValue().toString()) : null);
-		    	liabilitiesDetails.setCreatedDate(new Date());
-		    	liabilitiesDetails.setCreatedBy(applicantRequest.getUserId());
-		    	liabilitiesDetails.setFsLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
-		    	liabilitiesDetails.setFinancialYearlyStatement(finYearStmt);
-		    	liabilitiesDetails.setIsActive(true);
-		    	liabilitiesDetailsRepository.save(liabilitiesDetails); 
-    		}
+//    		Map<String, Object>	 yearMapNetworth  = (Map<String, Object>) networth.get("year"); 
+//    		for (Map.Entry<String,Object> yearEntry : yearMapNetworth.entrySet()) {
+//    			String finYearStmt = yearEntry.getKey().equals(""+currentYear) ? "Projected":"Audited";
+//    			LiabilitiesDetails liabilitiesDetails = liabilitiesDetailsRepository.findByFsLoanApplicationMasterIdAndYearAndFinancialYearlyStatementAndIsActive(applicantRequest.getApplicationId(), yearEntry.getKey(), finYearStmt, true);
+//    			if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails)) {
+//    				liabilitiesDetails = new LiabilitiesDetails();
+//    			}
+//		    	liabilitiesDetails.setYear(yearEntry.getKey());
+//		    	liabilitiesDetails.setNetWorth(yearEntry.getValue() != null ? Double.parseDouble(yearEntry.getValue().toString()) : null);
+//		    	liabilitiesDetails.setCreatedDate(new Date());
+//		    	liabilitiesDetails.setCreatedBy(applicantRequest.getUserId());
+//		    	liabilitiesDetails.setFsLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
+//		    	liabilitiesDetails.setFinancialYearlyStatement(finYearStmt);
+//		    	liabilitiesDetails.setIsActive(true);
+//		    	liabilitiesDetailsRepository.save(liabilitiesDetails); 
+//    		}
     		
     		Map<String, Object>	 yearMapProfitAfterTax  = (Map<String, Object>) profitAfterTax.get("year"); 
     		for (Map.Entry<String,Object> yearEntry : yearMapProfitAfterTax.entrySet()) {
@@ -995,6 +995,24 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		    	assetsDetails.setIsActive(true);
 		    	assetsDetailsRepository.save(assetsDetails); 
     		}
+    		
+    		Map<String, Object>	 yearMapNetworth  = (Map<String, Object>) networth.get("year"); 
+    		for (Map.Entry<String,Object> yearEntry : yearMapNetworth.entrySet()) {
+    			String finYearStmt = yearEntry.getKey().equals(""+currentYear) ? "Projected":"Audited";
+    			AssetsDetails assetsDetails = assetsDetailsRepository.findByLoanApplicationMasterIdAndYearAndFinancialYearlyStatementAndIsActive(applicantRequest.getApplicationId(), yearEntry.getKey(), finYearStmt, true);
+    			if(CommonUtils.isObjectNullOrEmpty(assetsDetails)) {
+    				assetsDetails = new AssetsDetails();
+    			}
+		    	assetsDetails.setYear(yearEntry.getKey());
+		    	assetsDetails.setTangibleNetWorth(yearEntry.getValue() != null ? Double.parseDouble(yearEntry.getValue().toString()) : null);
+		    	assetsDetails.setCreatedDate(new Date());
+		    	assetsDetails.setCreatedBy(applicantRequest.getUserId());
+		    	assetsDetails.setLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
+		    	assetsDetails.setFinancialYearlyStatement(finYearStmt);
+		    	assetsDetails.setIsActive(true);
+		    	assetsDetailsRepository.save(assetsDetails);
+    		}
+    		
     		
     		Map<String, Object>	 yearMapinventory  = (Map<String, Object>) inventory.get("year"); 
     		for (Map.Entry<String,Object> yearEntry : yearMapinventory.entrySet()) {
