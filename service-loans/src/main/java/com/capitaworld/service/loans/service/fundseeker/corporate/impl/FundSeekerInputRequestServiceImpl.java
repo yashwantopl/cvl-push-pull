@@ -37,6 +37,7 @@ import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.fraudanalytics.client.FraudAnalyticsClient;
 import com.capitaworld.service.fraudanalytics.model.AnalyticsRequest;
 import com.capitaworld.service.fraudanalytics.model.AnalyticsResponse;
+import com.capitaworld.service.gst.GstCalculation;
 import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
@@ -651,7 +652,17 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			GSTR1Request gstr1Request = new GSTR1Request();
 	        gstr1Request.setApplicationId(fsInputReq.getApplicationId());
 	        gstr1Request.setGstin(fsInputReq.getGstIn());
-			GstResponse calculationForScoring = gstClient.getGstr3bTotalAvgSales(gstr1Request);
+			
+			GstResponse calculationForScoring = gstClient.getCalculations(gstr1Request);
+            if(!CommonUtils.isObjectNullOrEmpty(calculationForScoring) && !CommonUtils.isObjectNullOrEmpty(calculationForScoring.getData())){
+                GstCalculation gstCalculation = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)calculationForScoring.getData(),GstCalculation.class);
+                if(!CommonUtils.isObjectNullOrEmpty(gstCalculation)){
+                    if(!CommonUtils.isObjectNullOrEmpty(gstCalculation.getHistoricalSales())){
+                        fsInputRes.setAvgMonthlySale(Double.valueOf(String.format("%.2f", (gstCalculation.getHistoricalSales() / 12))));	
+                    }
+                }
+            }
+			
 			
         	if(!CommonUtils.isObjectNullOrEmpty(calculationForScoring) && !CommonUtils.isObjectNullOrEmpty(calculationForScoring.getData())){
         		fsInputRes.setAvgMonthlySale(Double.valueOf(String.format("%.2f", (Double.valueOf(calculationForScoring.getData().toString()) / 12))));	
