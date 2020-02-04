@@ -935,8 +935,10 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		    	if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails)) {
 		    		operatingStatementDetails = new OperatingStatementDetails();
 		    	}
+		    	Double salesvalue = yearEntry.getValue() != null ? Double.parseDouble(yearEntry.getValue().toString()) : 0.0d;
 		    	operatingStatementDetails.setYear(yearEntry.getKey());
-		    	operatingStatementDetails.setNetSales(yearEntry.getValue() != null ? Double.parseDouble(yearEntry.getValue().toString()) : null);
+		    	operatingStatementDetails.setNetSales(salesvalue);
+		    	operatingStatementDetails.setDomesticSales(salesvalue); // Discussed with gaurav bhai
 		    	operatingStatementDetails.setCreatedDate(new Date());
 		    	operatingStatementDetails.setCreatedBy(applicantRequest.getUserId());
 		    	operatingStatementDetails.setLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
