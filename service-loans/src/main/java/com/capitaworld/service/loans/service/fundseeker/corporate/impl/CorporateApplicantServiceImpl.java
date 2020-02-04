@@ -1118,7 +1118,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		String investmentInPlantMachinery = assetsDetailsRepository.getInvestmentInPlantMachinery(applicationId);
 		incomeDetails.put("investmentInPlantMachinery", investmentInPlantMachinery);
 		
-		String networth = liabilitiesDetailsRepository.getNetWorth(applicationId);
+		String networth = assetsDetailsRepository.getTangibleNetWorth(applicationId);
 		incomeDetails.put("networth", networth);
 		
 		String totalAssets = assetsDetailsRepository.getTotalAssets(applicationId);
