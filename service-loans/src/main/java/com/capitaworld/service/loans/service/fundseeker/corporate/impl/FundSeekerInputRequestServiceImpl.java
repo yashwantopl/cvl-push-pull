@@ -63,6 +63,7 @@ import com.capitaworld.service.loans.model.corporate.CollateralSecurityDetailReq
 import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
 import com.capitaworld.service.loans.model.corporate.MachineDetailMudraLoanRequestResponse;
 import com.capitaworld.service.loans.model.corporate.PrimaryCorporateDetailMudraLoanReqRes;
+import com.capitaworld.service.loans.repository.common.LoanRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssociatedConcernDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CollateralSecurityDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
@@ -203,7 +204,10 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	private CollateralSecurityDetailRepository collateralSecurityDetailRepository;
 	
 	@Autowired
-	private PrimaryCorporateDetailMudraLoanRepository primaryCorporateDetailMudraLoanRepository; 
+	private PrimaryCorporateDetailMudraLoanRepository primaryCorporateDetailMudraLoanRepository;
+	
+	@Autowired
+	private LoanRepository loanRepository; 
 
 	@Autowired
 	private OneFormClient oneFormClient;
@@ -740,6 +744,10 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				}
 			}
 			fundSeekerInputResponse.setAssociatedConcernDetailRequestsList(associatedConcernResList);
+			
+			// get isITRManulFilled 
+			Boolean isItrManualFilled = loanRepository.getIsItrManualFilled(fundSeekerInputRequest.getApplicationId());
+			fundSeekerInputResponse.setIsItrManualFilled(isItrManualFilled);
 			
 			try {
 				LocalDate start = null;

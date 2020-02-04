@@ -99,6 +99,8 @@ public interface LoanRepository{
 	
 	public boolean getCibilBureauAPITrueOrFalse(Long orgId);
 	
+	public Boolean getIsItrManualFilled(Long applicationId);
+	
 	public Object[] getBankBureauFlags(Long orgId);
 	
 	public List<BankingRelation> listBankRelationAppId(Long id);
