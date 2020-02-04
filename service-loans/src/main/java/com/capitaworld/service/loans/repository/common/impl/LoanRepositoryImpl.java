@@ -701,4 +701,16 @@ public class LoanRepositoryImpl implements LoanRepository {
 				.setParameter("id", id).getResultList();
 		return bankingRelations;
 	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public Boolean getIsItrManualFilled(Long applicationId) {
+		List<Boolean> result = 	entityManager.createNativeQuery("SELECT is_manual_filled FROM `itr_api`.`itr_tracking` WHERE application_id =:appId AND is_active = TRUE ORDER BY id DESC LIMIT 1")
+				.setParameter("appId", applicationId)
+				.getResultList(); 
+		return !CommonUtils.isListNullOrEmpty(result) ? result.get(0) : null;
+	}
+	
+	
+	
 }
