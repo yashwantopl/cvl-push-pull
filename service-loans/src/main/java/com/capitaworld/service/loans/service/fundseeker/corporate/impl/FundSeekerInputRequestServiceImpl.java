@@ -591,6 +591,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	/**
 	 * Get one form details
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public ResponseEntity<LoansResponse> get(FundSeekerInputRequestResponse fsInputReq) {
 
@@ -662,12 +663,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
                     }
                 }
             }
-			
-			
-        	if(!CommonUtils.isObjectNullOrEmpty(calculationForScoring) && !CommonUtils.isObjectNullOrEmpty(calculationForScoring.getData())){
-        		fsInputRes.setAvgMonthlySale(Double.valueOf(String.format("%.2f", (Double.valueOf(calculationForScoring.getData().toString()) / 12))));	
-        	}
-			
+		
         	PrimaryCorporateDetailMudraLoan corporateDetailMudraLoan = primaryCorporateDetailMudraLoanRepository.findByApplicationIdAndIsActive(fsInputReq.getApplicationId(), true);
         	if(!CommonUtils.isObjectNullOrEmpty(corporateDetailMudraLoan)) {
         		fsInputRes.setMrktArragementFinishedGoods(corporateDetailMudraLoan.getMrktArragementFinishedGoods());
