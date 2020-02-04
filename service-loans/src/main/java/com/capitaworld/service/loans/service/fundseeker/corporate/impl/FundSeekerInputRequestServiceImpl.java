@@ -647,7 +647,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			GSTR1Request gstr1Request = new GSTR1Request();
 	        gstr1Request.setApplicationId(fsInputReq.getApplicationId());
 	        gstr1Request.setGstin(fsInputReq.getGstIn());
-			GstResponse calculationForScoring = gstClient.getCalculationForScoring(gstr1Request);
+			GstResponse calculationForScoring = gstClient.getGstr3bTotalAvgSales(gstr1Request);
 			
         	if(!CommonUtils.isObjectNullOrEmpty(calculationForScoring) && !CommonUtils.isObjectNullOrEmpty(calculationForScoring.getData())){
         		fsInputRes.setAvgMonthlySale(Double.valueOf(String.format("%.2f", (Double.valueOf(calculationForScoring.getData().toString()) / 12))));	
