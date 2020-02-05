@@ -1104,76 +1104,31 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		Map<String, Object> incomeDetails = new HashMap<>();
 		
 		String sales = operatingStatementDetailsRepository.getNetSales(applicationId );
-		try {
-			incomeDetails.put("sales", MultipleJSONObjectHelper.getObjectFromString(sales, Map.class));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		incomeDetails.put("sales", sales);
 		
 		String profitAfterTax = operatingStatementDetailsRepository.getNetProfitOrLoss(applicationId);
-		try {
-			incomeDetails.put("profitAfterTax", MultipleJSONObjectHelper.getObjectFromString(profitAfterTax, Map.class));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		incomeDetails.put("profitAfterTax", profitAfterTax);
 
 		String inventory = assetsDetailsRepository.getInventory(applicationId);
-		try {
-			incomeDetails.put("inventory", MultipleJSONObjectHelper.getObjectFromString(inventory, Map.class));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		incomeDetails.put("inventory", inventory);
 		
 		String debtors = assetsDetailsRepository.getDebtors(applicationId);
-		try {
-			incomeDetails.put("debtors", MultipleJSONObjectHelper.getObjectFromString(debtors, Map.class));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		incomeDetails.put("debtors", debtors);
 		
 		String creditors = liabilitiesDetailsRepository.getCreditors(applicationId);
-		try {
-			incomeDetails.put("creditors", MultipleJSONObjectHelper.getObjectFromString(creditors, Map.class));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		incomeDetails.put("creditors", creditors);
 
 		String investmentInPlantMachinery = assetsDetailsRepository.getInvestmentInPlantMachinery(applicationId);
-		try {
-			incomeDetails.put("investmentInPlantMachinery", MultipleJSONObjectHelper.getObjectFromString(investmentInPlantMachinery, Map.class));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		incomeDetails.put("investmentInPlantMachinery", investmentInPlantMachinery);
 		
 		String networth = assetsDetailsRepository.getTangibleNetWorth(applicationId);
-		try {
-			incomeDetails.put("networth", MultipleJSONObjectHelper.getObjectFromString(networth, Map.class));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		incomeDetails.put("networth", networth);
 		
 		String totalAssets = assetsDetailsRepository.getTotalAssets(applicationId);
-		try {
-			incomeDetails.put("totalAssets", MultipleJSONObjectHelper.getObjectFromString(totalAssets, Map.class));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		incomeDetails.put("totalAssets", totalAssets);
 		
 		String liability = liabilitiesDetailsRepository.getTotalLiability(applicationId);
-		try {
-			incomeDetails.put("liability", MultipleJSONObjectHelper.getObjectFromString(liability, Map.class));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		incomeDetails.put("totalLiabilities", liability);
 		
 		corporateApplicantRequest.setIncomeDetails(incomeDetails);
 		return corporateApplicantRequest;
