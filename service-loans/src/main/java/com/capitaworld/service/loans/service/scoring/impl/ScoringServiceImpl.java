@@ -2141,6 +2141,7 @@ public class ScoringServiceImpl implements ScoringService {
                             case ScoreParameter.MudraLoan.PAST_YEAR_TURNOVER_ML: {
 
                                 try {
+                                	logger.info("operatingStatementDetailsTY.getNetSales() :: {}",operatingStatementDetailsTY.getNetSales());
                                     Double domesticSales = operatingStatementDetailsTY.getDomesticSales();
                                     Double exportSales = operatingStatementDetailsTY.getExportSales();
                                     scoringParameterRequest.setPastYearTurnover_p(true);
@@ -2164,6 +2165,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     Integer itrType = CommonUtils.isObjectNullOrEmpty(itrResponse[1]) ? null : Integer.parseInt(itrResponse[1].toString());
 
                                     if(itrType !=null) {
+                                    	logger.info("operatingStatementDetailsTY.getNetSales() :: {}" ,operatingStatementDetailsTY.getNetSales());
                                         scoringParameterRequest.setNetSaleTy(getOrDefauls(operatingStatementDetailsTY.getNetSales()));
                                         scoringParameterRequest.setNetSaleSy(getOrDefauls(operatingStatementDetailsSY.getNetSales()));
                                         scoringParameterRequest.setNetSaleFy(getOrDefauls(operatingStatementDetailsFY.getNetSales()));
