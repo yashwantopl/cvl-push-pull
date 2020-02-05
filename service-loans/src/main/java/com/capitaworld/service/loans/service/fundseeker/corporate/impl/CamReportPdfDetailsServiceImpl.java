@@ -69,6 +69,7 @@ import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.LiabilitiesDetails;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.MachineDetailMudraLoan;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatementDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetailMudraLoan;
@@ -93,6 +94,7 @@ import com.capitaworld.service.loans.model.CAM.OperatingStatementDetailsString;
 import com.capitaworld.service.loans.model.common.CGTMSECalcDataResponse;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
+import com.capitaworld.service.loans.model.corporate.MachineDetailMudraLoanRequestResponse;
 import com.capitaworld.service.loans.model.corporate.PrimaryCorporateDetailMudraLoanReqRes;
 import com.capitaworld.service.loans.model.corporate.PrimaryCorporateRequest;
 import com.capitaworld.service.loans.model.corporate.TotalCostOfProjectRequest;
@@ -111,6 +113,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetai
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LiabilitiesDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.MachineDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailMudraLoanRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
@@ -378,6 +381,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	private CorporateApplicantService applicantService;
     
     @Autowired
+	MachineDetailsRepository machineDetailsRepo;
+    
+    @Autowired
     private PrimaryCorporateDetailMudraLoanRepository primaryCorporateDetailsMudra;
 
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
@@ -483,6 +489,19 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
      				//corporatePrimaryViewResponse.setMlDetail(mlDetailsRes);
      				map.put("mlDetail", !CommonUtils.isObjectNullOrEmpty(mlDetailsRes) ? mlDetailsRes : Collections.EMPTY_LIST);
      			}
+	// GET MACHINE DETAILS
+		List<MachineDetailMudraLoan> machineDetails = machineDetailsRepo.findByApplicationIdAndIsActive(toApplicationId, true);
+		PrimaryCorporateDetailMudraLoanReqRes mlDetailsRes = new PrimaryCorporateDetailMudraLoanReqRes();
+		if (!CommonUtils.isListNullOrEmpty(machineDetails)) {
+			List<MachineDetailMudraLoanRequestResponse> machineDetailsRes =  new ArrayList<>(machineDetails.size());
+			for (MachineDetailMudraLoan machineDetailMudraLoan : machineDetails) {
+				MachineDetailMudraLoanRequestResponse machineDetail = new MachineDetailMudraLoanRequestResponse(); 
+				BeanUtils.copyProperties(machineDetailMudraLoan, machineDetail);
+				machineDetailsRes.add(machineDetail);
+			}				
+			mlDetailsRes.setMachineDetails(machineDetailsRes);
+		}
+		map.put("machineDetailsMudra", mlDetailsRes);			
         
 		// Product Name
 		if(productId != null) {
@@ -635,46 +654,56 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				response.getIncomeDetails().get("creditors");
 				loansResponse.setData(response.getIncomeDetails());
 				
-				Map<String, Object> incomeDetails = response.getIncomeDetails();
-				
-				Map<String, Object> creditor = (Map<String, Object>) incomeDetails.get("creditors"); 
-				creditor.put("label", "Creditors");
-				incomeDetails.put("creditors", creditor);
-				
-				Map<String, Object> profitAfterTax = (Map<String, Object>) incomeDetails.get("profitAfterTax"); 
-				profitAfterTax.put("label", "Net Profit / Loss");
-				incomeDetails.put("profitAfterTax", profitAfterTax);
-				
-				Map<String, Object> totalAssets = (Map<String, Object>) incomeDetails.get("totalAssets"); 
-				totalAssets.put("label", "Total Assets");
-				incomeDetails.put("totalAssets", totalAssets);
-				
-				Map<String, Object> investmentInPlantMachinery = (Map<String, Object>) incomeDetails.get("investmentInPlantMachinery"); 
-				investmentInPlantMachinery.put("label", "Investment in Plant and Machinery / Equipments");
-				incomeDetails.put("investmentInPlantMachinery", investmentInPlantMachinery);
-				
-				Map<String, Object> liability = (Map<String, Object>) incomeDetails.get("liability"); 
-				liability.put("label", "Total Liabilities");
-				incomeDetails.put("liability", liability);
-				
-				Map<String, Object> networth = (Map<String, Object>) incomeDetails.get("networth"); 
-				networth.put("label", "Networth");
-				incomeDetails.put("networth", networth);
-				
-				Map<String, Object> debtors = (Map<String, Object>) incomeDetails.get("debtors"); 
-				debtors.put("label", "Debtors");
-				incomeDetails.put("debtors", debtors);
-				
-				Map<String, Object> inventory = (Map<String, Object>) incomeDetails.get("inventory"); 
-				inventory.put("label", "Inventory");
-				incomeDetails.put("inventory", inventory);
-				
-				Map<String, Object> sales = (Map<String, Object>) incomeDetails.get("sales"); 
-				sales.put("label", "Sales");
-				incomeDetails.put("sales", sales);
 				
 				
-				map.put("noItrIncomeMudra", incomeDetails);
+				try {
+						Map<String, Object> incomeDetails = response.getIncomeDetails();
+						
+						Map<String, Object> creditor = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("creditors").toString(), Map.class) ; 
+						creditor.put("label", "Creditors");
+						incomeDetails.put("creditors", creditor);
+						
+			
+						  Map<String, Object> profitAfterTax = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("profitAfterTax").toString(), Map.class) ;
+						  profitAfterTax.put("label","Net Profit / Loss"); 
+						  incomeDetails.put("profitAfterTax", profitAfterTax);
+						  
+						  Map<String, Object> totalAssets = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("totalAssets").toString(), Map.class) ;
+						  totalAssets.put("label", "Total Assets");
+						  incomeDetails.put("totalAssets", totalAssets);
+						  
+						 Map<String, Object> investmentInPlantMachinery = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("investmentInPlantMachinery").toString(), Map.class) ;
+						  investmentInPlantMachinery.put("label","Investment in Plant and Machinery / Equipments");
+						  incomeDetails.put("investmentInPlantMachinery", investmentInPlantMachinery);
+						  
+						  Map<String, Object> liability = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("totalLiabilities").toString(), Map.class) ;
+						  liability.put("label", "Total Liabilities");
+						  incomeDetails.put("liability", liability);
+						  
+						  Map<String, Object> networth = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("networth").toString(), Map.class) ;
+						  networth.put("label", "Networth");
+						  incomeDetails.put("networth", networth);
+						  
+						  Map<String, Object> debtors = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("debtors").toString(), Map.class) ;
+						  debtors.put("label", "Debtors");
+						  incomeDetails.put("debtors", debtors);
+						  
+						  Map<String, Object> inventory =  MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("inventory").toString(), Map.class) ;
+						  inventory.put("label", "Inventory");
+						  incomeDetails.put("inventory", inventory);
+						  
+						  Map<String, Object> sales = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("sales").toString(), Map.class) ;
+						  sales.put("label", "Sales"); 
+						  incomeDetails.put("sales", sales);
+			 
+						
+						
+						map.put("noItrIncomeMudra", incomeDetails);
+
+				} catch (Exception e) {
+						// TODO: handle exception
+					}
+				
 		
 		
 		//SCORING DATA 
@@ -2143,6 +2172,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			map.put("knowHow", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getKnowHow())? StringEscapeUtils.escapeXml(KnowHowMst.getById(primaryCorporateDetail.getKnowHow()).getValue()) : "-");
 			map.put("competition", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCompetition())? StringEscapeUtils.escapeXml(CompetitionMst_SBI.getById(primaryCorporateDetail.getCompetition()).getValue()) : "-");
 			map.put("productDesc", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getProductServiceDescription()) ? StringEscapeUtils.escapeXml(primaryCorporateDetail.getProductServiceDescription()) : null);
+			map.put("incrementalTurnOver", primaryCorporateDetail.getIncrementalTurnover()!= null ? CommonUtils.convertValueIndianCurrency(primaryCorporateDetail.getIncrementalTurnover()) : 0);
+			map.put("incrementalMarginMudra", primaryCorporateDetail.getIncrementalMargin()!= null ? CommonUtils.convertValueIndianCurrency(primaryCorporateDetail.getIncrementalMargin()) : 0);
+			map.put("commOperationDate", primaryCorporateDetail.getCommercialOperationDate() != null ? primaryCorporateDetail.getCommercialOperationDate() : "-");
 			//map.put("additionalLimit", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getAdditionalLoanAmount()) ? primaryCorporateDetail.getAdditionalLoanAmount() : "-" );
 			//map.put("costOfMachinery", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCostOfMachinery()) ? primaryCorporateDetail.getCostOfMachinery() : "-" );
 			
@@ -2411,7 +2443,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 									Boolean isSameIdProof = directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getIsSameAddIdProof(); 									
 									directorPersonalDetailResponse.setIsSameAddIdProof((isSameIdProof) ? "Yes" : "No");
 									directorPersonalDetailResponse.setCertificationCourse(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getCertificationCourse()) ? CertificationCourseMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getCertificationCourse()).getValue() : "-" );
-									directorPersonalDetailResponse.setOtherIncomeSource(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOtherIncomeSource()) ? directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getCertificationCourse() : 0 );
+									directorPersonalDetailResponse.setOtherIncomeSource(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOtherIncomeSource()) ? directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOtherIncomeSource() : 0 );
 									// REGISTER WITH GOV AUTHORITIES
 						            List<Integer> govAuthorities = fsParameterMappingRepository.getParametersByApplicationIdAndType(applicationId, FSParameterMst.GOV_SCHEMES.getId());
 						            if (!CommonUtils.isListNullOrEmpty(govAuthorities)) {
@@ -2420,6 +2452,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 						                    String authority =     GovSchemesMst.getById(govAuthorities.get(i)).getValue();
 						                    govAuthValue = govAuthValue + ((i != 0) ? ", " : "" )+ authority;
 						                }
+						                map.put("govtScheme", govAuthValue);
 						                directorPersonalDetailResponse.setGovScheme(govAuthValue);
 						            }									
 									
