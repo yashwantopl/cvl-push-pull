@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.capitaworld.api.eligibility.model.CalculationJSON;
@@ -58,6 +59,7 @@ import com.capitaworld.service.gst.MomSales;
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.gst.model.CAMGSTData;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
+import com.capitaworld.service.loans.domain.IncomeDetailsNoItrReq;
 import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WcTlParameter;
@@ -78,6 +80,7 @@ import com.capitaworld.service.loans.model.FinanceMeansDetailRequest;
 import com.capitaworld.service.loans.model.FinanceMeansDetailResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementDetailResponseString;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
+import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.OwnershipDetailRequest;
 import com.capitaworld.service.loans.model.OwnershipDetailResponse;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
@@ -373,6 +376,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
     private FSParameterMappingRepository fsParameterMappingRepository;
     
     @Autowired
+	private CorporateApplicantService applicantService;
+    
+    @Autowired
     private PrimaryCorporateDetailMudraLoanRepository primaryCorporateDetailsMudra;
 
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
@@ -553,7 +559,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		
 		PrimaryCorporateDetailMudraLoanReqRes primaryCorporateDetailMudraLoanReqRes = new PrimaryCorporateDetailMudraLoanReqRes(); 
-		PrimaryCorporateDetailMudraLoan primaryCorporateDetailMudraLoan = primaryCorporateDetailsMudra.findFirstByApplicationIdAndApplicationProposalMappingProposalIdOrderByIdDesc(applicationId, proposalId);
+		PrimaryCorporateDetailMudraLoan primaryCorporateDetailMudraLoan = primaryCorporateDetailsMudra.findFirstByApplicationIdAndApplicationProposalMappingProposalIdOrderByIdDesc(toApplicationId, proposalId);
 		BeanUtils.copyProperties(primaryCorporateDetailMudraLoan, primaryCorporateDetailMudraLoanReqRes);
 		if (primaryCorporateDetailMudraLoanReqRes != null) {
 			map.put("statutoryObligation", primaryCorporateDetailMudraLoanReqRes);
@@ -623,6 +629,88 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
+		
+		//FOR NO-ITR DATA (MUDRA - CAM)
+				CorporateApplicantRequest response = applicantService.getCorporateApplicantDetails(applicationId);
+				LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
+				response.getIncomeDetails().get("creditors");
+				loansResponse.setData(response.getIncomeDetails());
+				
+				Map<String, Object> incomeDetails = response.getIncomeDetails();
+				
+				Map<String, Object> creditor = (Map<String, Object>) incomeDetails.get("creditors"); 
+				creditor.put("label", "Creditors");
+				incomeDetails.put("creditors", creditor);
+				
+				Map<String, Object> profitAfterTax = (Map<String, Object>) incomeDetails.get("profitAfterTax"); 
+				profitAfterTax.put("label", "Net Profit / Loss");
+				incomeDetails.put("profitAfterTax", profitAfterTax);
+				
+				Map<String, Object> totalAssets = (Map<String, Object>) incomeDetails.get("totalAssets"); 
+				totalAssets.put("label", "Total Assets");
+				incomeDetails.put("totalAssets", totalAssets);
+				
+				Map<String, Object> investmentInPlantMachinery = (Map<String, Object>) incomeDetails.get("investmentInPlantMachinery"); 
+				investmentInPlantMachinery.put("label", "Investment in Plant and Machinery / Equipments");
+				incomeDetails.put("investmentInPlantMachinery", investmentInPlantMachinery);
+				
+				Map<String, Object> liability = (Map<String, Object>) incomeDetails.get("liability"); 
+				liability.put("label", "Total Liabilities");
+				incomeDetails.put("liability", liability);
+				
+				Map<String, Object> networth = (Map<String, Object>) incomeDetails.get("networth"); 
+				networth.put("label", "Networth");
+				incomeDetails.put("networth", networth);
+				
+				Map<String, Object> debtors = (Map<String, Object>) incomeDetails.get("debtors"); 
+				debtors.put("label", "Debtors");
+				incomeDetails.put("debtors", debtors);
+				
+				Map<String, Object> inventory = (Map<String, Object>) incomeDetails.get("inventory"); 
+				inventory.put("label", "Inventory");
+				incomeDetails.put("inventory", inventory);
+				
+				Map<String, Object> sales = (Map<String, Object>) incomeDetails.get("sales"); 
+				sales.put("label", "Sales");
+				incomeDetails.put("sales", sales);
+				
+//				 Dofa akho diva Coffee pi karre che kaam kon KARSE
+				
+//				===================================
+				
+//				==================
+				
+//				KAAM KAR. CAM JALDI COMPLETE KAR
+				
+				map.put("noItrIncomeMudra", incomeDetails);
+		
+				
+		/*
+		 * ArrayList<String> keyList = new
+		 * ArrayList<String>(response.getIncomeDetails().keySet()); ArrayList<Object>
+		 * valueList = new ArrayList<Object>(response.getIncomeDetails().values());
+		 * ArrayList<Object> insidevalueList = new
+		 * ArrayList<Object>(valueList.subList(0, valueList.size()));
+		 * 
+		 * 
+		 * IncomeDetailsNoItrReq req1 = new IncomeDetailsNoItrReq();
+		 * BeanUtils.copyProperties(response.getIncomeDetails().equals("creditors"),
+		 * req1);
+		 */
+				
+				
+				/*
+				 * String creditors = (String) response.getIncomeDetails().get("key");
+				 * Map<String,String> yearMap = new LinkedHashMap<>(); try { Map<String,Map>
+				 * creditorMap = MultipleJSONObjectHelper.getObjectFromString(creditors,
+				 * Map.class);
+				 * creditorMap.get("year").forEach((k,v)->yearMap.put(Objects.toString(k, null),
+				 * Objects.toString(v, null))); } catch (IOException e3) { throw new
+				 * RuntimeException(e3); }
+				 */
+//				yearMap.entrySet().forEach(System.out::println);
+				
+				
 		
 		//SCORING DATA 
 		try {
@@ -1953,7 +2041,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				EligibililityRequest eligibilityReq=new EligibililityRequest();
 				eligibilityReq.setApplicationId(applicationId);
 				eligibilityReq.setFpProductId(productId);
-				EligibilityResponse eligibilityResp= eligibilityClient.corporateEligibilityData(eligibilityReq);
+				EligibilityResponse eligibilityResp = eligibilityClient.corporateEligibilityData(eligibilityReq);
 			
 				if(!CommonUtils.isObjectListNull(eligibilityResp.getData())){
 					CalculationJSON req= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), CalculationJSON.class);
@@ -1961,6 +2049,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 //					map.put("elProSales", req.getProjectedSales() != null ? CommonUtils.convertValueIndianCurrency(req.getProjectedSales())  : "-");
 //					map.put("defaultHisSales", req.getDefaultHistoricSales() != null ? CommonUtils.convertValueIndianCurrency(req.getDefaultHistoricSales())  : "-");
 					map.put("assLimits",CommonUtils.convertToDoubleForXmlIndianCurr(req, new HashMap<>()));
+					map.put("financialYear",CommonUtils.getFinancialYear());
 				}
 			}
 		} catch (Exception e) {
