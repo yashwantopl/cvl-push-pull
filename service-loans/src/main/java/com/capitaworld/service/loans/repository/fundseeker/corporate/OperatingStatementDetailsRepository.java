@@ -111,6 +111,6 @@ public interface OperatingStatementDetailsRepository  extends JpaRepository<Oper
 	public String getNetSales(@Param("applicationId") Long applicationId);
 	
 	
-	
+	public OperatingStatementDetails findByLoanApplicationMasterIdAndYearAndApplicationProposalMappingIsNullAndIsActiveIsTrue(Long applicationId,String year);
 		
 }
