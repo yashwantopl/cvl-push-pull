@@ -59,7 +59,6 @@ import com.capitaworld.service.gst.MomSales;
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.gst.model.CAMGSTData;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
-import com.capitaworld.service.loans.domain.IncomeDetailsNoItrReq;
 import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WcTlParameter;
@@ -674,43 +673,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				sales.put("label", "Sales");
 				incomeDetails.put("sales", sales);
 				
-//				 Dofa akho diva Coffee pi karre che kaam kon KARSE
-				
-//				===================================
-				
-//				==================
-				
-//				KAAM KAR. CAM JALDI COMPLETE KAR
 				
 				map.put("noItrIncomeMudra", incomeDetails);
 		
-				
-		/*
-		 * ArrayList<String> keyList = new
-		 * ArrayList<String>(response.getIncomeDetails().keySet()); ArrayList<Object>
-		 * valueList = new ArrayList<Object>(response.getIncomeDetails().values());
-		 * ArrayList<Object> insidevalueList = new
-		 * ArrayList<Object>(valueList.subList(0, valueList.size()));
-		 * 
-		 * 
-		 * IncomeDetailsNoItrReq req1 = new IncomeDetailsNoItrReq();
-		 * BeanUtils.copyProperties(response.getIncomeDetails().equals("creditors"),
-		 * req1);
-		 */
-				
-				
-				/*
-				 * String creditors = (String) response.getIncomeDetails().get("key");
-				 * Map<String,String> yearMap = new LinkedHashMap<>(); try { Map<String,Map>
-				 * creditorMap = MultipleJSONObjectHelper.getObjectFromString(creditors,
-				 * Map.class);
-				 * creditorMap.get("year").forEach((k,v)->yearMap.put(Objects.toString(k, null),
-				 * Objects.toString(v, null))); } catch (IOException e3) { throw new
-				 * RuntimeException(e3); }
-				 */
-//				yearMap.entrySet().forEach(System.out::println);
-				
-				
 		
 		//SCORING DATA 
 		try {
