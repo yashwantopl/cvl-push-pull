@@ -661,17 +661,24 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
                 GstCalculation gstCalculation = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)calculationForScoring.getData(),GstCalculation.class);
                 if(!CommonUtils.isObjectNullOrEmpty(gstCalculation)){
                     if(!CommonUtils.isObjectNullOrEmpty(gstCalculation.getHistoricalSales())){
-                    	fsInputRes.setAvgMonthlySale(Double.valueOf(Math.round((Double.valueOf(calculationForScoring.getData().toString()) / 12))));	
+                    	 fsInputRes.setAvgMonthlySale(Double.valueOf(String.format("%.2f", (gstCalculation.getHistoricalSales() / 12))));	
                     }
                 }
             }
 		
         	PrimaryCorporateDetailMudraLoan corporateDetailMudraLoan = primaryCorporateDetailMudraLoanRepository.findByApplicationIdAndIsActive(fsInputReq.getApplicationId(), true);
         	if(!CommonUtils.isObjectNullOrEmpty(corporateDetailMudraLoan)) {
-        		BeanUtils.copyProperties(corporateDetailMudraLoan, fsInputRes);
-//        		fsInputRes.setMrktArragementFinishedGoods(corporateDetailMudraLoan.getMrktArragementFinishedGoods());
-//        		fsInputRes.setExisting(corporateDetailMudraLoan.getExisting());
-//        		fsInputRes.setProposed(corporateDetailMudraLoan.getProposed());
+        		fsInputRes.setMrktArragementFinishedGoods(corporateDetailMudraLoan.getMrktArragementFinishedGoods());
+        		fsInputRes.setExisting(corporateDetailMudraLoan.getExisting());
+        		fsInputRes.setProposed(corporateDetailMudraLoan.getProposed());
+        		fsInputRes.setExisting(corporateDetailMudraLoan.getExisting());
+        		fsInputRes.setProposed(corporateDetailMudraLoan.getProposed());
+        		fsInputRes.setRawMaterialsStock(corporateDetailMudraLoan.getRawMaterialsStock());
+        		fsInputRes.setWagesSalaries(corporateDetailMudraLoan.getWagesSalaries());
+        		fsInputRes.setSustenanceOfProprietorPartner(corporateDetailMudraLoan.getSustenanceOfProprietorPartner());
+        		fsInputRes.setOtherExpenses(corporateDetailMudraLoan.getOtherExpenses());
+        		fsInputRes.setTotalExpenses(corporateDetailMudraLoan.getTotalExpenses());
+        		fsInputRes.setMonthlySurplus(corporateDetailMudraLoan.getMonthlySurplus());
         	}
         	
 //			if (!CommonUtils.isObjectNullOrEmpty(mudraLoan)) {
