@@ -728,7 +728,12 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					associatedConcernResList.add(assoConcernDetailRes);
 				}
 			}	
-			map.put("associateConcern", associatedConcernResList);
+			try {
+				map.put("associateConcern", CommonUtils.printFields(associatedConcernResList, null));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
 				
 				
 				
