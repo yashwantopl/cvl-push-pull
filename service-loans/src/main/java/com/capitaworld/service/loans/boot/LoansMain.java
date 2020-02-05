@@ -1,8 +1,6 @@
 
 package com.capitaworld.service.loans.boot;
 
-import com.capitaworld.service.BodmasClient;
-import com.capitaworld.source.provider.util.CommonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -15,13 +13,13 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.ekyc.EPFClient;
-import com.capitaworld.client.ekyc.EkycClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.client.payment.gateway.GatewayClient;
 import com.capitaworld.client.reports.ReportsClient;
 import com.capitaworld.client.workflow.WorkflowClient;
 import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.itr.client.ITRClient;
+import com.capitaworld.service.BodmasClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.auth.client.AuthClient;
 import com.capitaworld.service.dms.client.DMSClient;
@@ -36,6 +34,7 @@ import com.capitaworld.service.rating.RatingClient;
 import com.capitaworld.service.scoring.ScoringClient;
 import com.capitaworld.service.thirdpaty.client.ThirdPartyClient;
 import com.capitaworld.service.users.client.UsersClient;
+import com.capitaworld.source.provider.util.CommonUtils;
 
 /**
  * @author win7
@@ -203,7 +202,7 @@ public class LoansMain {
 
 	@Bean
 	public ReportsClient reportsClient() {
-		ReportsClient reportsClient = new ReportsClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.reports));
+		ReportsClient reportsClient = new ReportsClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.reports_mudra));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(reportsClient);
 		return reportsClient;
 	}

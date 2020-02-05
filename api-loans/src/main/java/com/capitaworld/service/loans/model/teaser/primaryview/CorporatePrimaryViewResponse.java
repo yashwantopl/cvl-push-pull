@@ -9,6 +9,7 @@ import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
 import com.capitaworld.service.loans.model.GstRelatedPartyRequest;
 import com.capitaworld.service.loans.model.corporate.CollateralSecurityDetailRequest;
 import com.capitaworld.service.loans.model.corporate.PrimaryCorporateDetailMudraLoanReqRes;
+import com.capitaworld.service.loans.model.retail.BankRelationshipRequest;
 
 public class CorporatePrimaryViewResponse {
 
@@ -171,7 +172,10 @@ public class CorporatePrimaryViewResponse {
 	private  PrimaryCorporateDetailMudraLoanReqRes mlDetail; 
 	private Map matchesMap;
 	private String regiterWithGovAuthorities ; 
-	private AssociatedConcernDetailRequest associatedConcernDetail;
+	private List<AssociatedConcernDetailRequest> associatedConcernDetail;
+	private List<BankRelationshipRequest> bankingRelationshipList; 
+	private String govScheme; 
+	private String ongoingMudraLoan; 
 	
 	public CorporatePrimaryViewResponseNbfc getNbfcData() {
 		return nbfcData;
@@ -1380,13 +1384,31 @@ public class CorporatePrimaryViewResponse {
 	public void setRegiterWithGovAuthorities(String regiterWithGovAuthorities) {
 		this.regiterWithGovAuthorities = regiterWithGovAuthorities;
 	}
-	public AssociatedConcernDetailRequest getAssociatedConcernDetail() {
+	public List<AssociatedConcernDetailRequest> getAssociatedConcernDetail() {
 		return associatedConcernDetail;
 	}
-	public void setAssociatedConcernDetail(AssociatedConcernDetailRequest associatedConcernDetail) {
+	public void setAssociatedConcernDetail(List<AssociatedConcernDetailRequest> associatedConcernDetail) {
 		this.associatedConcernDetail = associatedConcernDetail;
 	}
-	
+	public List<BankRelationshipRequest> getBankingRelationshipList() {
+		return bankingRelationshipList;
+	}
+	public void setBankingRelationshipList(List<BankRelationshipRequest> bankingRelationshipList) {
+		this.bankingRelationshipList = bankingRelationshipList;
+	}
+	public String getGovScheme() {
+		return govScheme;
+	}
+	public void setGovScheme(String govScheme) {
+		this.govScheme = govScheme;
+	}
+	public String getOngoingMudraLoan() {
+		return ongoingMudraLoan;
+	}
+	public void setOngoingMudraLoan(String ongoingMudraLoan) {
+		this.ongoingMudraLoan = ongoingMudraLoan;
+	}
+
 	/*
 	 * public List<CorporatePrimaryViewResponseNbfc> getNbfcListList() { return
 	 * nbfcListList; } public void

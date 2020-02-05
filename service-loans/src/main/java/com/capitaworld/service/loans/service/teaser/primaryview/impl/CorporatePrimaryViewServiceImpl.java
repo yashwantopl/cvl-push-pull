@@ -3,6 +3,8 @@ package com.capitaworld.service.loans.service.teaser.primaryview.impl;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -51,8 +53,10 @@ import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMappin
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AssociatedConcernDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.MachineDetailMudraLoan;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetailMudraLoan;
+import com.capitaworld.service.loans.domain.fundseeker.retail.BankingRelation;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.AssociatedConcernDetailRequest;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
@@ -63,7 +67,9 @@ import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
 import com.capitaworld.service.loans.model.PincodeDataResponse;
 import com.capitaworld.service.loans.model.corporate.CollateralSecurityDetailRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
+import com.capitaworld.service.loans.model.corporate.MachineDetailMudraLoanRequestResponse;
 import com.capitaworld.service.loans.model.corporate.PrimaryCorporateDetailMudraLoanReqRes;
+import com.capitaworld.service.loans.model.retail.BankRelationshipRequest;
 import com.capitaworld.service.loans.model.teaser.primaryview.CorporatePrimaryViewResponse;
 import com.capitaworld.service.loans.repository.common.CommonRepository;
 import com.capitaworld.service.loans.repository.fundprovider.FSParameterMappingRepository;
@@ -77,12 +83,15 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.Application
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssociatedConcernDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.MachineDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailMudraLoanRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.BankingRelationlRepository;
 import com.capitaworld.service.loans.repository.sanction.LoanDisbursementRepository;
 import com.capitaworld.service.loans.repository.sanction.LoanSanctionRepository;
 import com.capitaworld.service.loans.service.common.CommonService;
 import com.capitaworld.service.loans.service.common.PincodeDateService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.CamReportPdfDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CollateralSecurityDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateFinalInfoService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
@@ -101,6 +110,7 @@ import com.capitaworld.service.mca.model.verifyApi.VerifyAPIRequest;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.AssessedForITMst;
 import com.capitaworld.service.oneform.enums.AssessmentOptionForFS;
+import com.capitaworld.service.oneform.enums.CertificationCourseMst;
 import com.capitaworld.service.oneform.enums.CompetitionMst_SBI;
 import com.capitaworld.service.oneform.enums.Constitution;
 import com.capitaworld.service.oneform.enums.Currency;
@@ -111,13 +121,16 @@ import com.capitaworld.service.oneform.enums.EstablishmentMonths;
 import com.capitaworld.service.oneform.enums.FSParameterMst;
 import com.capitaworld.service.oneform.enums.FactoryPremiseMst;
 import com.capitaworld.service.oneform.enums.Gender;
+import com.capitaworld.service.oneform.enums.GovSchemesMst;
 import com.capitaworld.service.oneform.enums.HaveLIMst;
+import com.capitaworld.service.oneform.enums.IdProofMst;
 import com.capitaworld.service.oneform.enums.KnowHowMst;
 import com.capitaworld.service.oneform.enums.LCBG_Status_SBI;
 import com.capitaworld.service.oneform.enums.LoanType;
 import com.capitaworld.service.oneform.enums.MaritalStatusMst;
 import com.capitaworld.service.oneform.enums.MrktArrFinishedGoodsList;
 import com.capitaworld.service.oneform.enums.MudraOwningHouseMst;
+import com.capitaworld.service.oneform.enums.OngoingMudraLoan;
 import com.capitaworld.service.oneform.enums.PurposeOfLoan;
 import com.capitaworld.service.oneform.enums.RegistrationWithGovernmentAuthoritiesList;
 import com.capitaworld.service.oneform.enums.ResidentStatusMst;
@@ -262,6 +275,15 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 	
 	@Autowired
 	AssociatedConcernDetailRepository associatedConcernDetailRepository;
+	
+	@Autowired
+	MachineDetailsRepository machineDetailsRepo;
+	
+	@Autowired
+	BankingRelationlRepository bankingRelationlRepository;
+	
+	@Autowired
+	private CamReportPdfDetailsService camReportPdfDetailsService;
 	
 	DecimalFormat decim = new DecimalFormat("#,###.00");
 
@@ -569,12 +591,24 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			corporatePrimaryViewResponse.setCompetition(primaryCorporateDetail.getCompetition()  != null ? CompetitionMst_SBI.getById(primaryCorporateDetail.getCompetition()).getValue().toString() : "-");
 			
 			// MUDRA LOAN DETAILS
-			PrimaryCorporateDetailMudraLoan mlDetail = 	mudraLoanRepo.findByApplicationId(applicationId); 
+			PrimaryCorporateDetailMudraLoan mlDetail = 	mudraLoanRepo.findFirstByApplicationIdAndApplicationProposalMappingProposalIdOrderByIdDesc(applicationId, proposalId); 
 			if (!CommonUtils.isObjectNullOrEmpty(mlDetail)) {			
 				PrimaryCorporateDetailMudraLoanReqRes mlDetailsRes = new PrimaryCorporateDetailMudraLoanReqRes();
 				BeanUtils.copyProperties(mlDetail, mlDetailsRes);
 				if (!CommonUtils.isObjectNullOrEmpty(mlDetail.getMrktArragementFinishedGoods())) {					
 					mlDetailsRes.setMrktArragementFinishedGoodsValue(MrktArrFinishedGoodsList.fromId(mlDetail.getMrktArragementFinishedGoods()).getValue());
+				}
+				
+				// GET MACHINE DETAILS
+				List<MachineDetailMudraLoan> machineDetails = machineDetailsRepo.findByApplicationIdAndIsActive(toApplicationId, true);
+				if (!CommonUtils.isListNullOrEmpty(machineDetails)) {
+					List<MachineDetailMudraLoanRequestResponse> machineDetailsRes =  new ArrayList<>(machineDetails.size());
+					for (MachineDetailMudraLoan machineDetailMudraLoan : machineDetails) {
+						MachineDetailMudraLoanRequestResponse machineDetail = new MachineDetailMudraLoanRequestResponse(); 
+						BeanUtils.copyProperties(machineDetailMudraLoan, machineDetail);
+						machineDetailsRes.add(machineDetail);
+					}				
+					mlDetailsRes.setMachineDetails(machineDetailsRes);
 				}
 				corporatePrimaryViewResponse.setMlDetail(mlDetailsRes);
 			}
@@ -588,13 +622,39 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				}
 				corporatePrimaryViewResponse.setRegiterWithGovAuthorities(govAuthValue);
 			}
+			
 			// GET ASSOCIATE CONCERN DETAILS
-			AssociatedConcernDetail associateDetails = associatedConcernDetailRepository.findFirstByApplicationIdIdAndIsActiveOrderByIdDesc(applicationId, true);
-			if (!CommonUtils.isObjectNullOrEmpty(associateDetails)) {
-				AssociatedConcernDetailRequest associateRes = new AssociatedConcernDetailRequest();  
-				BeanUtils.copyProperties(associateDetails, associateRes);
-				corporatePrimaryViewResponse.setAssociatedConcernDetail(associateRes);
+			List<AssociatedConcernDetailRequest> associatedConcernResList = new ArrayList<>(); 
+			List<AssociatedConcernDetail> associatedConcernDetailList =  associatedConcernDetailRepository.listAssociatedConcernFromAppId(applicationId);
+			
+			if (!CommonUtils.isListNullOrEmpty(associatedConcernDetailList)) {
+				for (AssociatedConcernDetail associatedConcern : associatedConcernDetailList) {
+					AssociatedConcernDetailRequest assoConcernDetailRes = new AssociatedConcernDetailRequest(); 
+					BeanUtils.copyProperties(associatedConcern, assoConcernDetailRes);
+					// SET ADDRESS
+					setAssociateAddress(assoConcernDetailRes);
+					associatedConcernResList.add(assoConcernDetailRes);
+				}
 			}
+			corporatePrimaryViewResponse.setAssociatedConcernDetail(associatedConcernResList);
+			
+			// GET BANKING RELATIONSHIP DETAILS
+			LocalDate today = LocalDate.now();
+            List<BankRelationshipRequest> bankRelationshipRequests = new ArrayList<>();
+            List<BankingRelation> bankingRelations = bankingRelationlRepository.listBankRelationAppId(applicationId);
+            for(BankingRelation bankingRelation : bankingRelations) {
+            	BankRelationshipRequest bankRelationshipRequest	= new BankRelationshipRequest();
+            	BeanUtils.copyProperties(bankingRelation, bankRelationshipRequest);
+            	if (bankingRelation.getSinceYear() != null && bankingRelation.getSinceMonth() != null) {
+					LocalDate since = LocalDate.of(bankingRelation.getSinceYear(), bankingRelation.getSinceMonth(),1);
+					Period age = Period.between(since, today);
+					bankRelationshipRequest.setSinceYear(age.getYears());
+					bankRelationshipRequest.setSinceMonth(age.getMonths());
+					bankRelationshipRequest.setSinceWhen((bankRelationshipRequest.getSinceYear() != null ? bankRelationshipRequest.getSinceYear() +" year" : "") + " " +(bankRelationshipRequest.getSinceMonth() != null ? bankRelationshipRequest.getSinceMonth()+" months" :  "" ));
+				}
+            	bankRelationshipRequests.add(bankRelationshipRequest);
+            }
+            corporatePrimaryViewResponse.setBankingRelationshipList(bankRelationshipRequests);
 		}
 
 		try {
@@ -655,12 +715,16 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 								: " "));
 				
 				// additional Details added as per req
+				directorBackgroundDetailResponse.setPhysicallyHandicapped(directorBackgroundDetailRequest.getPhysicallyHandicapped() != null ? VisuallyImpairedMst.getById(directorBackgroundDetailRequest.getPhysicallyHandicapped()).getValue().toString() : "-");
 				directorBackgroundDetailResponse.setIsMainDirector(directorBackgroundDetailRequest.getIsMainDirector());
 				directorBackgroundDetailResponse.setFatherName(directorBackgroundDetailRequest.getFatherName());
 				directorBackgroundDetailResponse.setEducationalStatus(directorBackgroundDetailRequest.getEducationalStatus() != null ? EducationalStatusMst.getById(directorBackgroundDetailRequest.getEducationalStatus()).getValue().toString() : "-");
 				directorBackgroundDetailResponse.setVisuallyImpaired(directorBackgroundDetailRequest.getVisuallyImpaired() != null ? VisuallyImpairedMst.getById(directorBackgroundDetailRequest.getVisuallyImpaired()).getValue().toString() : "-");
 				directorBackgroundDetailResponse.setResidentStatus(directorBackgroundDetailRequest.getResidentStatus() != null ? ResidentStatusMst.getById(directorBackgroundDetailRequest.getResidentStatus()).getValue().toString() : "-");
 				directorBackgroundDetailResponse.setDirectorPersonalInfo(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest() != null ? directorBackgroundDetailRequest.getDirectorPersonalDetailRequest() : " " );
+				String stateName = commonRepository.getStateByStateCode(directorBackgroundDetailRequest.getStateId().longValue()); 
+				directorBackgroundDetailResponse.setStateCode(stateName);
+				
 				//nationality
 				
 				List<Long> countryList = new ArrayList<>();
@@ -694,18 +758,38 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 					
 					if(directorBackgroundDetailRequest.getIsMainDirector() != null && directorBackgroundDetailRequest.getIsMainDirector() == true){
 
-						DirectorPersonalDetailResponse directorPersonalDetailResponse= new DirectorPersonalDetailResponse();
-						if(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest() != null)
-						{
-						directorPersonalDetailResponse.setMaritalStatus(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getMaritalStatus() != null ? MaritalStatusMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getMaritalStatus()).getValue().toString() : "-");
-						directorPersonalDetailResponse.setSpouseName(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getSpouseName());
-						directorPersonalDetailResponse.setSpouseDetail(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getSpouseDetail() != null ? SpouseDetailMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getSpouseDetail()).getValue().toString() : "-");
-						directorPersonalDetailResponse.setAssessedForIt(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getAssessedForIt() != null ? AssessedForITMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getAssessedForIt()).getValue().toString() : "-");
-						directorPersonalDetailResponse.setOwningHouse(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOwningHouse() != null ? MudraOwningHouseMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOwningHouse()).getValue().toString() : "-");
-						directorPersonalDetailResponse.setNoOfChildren(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getNoOfChildren());
-						directorPersonalDetailResponse.setHaveLiPolicy(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveLiPolicy()!= null ? HaveLIMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveLiPolicy()).getValue().toString() : "-");
+						DirectorPersonalDetailResponse directorPersonalDetail= new DirectorPersonalDetailResponse();
 						
-						directorBackgroundDetailResponse.setDirectorPersonalInfo(directorPersonalDetailResponse);
+						if(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest() != null) {
+							directorPersonalDetail.setMaritalStatus(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getMaritalStatus() != null ? MaritalStatusMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getMaritalStatus()).getValue().toString() : "-");
+							directorPersonalDetail.setSpouseName(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getSpouseName());
+							directorPersonalDetail.setSpouseDetail(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getSpouseDetail() != null ? SpouseDetailMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getSpouseDetail()).getValue().toString() : "-");
+							directorPersonalDetail.setAssessedForIt(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getAssessedForIt() != null ? AssessedForITMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getAssessedForIt()).getValue().toString() : "-");
+							directorPersonalDetail.setOwningHouse(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOwningHouse() != null ? MudraOwningHouseMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOwningHouse()).getValue().toString() : "-");
+							directorPersonalDetail.setNoOfChildren(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getNoOfChildren());
+							directorPersonalDetail.setHaveLiPolicy(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveLiPolicy()!= null ? HaveLIMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveLiPolicy()).getValue().toString() : "-");
+							directorPersonalDetail.setIdProof(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getIdProof() != null ? IdProofMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getIdProof()).getValue() : "-" );
+							directorPersonalDetail.setDependent(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getDependent());
+							directorPersonalDetail.setIsSameAddIdProof(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getIsSameAddIdProof() ? "Yes" : "No");
+							directorPersonalDetail.setAddressYears(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getAddressYears());
+							directorPersonalDetail.setOtherIncomeSource(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOtherIncomeSource());
+							directorPersonalDetail.setCertificationCourse(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getCertificationCourse() != null ? CertificationCourseMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getCertificationCourse()).getValue() : "-"  );
+							directorPersonalDetail.setOngoingMudraLoan(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOngoingMudraLoan() != null ? OngoingMudraLoan.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOngoingMudraLoan()).getValue() : "-"  );
+							corporatePrimaryViewResponse.setOngoingMudraLoan(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOngoingMudraLoan() != null ? OngoingMudraLoan.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOngoingMudraLoan()).getValue() : "-"  );
+							
+							// COVERED IN GOV_SCHEMES
+							List<Integer> govSchemes = fsParameterMappingRepository.getParametersByApplicationIdAndType(applicationId, FSParameterMst.GOV_SCHEMES.getId());
+							if (!CommonUtils.isListNullOrEmpty(govSchemes)) {
+								String govScheme  = ""; 
+								for (int i = 0; i < govSchemes.size(); i++) {
+									String authority = GovSchemesMst.getById(govSchemes.get(i)).getValue();
+									govScheme = govScheme + ((i != 0) ? ", " : "" )+ authority;
+								}
+								directorPersonalDetail.setGovScheme(govScheme);
+								corporatePrimaryViewResponse.setGovScheme(govScheme);
+							}
+						
+						directorBackgroundDetailResponse.setDirectorPersonalInfo(directorPersonalDetail);
 						}
 						else {
 							logger.warn("directorBackgroundDetailRequest.getDirectorPersonalDetailRequest() is null....");
@@ -1279,18 +1363,16 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 
 		try {
 
-			/*if(corporateApplicantDetail.getGstIn()!= null) {*/
-			CAMGSTData resp =null;
+				/*if(corporateApplicantDetail.getGstIn()!= null) {*/
+				CAMGSTData resp =null;
 				GSTR1Request req= new GSTR1Request();
 				req.setApplicationId(toApplicationId);
 				req.setUserId(toUserId);
 				req.setGstin(corporateApplicantDetail.getGstIn());
 				
 				GstResponse response = gstClient.detailCalculation(req);
-				/*GstResponse gstBankComp = gstClient.getGSTDataForBankStatmentComaparison(req);*/
 				
 				if (response != null) {
-					
 					DecimalFormat df = new DecimalFormat(".##");
 					if (!CommonUtils.isObjectNullOrEmpty(response)) {
 						for (LinkedHashMap<String, Object> data : (List<LinkedHashMap<String, Object>>) response.getData()) {
@@ -1299,33 +1381,19 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 							if(resp.getMomSales() != null) {
 								List<MomSales> momSalesResp = resp.getMomSales();
 								for (MomSales sales : momSalesResp) {
-									
 									totalSales += Double.valueOf(sales.getValue());
 								}
 								data.put("totalMomSales", df.format(totalSales));
-//							resp.setTotalMomSales(totalSales);
 							}
 						}
-						
 					corporatePrimaryViewResponse.setGstData((List<LinkedHashMap<String, Object>>) response.getData());
-				} else {
-
-					logger.warn("----------:::::::: Gst Response is null :::::::---------");
-
+					} else {
+						logger.warn("----------:::::::: Gst Response is null :::::::---------");
+					}
 				}
-					/*if(gstBankComp!= null && gstBankComp.getData()!= null) {
-						corporatePrimaryViewResponse.setGstBankComp(gstBankComp);
-					}else {
-						logger.info("gst bank comparison Data is null for====>>"+applicationId);
-					}*/
-			/*}else {
-				logger.warn("gstIn is Null for in corporate Applicant Details=>>>>>"+toApplicationId);
-			}*/
-
-				}
-		} catch (Exception e) {
-			logger.error(":::::::------Error while calling gstData---:::::::",e);
-		}
+			} catch (Exception e) {
+				logger.error(":::::::------Error while calling gstData---:::::::",e);
+			}
 
 		// Fraud Detection Data
 
@@ -1768,6 +1836,41 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		}
 		return response;
 	}
-	 
 	
+	public void setAssociateAddress(AssociatedConcernDetailRequest asso) {
+		String address = "";
+		
+		if (!CommonUtils.isObjectListNull(asso.getPremiseNumber())) {
+			address = address + asso.getPremiseNumber();
+		}
+		
+		if (!CommonUtils.isObjectListNull(asso.getLandMark())) {
+			address = address + ", " + asso.getLandMark();
+		}
+		
+		Long cityId = asso.getCityId() ;
+		Integer stateId = asso.getStateId();
+		Integer countryId = asso.getCountryId();
+		
+		if(cityId != null || stateId != null || countryId != null) {
+			Map<String ,Object> mapData = commonService.getCityStateCountryNameFromOneForm(cityId, stateId, countryId);
+			
+			if(mapData != null) {	
+				String cityName = mapData.get(CommonUtils.CITY_NAME).toString();
+				String stateName = mapData.get(CommonUtils.STATE_NAME).toString();
+				String countryName = mapData.get(CommonUtils.COUNTRY_NAME).toString();
+				
+				if (cityName != null) {					
+					address = address + ", " + cityName; 
+				}
+				if (stateName != null) {					
+					address = address + ", " + stateName; 
+				}
+				if (countryName != null) {					
+					address = address + ", " + countryName; 
+				}
+			}
+		}
+		asso.setAddress(address);
+	}	
 }

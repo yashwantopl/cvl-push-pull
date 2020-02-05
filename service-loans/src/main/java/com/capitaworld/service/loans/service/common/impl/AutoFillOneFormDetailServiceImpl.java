@@ -1497,8 +1497,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		associatedConcernDetailRepository.inActive(userId, corporateApplicantDetailTo.getApplicationId().getId());
 		for (AssociatedConcernDetail associatedConcernDetailFrom : associatedConcernDetailList) {
 			AssociatedConcernDetail associatedConcernDetailTo = new AssociatedConcernDetail();
-			BeanUtils.copyProperties(associatedConcernDetailFrom, associatedConcernDetailTo, "id", CommonUtils.APPLICATION_ID,
-					CommonUtils.CREATED_DATE);
+			BeanUtils.copyProperties(associatedConcernDetailFrom, associatedConcernDetailTo, "id", CommonUtils.APPLICATION_ID, CommonUtils.CREATED_DATE);
 			associatedConcernDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			associatedConcernDetailTo.setCreatedDate(new Date());
 			associatedConcernDetailRepository.save(associatedConcernDetailTo);

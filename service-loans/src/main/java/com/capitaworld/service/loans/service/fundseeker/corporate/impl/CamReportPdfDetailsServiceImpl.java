@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -23,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.capitaworld.api.eligibility.model.CalculationJSON;
@@ -65,10 +67,14 @@ import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMappin
 import com.capitaworld.service.loans.domain.fundseeker.IneligibleProposalDetails;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.AssociatedConcernDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.LiabilitiesDetails;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.MachineDetailMudraLoan;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatementDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetailMudraLoan;
+import com.capitaworld.service.loans.model.AssociatedConcernDetailRequest;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponseString;
 import com.capitaworld.service.loans.model.DirectorPersonalDetailResponse;
@@ -76,6 +82,7 @@ import com.capitaworld.service.loans.model.FinanceMeansDetailRequest;
 import com.capitaworld.service.loans.model.FinanceMeansDetailResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementDetailResponseString;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
+import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.OwnershipDetailRequest;
 import com.capitaworld.service.loans.model.OwnershipDetailResponse;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
@@ -89,10 +96,13 @@ import com.capitaworld.service.loans.model.CAM.OperatingStatementDetailsString;
 import com.capitaworld.service.loans.model.common.CGTMSECalcDataResponse;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
+import com.capitaworld.service.loans.model.corporate.MachineDetailMudraLoanRequestResponse;
+import com.capitaworld.service.loans.model.corporate.PrimaryCorporateDetailMudraLoanReqRes;
 import com.capitaworld.service.loans.model.corporate.PrimaryCorporateRequest;
 import com.capitaworld.service.loans.model.corporate.TotalCostOfProjectRequest;
 import com.capitaworld.service.loans.repository.common.CommonRepository;
 import com.capitaworld.service.loans.repository.common.impl.LoanRepositoryImpl;
+import com.capitaworld.service.loans.repository.fundprovider.FSParameterMappingRepository;
 import com.capitaworld.service.loans.repository.fundprovider.NbfcProposalBlendedRateRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
@@ -102,12 +112,17 @@ import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParam
 import com.capitaworld.service.loans.repository.fundseeker.IneligibleProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.AssociatedConcernDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LiabilitiesDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.MachineDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailMudraLoanRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
+import com.capitaworld.service.loans.service.common.CommonService;
 import com.capitaworld.service.loans.service.common.PincodeDateService;
+import com.capitaworld.service.loans.service.fundprovider.FSParameterMappingService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AchievmentDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AssociatedConcernDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CamReportPdfDetailsService;
@@ -145,21 +160,26 @@ import com.capitaworld.service.mca.model.McaResponse;
 import com.capitaworld.service.mca.model.verifyApi.VerifyAPIRequest;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.AssessedForITMst;
+import com.capitaworld.service.oneform.enums.CertificationCourseMst;
 import com.capitaworld.service.oneform.enums.CompetitionMst_SBI;
 import com.capitaworld.service.oneform.enums.Constitution;
 import com.capitaworld.service.oneform.enums.Denomination;
 import com.capitaworld.service.oneform.enums.DirectorRelationshipType;
 import com.capitaworld.service.oneform.enums.EducationalStatusMst;
 import com.capitaworld.service.oneform.enums.EstablishmentMonths;
+import com.capitaworld.service.oneform.enums.FSParameterMst;
 import com.capitaworld.service.oneform.enums.FactoryPremiseMst;
 import com.capitaworld.service.oneform.enums.FinanceCategory;
 import com.capitaworld.service.oneform.enums.Gender;
+import com.capitaworld.service.oneform.enums.GovSchemesMst;
 import com.capitaworld.service.oneform.enums.HaveLIMst;
+import com.capitaworld.service.oneform.enums.IdProofMst;
 import com.capitaworld.service.oneform.enums.Industry;
 import com.capitaworld.service.oneform.enums.KnowHowMst;
 import com.capitaworld.service.oneform.enums.LCBG_Status_SBI;
 import com.capitaworld.service.oneform.enums.MaritalStatusMst;
-import com.capitaworld.service.oneform.enums.OwningHouseMst;
+import com.capitaworld.service.oneform.enums.MrktArrFinishedGoodsList;
+import com.capitaworld.service.oneform.enums.MudraOwningHouseMst;
 import com.capitaworld.service.oneform.enums.Particular;
 import com.capitaworld.service.oneform.enums.PurposeOfLoan;
 import com.capitaworld.service.oneform.enums.ResidentStatusMst;
@@ -178,7 +198,6 @@ import com.capitaworld.service.scoring.model.ProposalScoreDetailResponse;
 import com.capitaworld.service.scoring.model.ProposalScoreResponse;
 import com.capitaworld.service.scoring.model.ScoringRequest;
 import com.capitaworld.service.scoring.model.ScoringResponse;
-import com.capitaworld.service.scoring.utils.ScoreParameter;
 import com.capitaworld.service.thirdparty.model.CGTMSEDataResponse;
 import com.capitaworld.service.thirdpaty.client.ThirdPartyClient;
 import com.capitaworld.service.users.client.UsersClient;
@@ -259,6 +278,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	
 	@Autowired
 	private GstClient gstClient;
+	
+	@Autowired
+	private FSParameterMappingService fsParameterMappingForDirBack;
 	
 	@Autowired
 	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
@@ -343,15 +365,36 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	
 	@Autowired
 	private CommonRepository commonRepository;
+	
+	@Autowired
+	private PrimaryCorporateDetailMudraLoanRepository mudraLoanRepo ;
         
-        @Autowired
-        private FinancialArrangementDetailsService arrangementsDetailServiceImpl;
+    @Autowired
+    private FinancialArrangementDetailsService arrangementsDetailServiceImpl;
 		
 	@Autowired
 	private NbfcProposalBlendedRateRepository nbfcProposalBlendedRateRepository;
         
-        @Autowired
-        private LoanRepositoryImpl loanRepoImpl;
+    @Autowired
+    private LoanRepositoryImpl loanRepoImpl;
+    
+    @Autowired
+    private FSParameterMappingRepository fsParameterMappingRepository;
+    
+    @Autowired
+	private CorporateApplicantService applicantService;
+    
+    @Autowired
+	MachineDetailsRepository machineDetailsRepo;
+    
+    @Autowired
+	private CommonService commonService;
+    
+    @Autowired
+	AssociatedConcernDetailRepository associatedConcernDetailRepository;
+    
+    @Autowired
+    private PrimaryCorporateDetailMudraLoanRepository primaryCorporateDetailsMudra;
 
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -414,7 +457,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
                 UsersRequest request = MultipleJSONObjectHelper.getObjectFromMap(lm,UsersRequest.class);
 	                map.put("mobile", request.getMobile());
 	                map.put("email", StringEscapeUtils.escapeXml(request.getEmail()));
-                if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getPanNo())) {
+                if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getPanNo()) && corporateApplicantRequest.getPanNo() != null) {
                 	 BigInteger isEmailMobileFound = commonRepository.checkApplicationDisbursed(corporateApplicantRequest.getPanNo());
          			String msg;
          			if(Integer.parseInt(String.valueOf(isEmailMobileFound)) > 0){
@@ -445,6 +488,31 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		
+     // MUDRA LOAN DETAILS
+     			PrimaryCorporateDetailMudraLoan mlDetail = 	mudraLoanRepo.findFirstByApplicationIdAndApplicationProposalMappingProposalIdOrderByIdDesc(applicationId, proposalId); 
+     			if (!CommonUtils.isObjectNullOrEmpty(mlDetail)) {			
+     				PrimaryCorporateDetailMudraLoanReqRes mlDetailsRes = new PrimaryCorporateDetailMudraLoanReqRes();
+     				BeanUtils.copyProperties(mlDetail, mlDetailsRes);
+     				if (!CommonUtils.isObjectNullOrEmpty(mlDetail.getMrktArragementFinishedGoods())) {					
+     					mlDetailsRes.setMrktArragementFinishedGoodsValue(MrktArrFinishedGoodsList.fromId(mlDetail.getMrktArragementFinishedGoods()).getValue());
+     				}
+     				//corporatePrimaryViewResponse.setMlDetail(mlDetailsRes);
+     				map.put("mlDetail", !CommonUtils.isObjectNullOrEmpty(mlDetailsRes) ? mlDetailsRes : Collections.EMPTY_LIST);
+     			}
+	// GET MACHINE DETAILS
+		List<MachineDetailMudraLoan> machineDetails = machineDetailsRepo.findByApplicationIdAndIsActive(toApplicationId, true);
+		PrimaryCorporateDetailMudraLoanReqRes mlDetailsRes = new PrimaryCorporateDetailMudraLoanReqRes();
+		if (!CommonUtils.isListNullOrEmpty(machineDetails)) {
+			List<MachineDetailMudraLoanRequestResponse> machineDetailsRes =  new ArrayList<>(machineDetails.size());
+			for (MachineDetailMudraLoan machineDetailMudraLoan : machineDetails) {
+				MachineDetailMudraLoanRequestResponse machineDetail = new MachineDetailMudraLoanRequestResponse(); 
+				BeanUtils.copyProperties(machineDetailMudraLoan, machineDetail);
+				machineDetailsRes.add(machineDetail);
+			}				
+			mlDetailsRes.setMachineDetails(machineDetailsRes);
+		}
+		map.put("machineDetailsMudra", mlDetailsRes);			
+        
 		// Product Name
 		if(productId != null) {
 			String productName = productMasterRepository.getFpProductName(productId);
@@ -517,6 +585,15 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		map.putAll(getMatchesAndEligiblityDetails(applicationId,productId,proposalId));
 		
+		
+		PrimaryCorporateDetailMudraLoanReqRes primaryCorporateDetailMudraLoanReqRes = new PrimaryCorporateDetailMudraLoanReqRes(); 
+		PrimaryCorporateDetailMudraLoan primaryCorporateDetailMudraLoan = primaryCorporateDetailsMudra.findFirstByApplicationIdAndApplicationProposalMappingProposalIdOrderByIdDesc(toApplicationId, proposalId);
+		BeanUtils.copyProperties(primaryCorporateDetailMudraLoan, primaryCorporateDetailMudraLoanReqRes);
+		if (primaryCorporateDetailMudraLoanReqRes != null) {
+			map.put("statutoryObligation", primaryCorporateDetailMudraLoanReqRes);
+		}
+		
+		
 		//FINANCIALS AND NOTES TO ACCOUNTS
 		try {
 			//PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(toApplicationId, userId);
@@ -581,6 +658,87 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		
+		//FOR NO-ITR DATA (MUDRA - CAM)
+				CorporateApplicantRequest response = applicantService.getCorporateApplicantDetails(applicationId);
+				LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
+				response.getIncomeDetails().get("creditors");
+				loansResponse.setData(response.getIncomeDetails());
+				
+				
+				
+				try {
+						Map<String, Object> incomeDetails = response.getIncomeDetails();
+						
+						Map<String, Object> creditor = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("creditors").toString(), Map.class) ; 
+						creditor.put("label", "Creditors");
+						incomeDetails.put("creditors", creditor);
+						
+			
+						  Map<String, Object> profitAfterTax = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("profitAfterTax").toString(), Map.class) ;
+						  profitAfterTax.put("label","Net Profit / Loss"); 
+						  incomeDetails.put("profitAfterTax", profitAfterTax);
+						  
+						  Map<String, Object> totalAssets = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("totalAssets").toString(), Map.class) ;
+						  totalAssets.put("label", "Total Assets");
+						  incomeDetails.put("totalAssets", totalAssets);
+						  
+						 Map<String, Object> investmentInPlantMachinery = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("investmentInPlantMachinery").toString(), Map.class) ;
+						  investmentInPlantMachinery.put("label","Investment in Plant and Machinery / Equipments");
+						  incomeDetails.put("investmentInPlantMachinery", investmentInPlantMachinery);
+						  
+						  Map<String, Object> totalLiabilities = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("totalLiabilities").toString(), Map.class) ;
+						  totalLiabilities.put("label", "Total Liabilities");
+						  incomeDetails.put("totalLiabilities", totalLiabilities);
+						  
+						  Map<String, Object> networth = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("networth").toString(), Map.class) ;
+						  networth.put("label", "Networth");
+						  incomeDetails.put("networth", networth);
+						  
+						  Map<String, Object> debtors = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("debtors").toString(), Map.class) ;
+						  debtors.put("label", "Debtors");
+						  incomeDetails.put("debtors", debtors);
+						  
+						  Map<String, Object> inventory =  MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("inventory").toString(), Map.class) ;
+						  inventory.put("label", "Inventory");
+						  incomeDetails.put("inventory", inventory);
+						  
+						  Map<String, Object> sales = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("sales").toString(), Map.class) ;
+						  sales.put("label", "Sales"); 
+						  incomeDetails.put("sales", sales);
+			 
+						
+						
+						map.put("noItrIncomeMudra", incomeDetails);
+
+				} catch (Exception e) {
+						// TODO: handle exception
+					}
+				
+		
+			// GET ASSOCIATE CONCERN DETAILS
+			List<AssociatedConcernDetailRequest> associatedConcernResList = new ArrayList<>(); 
+			List<AssociatedConcernDetail> associatedConcernDetailList =  associatedConcernDetailRepository.listAssociatedConcernFromAppId(applicationId);
+			
+			if (!CommonUtils.isListNullOrEmpty(associatedConcernDetailList)) {
+				for (AssociatedConcernDetail associatedConcern : associatedConcernDetailList) {
+					AssociatedConcernDetailRequest assoConcernDetailRes = new AssociatedConcernDetailRequest(); 
+					BeanUtils.copyProperties(associatedConcern, assoConcernDetailRes);
+					// SET ADDRESS
+					setAssociateAddress(assoConcernDetailRes);
+					associatedConcernResList.add(assoConcernDetailRes);
+				}
+			}	
+			try {
+				map.put("associateConcern", CommonUtils.printFields(associatedConcernResList, null));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+				
+				
+				
+				
+		
 		//SCORING DATA 
 		try {
 			ScoringRequest scoringRequest = new ScoringRequest();
@@ -588,7 +746,10 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			scoringRequest.setFpProductId(productId);
 			ScoringResponse scoringResponse = scoringClient.getScore(scoringRequest);
 			DecimalFormat df = new DecimalFormat(".##");
-			ProposalScoreResponse proposalScoreResponse = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)scoringResponse.getDataObject(),ProposalScoreResponse.class);
+			List<Map<String,Object>> scoreResponse = new ArrayList<>(scoringResponse.getDataList().size());
+			Map<String,Object> mudraScoringMap =new HashMap<>();
+			ProposalScoreResponse proposalScoreResponse =  (ProposalScoreResponse)MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)scoringResponse.getDataObject(),ProposalScoreResponse.class);
+			mudraScoringMap.put("scoringDataObject",CommonUtils.printFields(proposalScoreResponse,null));
 			map.put("scoringModelName", proposalScoreResponse.getScoringModelName() !=null ? CommonUtils.printFields(proposalScoreResponse.getScoringModelName(), null) : "-");
 			if(!CommonUtils.isObjectNullOrEmpty(proposalScoreResponse)) {
 				map.put("managementRiskScore",!CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getManagementRiskScore()) ? proposalScoreResponse.getManagementRiskScore().intValue(): "-");
@@ -621,314 +782,158 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				map.put("interpretation", StringEscapeUtils.escapeXml(proposalScoreResponse.getInterpretation()));
 				map.put("proposalScoreResp", proposalScoreResponse);
 			}
-			List<Map<String, Object>> proposalScoreDetailResponseList = (List<Map<String, Object>>) scoringResponse.getDataList();
-			int manufacturing =0;
-			int business = 0;
-			int financial = 0;
-			for(int i=0;i<proposalScoreDetailResponseList.size();i++)
-			{
-				ProposalScoreDetailResponse proposalScoreDetailResponse = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)proposalScoreDetailResponseList.get(i),ProposalScoreDetailResponse.class);
-				switch (proposalScoreDetailResponse.getParameterName()) {
-				case ScoreParameter.COMBINED_NETWORTH:
-					map.put("combinedNetworthActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("combinedNetworthScoreActual",!CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("combinedNetworthScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue() : "-");
-					continue;
-				case ScoreParameter.CUSTOMER_ASSOCIATE_CONCERN:
-					map.put("customerAssociateConcernActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("customerAssociateConcernScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("customerAssociateConcernScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue() : "-");
-					manufacturing++;
-					continue;
-				case ScoreParameter.CIBIL_TRANSUNION_SCORE:
-					map.put("cibilTransunionScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("cibilTransunionScoreScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("cibilTransunionScoreScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue() : "-");
-					manufacturing++;
-					continue;
-				case ScoreParameter.EXPERIENCE_IN_THE_BUSINESS:
-					map.put("experienceInBusinessActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("experienceInBusinessScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("experienceInBusinessScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue() : "-");
-					manufacturing++;
-					continue;
-				case ScoreParameter.CMR_SCORE_MSME_RANKING: // New MSME
-					map.put("cmrScoreMsmeRankingActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("cmrScoreMsmeRankingScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("cmrScoreMsmeRankingScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
-					manufacturing++;
-					continue;	
-				case ScoreParameter.DEBT_EQUITY_RATIO:
-					map.put("debtEquityRatioActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("debtEquityRatioScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("debtEquityRatioScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue() : "-");
-					continue;
-				case ScoreParameter.TOL_TNW:
-					map.put("tolTnwActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("tolTnwScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("tolTnwScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue() : "-");
-					financial++;
-					continue;
-				case ScoreParameter.AVERAGE_CURRENT_RATIO:
-					map.put("avgCurrentRatioActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("avgCurrentRatioScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("avgCurrentRatioScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue() : "-");
-					financial++;
-					continue;
-				case ScoreParameter.WORKING_CAPITAL_CYCLE:
-					map.put("wcCycleActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("wcCycleScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("wcCycleScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue() : "-");
-					financial++;
-					continue;
-				case ScoreParameter.AVERAGE_ANNUAL_GROWTH_GROSS_CASH:
-					map.put("avgAnnualgrowthGrossActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("avgAnnualgrowthGrossScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("avgAnnualgrowthGrossScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
-					financial++;
-					continue;
-				case ScoreParameter.AVERAGE_ANNUAL_GROWTH_NET_SALE:
-					map.put("avgAnnualgrowthNetSaleActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("avgAnnualgrowthNetSaleScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("avgAnnualgrowthNetSaleScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
-					financial++;
-					continue;
-				case ScoreParameter.AVERAGE_EBIDTA:
-					map.put("avgEbidtaActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("avgEbidtaScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("avgEbidtaScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
-					financial++;
-					continue;
-				case ScoreParameter.AVERAGE_ANNUAL_GROSS_CASH_ACCRUALS:
-					map.put("avgAnnualGrossCashActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("avgAnnualGrossCashScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("avgAnnualGrossCashScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
-					financial++;
-					continue;
-				case ScoreParameter.AVERAGE_INTEREST_COV_RATIO:
-					map.put("avgIntCovRatioActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("avgIntCovRatioScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("avgIntCovRatioScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
-					financial++;
-					continue;
-				case ScoreParameter.NO_OF_CUSTOMER:
-					map.put("noOfCustomerActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("noOfCustomerScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("noOfCustomerScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
-					continue;
-				case ScoreParameter.CONCENTRATION_CUSTOMER:
-					map.put("concentrationCustomerActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("concentrationCustomerScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("concentrationCustomerScoreOutOf",!CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
-					business++;
-					continue;
-				case ScoreParameter.CREDIT_SUMMATION:
-					map.put("creditSummationActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("creditSummationScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("creditSummationScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
-					business++;
-					continue;
-				case ScoreParameter.AGE:
-					map.put("ageActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("ageScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("ageScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
-					manufacturing++;
-					continue;
-				case ScoreParameter.NO_OF_CHILDREN:
-					map.put("noOfChildrenActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("noOfChildrenScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("noOfChildrenScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
-					manufacturing++;
-					continue;
-				case ScoreParameter.OWNING_HOUSE:
-					map.put("owningHouseActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("owningHouseScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("owningHouseScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
-					manufacturing++;
-					continue;
-				case ScoreParameter.ACADEMIC_QUALIFICATION:
-					map.put("acadamicQualificationActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("acadamicQualificationScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("acadamicQualificationScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
-					manufacturing++;
-					continue;
-				case ScoreParameter.EXPERIENCE_IN_THE_LINE_OF_TRADE:
-					map.put("experienceInTradeActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("experienceInTradeScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("experienceInTradeScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
-					manufacturing++;
-					continue;
-				case ScoreParameter.SPOUSE_DETAILS:
-					map.put("spouseDetailsActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("spouseDetailsScoreActual",!CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("spouseDetailsScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
-					manufacturing++;
-					continue;
-				case ScoreParameter.ASSESSED_FOR_INCOME_TAX:
-					map.put("assessedITActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("assessedITScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("assessedITScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
-					manufacturing++;
-					continue;
-				case ScoreParameter.HAVE_LIFE_INSURANCE_POLICY:
-					map.put("lifeInsurancePolicyActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("lifeInsurancePolicyScoreActual",!CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("lifeInsurancePolicyScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
-					manufacturing++;
-					continue;
-				case ScoreParameter.PAYMENT_RECORDS_WITH_LENDERS: // NEW MSME
-					map.put("paymentRecordswithLendersActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("paymentRecordswithLendersScoreActual",!CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("paymentRecordswithLendersScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
-					manufacturing++;
-					continue;
-				case ScoreParameter.REPAYMENT_PERIOD:
-					map.put("repaymentPeriodActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("repaymentPeriodScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("repaymentPeriodScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
-					financial++;
-					continue;
-				case ScoreParameter.CONTINUOUS_NET_PROFIT:
-					map.put("continuousNetProfitActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("continuousNetProfitScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("continuousNetProfitScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
-					financial++;
-					continue;
-				/* kotak changes */
-				case ScoreParameter.COLLATERAL_COVERAGE:
-					map.put("collateraltActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("collateralScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("collateralScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
-					financial++;
-					continue;
-				case ScoreParameter.DEBT_SERVICE_COVERAGE_RATIO:
-					map.put("dscrActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("dscrScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("dscrScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
-					financial++;
-					continue;
-				case ScoreParameter.PAST_YEAR_TURNOVER:
-					map.put("pastYearActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("pastYearScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("pastYearScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
-					financial++;
-					continue;
-				case ScoreParameter.DEBT_EBITDA:
-					map.put("debtEbitdaActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("debtEbitdaScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("debtEbitdaScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
-					financial++;
-					continue;	
-				case ScoreParameter.TURNOVER_ATNW:
-					map.put("turnActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("turnOverScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("turnOverScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
-					financial++;
-					continue;	
-				case ScoreParameter.PAT_NET_SALES_RATIO: // New MSME
-					map.put("patnetSalesRatioActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("patnetSalesRatioActualScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("patnetSalesRatioActualScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
-					financial++;
-					continue;	
-				case ScoreParameter.QUALITY_OF_RECEIVABLES:
-					map.put("qualityReceivablesActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("qualityReceivablesScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("qualityReceivablesScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
-					business++;
-					continue;
-				case ScoreParameter.QUALITY_OF_FINISHED_GOODS_INVENTORY:
-					map.put("qualityFinishedGoodsActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("qualityFinishedGoodsScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("qualityFinishedGoodsScoreOutOf",!CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
-					business++;
-					continue;
-				case ScoreParameter.KNOW_HOW:
-					map.put("knowHowActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("knowHowScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("knowHowScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
-					business++;
-					continue;
-				case ScoreParameter.LINE_OF_ACTIVITY:
-					map.put("lineOfActivityActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("lineOfActivityScoreActual",!CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("lineOfActivityScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
-					business++;
-					continue;
-				case ScoreParameter.COMPETITION:
-					map.put("competitionActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("competitionScoreActual",!CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("competitionScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
-					business++;
-					continue;
-				case ScoreParameter.FACTORY_PREMISES:
-					map.put("factoryPremisesActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("factoryPremisesScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("factoryPremisesScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
-					business++;
-					continue;
-				case ScoreParameter.SALES_SHOW_A_RISING_TREND:
-					map.put("salesShowActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("salesShowScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("salesShowScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
-					business++;
-					continue;
-				case ScoreParameter.YEARS_IN_BUSINESS:
-					map.put("yearsInBusinessActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("yearsInBusinessScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("yearsInBusinessScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
-					business++;
-					continue;
-					/* kotak changes */
-				case ScoreParameter.UTILISATION_PERCENTAGE:
-					map.put("utilisationPerActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("utilisationPerScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("utilisationPerScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
-					business++;
-					continue;
-				case ScoreParameter.TURN_OVER_TO_LIMIT_RATIO:
-					map.put("turnOverPerActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("turnOverScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("turnOverScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
-					business++;
-					continue;	
-				case ScoreParameter.NO_OF_CHEQUES_BOUNCED:
-					map.put("nocbActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("nocbScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("nocbScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
-					business++;
-					continue;
-				case ScoreParameter.NO_OF_CHEQUES_BOUNCED_LAST_SIX_MONTH:
-					map.put("nocblsmActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("nocblsmScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("nocbScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
-					business++;
-					continue;	
-				case ScoreParameter.STATUTORY_COMPLIANCE: // New MSME
-					map.put("statutoryComplianceActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("statutoryComplianceScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("statutoryComplianceScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
-					business++;
-					continue;
-				//NEW ADDITIONS 	
-				case ScoreParameter.ISO_CERTIFICATION: // New MSME
-					map.put("isoCertificationActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("isoCertificationScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("isoCertificationScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
-					continue;					
-				case ScoreParameter.TOTAL_NO_OF_INWARD_CHEQUE_BOUNCES_LAST_SIX_MONTHS: // New MSME
-					map.put("totalNoOfInwardChqBouncesLastSixMonthsActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
-					map.put("totalNoOfInwardChqBouncesLastSixMonthsScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
-					map.put("totalNoOfInwardChqBouncesLastSixMonthsScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
-					business++;
-					continue;	
-				default:
-					break;
-				}
+		
+//			FOR FILTERING MUDRA LOANS SCORING PARAMETERS
+			List<LinkedHashMap<String, Object>> mapList = (List<LinkedHashMap<String, Object>>)scoringResponse.getDataList();
+			List<ProposalScoreDetailResponse> newMapList = new ArrayList<>(mapList.size());
+			for(LinkedHashMap<String, Object> mp : mapList) {
+				newMapList.add(MultipleJSONObjectHelper.getObjectFromMap(mp,ProposalScoreDetailResponse.class));
 			}
-			map.put("manufacturing", manufacturing+1);
-			map.put("financial", financial+1);
-			map.put("business", business+1);
+			
+			List<ProposalScoreDetailResponse> collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("CUSTOMER_ASSOCIATE_CONCERN_ML")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("CUSTOMER_ASSOCIATE_CONCERN_ML", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("AGE_ML")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("AGE_ML", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("CIBIL_TRANSUNION_SCORE_ML")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("CIBIL_TRANSUNION_SCORE_ML", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("OWNING_HOUSE_ML")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("OWNING_HOUSE_ML", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("ACADEMIC_QUALIFICATION_ML")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("ACADEMIC_QUALIFICATION_ML", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("EXPERIENCE_IN_THE_LINE_OF_TRADE_ML")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("EXPERIENCE_IN_THE_LINE_OF_TRADE_ML", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("ASSESSED_FOR_INCOME_TAX_ML")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("ASSESSED_FOR_INCOME_TAX_ML", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("PAYMENT_RECORDS_WITH_LENDERS_ML")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("PAYMENT_RECORDS_WITH_LENDERS_ML", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("ID_PROOF_ML")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("ID_PROOF_ML", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("NUMBER_OF_DEPENDENTS_ML")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("NUMBER_OF_DEPENDENTS_ML", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("RESIDING_AT_THE_SAME_ADDRESS_ML")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("RESIDING_AT_THE_SAME_ADDRESS_ML", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("CERTIFICATION_ML")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("CERTIFICATION_ML", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("MAIN_DIRECTOR_CATEGORY_ML")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("MAIN_DIRECTOR_CATEGORY_ML", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("COVERED_UNDER_DIFF_SCHEMES_ML")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("COVERED_UNDER_DIFF_SCHEMES_ML", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("OTHER_SOURCE_OF_INCOME_ML")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("OTHER_SOURCE_OF_INCOME_ML", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("TOL_TNW_ML")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("TOL_TNW_ML", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("TENURE_ML")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("TENURE_ML", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("PAST_YEAR_TURNOVER_ML")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("PAST_YEAR_TURNOVER_ML", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("PAT_NET_SALES_RATIO_ML")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("PAT_NET_SALES_RATIO_ML", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("NO_OF_CUSTOMER_ML")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("NO_OF_CUSTOMER_ML", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("FACTORY_PREMISES_ML")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("FACTORY_PREMISES_ML", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("YEARS_IN_BUSINESS_ML")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("YEARS_IN_BUSINESS_ML", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("NO_OF_CHEQUES_BOUNCED_ML")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("NO_OF_CHEQUES_BOUNCED_ML", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("NO_OF_CHEQUES_BOUNCED_ML")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("NO_OF_CHEQUES_BOUNCED_ML", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("NO_OF_CHEQUES_BOUNCED_LAST_SIX_MONTH_ML")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("NO_OF_CHEQUES_BOUNCED_LAST_SIX_MONTH_ML", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("NO_OF_CHEQUES_BOUNCED_LAST_SIX_MONTH_ML")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("NO_OF_CHEQUES_BOUNCED_LAST_SIX_MONTH_ML", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("UDYOG_AADHAR_ML")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("UDYOG_AADHAR_ML", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("ITR_RETURN_FILED_ML")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("ITR_RETURN_FILED_ML", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("TYPE_OF_ACTIVITY_ML")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("TYPE_OF_ACTIVITY_ML", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("RELATIONSHIP_WITH_BANK_ML")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("RELATIONSHIP_WITH_BANK_ML", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("MARKETING_ARRANGEMENT_FOR_FINISHED_GOODS_ML")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("MARKETING_ARRANGEMENT_FOR_FINISHED_GOODS_ML", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("REGISTRATION_WITH_GOVERNMENT_AUTHORITIES_ML")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("REGISTRATION_WITH_GOVERNMENT_AUTHORITIES_ML", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("BUSINESS_PROSPECTS_OF_THE_ACTIVITY_TO_BE_UNDERTAKEN_ML")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("BUSINESS_PROSPECTS_OF_THE_ACTIVITY_TO_BE_UNDERTAKEN_ML", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("ACCESS_TO_INPUTS_ML")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("ACCESS_TO_INPUTS_ML", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("ACCESS_TO_INPUTS_ML")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("ACCESS_TO_INPUTS_ML", CommonUtils.printFields(collect.get(0),null));
+			}
+			
+			
+			scoreResponse.add(mudraScoringMap);
+			map.put("mudraScoringResp", scoreResponse);
 		}
 			catch (Exception e) {
 				logger.error("Error while getting scoring data : ",e);
@@ -2051,7 +2056,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				matchRequest.setProductId(productId);
 			}
 			MatchDisplayResponse matchResponse= matchEngineClient.displayMatchesOfCorporate(matchRequest);
-			map.put("matchesResponse", !CommonUtils.isListNullOrEmpty(matchResponse.getMatchDisplayObjectList()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectList(),null) : " ");
+			map.put("matchesResponse", !CommonUtils.isObjectNullOrEmpty(matchResponse.getMatchDisplayObjectMap()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectMap(),null) : " ");
 
 		}
 		catch (Exception e) {
@@ -2063,7 +2068,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				EligibililityRequest eligibilityReq=new EligibililityRequest();
 				eligibilityReq.setApplicationId(applicationId);
 				eligibilityReq.setFpProductId(productId);
-				EligibilityResponse eligibilityResp= eligibilityClient.corporateEligibilityData(eligibilityReq);
+				EligibilityResponse eligibilityResp = eligibilityClient.corporateEligibilityData(eligibilityReq);
 			
 				if(!CommonUtils.isObjectListNull(eligibilityResp.getData())){
 					CalculationJSON req= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), CalculationJSON.class);
@@ -2071,6 +2076,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 //					map.put("elProSales", req.getProjectedSales() != null ? CommonUtils.convertValueIndianCurrency(req.getProjectedSales())  : "-");
 //					map.put("defaultHisSales", req.getDefaultHistoricSales() != null ? CommonUtils.convertValueIndianCurrency(req.getDefaultHistoricSales())  : "-");
 					map.put("assLimits",CommonUtils.convertToDoubleForXmlIndianCurr(req, new HashMap<>()));
+					map.put("financialYear",CommonUtils.getFinancialYear());
 				}
 			}
 		} catch (Exception e) {
@@ -2083,66 +2089,91 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	
 	
 	//GST COMMON METHOD
-	@Override
-	public List<LinkedHashMap<String, Object>> getGstDetails(Long applicationId ,Long userId){
-		//Fetch Bank Details
-		Map<String, Object> map = new HashMap<String, Object>();
-		//GST DATA
-		
-		CorporateApplicantRequest corporateApplicantRequest = corporateApplicantService.getCorporateApplicant(applicationId);
-		if (corporateApplicantRequest != null) {			
-			
-			try {
-				GSTR1Request req= new GSTR1Request();
-				req.setApplicationId(applicationId);
-				req.setUserId(userId);
-				req.setGstin(corporateApplicantRequest.getGstIn());	
-				CAMGSTData resp =null;
-				GstResponse response = gstClient.detailCalculation(req);
+			@Override
+			public List<CAMGSTData> getGstDetails(Long applicationId ,Long userId){
+				//Fetch Bank Details
+				//GST DATA
 				
-				DecimalFormat df = new DecimalFormat(".##");
-				if (!CommonUtils.isObjectNullOrEmpty(response) && response.getData() != null) {
-					for (LinkedHashMap<String, Object> data : (List<LinkedHashMap<String, Object>>) response.getData()) {
-						resp = MultipleJSONObjectHelper.getObjectFromMap(data,CAMGSTData.class);
-						if(resp.getMomSales() != null) {
-	                        List<MomSales> momSalesResp1 = resp.getMomSales();
-	                        List<MomSales> responseMom= new ArrayList<>();
-	                        
-	                        for (MomSales sales1 : momSalesResp1) {
-	                        	StringBuilder str = new StringBuilder(sales1.getMonth());
-	                        	sales1.setMonth(str.insert(2, '-').toString());
-	                        	sales1.setValue((String)CommonUtils.convertValueIndianCurrency(Double.valueOf(sales1.getValue())));
-	                        	sales1.setIsManualEntry(sales1.getIsManualEntry());
-	                            responseMom.add(sales1);
-	                        }
-	                        data.put("monthWiseMomSales", responseMom);
-	                    }
-						Double totalSales =0.0d;
-						if(resp.getMomSales() != null) {
-							List<MomSales> momSalesResp = resp.getMomSales();
-							for (MomSales sales : momSalesResp) {
-								
-								totalSales += Double.valueOf(CommonUtils.convertStringCurrencyToDouble(sales.getValue()));
-							}
-							map.put("totalMomSales", df.format(totalSales));
-//						resp.setTotalMomSales(totalSales);
-						}
-					}		
+				CorporateApplicantRequest corporateApplicantRequest = corporateApplicantService.getCorporateApplicant(applicationId);
+				if (corporateApplicantRequest != null) {			
 					
-					List<LinkedHashMap<String, Object>> dataMapList =  (List<LinkedHashMap<String, Object>>) response.getData();
-					convertExpVal(dataMapList);
-					
-					return (List<LinkedHashMap<String, Object>>) response.getData();
-				}else {
-					logger.info("Gst Data Null for==>"+applicationId);
-				}		
-			}catch(Exception e) {
-				logger.error(CommonUtils.EXCEPTION,e);
+					try {
+						GSTR1Request req= new GSTR1Request();
+						req.setApplicationId(applicationId);
+						req.setUserId(userId);
+						req.setGstin(corporateApplicantRequest.getGstIn());	
+						List<CAMGSTData> resp = new ArrayList<>();
+						GstResponse response = gstClient.detailCalculation(req);
+						
+						DecimalFormat df = new DecimalFormat(".##");
+						if (!CommonUtils.isObjectNullOrEmpty(response) && response.getData() != null) {
+							for (LinkedHashMap<String, Object> data : (List<LinkedHashMap<String, Object>>) response.getData()) {
+							 CAMGSTData	resp1 = MultipleJSONObjectHelper.getObjectFromMap(data,CAMGSTData.class);
+								if(resp1.getMomSales() != null) {
+			                        List<MomSales> momSalesResp1 = resp1.getMomSales();
+			                        List<MomSales> responseMom= new ArrayList<>();
+			                        
+			                        for (MomSales sales1 : momSalesResp1) {
+			                        	StringBuilder str = new StringBuilder(sales1.getMonth());
+			                        	sales1.setMonth(str.insert(2, '-').toString());
+			                        	sales1.setValue((String)CommonUtils.convertValueIndianCurrency(Double.valueOf(sales1.getValue())));
+			                        	sales1.setIsManualEntry(sales1.getIsManualEntry());
+			                            responseMom.add(sales1);
+			                        }
+			                        /*data.put("monthWiseMomSales", responseMom);*/
+			                        resp1.setMonthWiseMomSales(responseMom);
+			                    }
+								Double totalSales =0.0d;
+								if(resp1.getMomSales() != null) {
+									List<MomSales> momSalesResp = resp1.getMomSales();
+									for (MomSales sales : momSalesResp) {
+										
+										totalSales += Double.valueOf(CommonUtils.convertStringCurrencyToDouble(sales.getValue()));
+									}
+									/*map.put("totalMomSales", df.format(totalSales));*/
+									/* resp1.setTotalMomSales(totalSales); */
+									if(!CommonUtils.isObjectNullOrEmpty(totalSales)) {
+										Double momSalesOrig = (Double) totalSales;
+										BigDecimal convertedTotalMomSales = BigDecimal.valueOf(momSalesOrig).setScale(2);
+										resp1.setTotalMomSalesInString(convertedTotalMomSales.toString());
+									}							
+								}
+								Map<String, Object> convertExpVal = convertExpVal(resp1);
+								resp1.getGstNotApplicable().setMomSalesBigDecimal(convertExpVal);
+								resp.add(resp1);
+							}		
+							
+		/*					List<LinkedHashMap<String, Object>> dataMapList =  (List<LinkedHashMap<String, Object>>) resp;*/
+							
+							
+							return resp;
+						}else {
+							logger.info("Gst Data Null for==>"+applicationId);
+						}		
+					}catch(Exception e) {
+						logger.error(CommonUtils.EXCEPTION,e);
+					}
+				}
+				
+				return null;
 			}
-		}
-		
-		return null;
-	}
+			
+			private Map<String,Object> convertExpVal(CAMGSTData dataMapList) {
+				Map<String,Object> momSalesmodified = new HashMap<String, Object>();
+				/* for (CAMGSTData dataMap : dataMapList) { */
+					/*Map gstNotApplicatbleMap = (Map) dataMap.get("gstNotApplicable");
+					Map<String, Map<String,Object>> momSalesMap = (Map<String, Map<String,Object>>) gstNotApplicatbleMap.get("momSales");*/
+					Map<Integer, Map<String, Double>> momSales = dataMapList.getGstNotApplicable().getMomSales();
+					for (Map<String,Double> momSalesMapValuesMap : momSales.values()) {
+						for (Entry<String,Double> entry : momSalesMapValuesMap.entrySet()) {
+							Double value = (Double) entry.getValue();
+							BigDecimal convertedVal = BigDecimal.valueOf(value).setScale(2);
+							momSalesmodified.put(entry.getKey(), convertedVal.toString());
+						}
+					}
+				/* } */
+				return momSalesmodified;
+			}		
 	
 	//ONE_FORM COMMON
 	public Map<String ,Object> getOneFormData(Long applicationId, Long proposalId,Long userId){
@@ -2174,6 +2205,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			map.put("knowHow", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getKnowHow())? StringEscapeUtils.escapeXml(KnowHowMst.getById(primaryCorporateDetail.getKnowHow()).getValue()) : "-");
 			map.put("competition", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCompetition())? StringEscapeUtils.escapeXml(CompetitionMst_SBI.getById(primaryCorporateDetail.getCompetition()).getValue()) : "-");
 			map.put("productDesc", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getProductServiceDescription()) ? StringEscapeUtils.escapeXml(primaryCorporateDetail.getProductServiceDescription()) : null);
+			map.put("incrementalTurnOver", primaryCorporateDetail.getIncrementalTurnover()!= null ? CommonUtils.convertValueIndianCurrency(primaryCorporateDetail.getIncrementalTurnover()) : 0);
+			map.put("incrementalMarginMudra", primaryCorporateDetail.getIncrementalMargin()!= null ? CommonUtils.convertValueIndianCurrency(primaryCorporateDetail.getIncrementalMargin()) : 0);
+			map.put("commOperationDate", primaryCorporateDetail.getCommercialOperationDate() != null ? primaryCorporateDetail.getCommercialOperationDate() : "-");
 			//map.put("additionalLimit", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getAdditionalLoanAmount()) ? primaryCorporateDetail.getAdditionalLoanAmount() : "-" );
 			//map.put("costOfMachinery", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCostOfMachinery()) ? primaryCorporateDetail.getCostOfMachinery() : "-" );
 			
@@ -2404,7 +2438,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 						directorBackgroundDetailResponse.setVisuallyImpaired(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getVisuallyImpaired()) ? StringEscapeUtils.escapeXml(VisuallyImpairedMst.getById(directorBackgroundDetailRequest.getVisuallyImpaired()).getValue().toString()) : "-");
 						directorBackgroundDetailResponse.setResidentStatus(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getResidentStatus()) ? StringEscapeUtils.escapeXml(ResidentStatusMst.getById(directorBackgroundDetailRequest.getResidentStatus()).getValue().toString()) : "-");
 						directorBackgroundDetailResponse.setDirectorPersonalInfo(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest()) ? directorBackgroundDetailRequest.getDirectorPersonalDetailRequest() : " " );
-						
+						directorBackgroundDetailResponse.setIsPhysicallyhandicapped(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getPhysicallyHandicapped()) ? VisuallyImpairedMst.getById(directorBackgroundDetailRequest.getPhysicallyHandicapped()).toString() : "-");
+					
 						//NATIONALITY
 						List<Long> countryList = new ArrayList<>();
 						if (!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getNationality()))
@@ -2433,10 +2468,26 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 									directorPersonalDetailResponse.setMaritalStatus(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getMaritalStatus()) ? StringEscapeUtils.escapeXml(MaritalStatusMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getMaritalStatus()).getValue().toString()) : "-");
 									directorPersonalDetailResponse.setSpouseName(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getSpouseName()) ? StringEscapeUtils.escapeXml(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getSpouseName()) : "-" );
 									directorPersonalDetailResponse.setSpouseDetail(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getSpouseDetail()) ? StringEscapeUtils.escapeXml(SpouseDetailMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getSpouseDetail()).getValue().toString()) : "-");
+									directorPersonalDetailResponse.setIdProof(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getIdProof()) ? IdProofMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getIdProof()).getValue() : "-");
 									directorPersonalDetailResponse.setAssessedForIt(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getAssessedForIt()) ? StringEscapeUtils.escapeXml(AssessedForITMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getAssessedForIt()).getValue().toString()) : "-");
-									directorPersonalDetailResponse.setOwningHouse(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOwningHouse()) ? StringEscapeUtils.escapeXml(OwningHouseMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOwningHouse()).getValue().toString()) : "-");
+									directorPersonalDetailResponse.setOwningHouse(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOwningHouse()) ? StringEscapeUtils.escapeXml(MudraOwningHouseMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOwningHouse()).getValue().toString()) : "-");
 									directorPersonalDetailResponse.setNoOfChildren(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getNoOfChildren()) ? directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getNoOfChildren() : 0 );
 									directorPersonalDetailResponse.setHaveLiPolicy(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveLiPolicy()) ? StringEscapeUtils.escapeXml(HaveLIMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveLiPolicy()).getValue().toString()) : "-");
+									Boolean isSameIdProof = directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getIsSameAddIdProof(); 									
+									directorPersonalDetailResponse.setIsSameAddIdProof((isSameIdProof) ? "Yes" : "No");
+									directorPersonalDetailResponse.setCertificationCourse(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getCertificationCourse()) ? CertificationCourseMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getCertificationCourse()).getValue() : "-" );
+									directorPersonalDetailResponse.setOtherIncomeSource(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOtherIncomeSource()) ? directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOtherIncomeSource() : 0 );
+									// REGISTER WITH GOV AUTHORITIES
+						            List<Integer> govAuthorities = fsParameterMappingRepository.getParametersByApplicationIdAndType(applicationId, FSParameterMst.GOV_SCHEMES.getId());
+						            if (!CommonUtils.isListNullOrEmpty(govAuthorities)) {
+						                String govAuthValue  = "";
+						                for (int i = 0; i < govAuthorities.size(); i++) {
+						                    String authority =     GovSchemesMst.getById(govAuthorities.get(i)).getValue();
+						                    govAuthValue = govAuthValue + ((i != 0) ? ", " : "" )+ authority;
+						                }
+						                map.put("govtScheme", govAuthValue);
+						                directorPersonalDetailResponse.setGovScheme(govAuthValue);
+						            }									
 									
 									directorBackgroundDetailResponse.setDirectorPersonalInfo(directorPersonalDetailResponse);
 								}
@@ -2698,6 +2749,44 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 		
 	}
+	
+	public void setAssociateAddress(AssociatedConcernDetailRequest asso) {
+		String address = "";
+		
+		if (!CommonUtils.isObjectListNull(asso.getPremiseNumber())) {
+			address = address + asso.getPremiseNumber();
+		}
+		
+		if (!CommonUtils.isObjectListNull(asso.getLandMark())) {
+			address = address + ", " + asso.getLandMark();
+		}
+		
+		Long cityId = asso.getCityId() ;
+		Integer stateId = asso.getStateId();
+		Integer countryId = asso.getCountryId();
+		
+		if(cityId != null || stateId != null || countryId != null) {
+			Map<String ,Object> mapData = commonService.getCityStateCountryNameFromOneForm(cityId, stateId, countryId);
+			
+			if(mapData != null) {	
+				String cityName = mapData.get(CommonUtils.CITY_NAME).toString();
+				String stateName = mapData.get(CommonUtils.STATE_NAME).toString();
+				String countryName = mapData.get(CommonUtils.COUNTRY_NAME).toString();
+				
+				if (cityName != null) {					
+					address = address + ", " + cityName; 
+				}
+				if (stateName != null) {					
+					address = address + ", " + stateName; 
+				}
+				if (countryName != null) {					
+					address = address + ", " + countryName; 
+				}
+			}
+		}
+		asso.setAddress(address);
+	}		
+	
 	
 	
 	//For application Form

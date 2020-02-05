@@ -58,6 +58,8 @@ public class FundSeekerInputRequestResponse {
 
     private Boolean isItrCompleted;
     
+    private Boolean isItrManualFilled;
+    
     private Double collateralSecurityAmount;
 
     private Integer constitutionId;
@@ -961,6 +963,14 @@ public class FundSeekerInputRequestResponse {
 
 	public void setDeletedMachine(List<Long> deletedMachine) {
 		this.deletedMachine = deletedMachine;
+	}
+	
+	public Boolean getIsItrManualFilled() {
+		return isItrManualFilled;
+	}
+
+	public void setIsItrManualFilled(Boolean isItrManualFilled) {
+		this.isItrManualFilled = isItrManualFilled;
 	}
 
 	@Override
