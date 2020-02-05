@@ -67,12 +67,14 @@ import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMappin
 import com.capitaworld.service.loans.domain.fundseeker.IneligibleProposalDetails;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.AssociatedConcernDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.LiabilitiesDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.MachineDetailMudraLoan;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatementDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetailMudraLoan;
+import com.capitaworld.service.loans.model.AssociatedConcernDetailRequest;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponseString;
 import com.capitaworld.service.loans.model.DirectorPersonalDetailResponse;
@@ -110,6 +112,7 @@ import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParam
 import com.capitaworld.service.loans.repository.fundseeker.IneligibleProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.AssociatedConcernDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LiabilitiesDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
@@ -117,6 +120,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.MachineDeta
 import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailMudraLoanRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
+import com.capitaworld.service.loans.service.common.CommonService;
 import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundprovider.FSParameterMappingService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AchievmentDetailsService;
@@ -382,6 +386,12 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
     
     @Autowired
 	MachineDetailsRepository machineDetailsRepo;
+    
+    @Autowired
+	private CommonService commonService;
+    
+    @Autowired
+	AssociatedConcernDetailRepository associatedConcernDetailRepository;
     
     @Autowired
     private PrimaryCorporateDetailMudraLoanRepository primaryCorporateDetailsMudra;
@@ -676,9 +686,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 						  investmentInPlantMachinery.put("label","Investment in Plant and Machinery / Equipments");
 						  incomeDetails.put("investmentInPlantMachinery", investmentInPlantMachinery);
 						  
-						  Map<String, Object> liability = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("totalLiabilities").toString(), Map.class) ;
-						  liability.put("label", "Total Liabilities");
-						  incomeDetails.put("liability", liability);
+						  Map<String, Object> totalLiabilities = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("totalLiabilities").toString(), Map.class) ;
+						  totalLiabilities.put("label", "Total Liabilities");
+						  incomeDetails.put("totalLiabilities", totalLiabilities);
 						  
 						  Map<String, Object> networth = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("networth").toString(), Map.class) ;
 						  networth.put("label", "Networth");
@@ -705,6 +715,24 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					}
 				
 		
+			// GET ASSOCIATE CONCERN DETAILS
+			List<AssociatedConcernDetailRequest> associatedConcernResList = new ArrayList<>(); 
+			List<AssociatedConcernDetail> associatedConcernDetailList =  associatedConcernDetailRepository.listAssociatedConcernFromAppId(applicationId);
+			
+			if (!CommonUtils.isListNullOrEmpty(associatedConcernDetailList)) {
+				for (AssociatedConcernDetail associatedConcern : associatedConcernDetailList) {
+					AssociatedConcernDetailRequest assoConcernDetailRes = new AssociatedConcernDetailRequest(); 
+					BeanUtils.copyProperties(associatedConcern, assoConcernDetailRes);
+					// SET ADDRESS
+					setAssociateAddress(assoConcernDetailRes);
+					associatedConcernResList.add(assoConcernDetailRes);
+				}
+			}	
+			map.put("associateConcern", associatedConcernResList);
+				
+				
+				
+				
 		
 		//SCORING DATA 
 		try {
@@ -2716,6 +2744,44 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 		
 	}
+	
+	public void setAssociateAddress(AssociatedConcernDetailRequest asso) {
+		String address = "";
+		
+		if (!CommonUtils.isObjectListNull(asso.getPremiseNumber())) {
+			address = address + asso.getPremiseNumber();
+		}
+		
+		if (!CommonUtils.isObjectListNull(asso.getLandMark())) {
+			address = address + ", " + asso.getLandMark();
+		}
+		
+		Long cityId = asso.getCityId() ;
+		Integer stateId = asso.getStateId();
+		Integer countryId = asso.getCountryId();
+		
+		if(cityId != null || stateId != null || countryId != null) {
+			Map<String ,Object> mapData = commonService.getCityStateCountryNameFromOneForm(cityId, stateId, countryId);
+			
+			if(mapData != null) {	
+				String cityName = mapData.get(CommonUtils.CITY_NAME).toString();
+				String stateName = mapData.get(CommonUtils.STATE_NAME).toString();
+				String countryName = mapData.get(CommonUtils.COUNTRY_NAME).toString();
+				
+				if (cityName != null) {					
+					address = address + ", " + cityName; 
+				}
+				if (stateName != null) {					
+					address = address + ", " + stateName; 
+				}
+				if (countryName != null) {					
+					address = address + ", " + countryName; 
+				}
+			}
+		}
+		asso.setAddress(address);
+	}		
+	
 	
 	
 	//For application Form
