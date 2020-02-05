@@ -297,11 +297,13 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				// UPDATE
 				PrimaryCorporateDetailMudraLoan corporateDetailMudraLoan = primaryCorporateDetail.getPrimaryCorporatedetailsMudraloanId(); 
 				BeanUtils.copyProperties(fundSeekerInputRequest, corporateDetailMudraLoan, "id" , "applicationId");
+				corporateDetailMudraLoan.setIsActive(true);
 				primaryCorporateDetailMudraLoanRepository.save(corporateDetailMudraLoan);
 			} else {
 				// NEW 
 				PrimaryCorporateDetailMudraLoan mudraLoanDetails = new PrimaryCorporateDetailMudraLoan();				
 				BeanUtils.copyProperties(fundSeekerInputRequest, mudraLoanDetails);
+				mudraLoanDetails.setIsActive(true);
 				primaryCorporateDetailMudraLoanRepository.save(mudraLoanDetails);
 				primaryCorporateDetail.setPrimaryCorporatedetailsMudraloanId(mudraLoanDetails);
 			}
@@ -659,16 +661,17 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
                 GstCalculation gstCalculation = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)calculationForScoring.getData(),GstCalculation.class);
                 if(!CommonUtils.isObjectNullOrEmpty(gstCalculation)){
                     if(!CommonUtils.isObjectNullOrEmpty(gstCalculation.getHistoricalSales())){
-                        fsInputRes.setAvgMonthlySale(Double.valueOf(String.format("%.2f", (gstCalculation.getHistoricalSales() / 12))));	
+                    	fsInputRes.setAvgMonthlySale(Double.valueOf(Math.round((Double.valueOf(calculationForScoring.getData().toString()) / 12))));	
                     }
                 }
             }
 		
         	PrimaryCorporateDetailMudraLoan corporateDetailMudraLoan = primaryCorporateDetailMudraLoanRepository.findByApplicationIdAndIsActive(fsInputReq.getApplicationId(), true);
         	if(!CommonUtils.isObjectNullOrEmpty(corporateDetailMudraLoan)) {
-        		fsInputRes.setMrktArragementFinishedGoods(corporateDetailMudraLoan.getMrktArragementFinishedGoods());
-        		fsInputRes.setExisting(corporateDetailMudraLoan.getExisting());
-        		fsInputRes.setProposed(corporateDetailMudraLoan.getProposed());
+        		BeanUtils.copyProperties(corporateDetailMudraLoan, fsInputRes);
+//        		fsInputRes.setMrktArragementFinishedGoods(corporateDetailMudraLoan.getMrktArragementFinishedGoods());
+//        		fsInputRes.setExisting(corporateDetailMudraLoan.getExisting());
+//        		fsInputRes.setProposed(corporateDetailMudraLoan.getProposed());
         	}
         	
 //			if (!CommonUtils.isObjectNullOrEmpty(mudraLoan)) {
