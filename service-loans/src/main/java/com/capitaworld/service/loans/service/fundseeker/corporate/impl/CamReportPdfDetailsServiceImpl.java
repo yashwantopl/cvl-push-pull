@@ -557,7 +557,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				for (LinkedHashMap<String, Object> mp : list) {
 					response = MultipleJSONObjectHelper.getObjectFromMap(mp, ConnectRequest.class);
 					if (response.getProposalId().equals(proposalId)) {
-						Date inPrincipleDate = response.getModifiedDate();
+						Date inPrincipleDate = response.getInPrincipleDate();
 						map.put("dateOfInPrincipalApproval", !CommonUtils.isObjectNullOrEmpty(inPrincipleDate)? CommonUtils.DATE_FORMAT.format(inPrincipleDate) : "-");
 					}
 				}
@@ -1019,22 +1019,24 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			logger.error(CommonUtils.EXCEPTION,e2);
 		}
 		
-		try{
-			EligibililityRequest eligibilityReq=new EligibililityRequest();
-			eligibilityReq.setApplicationId(toApplicationId);
-			eligibilityReq.setFpProductId(productId);
-			EligibilityResponse eligibilityResp= eligibilityClient.corporateEligibilityData(eligibilityReq);
-			
-			if(!CommonUtils.isObjectListNull(eligibilityResp.getData())){
-				CalculationJSON req= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), CalculationJSON.class);
-				
-//				map.put("elProSales", req.getProjectedSales() != null ? CommonUtils.convertValueIndianCurrency(req.getProjectedSales())  : "-");
-//				map.put("defaultHisSales", req.getDefaultHistoricSales() != null ? CommonUtils.convertValueIndianCurrency(req.getDefaultHistoricSales())  : "-");
-				map.put("assLimits",CommonUtils.convertToDoubleForXmlIndianCurr(req, new HashMap<>()));
-			}
-		}catch (Exception e) {
-			logger.error("Error while getting Eligibility data : ",e);
-		}
+		/*
+		 * try{ EligibililityRequest eligibilityReq=new EligibililityRequest();
+		 * eligibilityReq.setApplicationId(toApplicationId);
+		 * eligibilityReq.setFpProductId(productId); EligibilityResponse
+		 * eligibilityResp= eligibilityClient.corporateEligibilityData(eligibilityReq);
+		 * 
+		 * if(!CommonUtils.isObjectListNull(eligibilityResp.getData())){ CalculationJSON
+		 * req= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,
+		 * Object>)eligibilityResp.getData(), CalculationJSON.class);
+		 * 
+		 * // map.put("elProSales", req.getProjectedSales() != null ?
+		 * CommonUtils.convertValueIndianCurrency(req.getProjectedSales()) : "-"); //
+		 * map.put("defaultHisSales", req.getDefaultHistoricSales() != null ?
+		 * CommonUtils.convertValueIndianCurrency(req.getDefaultHistoricSales()) : "-");
+		 * map.put("assLimits",CommonUtils.convertToDoubleForXmlIndianCurr(req, new
+		 * HashMap<>())); } }catch (Exception e) {
+		 * logger.error("Error while getting Eligibility data : ",e); }
+		 */
 
 		/* eligibility financialCalculation year */
 		map.put("eligibilityFinancialYear",CommonUtils.getFinancialYear());		
