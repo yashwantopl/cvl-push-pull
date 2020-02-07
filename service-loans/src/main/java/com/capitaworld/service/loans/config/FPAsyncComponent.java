@@ -1580,15 +1580,15 @@ public class FPAsyncComponent {
 	@Async
 	public void sendEmailToCheckerWhenAdminMakerSendProductForApproval(ProductMasterTemp productMasterTemp, Long userId,String productType) {
 		try {
-			Long domainId=DomainValue.MSME.getId();
+//			Long domainId=DomainValue.MSME.getId();
 			logger.info("Into sending Mail to Checker when Admin Maker send product for Approval ");
 //			String subject = "Intimation: New Product - " + productMasterTemp.getName()+" for "+productType;
 			Map<String, Object> mailParameters = new HashMap<String, Object>();
 			mailParameters.put(PARAMETERS_PRODUCT_NAME,productMasterTemp.getName() != null ? productMasterTemp.getName() : "NA");
 			mailParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "NA");
-			if(productMasterTemp != null && productMasterTemp.getProductId() != null && (productMasterTemp.getProductId() == LoanType.HOME_LOAN.getValue() || productMasterTemp.getProductId() == LoanType.PERSONAL_LOAN.getValue())) {
-				 domainId=DomainValue.RETAIL.getId();
-			}
+//			if(productMasterTemp != null && productMasterTemp.getProductId() != null && (productMasterTemp.getProductId() == LoanType.HOME_LOAN.getValue() || productMasterTemp.getProductId() == LoanType.PERSONAL_LOAN.getValue())) {
+//				 domainId=DomainValue.RETAIL.getId();
+//			}
 			
 			UsersRequest adminForMaker = new UsersRequest();
 			adminForMaker.setId(userId);
@@ -1649,8 +1649,8 @@ public class FPAsyncComponent {
 						smsParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "NA");
 						smsParameters.put("url", URL_WWW_PSBLOANS_COM);
 
-						sendSMSNotification(userId.toString(), smsParameters,NotificationAlias.SMS_ADMIN_CHECKER_ADMIN_MAKER_CREATES_PRODUCT,domainId,
-								productMasterTemp.getProductId(),productMasterTemp.getUserOrgId(),NotificationMasterAlias.SMS_ADMIN_CHECKER_ADMIN_MAKER_CREATES_PRODUCT.getMasterId(),to);
+						sendSMSNotification(userId.toString(), smsParameters,NotificationAlias.ML_SMS_ADMIN_CHECKER_WHEN_ADMIN_MAKER_CREATES_PRODUCT,null,
+								productMasterTemp.getProductId(),productMasterTemp.getUserOrgId(),NotificationMasterAlias.ML_SMS_ADMIN_CHECKER_WHEN_ADMIN_MAKER_CREATES_PRODUCT.getMasterId(),to);
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(userObj.getId())) {
@@ -1662,8 +1662,8 @@ public class FPAsyncComponent {
 						sysParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "NA");
 
 						sendSYSNotification(userId, userObj.getId().toString(), sysParameters,
-								NotificationAlias.SYS_ADMIN_CHECKER_ADMIN_MAKER_CREATES_PRODUCT,userObj.getId().toString(),domainId,
-								productMasterTemp.getProductId(),productMasterTemp.getUserOrgId(),NotificationMasterAlias.SYS_ADMIN_CHECKER_ADMIN_MAKER_CREATES_PRODUCT.getMasterId() ,userObj.getId().toString());
+								NotificationAlias.ML_SYS_ADMIN_CHECKER_WHEN_ADMIN_MAKER_CREATES_PRODUCT,userObj.getId().toString(),null,
+								productMasterTemp.getProductId(),productMasterTemp.getUserOrgId(),NotificationMasterAlias.ML_SYS_ADMIN_CHECKER_WHEN_ADMIN_MAKER_CREATES_PRODUCT.getMasterId() ,userObj.getId().toString());
 					}
 
 				}
@@ -1679,8 +1679,8 @@ public class FPAsyncComponent {
 						mailParameters.put(PARAMETERS_ADMIN_CHECKER, firstAdminChecker.getName() != null ? firstAdminChecker.getName() : PARAMETERS_SIR_MADAM);
 					}
 
-					createNotificationForEmail(firstAdminChecker.getEmail(), userId.toString(), mailParameters, NotificationAlias.EMAIL_ADMIN_CHECKER_ADMIN_MAKER_CREATES_PRODUCT, 
-							EmailSubjectAlias.EMAIL_ADMIN_CHECKER_ADMIN_MAKER_CREATES_PRODUCT.getSubjectId(),domainId,cc,productMasterTemp.getProductId(),productMasterTemp.getUserOrgId(),NotificationMasterAlias.EMAIL_ADMIN_CHECKER_ADMIN_MAKER_CREATES_PRODUCT.getMasterId());
+					createNotificationForEmail(firstAdminChecker.getEmail(), userId.toString(), mailParameters, NotificationAlias.ML_EMAIL_ADMIN_CHECKER_WHEN_ADMIN_MAKER_CREATES_PRODUCT, 
+							null,null,cc,productMasterTemp.getProductId(),productMasterTemp.getUserOrgId(),NotificationMasterAlias.ML_EMAIL_ADMIN_CHECKER_WHEN_ADMIN_MAKER_CREATES_PRODUCT.getMasterId());
 				}
 
 
@@ -1698,7 +1698,7 @@ public class FPAsyncComponent {
 	@Async
 	public void sendEmailToCheckerWhenAdminMakerResendProductForApproval(ProductMasterTemp productMasterTemp,Long userId, String productType) {
 		try {
-			Long domainId=DomainValue.MSME.getId();
+	//		Long domainId=DomainValue.MSME.getId();
 			logger.info("Into sending Mail to Checker when Admin Maker resend product for Approval");
 //			String subject = "Intimation: Re-sent Product - " + productMasterTemp.getName()+" for "+productType;
 			Map<String, Object> mailParameters = new HashMap<>();
@@ -1742,18 +1742,14 @@ public class FPAsyncComponent {
 					} catch (Exception e) {
 						logger.error(ERROR_WHILE_FETCHING_FP_NAME,e);
 					}
-					if(productMasterTemp!=null && productMasterTemp.getProductId()!= null 
-							&& (productMasterTemp.getProductId() == LoanType.PERSONAL_LOAN.getValue() 
-							|| productMasterTemp.getProductId() == LoanType.HOME_LOAN.getValue())) {
-						domainId = DomainValue.RETAIL.getId();
-					}
+
 					if (LITERAL_NULL.equals(name)) {
 						mailParameters.put(PARAMETERS_ADMIN_CHECKER, PARAMETERS_SIR_MADAM);
 					} else {
 						mailParameters.put(PARAMETERS_ADMIN_CHECKER, name != null ? name : PARAMETERS_SIR_MADAM);
 					}
 					/** getting user for cc*/
-					final Long tempDomId = domainId;
+//					final Long tempDomId = domainId;
 					List<String> tocc=new ArrayList<>();
 					for (Map<String,Object> us : usersRespList) {
 						UsersRequest user = MultipleJSONObjectHelper.getObjectFromMap(us,UsersRequest.class);
@@ -1782,15 +1778,15 @@ public class FPAsyncComponent {
 								mailParameters.put(PARAMETERS_PRODUCT_NAME, productMasterTemp.getName() != null ? productMasterTemp.getName() : "NA");
 								mailParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "NA");
 								mailParameters.put("url", URL_WWW_PSBLOANS_COM);
-								sendSMSNotification(userId.toString(), mailParameters,NotificationAlias.SMS_ADMIN_CHECKER_ADMIN_MAKER_RESENDS_PRODUCT,tempDomId,
-										productMasterTemp.getProductId(),productMasterTemp.getUserOrgId(),NotificationMasterAlias.SMS_ADMIN_CHECKER_ADMIN_MAKER_RESENDS_PRODUCT.getMasterId() ,toSms);
+								sendSMSNotification(userId.toString(), mailParameters,NotificationAlias.ML_SMS_ADMIN_CHECKER_WHEN_ADMIN_MAKER_RESENDS_PRODUCT,null,
+										productMasterTemp.getProductId(),productMasterTemp.getUserOrgId(),NotificationMasterAlias.ML_SMS_ADMIN_CHECKER_WHEN_ADMIN_MAKER_RESENDS_PRODUCT.getMasterId() ,toSms);
 							}
 		
 							if (!CommonUtils.isObjectNullOrEmpty(user.getId())) {
 								logger.info(MSG_MAKER_ID,user.getEmail());
 								sendSYSNotification(userId, user.getId().toString(), mailParameters,
-										NotificationAlias.SYS_ADMIN_CHECKER_ADMIN_MAKER_RESENDS_PRODUCT,user.getId().toString(), tempDomId,
-										productMasterTemp.getProductId(),productMasterTemp.getUserOrgId(),NotificationMasterAlias.SYS_ADMIN_CHECKER_ADMIN_MAKER_RESENDS_PRODUCT.getMasterId()  ,user.getId().toString());
+										NotificationAlias.ML_SYS_ADMIN_CHECKER_WHEN_ADMIN_MAKER_RESENDS_PRODUCT,user.getId().toString(), null,
+										productMasterTemp.getProductId(),productMasterTemp.getUserOrgId(),NotificationMasterAlias.ML_SYS_ADMIN_CHECKER_WHEN_ADMIN_MAKER_RESENDS_PRODUCT.getMasterId()  ,user.getId().toString());
 								
 							}
 						} catch (NotificationException e) {
@@ -1803,8 +1799,8 @@ public class FPAsyncComponent {
 						tocc.remove(tocc.indexOf(to));
 					}	
 					cc = Arrays.copyOf(tocc.toArray(), tocc.size(),String[].class);
-					createNotificationForEmail(to, userId.toString(), mailParameters, NotificationAlias.EMAIL_ADMIN_CHECKER_ADMIN_MAKER_RESENDS_PRODUCT, 
-							EmailSubjectAlias.EMAIL_ADMIN_CHECKER_ADMIN_MAKER_RESENDS_PRODUCT.getSubjectId(),domainId,cc,productMasterTemp.getProductId(),productMasterTemp.getUserOrgId(),NotificationMasterAlias.EMAIL_ADMIN_CHECKER_ADMIN_MAKER_RESENDS_PRODUCT.getMasterId());
+					createNotificationForEmail(to, userId.toString(), mailParameters, NotificationAlias.ML_EMAIL_ADMIN_CHECKER_WHEN_ADMIN_MAKER_RESENDS_PRODUCT, 
+							null,null,cc,productMasterTemp.getProductId(),productMasterTemp.getUserOrgId(),NotificationMasterAlias.ML_EMAIL_ADMIN_CHECKER_WHEN_ADMIN_MAKER_RESENDS_PRODUCT.getMasterId());
 			  }else {
 				logger.info("No Admin Checker found=================>");
 			  }
@@ -1816,7 +1812,7 @@ public class FPAsyncComponent {
 	@Async
 	public void sendEmailToMakerWhenAdminCheckerApprovedProduct(ProductMasterTemp productMasterTemp, Long userId,String productType) {
 		try {
-			Long domainId = DomainValue.MSME.getId();
+//			Long domainId = DomainValue.MSME.getId();
 			logger.info("Into sending Mail to Maker when Admin Checker Approved product");
 			Map<String, Object> mailParameters = new HashMap<String, Object>();
 			mailParameters.put(PARAMETERS_PRODUCT_NAME,productMasterTemp.getName() != null ? productMasterTemp.getName() : "NA");
@@ -1871,10 +1867,6 @@ public class FPAsyncComponent {
 					logger.error(ERROR_WHILE_FETCHING_FP_NAME,e);
 				}
 			}
-			if(productMasterTemp!=null && productMasterTemp.getProductId()!= null && (productMasterTemp.getProductId() == LoanType.PERSONAL_LOAN.getValue() || 
-					productMasterTemp.getProductId() == LoanType.HOME_LOAN.getValue())) {
-				domainId = DomainValue.RETAIL.getId();
-			}
 			ArrayList<String>ccList=new ArrayList<>();
 			UserResponse userResponse = userClient.getUserDetailByOrgRoleId(productMasterTemp.getUserOrgId(),
 					com.capitaworld.service.users.utils.CommonUtils.UserRoles.ADMIN_MAKER);
@@ -1892,9 +1884,9 @@ public class FPAsyncComponent {
 				} else {
 					mailParameters.put(PARAMETERS_ADMIN_MAKER, makerName != null ? makerName : PARAMETERS_SIR_MADAM);
 				}
-				createNotificationForEmail(to, userId.toString(), mailParameters,NotificationAlias.EMAIL_ADMIN_MAKER_PRODUCT_APPROVED_BY_CHECKER,
-						EmailSubjectAlias.EMAIL_ADMIN_MAKER_PRODUCT_APPROVED_BY_CHECKER.getSubjectId(),domainId,cc,productMasterTemp.getProductId(),
-						productMasterTemp.getUserOrgId(),NotificationMasterAlias.EMAIL_ADMIN_MAKER_PRODUCT_APPROVED_BY_CHECKER.getMasterId());
+				createNotificationForEmail(to, userId.toString(), mailParameters,NotificationAlias.ML_EMAIL_ADMIN_MAKER_WHEN_PRODUCT_APPROVED_BY_CHECKER,
+						null,null,cc,productMasterTemp.getProductId(),
+						productMasterTemp.getUserOrgId(),NotificationMasterAlias.ML_EMAIL_ADMIN_MAKER_WHEN_PRODUCT_APPROVED_BY_CHECKER.getMasterId());
 			}
 
 			if (!CommonUtils.isObjectNullOrEmpty(assignedMaker.getMobile())) {
@@ -1904,8 +1896,8 @@ public class FPAsyncComponent {
 				smsParameters.put(PARAMETERS_PRODUCT_NAME,productMasterTemp.getName() != null ? productMasterTemp.getName() : "NA");
 				smsParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "NA");
 				smsParameters.put("url", URL_WWW_PSBLOANS_COM);
-				sendSMSNotification(userId.toString(), smsParameters,NotificationAlias.SMS_ADMIN_MAKER_PRODUCT_APPROVED_BY_CHECKER,domainId,productMasterTemp.getProductId(),
-						productMasterTemp.getUserOrgId(),NotificationMasterAlias.SMS_ADMIN_MAKER_PRODUCT_APPROVED_BY_CHECKER.getMasterId() ,to);
+				sendSMSNotification(userId.toString(), smsParameters,NotificationAlias.ML_SMS_ADMIN_MAKER_WHEN_PRODUCT_APPROVED_BY_CHECKER,null,productMasterTemp.getProductId(),
+						productMasterTemp.getUserOrgId(),NotificationMasterAlias.ML_SMS_ADMIN_MAKER_WHEN_PRODUCT_APPROVED_BY_CHECKER.getMasterId() ,to);
 			}
 
 			if (!CommonUtils.isObjectNullOrEmpty(assignedMaker.getId())) {
@@ -1915,8 +1907,8 @@ public class FPAsyncComponent {
 				sysParameters.put(PARAMETERS_PRODUCT_NAME,productMasterTemp.getName() != null ? productMasterTemp.getName() : "NA");
 				sysParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "NA");
 				sendSYSNotification(userId, assignedMaker.getId().toString(), sysParameters,
-						NotificationAlias.SYS_ADMIN_MAKER_PRODUCT_APPROVED_BY_CHECKER,assignedMaker.getId().toString(),domainId,productMasterTemp.getProductId(),
-						productMasterTemp.getUserOrgId(),NotificationMasterAlias.SYS_ADMIN_MAKER_PRODUCT_APPROVED_BY_CHECKER.getMasterId() , assignedMaker.getId().toString());
+						NotificationAlias.ML_SYS_ADMIN_MAKER_WHEN_PRODUCT_APPROVED_BY_CHECKER,assignedMaker.getId().toString(),null,productMasterTemp.getProductId(),
+						productMasterTemp.getUserOrgId(),NotificationMasterAlias.ML_SYS_ADMIN_MAKER_WHEN_PRODUCT_APPROVED_BY_CHECKER.getMasterId() , assignedMaker.getId().toString());
 			}
 
 
@@ -1999,7 +1991,7 @@ public class FPAsyncComponent {
 	@Async
 	public void sendEmailToMakerWhenAdminCheckerRevertedProduct(ProductMasterTemp productMasterTemp, Long userId,String productType) {
 		try {
-			Long domainId=DomainValue.MSME.getId();
+//			Long domainId=DomainValue.MSME.getId();
 			logger.info("Into sending Mail to Maker when Admin Checker reverted product");
 //			String subject = "Intimation :Re-Sent Product - " + productMasterTemp.getName() + " - Modification";
 			Map<String, Object> mailParameters = new HashMap<String, Object>();
@@ -2050,11 +2042,6 @@ public class FPAsyncComponent {
 			assignedMakerForName.setId(productMasterTemp.getCreatedBy());
 			String makerName = null;
 			
-			if(productMasterTemp!=null && productMasterTemp.getProductId()!= null && (productMasterTemp.getProductId() == LoanType.PERSONAL_LOAN.getValue() || 
-					productMasterTemp.getProductId() == LoanType.HOME_LOAN.getValue())) {
-				domainId = DomainValue.RETAIL.getId();
-			}
-			
 			if (!CommonUtils.isObjectNullOrEmpty(assignedMakerForName)) {
 
 				try {
@@ -2077,9 +2064,8 @@ public class FPAsyncComponent {
 				} else {
 					mailParameters.put(PARAMETERS_ADMIN_MAKER, makerName != null ? makerName : PARAMETERS_SIR_MADAM);
 				}
-				createNotificationForEmail(to, userId.toString(), mailParameters,NotificationAlias.EMAIL_ADMIN_MAKER_PRODUCT_REVERTED_BY_CHECKER, 
-						EmailSubjectAlias.EMAIL_ADMIN_MAKER_PRODUCT_REVERTED_BY_CHECKER.getSubjectId(),domainId,null,
-						productMasterTemp.getProductId(),productMasterTemp.getUserOrgId(),NotificationMasterAlias.EMAIL_ADMIN_MAKER_PRODUCT_REVERTED_BY_CHECKER.getMasterId());
+				createNotificationForEmail(to, userId.toString(), mailParameters,NotificationAlias.ML_EMAIL_ADMIN_MAKER_WHEN_PRODUCT_REVERTED_BY_CHECKER, null,null,null,
+						productMasterTemp.getProductId(),productMasterTemp.getUserOrgId(),NotificationMasterAlias.ML_EMAIL_ADMIN_MAKER_WHEN_PRODUCT_REVERTED_BY_CHECKER.getMasterId());
 			}
 			if (!CommonUtils.isObjectNullOrEmpty(assignedMaker.getMobile())) {
 				Map<String, Object> smsParameters = new HashMap<String, Object>();
@@ -2089,8 +2075,8 @@ public class FPAsyncComponent {
 						productMasterTemp.getName() != null ? productMasterTemp.getName() : "NA");
 				smsParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "NA");
 				smsParameters.put("url", URL_WWW_PSBLOANS_COM);
-				sendSMSNotification(userId.toString(), smsParameters,NotificationAlias.SMS_ADMIN_MAKER_PRODUCT_REVERTED_BY_CHECKER,domainId,
-						productMasterTemp.getProductId(),productMasterTemp.getUserOrgId(),NotificationMasterAlias.SMS_ADMIN_MAKER_PRODUCT_REVERTED_BY_CHECKER.getMasterId(),to);
+				sendSMSNotification(userId.toString(), smsParameters,NotificationAlias.ML_SMS_ADMIN_MAKER_WHEN_PRODUCT_REVERTED_BY_CHECKER,null,
+						productMasterTemp.getProductId(),productMasterTemp.getUserOrgId(),NotificationMasterAlias.ML_SMS_ADMIN_MAKER_WHEN_PRODUCT_REVERTED_BY_CHECKER.getMasterId(),to);
 			}
 
 			if (!CommonUtils.isObjectNullOrEmpty(assignedMaker.getId())) {
@@ -2101,8 +2087,8 @@ public class FPAsyncComponent {
 				sysParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "NA");
 
 				sendSYSNotification(userId, assignedMaker.getId().toString(), sysParameters,
-						NotificationAlias.SYS_ADMIN_MAKER_PRODUCT_REVERTED_BY_CHECKER,assignedMaker.getId().toString(),domainId,
-						productMasterTemp.getProductId(),productMasterTemp.getUserOrgId(),NotificationMasterAlias.SYS_ADMIN_MAKER_PRODUCT_REVERTED_BY_CHECKER.getMasterId()  ,assignedMaker.getId().toString());
+						NotificationAlias.ML_SYS_ADMIN_MAKER_WHEN_PRODUCT_REVERTED_BY_CHECKER,assignedMaker.getId().toString(),null,
+						productMasterTemp.getProductId(),productMasterTemp.getUserOrgId(),NotificationMasterAlias.ML_SYS_ADMIN_MAKER_WHEN_PRODUCT_REVERTED_BY_CHECKER.getMasterId()  ,assignedMaker.getId().toString());
 			}
 
 			/*UserResponse userResponse = userClient.getUserDetailByOrgRoleId(productMasterTemp.getUserOrgId(),
@@ -2184,7 +2170,7 @@ public class FPAsyncComponent {
 	@Async
 	public void sendEmailToMakerHOBOWhenCheckerSanctionLoan(LoanSanctionDomain loanSanctionDomainOld) {
 		try {
-			Long domainId=DomainValue.MSME.getId();
+//			Long domainId=DomainValue.MSME.getId();
 			logger.info("Into sending Mail to Maker/HO/BO when Checker sanction loan ");
 //			String subject = "Intimation: Sanction - #ApplicationId=" + loanSanctionDomainOld.getApplicationId();
 			Map<String, Object> mailParameters = new HashMap<>();
@@ -2201,35 +2187,32 @@ public class FPAsyncComponent {
 				logger.info("Error calling Proposal Details Client {}" , loanSanctionDomainOld.getApplicationId());
 				logger.error(CommonUtils.EXCEPTION,e);
 			}
-			String productType = null;
-			if (!CommonUtils.isObjectNullOrEmpty(applicationRequest)) {
-				if (!CommonUtils.isObjectNullOrEmpty(applicationRequest.getProductId())) {
-					productType = CommonUtils.LoanType.getType(applicationRequest.getProductId()).getName();
-				} else {
-					productType = "NA";
-				}
-			} else {
-				productType = "NA";
-			}
+//			String productType = null;
+//			if (!CommonUtils.isObjectNullOrEmpty(applicationRequest)) {
+//				if (!CommonUtils.isObjectNullOrEmpty(applicationRequest.getProductId())) {
+//					productType = CommonUtils.LoanType.getType(applicationRequest.getProductId()).getName();
+//				} else {
+//					productType = "NA";
+//				}
+//			} else {
+//				productType = "NA";
+//			}
 
 			SimpleDateFormat form = new SimpleDateFormat(DATE_FORMAT_DD_MM_YYYY);
 			String fpName = proposalresp.get(CommonUtils.PARAMETERS_FP_NAME) != null ? proposalresp.get(CommonUtils.PARAMETERS_FP_NAME).toString() : "NA";
 			mailParameters.put(CommonUtils.PARAMETERS_FP_NAME, fpName != null ? fpName : "NA");
-			mailParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "NA");
 			mailParameters.put(CommonUtils.LITERAL_AMOUNT,
 					loanSanctionDomainOld.getSanctionAmount() != null ? loanSanctionDomainOld.getSanctionAmount()
 							: "NA");
 			mailParameters.put("processing_fees",
 					loanSanctionDomainOld.getProcessingFee() != null ? loanSanctionDomainOld.getProcessingFee() : "NA");
-			mailParameters.put(CommonUtils.LITERAL_AMOUNT,
-					loanSanctionDomainOld.getSanctionAmount() != null ? loanSanctionDomainOld.getSanctionAmount()
-							: "NA");
-			mailParameters.put(PARAMETERS_INTEREST_RATE,
+			mailParameters.put("roi",
 					loanSanctionDomainOld.getRoi() != null ? loanSanctionDomainOld.getRoi() : "NA");
 			mailParameters.put("tenure",
 					loanSanctionDomainOld.getTenure() != null ? loanSanctionDomainOld.getTenure() : "NA");
 			mailParameters.put("date", form.format(loanSanctionDomainOld.getSanctionDate()) != null
 							? form.format(loanSanctionDomainOld.getSanctionDate()): "NA");
+			mailParameters.put("reason", loanSanctionDomainOld.getRemark() != null ? loanSanctionDomainOld.getRemark() : "");
 
 			// For getting Fund Seeker's Name================================================================================
 			String fsName = null;
@@ -2270,7 +2253,7 @@ public class FPAsyncComponent {
 			mailParameters.put(CommonUtils.PARAMETERS_LOAN_AMOUNT,loanSanctionDomainOld.getSanctionAmount() != null ? loanSanctionDomainOld.getSanctionAmount(): "NA");
 			mailParameters.put(PARAMETERS_CHECKER_NAME, checkerName != null ? checkerName : LITERAL_CHECKER);
 			mailParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
-			mailParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "NA");
+			mailParameters.put(PARAMETERS_PRODUCT_TYPE, "Mudra Loan");
 			
 			UsersRequest maker = new UsersRequest();
 			if(!CommonUtils.isObjectNullOrEmpty(applicationRequest) && !applicationRequest.getBusinessTypeId().equals(CommonUtils.BusinessType.ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS.getId())){
@@ -2293,15 +2276,15 @@ public class FPAsyncComponent {
 								if (!CommonUtils.isObjectNullOrEmpty(applicationRequest.getFpMakerId())) {
 									/** sending system notification to Ho,BO user*/
 									sendSYSNotification(loanSanctionDomainOld.getApplicationId(),
-											resp.getUserId().toString(), mailParameters,NotificationAlias.SYS_MAKER_AFTER_CHECKER_SUBMIT_SANCTION_POPUP,
-											applicationRequest.getFpMakerId().toString(), domainId,applicationRequest.getProductId(),prpo.getUserOrgId(),NotificationMasterAlias.SYS_MAKER_AFTER_CHECKER_SUBMIT_SANCTION_POPUP.getMasterId() ,resp.getUserId().toString());
+											resp.getUserId().toString(), mailParameters,NotificationAlias.ML_SYS_ALL_FP_WHEN_CHECKER_SANCTIONED,
+											applicationRequest.getFpMakerId().toString(), null,applicationRequest.getProductId(),prpo.getUserOrgId(),NotificationMasterAlias.ML_SYS_ALL_FP_WHEN_CHECKER_SANCTIONED.getMasterId() ,resp.getUserId().toString());
 								}
 								/** sending sms notification to Ho,BO user*/
 								if (!CommonUtils.isObjectNullOrEmpty(resp.getMobile())) {
 									
 									mailParameters.put("url", URL_WWW_PSBLOANS_COM);
-									sendSMSNotification(resp.getUserId().toString(), mailParameters,NotificationAlias.SMS_HO_CHECKER_SANCTIONED,domainId,
-											applicationRequest.getProductId(),prpo.getUserOrgId(),NotificationMasterAlias.SMS_HO_CHECKER_SANCTIONED.getMasterId() ,resp.getMobile());
+									sendSMSNotification(resp.getUserId().toString(), mailParameters,NotificationAlias.ML_SMS_ALL_FP_WHEN_CHECKER_SANCTIONED,null,
+											applicationRequest.getProductId(),prpo.getUserOrgId(),NotificationMasterAlias.ML_SMS_ALL_FP_WHEN_CHECKER_SANCTIONED.getMasterId() ,resp.getMobile());
 								}
 							}
 						}
@@ -2326,30 +2309,29 @@ public class FPAsyncComponent {
 					logger.error("Exception in attaching branch user in cc {}",e);
 				}
 				mailParameters.put(PARAMETERS_CHECKER_NAME, checkerName);
-				if((applicationRequest.getProductId() == LoanType.HOME_LOAN.getValue() 
-					|| applicationRequest.getProductId() == LoanType.PERSONAL_LOAN.getValue())) {
-					domainId= DomainValue.RETAIL.getId();
-				}
+//				if((applicationRequest.getProductId() == LoanType.HOME_LOAN.getValue() 
+//					|| applicationRequest.getProductId() == LoanType.PERSONAL_LOAN.getValue())) {
+//					domainId= DomainValue.RETAIL.getId();
+//				}
 				// ===========================Email to Maker==and branch users are in cc======================
 				if (!CommonUtils.isObjectNullOrEmpty(maker) && !CommonUtils.isObjectNullOrEmpty(maker.getEmail())) {
 					String toIds = maker.getEmail();
 					logger.info("Email Sending TO MAKER when Checker sanction loan===to==>{}", toIds);
 					mailParameters.put(CommonUtils.PARAMETERS_IS_DYNAMIC, true);
 					createNotificationForEmail(toIds, applicationRequest.getFpMakerId().toString(), mailParameters,
-							NotificationAlias.EMAIL_MAKER_AFTER_CHECKER_SUBMIT_SANCTION_POPUP, 
-							EmailSubjectAlias.EMAIL_MAKER_AFTER_CHECKER_SUBMIT_SANCTION_POPUP.getSubjectId(),domainId,cc,
-							applicationRequest.getProductId(),prpo.getUserOrgId(),NotificationMasterAlias.EMAIL_MAKER_AFTER_CHECKER_SUBMIT_SANCTION_POPUP.getMasterId());
+							NotificationAlias.ML_EMAIL_ALL_FP_WHEN_CHECKER_SANCTIONED, 
+							null,null,cc,
+							applicationRequest.getProductId(),prpo.getUserOrgId(),NotificationMasterAlias.ML_EMAIL_ALL_FP_WHEN_CHECKER_SANCTIONED.getMasterId());
 				}
 				/** sending system notification to maker user*/
 				if (!CommonUtils.isObjectNullOrEmpty(applicationRequest.getFpMakerId())) {
 					mailParameters.put(PARAMETERS_CHECKER_NAME, checkerName != null ? checkerName : LITERAL_CHECKER);
 					mailParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
-					mailParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "NA");
 					sendSYSNotification(loanSanctionDomainOld.getApplicationId(),
 							applicationRequest.getFpMakerId().toString(), mailParameters,
-							NotificationAlias.SYS_MAKER_AFTER_CHECKER_SUBMIT_SANCTION_POPUP,
-							applicationRequest.getFpMakerId().toString(), domainId,
-							applicationRequest.getProductId(),prpo.getUserOrgId(),NotificationMasterAlias.SYS_MAKER_AFTER_CHECKER_SUBMIT_SANCTION_POPUP.getMasterId() ,applicationRequest.getFpMakerId().toString());
+							NotificationAlias.ML_SYS_ALL_FP_WHEN_CHECKER_SANCTIONED,
+							applicationRequest.getFpMakerId().toString(), null,
+							applicationRequest.getProductId(),prpo.getUserOrgId(),NotificationMasterAlias.ML_SYS_ALL_FP_WHEN_CHECKER_SANCTIONED.getMasterId() ,applicationRequest.getFpMakerId().toString());
 				}
 			
 				
@@ -2494,21 +2476,21 @@ public class FPAsyncComponent {
 	@Async
 	public void sendEmailToFSWhenCheckerSanctionLoan(LoanSanctionDomain loanSanctionDomainOld) {
 		try {
-			Long domainId = DomainValue.MSME.getId();
+//			Long domainId = DomainValue.MSME.getId();
 			logger.info("Into sending Mail to FS when Checker sanction loan for :{}",loanSanctionDomainOld.getApplicationId());
 //			String subject = "Congratulations - Your Loan Has Been Sanctioned!!!";
-			Object subjectId=EmailSubjectAlias.EMAIL_FS_CHECKER_SANCTIONED.getSubjectId();
+//			Object subjectId=EmailSubjectAlias.EMAIL_FS_CHECKER_SANCTIONED.getSubjectId();
 			Map<String, Object> mailParameters = new HashMap<>();
 			ProposalMappingResponse proposal = proposalDetailsClient.getProposalByApplicationIdAndUserOrgId(loanSanctionDomainOld.getOrgId(),loanSanctionDomainOld.getApplicationId());
 			ProposalMappingRequest prpo= MultipleJSONObjectHelper.getObjectFromMap((Map<?,?>)proposal.getData(), ProposalMappingRequest.class);
 			LoanApplicationRequest applicationRequest = loanApplicationService.getFromClient(prpo.getId());
 
-			if(applicationRequest != null && applicationRequest.getProductId() != null 
-					&& (applicationRequest.getProductId() == LoanType.HOME_LOAN.getValue() 
-					||applicationRequest.getProductId() == LoanType.PERSONAL_LOAN.getValue()
-					|| applicationRequest.getProductId() == LoanType.AUTO_LOAN.getValue())) {
-				domainId = DomainValue.RETAIL.getId();
-			}
+//			if(applicationRequest != null && applicationRequest.getProductId() != null 
+//					&& (applicationRequest.getProductId() == LoanType.HOME_LOAN.getValue() 
+//					||applicationRequest.getProductId() == LoanType.PERSONAL_LOAN.getValue()
+//					|| applicationRequest.getProductId() == LoanType.AUTO_LOAN.getValue())) {
+//				domainId = DomainValue.RETAIL.getId();
+//			}
 			
 			String productType = null;
 			if (!CommonUtils.isObjectNullOrEmpty(applicationRequest)) {
@@ -2534,13 +2516,13 @@ public class FPAsyncComponent {
 				fpName = organisationRequest.getOrganisationName();
 			}
 			//============================================================
-			if(!CommonUtils.isObjectNullOrEmpty(loanSanctionDomainOld.getIsSanctionedFrom()) 
-					&& loanSanctionDomainOld.getIsSanctionedFrom().equals(CommonUtils.sanctionedFrom.INELIGIBLE_USERS_OFFLINE_APPLICATION)){
-//				subject = "Congratulations - Your Loan for Manual Application Has Been Sanctioned!!!";
-				subjectId=EmailSubjectAlias.EMAIL_FS_CHECKER_SANCTIONED_OFFLINE.getSubjectId();
-			}
+//			if(!CommonUtils.isObjectNullOrEmpty(loanSanctionDomainOld.getIsSanctionedFrom()) 
+//					&& loanSanctionDomainOld.getIsSanctionedFrom().equals(CommonUtils.sanctionedFrom.INELIGIBLE_USERS_OFFLINE_APPLICATION)){
+////				subject = "Congratulations - Your Loan for Manual Application Has Been Sanctioned!!!";
+//				subjectId=EmailSubjectAlias.EMAIL_FS_CHECKER_SANCTIONED_OFFLINE.getSubjectId();
+//			}
 			mailParameters.put(CommonUtils.PARAMETERS_FP_NAME, fpName != null ? fpName : "");
-			mailParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "");
+			mailParameters.put(PARAMETERS_PRODUCT_TYPE, "Mudra Loan");
 			mailParameters.put(CommonUtils.PARAMETERS_LOAN_AMOUNT,loanSanctionDomainOld.getSanctionAmount() != null ? loanSanctionDomainOld.getSanctionAmount(): "NA");
 			mailParameters.put("processing_fees",loanSanctionDomainOld.getProcessingFee() != null ? loanSanctionDomainOld.getProcessingFee() : "");
 			mailParameters.put(CommonUtils.LITERAL_AMOUNT,loanSanctionDomainOld.getSanctionAmount() != null ? loanSanctionDomainOld.getSanctionAmount(): "NA");
@@ -2582,7 +2564,7 @@ public class FPAsyncComponent {
 				// ====================== MAIL TO MAKER by new code ======================
 				mailParameters.put(CommonUtils.PARAMETERS_IS_DYNAMIC, false);
 				createNotificationForEmail(toIds, applicationRequest.getUserId().toString(), mailParameters,
-						NotificationAlias.EMAIL_FS_CHECKER_SANCTIONED, subjectId,domainId,null,applicationRequest.getProductId(),prpo.getUserOrgId(),NotificationMasterAlias.EMAIL_FS_CHECKER_SANCTIONED.getMasterId());
+						NotificationAlias.ML_EMAIL_FS_WHEN_FP_SANCTIONED_PROPOSAL, null,null,null,applicationRequest.getProductId(),prpo.getUserOrgId(),NotificationMasterAlias.ML_EMAIL_FS_WHEN_FP_SANCTIONED_PROPOSAL.getMasterId());
 
 			}
 			if (applicationRequest != null && !CommonUtils.isObjectNullOrEmpty(applicationRequest.getMobile())) {
@@ -2593,8 +2575,8 @@ public class FPAsyncComponent {
 				mailParameters.put("url", URL_WWW_PSBLOANS_COM);
 
 				sendSMSNotification(applicationRequest.getUserId().toString(), mailParameters,
-						NotificationAlias.SMS_FS_CHECKER_SANCTIONED,domainId,applicationRequest.getProductId(),
-						prpo.getUserOrgId(),NotificationMasterAlias.SMS_FS_CHECKER_SANCTIONED.getMasterId() , to);
+						NotificationAlias.ML_SMS_FS_WHEN_FP_SANCTIONED_PROPOSAL,null,applicationRequest.getProductId(),
+						prpo.getUserOrgId(),NotificationMasterAlias.ML_SMS_FS_WHEN_FP_SANCTIONED_PROPOSAL.getMasterId() , to);
 			}
 			if (!CommonUtils.isObjectNullOrEmpty(applicationRequest.getUserId())) {
 
@@ -2603,9 +2585,9 @@ public class FPAsyncComponent {
 				mailParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "");
 
 				sendSYSNotification(loanSanctionDomainOld.getApplicationId(), applicationRequest.getUserId().toString(),
-						mailParameters, NotificationAlias.SYS_FS_CHECKER_SANCTIONED,
-						applicationRequest.getUserId().toString(),domainId,applicationRequest.getProductId(),
-						prpo.getUserOrgId(),NotificationMasterAlias.SYS_FS_CHECKER_SANCTIONED.getMasterId() ,applicationRequest.getUserId().toString());
+						mailParameters, NotificationAlias.ML_SYS_FS_WHEN_FP_SANCTIONED_PROPOSAL,
+						applicationRequest.getUserId().toString(),null,applicationRequest.getProductId(),
+						prpo.getUserOrgId(),NotificationMasterAlias.ML_SYS_FS_WHEN_FP_SANCTIONED_PROPOSAL.getMasterId() ,applicationRequest.getUserId().toString());
 			}
 
 		} catch (Exception e) {

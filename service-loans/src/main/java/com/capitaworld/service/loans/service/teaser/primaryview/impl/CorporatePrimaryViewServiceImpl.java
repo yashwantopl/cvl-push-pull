@@ -770,7 +770,8 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 							directorPersonalDetail.setHaveLiPolicy(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveLiPolicy()!= null ? HaveLIMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveLiPolicy()).getValue().toString() : "-");
 							directorPersonalDetail.setIdProof(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getIdProof() != null ? IdProofMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getIdProof()).getValue() : "-" );
 							directorPersonalDetail.setDependent(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getDependent());
-							directorPersonalDetail.setIsSameAddIdProof(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getIsSameAddIdProof() ? "Yes" : "No");
+							Boolean isSameAddIdProof = directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getIsSameAddIdProof() ; 
+							directorPersonalDetail.setIsSameAddIdProof(!CommonUtils.isObjectNullOrEmpty(isSameAddIdProof) ? (isSameAddIdProof ? "Yes" : "No") : "No");
 							directorPersonalDetail.setAddressYears(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getAddressYears());
 							directorPersonalDetail.setOtherIncomeSource(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOtherIncomeSource());
 							directorPersonalDetail.setCertificationCourse(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getCertificationCourse() != null ? CertificationCourseMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getCertificationCourse()).getValue() : "-"  );
