@@ -126,6 +126,7 @@ import com.capitaworld.service.loans.model.common.EkycResponse;
 import com.capitaworld.service.loans.model.common.HunterRequestDataResponse;
 import com.capitaworld.service.loans.model.common.MinMaxProductDetailRequest;
 import com.capitaworld.service.loans.model.common.ProposalList;
+import com.capitaworld.service.loans.model.common.SanctioningDetailResponse;
 import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateProduct;
 import com.capitaworld.service.loans.model.mobile.MLoanDetailsResponse;
@@ -1123,6 +1124,57 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 	
 	
+	
+	@Override
+	public SanctioningDetailResponse getDetailsForSanction(DisbursementRequest disbursementRequest)
+			throws LoansException {
+		try {
+			logger.info(
+					"Start getDetailsForSanction with data application Id : " + disbursementRequest.getApplicationId()
+							+ " ProductMapping Id :" + disbursementRequest.getProductMappingId());
+			SanctioningDetailResponse sanctioningDetailResponse = new SanctioningDetailResponse();
+
+			logger.info("Fetching data from in-principle: ");
+			ProposalMappingResponse response = proposalDetailsClient.getActivateProposalById(
+					disbursementRequest.getProductMappingId(), disbursementRequest.getApplicationId());
+			Map<String, Object> proposalresp = MultipleJSONObjectHelper
+					.getObjectFromMap((Map<String, Object>) response.getData(), Map.class);
+			if (proposalresp != null) {
+					sanctioningDetailResponse.setSanctionAmount(
+							proposalresp.get("elAmount") != null ? Double.valueOf(proposalresp.get("elAmount").toString())
+									: 0.0);
+				sanctioningDetailResponse.setTenure(
+						proposalresp.get("elTenure") != null ? Double.valueOf(proposalresp.get("elTenure").toString())
+								: 0.0);
+				sanctioningDetailResponse.setRoi(
+						proposalresp.get("elRoi") != null ? Double.valueOf(proposalresp.get("elRoi").toString()) : 0.0);
+				sanctioningDetailResponse.setProcessingFee(proposalresp.get("processingFee") != null
+						? Double.valueOf(proposalresp.get("processingFee").toString())
+						: 0.0);
+				sanctioningDetailResponse.setBranch(
+						proposalresp.get("branchId") != null ? Long.valueOf(proposalresp.get("branchId").toString())
+								: null);
+				sanctioningDetailResponse.setUserOrgId(
+						proposalresp.get("userOrgId") != null ? Long.valueOf(proposalresp.get("userOrgId").toString())
+								: null);
+			}
+
+			logger.info("Fetching data for proposal: ");
+			DisbursementRequest disbursementDetailsResponse = getDisbursementDetails(disbursementRequest);
+
+			if (disbursementDetailsResponse != null) {
+				BeanUtils.copyProperties(disbursementDetailsResponse, sanctioningDetailResponse, TENURE_LITERAL, "roi",
+						"userId");
+			}
+			logger.info("End getDetailsForSanction with data application Id : " + disbursementRequest.getApplicationId()
+					+ " ProductMapping Id :" + disbursementRequest.getProductMappingId());
+			return sanctioningDetailResponse;
+		} catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+			throw new LoansException(e);
+		}
+	}
+
 	//Arun Code
 	public List<LoanApplicationRequest> getDetailsForSanctionPopup(Long userId) throws LoansException {
 
