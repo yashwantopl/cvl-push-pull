@@ -883,15 +883,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("NO_OF_CHEQUES_BOUNCED_ML")).collect(Collectors.toList());
 			if(!CommonUtils.isListNullOrEmpty(collect)) {
 				mudraScoringMap.put("NO_OF_CHEQUES_BOUNCED_ML", CommonUtils.printFields(collect.get(0),null));
-			}
-			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("NO_OF_CHEQUES_BOUNCED_ML")).collect(Collectors.toList());
-			if(!CommonUtils.isListNullOrEmpty(collect)) {
-				mudraScoringMap.put("NO_OF_CHEQUES_BOUNCED_ML", CommonUtils.printFields(collect.get(0),null));
-			}
-			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("NO_OF_CHEQUES_BOUNCED_LAST_SIX_MONTH_ML")).collect(Collectors.toList());
-			if(!CommonUtils.isListNullOrEmpty(collect)) {
-				mudraScoringMap.put("NO_OF_CHEQUES_BOUNCED_LAST_SIX_MONTH_ML", CommonUtils.printFields(collect.get(0),null));
-			}
+			}			
 			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("NO_OF_CHEQUES_BOUNCED_LAST_SIX_MONTH_ML")).collect(Collectors.toList());
 			if(!CommonUtils.isListNullOrEmpty(collect)) {
 				mudraScoringMap.put("NO_OF_CHEQUES_BOUNCED_LAST_SIX_MONTH_ML", CommonUtils.printFields(collect.get(0),null));
@@ -2478,8 +2470,10 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 									directorPersonalDetailResponse.setOwningHouse(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOwningHouse()) ? StringEscapeUtils.escapeXml(MudraOwningHouseMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOwningHouse()).getValue().toString()) : "-");
 									directorPersonalDetailResponse.setNoOfChildren(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getNoOfChildren()) ? directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getNoOfChildren() : 0 );
 									directorPersonalDetailResponse.setHaveLiPolicy(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveLiPolicy()) ? StringEscapeUtils.escapeXml(HaveLIMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveLiPolicy()).getValue().toString()) : "-");
+
 									Boolean isSameIdProof = directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getIsSameAddIdProof(); 									
-									directorPersonalDetailResponse.setIsSameAddIdProof((isSameIdProof) ? "Yes" : "No");
+									directorPersonalDetailResponse.setIsSameAddIdProof(!CommonUtils.isObjectNullOrEmpty(isSameIdProof) ? (isSameIdProof ? "Yes" : "No") : "No");
+									
 									directorPersonalDetailResponse.setCertificationCourse(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getCertificationCourse()) ? CertificationCourseMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getCertificationCourse()).getValue() : "-" );
 									directorPersonalDetailResponse.setOtherIncomeSource(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOtherIncomeSource()) ? directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOtherIncomeSource() : 0 );
 									map.put("onGoingMudraLoan", directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOngoingMudraLoan() != null ? OngoingMudraLoan.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOngoingMudraLoan()).getValue() : "-"  );
