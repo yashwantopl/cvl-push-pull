@@ -1792,21 +1792,21 @@ public class ScoringServiceImpl implements ScoringService {
                 logger.info(MSG_APPLICATION_ID + applicationId + MSG_FP_PRODUCT_ID + fpProductId + MSG_SCORING_MODEL_ID + scoreModelId);
 
                 // CMA
-                OperatingStatementDetails operatingStatementDetailsFY = new OperatingStatementDetails();
-                OperatingStatementDetails operatingStatementDetailsSY = new OperatingStatementDetails();
-                OperatingStatementDetails operatingStatementDetailsTY = new OperatingStatementDetails();
+                OperatingStatementDetails operatingStatementDetailsFY = null;
+                OperatingStatementDetails operatingStatementDetailsSY = null;
+                OperatingStatementDetails operatingStatementDetailsTY = null;
 
 
-                LiabilitiesDetails liabilitiesDetailsFY = new LiabilitiesDetails();
-                LiabilitiesDetails liabilitiesDetailsSY = new LiabilitiesDetails();
-                LiabilitiesDetails liabilitiesDetailsTY = new LiabilitiesDetails();
+                LiabilitiesDetails liabilitiesDetailsFY = null;
+                LiabilitiesDetails liabilitiesDetailsSY = null;
+                LiabilitiesDetails liabilitiesDetailsTY = null;
 
-                AssetsDetails assetsDetailsFY = new AssetsDetails();
-                AssetsDetails assetsDetailsSY = new AssetsDetails();
-                AssetsDetails assetsDetailsTY = new AssetsDetails();
+                AssetsDetails assetsDetailsFY = null;
+                AssetsDetails assetsDetailsSY = null;
+                AssetsDetails assetsDetailsTY = null;
 
-                if (ScoreParameter.FinancialTypeForITR.THREE_YEAR_ITR == scoringRequest.getFinancialTypeId()) {
-                    operatingStatementDetailsTY = operatingStatementDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 1 + "");
+//                if (ScoreParameter.FinancialTypeForITR.THREE_YEAR_ITR == scoringRequest.getFinancialTypeId()) {
+                    operatingStatementDetailsTY = operatingStatementDetailsRepository.findByLoanApplicationMasterIdAndYearAndApplicationProposalMappingIsNullAndIsActiveIsTrue(applicationId, currentYear - 1 + "");
                     operatingStatementDetailsSY = operatingStatementDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 2 + "");
                     operatingStatementDetailsFY = operatingStatementDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 3 + "");
 
@@ -1817,15 +1817,15 @@ public class ScoringServiceImpl implements ScoringService {
                     assetsDetailsTY = assetsDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 1 + "");
                     assetsDetailsSY = assetsDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 2 + "");
                     assetsDetailsFY = assetsDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 3 + "");
-                } else if (ScoreParameter.FinancialTypeForITR.ONE_YEAR_ITR == scoringRequest.getFinancialTypeId()) {
-                    operatingStatementDetailsTY = operatingStatementDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 1 + "");
+                /*} else if (ScoreParameter.FinancialTypeForITR.ONE_YEAR_ITR == scoringRequest.getFinancialTypeId()) {
+                    operatingStatementDetailsTY = operatingStatementDetailsRepository.findByLoanApplicationMasterIdAndYearAndApplicationProposalMappingIsNullAndIsActiveIsTrue(applicationId, currentYear - 1 + "");
                     liabilitiesDetailsTY = liabilitiesDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 1 + "");
                     assetsDetailsTY = assetsDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 1 + "");
                 } else if (ScoreParameter.FinancialTypeForITR.PRESUMPTIVE == scoringRequest.getFinancialTypeId()) {
-                    operatingStatementDetailsTY = operatingStatementDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 1 + "");
+                    operatingStatementDetailsTY = operatingStatementDetailsRepository.findByLoanApplicationMasterIdAndYearAndApplicationProposalMappingIsNullAndIsActiveIsTrue(applicationId, currentYear - 1 + "");
                     liabilitiesDetailsTY = liabilitiesDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 1 + "");
                     assetsDetailsTY = assetsDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 1 + "");
-                }
+                }*/
                 IndustryResponse industryResponse =null;
                 logger.info("corporateApplicantDetail.getKeyVerticalSubsector()"+corporateApplicantDetail.getKeyVerticalSubsector());
                 if(corporateApplicantDetail.getKeyVerticalSector()!=null && corporateApplicantDetail.getKeyVerticalSubsector()!=null) {
@@ -2141,6 +2141,7 @@ public class ScoringServiceImpl implements ScoringService {
                             case ScoreParameter.MudraLoan.PAST_YEAR_TURNOVER_ML: {
 
                                 try {
+                                	logger.info("operatingStatementDetailsTY.getNetSales() :: {}",operatingStatementDetailsTY.getNetSales());
                                     Double domesticSales = operatingStatementDetailsTY.getDomesticSales();
                                     Double exportSales = operatingStatementDetailsTY.getExportSales();
                                     scoringParameterRequest.setPastYearTurnover_p(true);
@@ -2164,6 +2165,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     Integer itrType = CommonUtils.isObjectNullOrEmpty(itrResponse[1]) ? null : Integer.parseInt(itrResponse[1].toString());
 
                                     if(itrType !=null) {
+                                    	logger.info("operatingStatementDetailsTY.getNetSales() :: {}" ,operatingStatementDetailsTY.getNetSales());
                                         scoringParameterRequest.setNetSaleTy(getOrDefauls(operatingStatementDetailsTY.getNetSales()));
                                         scoringParameterRequest.setNetSaleSy(getOrDefauls(operatingStatementDetailsSY.getNetSales()));
                                         scoringParameterRequest.setNetSaleFy(getOrDefauls(operatingStatementDetailsFY.getNetSales()));

@@ -67,12 +67,14 @@ import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMappin
 import com.capitaworld.service.loans.domain.fundseeker.IneligibleProposalDetails;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.AssociatedConcernDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.LiabilitiesDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.MachineDetailMudraLoan;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatementDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetailMudraLoan;
+import com.capitaworld.service.loans.model.AssociatedConcernDetailRequest;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponseString;
 import com.capitaworld.service.loans.model.DirectorPersonalDetailResponse;
@@ -110,6 +112,7 @@ import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParam
 import com.capitaworld.service.loans.repository.fundseeker.IneligibleProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.AssociatedConcernDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LiabilitiesDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
@@ -117,6 +120,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.MachineDeta
 import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailMudraLoanRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
+import com.capitaworld.service.loans.service.common.CommonService;
 import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundprovider.FSParameterMappingService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AchievmentDetailsService;
@@ -176,8 +180,10 @@ import com.capitaworld.service.oneform.enums.LCBG_Status_SBI;
 import com.capitaworld.service.oneform.enums.MaritalStatusMst;
 import com.capitaworld.service.oneform.enums.MrktArrFinishedGoodsList;
 import com.capitaworld.service.oneform.enums.MudraOwningHouseMst;
+import com.capitaworld.service.oneform.enums.OngoingMudraLoan;
 import com.capitaworld.service.oneform.enums.Particular;
 import com.capitaworld.service.oneform.enums.PurposeOfLoan;
+import com.capitaworld.service.oneform.enums.RegistrationWithGovernmentAuthoritiesList;
 import com.capitaworld.service.oneform.enums.ResidentStatusMst;
 import com.capitaworld.service.oneform.enums.ShareHoldingCategory;
 import com.capitaworld.service.oneform.enums.SpouseDetailMst;
@@ -384,6 +390,12 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	MachineDetailsRepository machineDetailsRepo;
     
     @Autowired
+	private CommonService commonService;
+    
+    @Autowired
+	AssociatedConcernDetailRepository associatedConcernDetailRepository;
+    
+    @Autowired
     private PrimaryCorporateDetailMudraLoanRepository primaryCorporateDetailsMudra;
 
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
@@ -547,7 +559,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				for (LinkedHashMap<String, Object> mp : list) {
 					response = MultipleJSONObjectHelper.getObjectFromMap(mp, ConnectRequest.class);
 					if (response.getProposalId().equals(proposalId)) {
-						Date inPrincipleDate = response.getModifiedDate();
+						Date inPrincipleDate = response.getInPrincipleDate();
 						map.put("dateOfInPrincipalApproval", !CommonUtils.isObjectNullOrEmpty(inPrincipleDate)? CommonUtils.DATE_FORMAT.format(inPrincipleDate) : "-");
 					}
 				}
@@ -676,9 +688,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 						  investmentInPlantMachinery.put("label","Investment in Plant and Machinery / Equipments");
 						  incomeDetails.put("investmentInPlantMachinery", investmentInPlantMachinery);
 						  
-						  Map<String, Object> liability = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("totalLiabilities").toString(), Map.class) ;
-						  liability.put("label", "Total Liabilities");
-						  incomeDetails.put("liability", liability);
+						  Map<String, Object> totalLiabilities = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("totalLiabilities").toString(), Map.class) ;
+						  totalLiabilities.put("label", "Total Liabilities");
+						  incomeDetails.put("totalLiabilities", totalLiabilities);
 						  
 						  Map<String, Object> networth = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("networth").toString(), Map.class) ;
 						  networth.put("label", "Networth");
@@ -705,6 +717,29 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					}
 				
 		
+			// GET ASSOCIATE CONCERN DETAILS
+			List<AssociatedConcernDetailRequest> associatedConcernResList = new ArrayList<>(); 
+			List<AssociatedConcernDetail> associatedConcernDetailList =  associatedConcernDetailRepository.listAssociatedConcernFromAppId(applicationId);
+			
+			if (!CommonUtils.isListNullOrEmpty(associatedConcernDetailList)) {
+				for (AssociatedConcernDetail associatedConcern : associatedConcernDetailList) {
+					AssociatedConcernDetailRequest assoConcernDetailRes = new AssociatedConcernDetailRequest(); 
+					BeanUtils.copyProperties(associatedConcern, assoConcernDetailRes);
+					// SET ADDRESS
+					setAssociateAddress(assoConcernDetailRes);
+					associatedConcernResList.add(assoConcernDetailRes);
+				}
+			}	
+			try {
+				map.put("associateConcern", CommonUtils.printFields(associatedConcernResList, null));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+				
+				
+				
+				
 		
 		//SCORING DATA 
 		try {
@@ -848,15 +883,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("NO_OF_CHEQUES_BOUNCED_ML")).collect(Collectors.toList());
 			if(!CommonUtils.isListNullOrEmpty(collect)) {
 				mudraScoringMap.put("NO_OF_CHEQUES_BOUNCED_ML", CommonUtils.printFields(collect.get(0),null));
-			}
-			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("NO_OF_CHEQUES_BOUNCED_ML")).collect(Collectors.toList());
-			if(!CommonUtils.isListNullOrEmpty(collect)) {
-				mudraScoringMap.put("NO_OF_CHEQUES_BOUNCED_ML", CommonUtils.printFields(collect.get(0),null));
-			}
-			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("NO_OF_CHEQUES_BOUNCED_LAST_SIX_MONTH_ML")).collect(Collectors.toList());
-			if(!CommonUtils.isListNullOrEmpty(collect)) {
-				mudraScoringMap.put("NO_OF_CHEQUES_BOUNCED_LAST_SIX_MONTH_ML", CommonUtils.printFields(collect.get(0),null));
-			}
+			}			
 			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("NO_OF_CHEQUES_BOUNCED_LAST_SIX_MONTH_ML")).collect(Collectors.toList());
 			if(!CommonUtils.isListNullOrEmpty(collect)) {
 				mudraScoringMap.put("NO_OF_CHEQUES_BOUNCED_LAST_SIX_MONTH_ML", CommonUtils.printFields(collect.get(0),null));
@@ -986,22 +1013,24 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			logger.error(CommonUtils.EXCEPTION,e2);
 		}
 		
-		try{
-			EligibililityRequest eligibilityReq=new EligibililityRequest();
-			eligibilityReq.setApplicationId(toApplicationId);
-			eligibilityReq.setFpProductId(productId);
-			EligibilityResponse eligibilityResp= eligibilityClient.corporateEligibilityData(eligibilityReq);
-			
-			if(!CommonUtils.isObjectListNull(eligibilityResp.getData())){
-				CalculationJSON req= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), CalculationJSON.class);
-				
-//				map.put("elProSales", req.getProjectedSales() != null ? CommonUtils.convertValueIndianCurrency(req.getProjectedSales())  : "-");
-//				map.put("defaultHisSales", req.getDefaultHistoricSales() != null ? CommonUtils.convertValueIndianCurrency(req.getDefaultHistoricSales())  : "-");
-				map.put("assLimits",CommonUtils.convertToDoubleForXmlIndianCurr(req, new HashMap<>()));
-			}
-		}catch (Exception e) {
-			logger.error("Error while getting Eligibility data : ",e);
-		}
+		/*
+		 * try{ EligibililityRequest eligibilityReq=new EligibililityRequest();
+		 * eligibilityReq.setApplicationId(toApplicationId);
+		 * eligibilityReq.setFpProductId(productId); EligibilityResponse
+		 * eligibilityResp= eligibilityClient.corporateEligibilityData(eligibilityReq);
+		 * 
+		 * if(!CommonUtils.isObjectListNull(eligibilityResp.getData())){ CalculationJSON
+		 * req= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,
+		 * Object>)eligibilityResp.getData(), CalculationJSON.class);
+		 * 
+		 * // map.put("elProSales", req.getProjectedSales() != null ?
+		 * CommonUtils.convertValueIndianCurrency(req.getProjectedSales()) : "-"); //
+		 * map.put("defaultHisSales", req.getDefaultHistoricSales() != null ?
+		 * CommonUtils.convertValueIndianCurrency(req.getDefaultHistoricSales()) : "-");
+		 * map.put("assLimits",CommonUtils.convertToDoubleForXmlIndianCurr(req, new
+		 * HashMap<>())); } }catch (Exception e) {
+		 * logger.error("Error while getting Eligibility data : ",e); }
+		 */
 
 		/* eligibility financialCalculation year */
 		map.put("eligibilityFinancialYear",CommonUtils.getFinancialYear());		
@@ -2097,8 +2126,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 										
 										totalSales += Double.valueOf(CommonUtils.convertStringCurrencyToDouble(sales.getValue()));
 									}
-									/*map.put("totalMomSales", df.format(totalSales));*/
-									/* resp1.setTotalMomSales(totalSales); */
+									//map.put("totalMomSales", df.format(totalSales));
+									 resp1.setTotalMomSales(totalSales); 
 									if(!CommonUtils.isObjectNullOrEmpty(totalSales)) {
 										Double momSalesOrig = (Double) totalSales;
 										BigDecimal convertedTotalMomSales = BigDecimal.valueOf(momSalesOrig).setScale(2);
@@ -2175,6 +2204,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			map.put("incrementalTurnOver", primaryCorporateDetail.getIncrementalTurnover()!= null ? CommonUtils.convertValueIndianCurrency(primaryCorporateDetail.getIncrementalTurnover()) : 0);
 			map.put("incrementalMarginMudra", primaryCorporateDetail.getIncrementalMargin()!= null ? CommonUtils.convertValueIndianCurrency(primaryCorporateDetail.getIncrementalMargin()) : 0);
 			map.put("commOperationDate", primaryCorporateDetail.getCommercialOperationDate() != null ? primaryCorporateDetail.getCommercialOperationDate() : "-");
+			map.put("totalCostOfMachineryForMudraLoan", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCostOfMachinery())? primaryCorporateDetail.getCostOfMachinery() : "-");
 			//map.put("additionalLimit", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getAdditionalLoanAmount()) ? primaryCorporateDetail.getAdditionalLoanAmount() : "-" );
 			//map.put("costOfMachinery", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCostOfMachinery()) ? primaryCorporateDetail.getCostOfMachinery() : "-" );
 			
@@ -2440,21 +2470,24 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 									directorPersonalDetailResponse.setOwningHouse(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOwningHouse()) ? StringEscapeUtils.escapeXml(MudraOwningHouseMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOwningHouse()).getValue().toString()) : "-");
 									directorPersonalDetailResponse.setNoOfChildren(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getNoOfChildren()) ? directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getNoOfChildren() : 0 );
 									directorPersonalDetailResponse.setHaveLiPolicy(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveLiPolicy()) ? StringEscapeUtils.escapeXml(HaveLIMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveLiPolicy()).getValue().toString()) : "-");
+
 									Boolean isSameIdProof = directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getIsSameAddIdProof(); 									
-									directorPersonalDetailResponse.setIsSameAddIdProof((isSameIdProof) ? "Yes" : "No");
+									directorPersonalDetailResponse.setIsSameAddIdProof(!CommonUtils.isObjectNullOrEmpty(isSameIdProof) ? (isSameIdProof ? "Yes" : "No") : "No");
+									
 									directorPersonalDetailResponse.setCertificationCourse(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getCertificationCourse()) ? CertificationCourseMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getCertificationCourse()).getValue() : "-" );
 									directorPersonalDetailResponse.setOtherIncomeSource(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOtherIncomeSource()) ? directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOtherIncomeSource() : 0 );
-									// REGISTER WITH GOV AUTHORITIES
-						            List<Integer> govAuthorities = fsParameterMappingRepository.getParametersByApplicationIdAndType(applicationId, FSParameterMst.GOV_SCHEMES.getId());
-						            if (!CommonUtils.isListNullOrEmpty(govAuthorities)) {
-						                String govAuthValue  = "";
-						                for (int i = 0; i < govAuthorities.size(); i++) {
-						                    String authority =     GovSchemesMst.getById(govAuthorities.get(i)).getValue();
-						                    govAuthValue = govAuthValue + ((i != 0) ? ", " : "" )+ authority;
-						                }
-						                map.put("govtScheme", govAuthValue);
-						                directorPersonalDetailResponse.setGovScheme(govAuthValue);
-						            }									
+									map.put("onGoingMudraLoan", directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOngoingMudraLoan() != null ? OngoingMudraLoan.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOngoingMudraLoan()).getValue() : "-"  );
+									// COVERED IN GOV_SCHEMES
+									List<Integer> govSchemes = fsParameterMappingRepository.getParametersByApplicationIdAndType(applicationId, FSParameterMst.GOV_SCHEMES.getId());
+									if (!CommonUtils.isListNullOrEmpty(govSchemes)) {
+										String govScheme  = ""; 
+										for (int i = 0; i < govSchemes.size(); i++) {
+											String authority = GovSchemesMst.getById(govSchemes.get(i)).getValue();
+											govScheme = govScheme + ((i != 0) ? ", " : "" )+ authority;
+										}
+										directorPersonalDetailResponse.setGovScheme(govScheme);
+										map.put("govtScheme", govScheme);
+									}									
 									
 									directorBackgroundDetailResponse.setDirectorPersonalInfo(directorPersonalDetailResponse);
 								}
@@ -2469,6 +2502,18 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				catch (Exception e) {
 					logger.error("Error in getting directors background details : ",e);
 				}
+				
+				// REGISTER WITH GOV AUTHORITIES
+				List<Integer> govAuthorities = fsParameterMappingRepository.getParametersByApplicationIdAndType(applicationId, FSParameterMst.GOV_AUTHORITIES.getId());
+				if (!CommonUtils.isListNullOrEmpty(govAuthorities)) {
+					String govAuthValue  = ""; 
+					for (int i = 0; i < govAuthorities.size(); i++) {
+						String authority = 	RegistrationWithGovernmentAuthoritiesList.fromId(govAuthorities.get(i)).getValue();
+						govAuthValue = govAuthValue + ((i != 0) ? ", " : "" )+ authority;
+					}
+					map.put("govtAuthority", govAuthValue);
+				}
+				
 				
 				/* cmr details cibil */
                                     try {
@@ -2716,6 +2761,44 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 		
 	}
+	
+	public void setAssociateAddress(AssociatedConcernDetailRequest asso) {
+		String address = "";
+		
+		if (!CommonUtils.isObjectListNull(asso.getPremiseNumber())) {
+			address = address + asso.getPremiseNumber();
+		}
+		
+		if (!CommonUtils.isObjectListNull(asso.getLandMark())) {
+			address = address + ", " + asso.getLandMark();
+		}
+		
+		Long cityId = asso.getCityId() ;
+		Integer stateId = asso.getStateId();
+		Integer countryId = asso.getCountryId();
+		
+		if(cityId != null || stateId != null || countryId != null) {
+			Map<String ,Object> mapData = commonService.getCityStateCountryNameFromOneForm(cityId, stateId, countryId);
+			
+			if(mapData != null) {	
+				String cityName = mapData.get(CommonUtils.CITY_NAME).toString();
+				String stateName = mapData.get(CommonUtils.STATE_NAME).toString();
+				String countryName = mapData.get(CommonUtils.COUNTRY_NAME).toString();
+				
+				if (cityName != null) {					
+					address = address + ", " + cityName; 
+				}
+				if (stateName != null) {					
+					address = address + ", " + stateName; 
+				}
+				if (countryName != null) {					
+					address = address + ", " + countryName; 
+				}
+			}
+		}
+		asso.setAddress(address);
+	}		
+	
 	
 	
 	//For application Form

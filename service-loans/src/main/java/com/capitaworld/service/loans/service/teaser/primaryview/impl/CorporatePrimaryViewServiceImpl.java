@@ -153,8 +153,6 @@ import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
 
-import ch.qos.logback.core.joran.util.beans.BeanUtil;
-
 @Service
 @Transactional
 public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewService {
@@ -772,7 +770,8 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 							directorPersonalDetail.setHaveLiPolicy(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveLiPolicy()!= null ? HaveLIMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveLiPolicy()).getValue().toString() : "-");
 							directorPersonalDetail.setIdProof(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getIdProof() != null ? IdProofMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getIdProof()).getValue() : "-" );
 							directorPersonalDetail.setDependent(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getDependent());
-							directorPersonalDetail.setIsSameAddIdProof(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getIsSameAddIdProof() ? "Yes" : "No");
+							Boolean isSameAddIdProof = directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getIsSameAddIdProof() ; 
+							directorPersonalDetail.setIsSameAddIdProof(!CommonUtils.isObjectNullOrEmpty(isSameAddIdProof) ? (isSameAddIdProof ? "Yes" : "No") : "No");
 							directorPersonalDetail.setAddressYears(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getAddressYears());
 							directorPersonalDetail.setOtherIncomeSource(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOtherIncomeSource());
 							directorPersonalDetail.setCertificationCourse(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getCertificationCourse() != null ? CertificationCourseMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getCertificationCourse()).getValue() : "-"  );
@@ -1365,55 +1364,37 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 
 		try {
 
-			/*if(corporateApplicantDetail.getGstIn()!= null) {*/
-//			CAMGSTData resp =null;
-//				GSTR1Request req= new GSTR1Request();
-//				req.setApplicationId(toApplicationId);
-//				req.setUserId(toUserId);
-//				req.setGstin(corporateApplicantDetail.getGstIn());
-//				
-//				GstResponse response = gstClient.detailCalculation(req);
-//				/*GstResponse gstBankComp = gstClient.getGSTDataForBankStatmentComaparison(req);*/
-//				
-//				if (response != null) {
-//					
-//					DecimalFormat df = new DecimalFormat(".##");
-//					if (!CommonUtils.isObjectNullOrEmpty(response)) {
-//						for (LinkedHashMap<String, Object> data : (List<LinkedHashMap<String, Object>>) response.getData()) {
-//							resp = MultipleJSONObjectHelper.getObjectFromMap(data,CAMGSTData.class);
-//							Double totalSales =0.0d;
-//							if(resp.getMomSales() != null) {
-//								List<MomSales> momSalesResp = resp.getMomSales();
-//								for (MomSales sales : momSalesResp) {
-//									
-//									totalSales += Double.valueOf(sales.getValue());
-//								}
-//								data.put("totalMomSales", df.format(totalSales));
-////							resp.setTotalMomSales(totalSales);
-//							}
-//						}
-						
-			corporatePrimaryViewResponse.setGstData(camReportPdfDetailsService.getGstDetails(toApplicationId, toUserId));
-					//corporatePrimaryViewResponse.setGstData((List<LinkedHashMap<String, Object>>) response.getData());
-//				}
-//		else {
-//
-//					logger.warn("----------:::::::: Gst Response is null :::::::---------");
-//
-//				}
-					/*if(gstBankComp!= null && gstBankComp.getData()!= null) {
-						corporatePrimaryViewResponse.setGstBankComp(gstBankComp);
-					}else {
-						logger.info("gst bank comparison Data is null for====>>"+applicationId);
-					}*/
-			/*}else {
-				logger.warn("gstIn is Null for in corporate Applicant Details=>>>>>"+toApplicationId);
-			}*/
-
-//				}
-		} catch (Exception e) {
-			logger.error(":::::::------Error while calling gstData---:::::::",e);
-		}
+				/*if(corporateApplicantDetail.getGstIn()!= null) {*/
+				CAMGSTData resp =null;
+				GSTR1Request req= new GSTR1Request();
+				req.setApplicationId(toApplicationId);
+				req.setUserId(toUserId);
+				req.setGstin(corporateApplicantDetail.getGstIn());
+				
+				GstResponse response = gstClient.detailCalculation(req);
+				
+				if (response != null) {
+					DecimalFormat df = new DecimalFormat(".##");
+					if (!CommonUtils.isObjectNullOrEmpty(response)) {
+						for (LinkedHashMap<String, Object> data : (List<LinkedHashMap<String, Object>>) response.getData()) {
+							resp = MultipleJSONObjectHelper.getObjectFromMap(data,CAMGSTData.class);
+							Double totalSales =0.0d;
+							if(resp.getMomSales() != null) {
+								List<MomSales> momSalesResp = resp.getMomSales();
+								for (MomSales sales : momSalesResp) {
+									totalSales += Double.valueOf(sales.getValue());
+								}
+								data.put("totalMomSales", df.format(totalSales));
+							}
+						}
+					corporatePrimaryViewResponse.setGstData((List<LinkedHashMap<String, Object>>) response.getData());
+					} else {
+						logger.warn("----------:::::::: Gst Response is null :::::::---------");
+					}
+				}
+			} catch (Exception e) {
+				logger.error(":::::::------Error while calling gstData---:::::::",e);
+			}
 
 		// Fraud Detection Data
 

@@ -234,18 +234,20 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				corporateApplicantDetail = new CorporateApplicantDetail();
 				BeanUtils.copyProperties(fundSeekerInputRequest, corporateApplicantDetail, SECOND_ADDRESS, SAME_AS,"organisationName",CONSTITUTION_ID,
 						CREDIT_RATING_ID, CONT_LIABILITY_FY_AMT, CONT_LIABILITY_SY_AMT, CONT_LIABILITY_TY_AMT,
-						CONT_LIABILITY_YEAR, NOT_APPLICABLE, ABOUT_US, "id", CommonUtils.IS_ACTIVE);
+						CONT_LIABILITY_YEAR, NOT_APPLICABLE, ABOUT_US, "id", CommonUtils.IS_ACTIVE,"aadhar");
 				corporateApplicantDetail
 						.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
 				corporateApplicantDetail.setCreatedBy(fundSeekerInputRequest.getUserId());
 				corporateApplicantDetail.setCreatedDate(new Date());
 				corporateApplicantDetail.setIsActive(true);
+				corporateApplicantDetail.setAadhar((fundSeekerInputRequest.getAadhar() == "" || fundSeekerInputRequest.getAadhar() == null) ? null : fundSeekerInputRequest.getAadhar());
 			} else {
 				BeanUtils.copyProperties(fundSeekerInputRequest, corporateApplicantDetail, SECOND_ADDRESS, SAME_AS,"organisationName",CONSTITUTION_ID,
 						CREDIT_RATING_ID, CONT_LIABILITY_FY_AMT, CONT_LIABILITY_SY_AMT, CONT_LIABILITY_TY_AMT,
-						CONT_LIABILITY_YEAR, NOT_APPLICABLE, ABOUT_US, "id");
+						CONT_LIABILITY_YEAR, NOT_APPLICABLE, ABOUT_US, "id","aadhar");
 				corporateApplicantDetail.setModifiedBy(fundSeekerInputRequest.getUserId());
 				corporateApplicantDetail.setModifiedDate(new Date());
+				corporateApplicantDetail.setAadhar(CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequest.getAadhar()) ? null : fundSeekerInputRequest.getAadhar());
 			}
 
 			corporateApplicantDetailRepository.save(corporateApplicantDetail);

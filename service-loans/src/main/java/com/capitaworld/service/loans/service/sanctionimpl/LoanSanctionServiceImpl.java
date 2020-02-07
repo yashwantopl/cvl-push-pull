@@ -183,7 +183,8 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			Integer count = proposalDetailsRepository.getCountOfProposalDetailsByApplicationId(loanSanctionDomainOld.getApplicationId());
 			if(count > 1) {
 				try {
-					sendMailToHOBOCheckerMakerForMultipleBanks(loanSanctionDomainOld.getApplicationId());
+					fpAsyncComponent.sendEmailToMakerHOBOWhenCheckerSanctionLoan(loanSanctionDomainOld);
+					//sendMailToHOBOCheckerMakerForMultipleBanks(loanSanctionDomainOld.getApplicationId());
 				}catch (IndexOutOfBoundsException e) {
 					logger.info("Application not from multiple bank applicationid:{}",loanSanctionDomainOld.getApplicationId());
 				}
