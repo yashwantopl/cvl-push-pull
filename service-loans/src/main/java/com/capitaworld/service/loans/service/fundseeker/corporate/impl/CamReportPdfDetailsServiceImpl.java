@@ -180,8 +180,10 @@ import com.capitaworld.service.oneform.enums.LCBG_Status_SBI;
 import com.capitaworld.service.oneform.enums.MaritalStatusMst;
 import com.capitaworld.service.oneform.enums.MrktArrFinishedGoodsList;
 import com.capitaworld.service.oneform.enums.MudraOwningHouseMst;
+import com.capitaworld.service.oneform.enums.OngoingMudraLoan;
 import com.capitaworld.service.oneform.enums.Particular;
 import com.capitaworld.service.oneform.enums.PurposeOfLoan;
+import com.capitaworld.service.oneform.enums.RegistrationWithGovernmentAuthoritiesList;
 import com.capitaworld.service.oneform.enums.ResidentStatusMst;
 import com.capitaworld.service.oneform.enums.ShareHoldingCategory;
 import com.capitaworld.service.oneform.enums.SpouseDetailMst;
@@ -2132,8 +2134,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 										
 										totalSales += Double.valueOf(CommonUtils.convertStringCurrencyToDouble(sales.getValue()));
 									}
-									/*map.put("totalMomSales", df.format(totalSales));*/
-									/* resp1.setTotalMomSales(totalSales); */
+									//map.put("totalMomSales", df.format(totalSales));
+									 resp1.setTotalMomSales(totalSales); 
 									if(!CommonUtils.isObjectNullOrEmpty(totalSales)) {
 										Double momSalesOrig = (Double) totalSales;
 										BigDecimal convertedTotalMomSales = BigDecimal.valueOf(momSalesOrig).setScale(2);
@@ -2210,6 +2212,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			map.put("incrementalTurnOver", primaryCorporateDetail.getIncrementalTurnover()!= null ? CommonUtils.convertValueIndianCurrency(primaryCorporateDetail.getIncrementalTurnover()) : 0);
 			map.put("incrementalMarginMudra", primaryCorporateDetail.getIncrementalMargin()!= null ? CommonUtils.convertValueIndianCurrency(primaryCorporateDetail.getIncrementalMargin()) : 0);
 			map.put("commOperationDate", primaryCorporateDetail.getCommercialOperationDate() != null ? primaryCorporateDetail.getCommercialOperationDate() : "-");
+			map.put("totalCostOfMachineryForMudraLoan", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCostOfMachinery())? primaryCorporateDetail.getCostOfMachinery() : "-");
 			//map.put("additionalLimit", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getAdditionalLoanAmount()) ? primaryCorporateDetail.getAdditionalLoanAmount() : "-" );
 			//map.put("costOfMachinery", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCostOfMachinery()) ? primaryCorporateDetail.getCostOfMachinery() : "-" );
 			
@@ -2479,17 +2482,18 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 									directorPersonalDetailResponse.setIsSameAddIdProof((isSameIdProof) ? "Yes" : "No");
 									directorPersonalDetailResponse.setCertificationCourse(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getCertificationCourse()) ? CertificationCourseMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getCertificationCourse()).getValue() : "-" );
 									directorPersonalDetailResponse.setOtherIncomeSource(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOtherIncomeSource()) ? directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOtherIncomeSource() : 0 );
-									// REGISTER WITH GOV AUTHORITIES
-						            List<Integer> govAuthorities = fsParameterMappingRepository.getParametersByApplicationIdAndType(applicationId, FSParameterMst.GOV_SCHEMES.getId());
-						            if (!CommonUtils.isListNullOrEmpty(govAuthorities)) {
-						                String govAuthValue  = "";
-						                for (int i = 0; i < govAuthorities.size(); i++) {
-						                    String authority =     GovSchemesMst.getById(govAuthorities.get(i)).getValue();
-						                    govAuthValue = govAuthValue + ((i != 0) ? ", " : "" )+ authority;
-						                }
-						                map.put("govtScheme", govAuthValue);
-						                directorPersonalDetailResponse.setGovScheme(govAuthValue);
-						            }									
+									map.put("onGoingMudraLoan", directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOngoingMudraLoan() != null ? OngoingMudraLoan.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOngoingMudraLoan()).getValue() : "-"  );
+									// COVERED IN GOV_SCHEMES
+									List<Integer> govSchemes = fsParameterMappingRepository.getParametersByApplicationIdAndType(applicationId, FSParameterMst.GOV_SCHEMES.getId());
+									if (!CommonUtils.isListNullOrEmpty(govSchemes)) {
+										String govScheme  = ""; 
+										for (int i = 0; i < govSchemes.size(); i++) {
+											String authority = GovSchemesMst.getById(govSchemes.get(i)).getValue();
+											govScheme = govScheme + ((i != 0) ? ", " : "" )+ authority;
+										}
+										directorPersonalDetailResponse.setGovScheme(govScheme);
+										map.put("govtScheme", govScheme);
+									}									
 									
 									directorBackgroundDetailResponse.setDirectorPersonalInfo(directorPersonalDetailResponse);
 								}
@@ -2504,6 +2508,18 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				catch (Exception e) {
 					logger.error("Error in getting directors background details : ",e);
 				}
+				
+				// REGISTER WITH GOV AUTHORITIES
+				List<Integer> govAuthorities = fsParameterMappingRepository.getParametersByApplicationIdAndType(applicationId, FSParameterMst.GOV_AUTHORITIES.getId());
+				if (!CommonUtils.isListNullOrEmpty(govAuthorities)) {
+					String govAuthValue  = ""; 
+					for (int i = 0; i < govAuthorities.size(); i++) {
+						String authority = 	RegistrationWithGovernmentAuthoritiesList.fromId(govAuthorities.get(i)).getValue();
+						govAuthValue = govAuthValue + ((i != 0) ? ", " : "" )+ authority;
+					}
+					map.put("govtAuthority", govAuthValue);
+				}
+				
 				
 				/* cmr details cibil */
                                     try {
