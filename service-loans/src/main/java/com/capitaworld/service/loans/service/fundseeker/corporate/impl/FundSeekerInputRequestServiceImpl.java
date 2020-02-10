@@ -1427,9 +1427,17 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		PrimaryCorporateDetailMudraLoanReqRes response = new PrimaryCorporateDetailMudraLoanReqRes();
 		try {
 			PrimaryCorporateDetailMudraLoan corporateDetailMudraLoan = primaryCorporateDetailMudraLoanRepository.findFirstByApplicationIdAndApplicationProposalMappingProposalIdIsNullOrderByIdDesc(applicationId);
-			if (!CommonUtils.isObjectNullOrEmpty(corporateDetailMudraLoan)) {
-				BeanUtils.copyProperties(corporateDetailMudraLoan,response);	
+			// Default select No option discussed with Hiren Kavathiya and mandatory
+			if(!CommonUtils.isObjectNullOrEmpty(corporateDetailMudraLoan)){
+				response.setId(corporateDetailMudraLoan.getId().intValue());
+				response.setDrugLicense(corporateDetailMudraLoan.getDrugLicense());
+				response.setRegisterUnderShopEstAct(corporateDetailMudraLoan.getRegisterUnderShopEstAct());
+				response.setRegisterUnderMsme(corporateDetailMudraLoan.getRegisterUnderMsme());
+				response.setLatestGstReturnFilled(corporateDetailMudraLoan.getLatestGstReturnFilled());
+				response.setLatestItrFilled(corporateDetailMudraLoan.getLatestItrFilled());
+				response.setOtherStatutory(corporateDetailMudraLoan.getOtherStatutory());
 			}
+			
 		} catch (Exception e) {
 			logger.error("Throw Exception while getStatutoryObligationByApplicationId !!",e);
 			throw new LoansException(e);
