@@ -6,6 +6,8 @@ package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -22,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.capitaworld.api.workflow.model.WorkflowRequest;
@@ -45,17 +48,21 @@ import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.AssociatedConcernDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.LiabilitiesDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.MachineDetailMudraLoan;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatementDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetailMudraLoan;
+import com.capitaworld.service.loans.domain.fundseeker.retail.BankingRelation;
+import com.capitaworld.service.loans.model.AssociatedConcernDetailRequest;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponseString;
 import com.capitaworld.service.loans.model.DirectorPersonalDetailResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementDetailResponseString;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
+import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.CAM.AssetDetailsString;
 import com.capitaworld.service.loans.model.CAM.FinancialInputRequestDbl;
 import com.capitaworld.service.loans.model.CAM.FinancialInputRequestString;
@@ -66,8 +73,13 @@ import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
 import com.capitaworld.service.loans.model.corporate.MachineDetailMudraLoanRequestResponse;
 import com.capitaworld.service.loans.model.corporate.PrimaryCorporateDetailMudraLoanReqRes;
 import com.capitaworld.service.loans.model.corporate.PrimaryCorporateRequest;
+import com.capitaworld.service.loans.model.retail.BankRelationshipRequest;
+import com.capitaworld.service.loans.repository.common.CommonRepository;
 import com.capitaworld.service.loans.repository.fundprovider.FSParameterMappingRepository;
+import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.IneligibleProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.AssociatedConcernDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LiabilitiesDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
@@ -75,6 +87,8 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.MachineDeta
 import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailMudraLoanRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.BankingRelationlRepository;
+import com.capitaworld.service.loans.service.common.CommonService;
 import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CamReportPdfDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
@@ -116,12 +130,15 @@ import com.capitaworld.service.oneform.enums.LCBG_Status_SBI;
 import com.capitaworld.service.oneform.enums.MaritalStatusMst;
 import com.capitaworld.service.oneform.enums.MrktArrFinishedGoodsList;
 import com.capitaworld.service.oneform.enums.MudraOwningHouseMst;
+import com.capitaworld.service.oneform.enums.OngoingMudraLoan;
 import com.capitaworld.service.oneform.enums.OwningHouseMst;
 import com.capitaworld.service.oneform.enums.PurposeOfLoan;
+import com.capitaworld.service.oneform.enums.RegistrationWithGovernmentAuthoritiesList;
 import com.capitaworld.service.oneform.enums.ResidentStatusMst;
 import com.capitaworld.service.oneform.enums.SpouseDetailMst;
 import com.capitaworld.service.oneform.enums.Title;
 import com.capitaworld.service.oneform.enums.VisuallyImpairedMst;
+import com.capitaworld.service.oneform.enums.WcRenewalType;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.rating.model.FinancialInputRequest;
@@ -222,7 +239,31 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 	MachineDetailsRepository machineDetailsRepo;
     
     @Autowired
+	ProposalDetailsRepository proposalDetailsRepository;
+    
+    @Autowired
+	IneligibleProposalDetailsRepository ineligibleProposalDetailsRepository;
+    
+    @Autowired
+	private CommonRepository commonRepository;
+    
+    @Autowired
     private FSParameterMappingRepository fsParameterMappingRepository;
+    
+    @Autowired
+	BankingRelationlRepository bankingRelationlRepository;
+    
+    @Autowired
+	private CommonService commonService;
+    
+    @Autowired
+  	AssociatedConcernDetailRepository associatedConcernDetailRepository;
+    
+    @Autowired
+   	private CorporateApplicantService applicantService;
+    
+    @Autowired
+    private PrimaryCorporateDetailMudraLoanRepository primaryCorporateDetailsMudra;
 
 	private static final Logger logger = LoggerFactory.getLogger(InEligibleProposalCamReportServiceImpl.class);
 	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -319,12 +360,107 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 			// connectClient.getByAppStageBusinessTypeId(applicationId,
 			// ConnectStage.COMPLETE.getId(),
 			// com.capitaworld.service.loans.utils.CommonUtils.BusinessType.EXISTING_BUSINESS.getId());
-			Date InPrincipleDate = loanApplicationRepository.getInEligibleModifiedDate(applicationId,ConnectStage.ONE_FORM.getId(), 6);
+			Date InPrincipleDate = loanApplicationRepository.getInEligibleModifiedDate(applicationId,ConnectStage.MUDRA_ONE_FORM.getId(), 6);
 			if (!CommonUtils.isObjectNullOrEmpty(InPrincipleDate)) {
 				map.put("dateOfInEligible", !CommonUtils.isObjectNullOrEmpty(InPrincipleDate)? CommonUtils.DATE_FORMAT.format(InPrincipleDate): "-");
 			}
 		} catch (Exception e2) {
 			logger.error(CommonUtils.EXCEPTION, e2);
+		}
+		
+		 //Bank Details for MSME added.
+        map.put("bankDetails", getBranchDetails(applicationId, userId, null));
+        
+        PrimaryCorporateDetailMudraLoanReqRes primaryCorporateDetailMudraLoanReqRes = new PrimaryCorporateDetailMudraLoanReqRes(); 
+		PrimaryCorporateDetailMudraLoan primaryCorporateDetailMudraLoan = primaryCorporateDetailsMudra.findFirstByApplicationIdAndApplicationProposalMappingProposalIdOrderByIdDesc(applicationId, null);
+		BeanUtils.copyProperties(primaryCorporateDetailMudraLoan, primaryCorporateDetailMudraLoanReqRes);
+		if (primaryCorporateDetailMudraLoanReqRes != null) {
+			map.put("statutoryObligation", primaryCorporateDetailMudraLoanReqRes);
+		}
+		
+		//ITR (CHECK IF UPLOADED USING XML OR ONLINE)
+		try {
+			ITRConnectionResponse itrConnectionResponse= itrClient.getIsUploadAndYearDetails(applicationId);
+			if(!CommonUtils.isObjectNullOrEmpty(itrConnectionResponse)) {
+				map.put("checkItr", itrConnectionResponse.getData());
+			}
+		}catch(Exception e) {
+			logger.error("Error while getting ITR data : ",e);
+		}
+		
+		//FOR NO-ITR DATA (MUDRA - CAM)
+		CorporateApplicantRequest corpApp = applicantService.getCorporateApplicantDetails(applicationId);
+		LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
+		corpApp.getIncomeDetails().get("creditors");
+		loansResponse.setData(corpApp.getIncomeDetails());
+		
+		
+		
+		try {
+				Map<String, Object> incomeDetails = corpApp.getIncomeDetails();
+				
+				Map<String, Object> creditor = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("creditors").toString(), Map.class) ; 
+				creditor.put("label", "Creditors");
+				incomeDetails.put("creditors", creditor);
+				
+	
+				  Map<String, Object> profitAfterTax = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("profitAfterTax").toString(), Map.class) ;
+				  profitAfterTax.put("label","Net Profit / Loss"); 
+				  incomeDetails.put("profitAfterTax", profitAfterTax);
+				  
+				  Map<String, Object> totalAssets = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("totalAssets").toString(), Map.class) ;
+				  totalAssets.put("label", "Total Assets");
+				  incomeDetails.put("totalAssets", totalAssets);
+				  
+				 Map<String, Object> investmentInPlantMachinery = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("investmentInPlantMachinery").toString(), Map.class) ;
+				  investmentInPlantMachinery.put("label","Investment in Plant and Machinery / Equipments");
+				  incomeDetails.put("investmentInPlantMachinery", investmentInPlantMachinery);
+				  
+				  Map<String, Object> totalLiabilities = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("totalLiabilities").toString(), Map.class) ;
+				  totalLiabilities.put("label", "Total Liabilities");
+				  incomeDetails.put("totalLiabilities", totalLiabilities);
+				  
+				  Map<String, Object> networth = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("networth").toString(), Map.class) ;
+				  networth.put("label", "Networth");
+				  incomeDetails.put("networth", networth);
+				  
+				  Map<String, Object> debtors = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("debtors").toString(), Map.class) ;
+				  debtors.put("label", "Debtors");
+				  incomeDetails.put("debtors", debtors);
+				  
+				  Map<String, Object> inventory =  MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("inventory").toString(), Map.class) ;
+				  inventory.put("label", "Inventory");
+				  incomeDetails.put("inventory", inventory);
+				  
+				  Map<String, Object> sales = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("sales").toString(), Map.class) ;
+				  sales.put("label", "Sales"); 
+				  incomeDetails.put("sales", sales);
+	 
+				
+				
+				map.put("noItrIncomeMudra", incomeDetails);
+
+		} catch (Exception e) {
+				// TODO: handle exception
+			}
+		
+		// GET ASSOCIATE CONCERN DETAILS
+		List<AssociatedConcernDetailRequest> associatedConcernResList = new ArrayList<>(); 
+		List<AssociatedConcernDetail> associatedConcernDetailList =  associatedConcernDetailRepository.listAssociatedConcernFromAppId(applicationId);
+		
+		if (!CommonUtils.isListNullOrEmpty(associatedConcernDetailList)) {
+			for (AssociatedConcernDetail associatedConcern : associatedConcernDetailList) {
+				AssociatedConcernDetailRequest assoConcernDetailRes = new AssociatedConcernDetailRequest(); 
+				BeanUtils.copyProperties(associatedConcern, assoConcernDetailRes);
+				// SET ADDRESS
+				setAssociateAddress(assoConcernDetailRes);
+				associatedConcernResList.add(assoConcernDetailRes);
+			}
+		}	
+		try {
+			map.put("associateConcern", CommonUtils.printFields(associatedConcernResList, null));
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		
 		//GST Comparision by Maaz
@@ -399,77 +535,95 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 			logger.error(CommonUtils.EXCEPTION, e);
 		}
 
-		// DIRECTOR'S BACKGROUND
+		//DIRECTOR'S BACKGROUND
 		try {
 			List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList = backgroundDetailsService.getDirectorBackgroundDetailList(applicationId, userId);
 			List<DirectorBackgroundDetailResponseString> directorBackgroundDetailResponseList = new ArrayList<>();
 			for (DirectorBackgroundDetailRequest directorBackgroundDetailRequest : directorBackgroundDetailRequestList) {
 				DirectorBackgroundDetailResponseString directorBackgroundDetailResponse = new DirectorBackgroundDetailResponseString();
-				// directorBackgroundDetailResponse.setAchivements(directorBackgroundDetailRequest.getAchivements());
+				//directorBackgroundDetailResponse.setAchivements(directorBackgroundDetailRequest.getAchivements());
 				directorBackgroundDetailResponse.setAddress(directorBackgroundDetailRequest.getAddress());
-				// directorBackgroundDetailResponse.setAge(directorBackgroundDetailRequest.getAge());
-				directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo());
-				directorBackgroundDetailResponse.setDirectorsName((directorBackgroundDetailRequest.getSalutationId() != null? Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue(): null) + " " + directorBackgroundDetailRequest.getDirectorsName());
-				directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo().toUpperCase());
+				//directorBackgroundDetailResponse.setAge(directorBackgroundDetailRequest.getAge());
+				directorBackgroundDetailResponse.setDirectorsName((directorBackgroundDetailRequest.getSalutationId() != null ? Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue() : null )+ " " + directorBackgroundDetailRequest.getDirectorsName());
+				if(directorBackgroundDetailRequest.getPanNo() != null) {
+					directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo().toUpperCase());
+				}
+
 				String directorName = "";
-				if (directorBackgroundDetailRequest.getSalutationId() != null) {
+				if (directorBackgroundDetailRequest.getSalutationId() != null){
 					directorName = Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue();
 				}
-				directorName += " " + directorBackgroundDetailRequest.getDirectorsName();
+				directorName += " "+directorBackgroundDetailRequest.getDirectorsName();
 				directorBackgroundDetailResponse.setDirectorsName(directorName);
-				// directorBackgroundDetailResponse.setQualification(directorBackgroundDetailRequest.getQualification());
+				//directorBackgroundDetailResponse.setQualification(directorBackgroundDetailRequest.getQualification());
 				directorBackgroundDetailResponse.setTotalExperience(CommonUtils.convertValueWithoutDecimal(directorBackgroundDetailRequest.getTotalExperience()));
 				directorBackgroundDetailResponse.setNetworth(CommonUtils.convertValueIndianCurrency(directorBackgroundDetailRequest.getNetworth()).toString());
 				directorBackgroundDetailResponse.setDesignation(directorBackgroundDetailRequest.getDesignation());
 				directorBackgroundDetailResponse.setAppointmentDate(directorBackgroundDetailRequest.getAppointmentDate());
-				directorBackgroundDetailResponse.setDin(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDin())? decim.format(directorBackgroundDetailRequest.getDin()).toString(): "");
-				directorBackgroundDetailResponse.setMobile(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getMobile())? directorBackgroundDetailRequest.getMobile(): " ");
+				directorBackgroundDetailResponse.setDin(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDin())?decim.format(directorBackgroundDetailRequest.getDin()).toString() : "");
+				directorBackgroundDetailResponse.setMobile(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getMobile())?directorBackgroundDetailRequest.getMobile(): " ");
 				directorBackgroundDetailResponse.setDob(directorBackgroundDetailRequest.getDob());
-				if (directorBackgroundDetailRequest.getPanNo().charAt(3) == 'H' || directorBackgroundDetailRequest.getPanNo().charAt(3) == 'h') {
+				
+				if(directorBackgroundDetailRequest.getPanNo().charAt(3) == 'H' ||directorBackgroundDetailRequest.getPanNo().charAt(3) == 'h') {
 					directorBackgroundDetailResponse.setCibilScore("HUF");
-				} else {
-					try {
+				}else {                                                            
+                                                try {
 						CibilRequest cibilRequest = new CibilRequest();
 						cibilRequest.setPan(directorBackgroundDetailRequest.getPanNo());
+						cibilRequest.setApplicationId(applicationId);
 
-						CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilRequest);
-						if (!CommonUtils.isObjectNullOrEmpty(cibilScoreByPanCard)) {
-							if ("000-1".equalsIgnoreCase(cibilScoreByPanCard.getActualScore())) {
-								directorBackgroundDetailResponse.setCibilScore("-1");
-							} else {
-								directorBackgroundDetailResponse.setCibilScore(
-										Integer.valueOf(cibilScoreByPanCard.getActualScore()).toString());
+						List<CibilScoreLogRequest> response = cibilClient.getMultipleProviderScoreByApplicationIdAndPan(cibilRequest);
+						if(!CommonUtils.isListNullOrEmpty(response)) {
+							for(CibilScoreLogRequest cibilScoreLogRequest : response) {
+								String score = cibilScoreLogRequest.getActualScore();
+								if("000-1".equalsIgnoreCase(cibilScoreLogRequest.getActualScore())) {
+									score = "-1";
+								}else {
+									score = Integer.valueOf(cibilScoreLogRequest.getActualScore()).toString();								
+								}
+								if(cibilScoreLogRequest.getScoreName() != null && cibilScoreLogRequest.getScoreName().contains("CIBIL")) {
+									directorBackgroundDetailResponse.setCibilScore(score);								
+								}else if(cibilScoreLogRequest.getScoreName().contains("Experian")) {
+									directorBackgroundDetailResponse.setExperianScore(score);								
+								}else if(cibilScoreLogRequest.getScoreName().contains("HIGHMARK")) {
+									directorBackgroundDetailResponse.setHighmarkScore(score);								
+								}
+								
 							}
-						} else {
-							directorBackgroundDetailResponse.setCibilScore("-");
 						}
-
-					} catch (Exception e) {
-						logger.error("Error while getting cibil details : ", e);
-					}
+					}catch(Exception e) {
+						logger.error("Error while getting cibil details : ",e);
+					}                                                    						
 				}
+				
+				Double loanObligation = financialArrangementDetailsService.getTotalOfEmiByApplicationIdAndDirectorId(applicationId,directorBackgroundDetailRequest.getId());
+				directorBackgroundDetailResponse.setLoanObligation(!CommonUtils.isObjectNullOrEmpty(loanObligation) ? loanObligation : 0);
+				
 				directorBackgroundDetailResponse.setPincode(directorBackgroundDetailRequest.getPincode());
 				directorBackgroundDetailResponse.setPersonalId(directorBackgroundDetailRequest.getPersonalId());
+				
 				try {
 					if (!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDistrictMappingId())) {
-						directorBackgroundDetailResponse.setPinData(
-								pincodeDateService.getById(directorBackgroundDetailRequest.getDistrictMappingId()));
+						directorBackgroundDetailResponse.setPinData(pincodeDateService.getById(directorBackgroundDetailRequest.getDistrictMappingId()));
 					}
 				} catch (Exception e) {
-					logger.error(CommonUtils.EXCEPTION, e);
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
+				
 				directorBackgroundDetailResponse.setStateCode(directorBackgroundDetailRequest.getStateCode());
 				directorBackgroundDetailResponse.setCity(directorBackgroundDetailRequest.getCity());
-				directorBackgroundDetailResponse.setGender((!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getGender())? Gender.getById(directorBackgroundDetailRequest.getGender()).getValue(): " "));
-				directorBackgroundDetailResponse.setRelationshipType((!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getRelationshipType())? StringEscapeUtils.escapeXml(DirectorRelationshipType.getById(directorBackgroundDetailRequest.getRelationshipType()).getValue()): " "));
+				directorBackgroundDetailResponse.setGender((!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getGender()) ? Gender.getById(directorBackgroundDetailRequest.getGender()).getValue() : " "));
+				directorBackgroundDetailResponse.setRelationshipType((!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getRelationshipType())  ? StringEscapeUtils.escapeXml(DirectorRelationshipType.getById(directorBackgroundDetailRequest.getRelationshipType()).getValue()) : " "));
 				directorBackgroundDetailResponse.setIsMainDirector(directorBackgroundDetailRequest.getIsMainDirector());
 				directorBackgroundDetailResponse.setAadhar(directorBackgroundDetailRequest.getAadhar());
 				directorBackgroundDetailResponse.setFatherName(directorBackgroundDetailRequest.getFatherName());
-				directorBackgroundDetailResponse.setEducationalStatus(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getEducationalStatus())? StringEscapeUtils.escapeXml(EducationalStatusMst.getById(directorBackgroundDetailRequest.getEducationalStatus()).getValue().toString()): "-");
-				directorBackgroundDetailResponse.setVisuallyImpaired(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getVisuallyImpaired())? StringEscapeUtils.escapeXml(VisuallyImpairedMst.getById(directorBackgroundDetailRequest.getVisuallyImpaired()).getValue().toString()): "-");
-				directorBackgroundDetailResponse.setResidentStatus(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getResidentStatus())? StringEscapeUtils.escapeXml(ResidentStatusMst.getById(directorBackgroundDetailRequest.getResidentStatus()).getValue().toString()): "-");
-				directorBackgroundDetailResponse.setDirectorPersonalInfo(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest())? directorBackgroundDetailRequest.getDirectorPersonalDetailRequest(): " ");
-				// NATIONALITY
+				directorBackgroundDetailResponse.setEducationalStatus(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getEducationalStatus()) ? StringEscapeUtils.escapeXml(EducationalStatusMst.getById(directorBackgroundDetailRequest.getEducationalStatus()).getValue().toString()) : "-");
+				directorBackgroundDetailResponse.setVisuallyImpaired(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getVisuallyImpaired()) ? StringEscapeUtils.escapeXml(VisuallyImpairedMst.getById(directorBackgroundDetailRequest.getVisuallyImpaired()).getValue().toString()) : "-");
+				directorBackgroundDetailResponse.setResidentStatus(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getResidentStatus()) ? StringEscapeUtils.escapeXml(ResidentStatusMst.getById(directorBackgroundDetailRequest.getResidentStatus()).getValue().toString()) : "-");
+				directorBackgroundDetailResponse.setDirectorPersonalInfo(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest()) ? directorBackgroundDetailRequest.getDirectorPersonalDetailRequest() : " " );
+				directorBackgroundDetailResponse.setIsPhysicallyhandicapped(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getPhysicallyHandicapped()) ? VisuallyImpairedMst.getById(directorBackgroundDetailRequest.getPhysicallyHandicapped()).toString() : "-");
+			
+				//NATIONALITY
 				List<Long> countryList = new ArrayList<>();
 				if (!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getNationality()))
 					countryList.add(Long.valueOf(directorBackgroundDetailRequest.getNationality()));
@@ -486,47 +640,45 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 							directorBackgroundDetailResponse.setNationality("NA");
 						}
 					} catch (Exception e) {
-						logger.error(CommonUtils.EXCEPTION, e);
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 				}
+				
 				try {
-					if (!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getIsMainDirector())&& directorBackgroundDetailRequest.getIsMainDirector() == true) {
-						DirectorPersonalDetailResponse directorPersonalDetailResponse = new DirectorPersonalDetailResponse();
-						if (!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest())) {
-
-							directorPersonalDetailResponse.setMaritalStatus(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getMaritalStatus()) ? StringEscapeUtils.escapeXml(MaritalStatusMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getMaritalStatus()).getValue().toString()): "-");
-							directorPersonalDetailResponse.setSpouseName(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getSpouseName())? StringEscapeUtils.escapeXml(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getSpouseName()): "-");
-							directorPersonalDetailResponse.setSpouseDetail(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getSpouseDetail()) ? StringEscapeUtils.escapeXml(SpouseDetailMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getSpouseDetail()).getValue().toString()): "-");
+					if(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getIsMainDirector()) && directorBackgroundDetailRequest.getIsMainDirector() == true) {
+						DirectorPersonalDetailResponse directorPersonalDetailResponse= new DirectorPersonalDetailResponse();
+						if(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest())) {	
+							directorPersonalDetailResponse.setMaritalStatus(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getMaritalStatus()) ? StringEscapeUtils.escapeXml(MaritalStatusMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getMaritalStatus()).getValue().toString()) : "-");
+							directorPersonalDetailResponse.setSpouseName(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getSpouseName()) ? StringEscapeUtils.escapeXml(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getSpouseName()) : "-" );
+							directorPersonalDetailResponse.setSpouseDetail(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getSpouseDetail()) ? StringEscapeUtils.escapeXml(SpouseDetailMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getSpouseDetail()).getValue().toString()) : "-");
 							directorPersonalDetailResponse.setIdProof(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getIdProof()) ? IdProofMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getIdProof()).getValue() : "-");
+							directorPersonalDetailResponse.setAssessedForIt(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getAssessedForIt()) ? StringEscapeUtils.escapeXml(AssessedForITMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getAssessedForIt()).getValue().toString()) : "-");
 							directorPersonalDetailResponse.setOwningHouse(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOwningHouse()) ? StringEscapeUtils.escapeXml(MudraOwningHouseMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOwningHouse()).getValue().toString()) : "-");
-							directorPersonalDetailResponse.setAssessedForIt(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getAssessedForIt()) ? StringEscapeUtils.escapeXml(AssessedForITMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getAssessedForIt()).getValue().toString()): "-");
-							directorPersonalDetailResponse.setOwningHouse(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOwningHouse())? StringEscapeUtils.escapeXml(OwningHouseMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOwningHouse()).getValue().toString()): "-");
-							directorPersonalDetailResponse.setNoOfChildren(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getNoOfChildren())? directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getNoOfChildren(): null);
-							directorPersonalDetailResponse.setHaveLiPolicy(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveLiPolicy()) ? StringEscapeUtils.escapeXml(HaveLIMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveLiPolicy()).getValue().toString()): "-");
-							Double loanObligation = financialArrangementDetailsService.getTotalEmiOfAllDirByApplicationId(applicationId);
-							directorBackgroundDetailResponse.setLoanObligation(!CommonUtils.isObjectNullOrEmpty(loanObligation) ? loanObligation : 0);
-							map.put("loanObligation1",loanObligation != null ? CommonUtils.CurrencyFormat(loanObligation.toString()) : 0);
-							
+							directorPersonalDetailResponse.setNoOfChildren(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getNoOfChildren()) ? directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getNoOfChildren() : 0 );
+							directorPersonalDetailResponse.setHaveLiPolicy(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveLiPolicy()) ? StringEscapeUtils.escapeXml(HaveLIMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveLiPolicy()).getValue().toString()) : "-");
+
 							Boolean isSameIdProof = directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getIsSameAddIdProof(); 									
-							directorPersonalDetailResponse.setIsSameAddIdProof((isSameIdProof) ? "Yes" : "No");
+							directorPersonalDetailResponse.setIsSameAddIdProof(!CommonUtils.isObjectNullOrEmpty(isSameIdProof) ? (isSameIdProof ? "Yes" : "No") : "No");
+							
 							directorPersonalDetailResponse.setCertificationCourse(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getCertificationCourse()) ? CertificationCourseMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getCertificationCourse()).getValue() : "-" );
 							directorPersonalDetailResponse.setOtherIncomeSource(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOtherIncomeSource()) ? directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOtherIncomeSource() : 0 );
-							// REGISTER WITH GOV AUTHORITIES
-				            List<Integer> govAuthorities = fsParameterMappingRepository.getParametersByApplicationIdAndType(applicationId, FSParameterMst.GOV_SCHEMES.getId());
-				            if (!CommonUtils.isListNullOrEmpty(govAuthorities)) {
-				                String govAuthValue  = "";
-				                for (int i = 0; i < govAuthorities.size(); i++) {
-				                    String authority =     GovSchemesMst.getById(govAuthorities.get(i)).getValue();
-				                    govAuthValue = govAuthValue + ((i != 0) ? ", " : "" )+ authority;
-				                }
-				                map.put("govtScheme", govAuthValue);
-				                directorPersonalDetailResponse.setGovScheme(govAuthValue);
-				            }			
+							map.put("onGoingMudraLoan", directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOngoingMudraLoan() != null ? OngoingMudraLoan.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOngoingMudraLoan()).getValue() : "-"  );
+							// COVERED IN GOV_SCHEMES
+							List<Integer> govSchemes = fsParameterMappingRepository.getParametersByApplicationIdAndType(applicationId, FSParameterMst.GOV_SCHEMES.getId());
+							if (!CommonUtils.isListNullOrEmpty(govSchemes)) {
+								String govScheme  = ""; 
+								for (int i = 0; i < govSchemes.size(); i++) {
+									String authority = GovSchemesMst.getById(govSchemes.get(i)).getValue();
+									govScheme = govScheme + ((i != 0) ? ", " : "" )+ authority;
+								}
+								directorPersonalDetailResponse.setGovScheme(govScheme);
+								map.put("govtScheme", govScheme);
+							}									
 							
 							directorBackgroundDetailResponse.setDirectorPersonalInfo(directorPersonalDetailResponse);
 						}
 					}
-				} catch(Exception e) {
+				}catch(Exception e) {
 					logger.error("error while getting main directors details : ",e);
 				}
 				directorBackgroundDetailResponseList.add(directorBackgroundDetailResponse);
@@ -536,6 +688,18 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		catch (Exception e) {
 			logger.error("Error in getting directors background details : ",e);
 		}
+		
+		// REGISTER WITH GOV AUTHORITIES
+		List<Integer> govAuthorities = fsParameterMappingRepository.getParametersByApplicationIdAndType(applicationId, FSParameterMst.GOV_AUTHORITIES.getId());
+		if (!CommonUtils.isListNullOrEmpty(govAuthorities)) {
+			String govAuthValue  = ""; 
+			for (int i = 0; i < govAuthorities.size(); i++) {
+				String authority = 	RegistrationWithGovernmentAuthoritiesList.fromId(govAuthorities.get(i)).getValue();
+				govAuthValue = govAuthValue + ((i != 0) ? ", " : "" )+ authority;
+			}
+			map.put("govtAuthority", govAuthValue);
+		}
+		
 		
 		// MUDRA LOAN DETAILS
 		PrimaryCorporateDetailMudraLoan mlDetail = mudraLoanRepo.findFirstByApplicationIdAndApplicationProposalMappingProposalIdIsNullOrderByIdDesc(applicationId);
@@ -562,7 +726,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		}
 		map.put("machineDetailsMudra", mlDetailsRes);
 		
-		
+		map.put("applicationType", (loanApplicationMaster.getWcRenewalStatus() != null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue() : "New" ));
 
 		try {
 			String cmrScore = cibilClient.getCMRScore(applicationId);
@@ -579,6 +743,8 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 
 			logger.error("error while getting cmr score : ", e);
 		}
+		
+
 
 		// MATCHES RESPONSE
 		try {
@@ -586,7 +752,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 			matchRequest.setApplicationId(applicationId);
 			/* matchRequest.setProductId(productId); */
 			MatchDisplayResponse matchResponse = matchEngineClient.displayMatchesOfCorporate(matchRequest);
-			map.put("matchesResponse",!CommonUtils.isListNullOrEmpty(matchResponse.getMatchDisplayObjectList())? CommonUtils.printFields(matchResponse.getMatchDisplayObjectList(), null): " ");
+			map.put("matchesResponse",!CommonUtils.isObjectNullOrEmpty(matchResponse.getMatchDisplayObjectMap())? CommonUtils.printFields(matchResponse.getMatchDisplayObjectMap(), null): " ");
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION, e);
 		}
@@ -625,10 +791,12 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		 * applicationId); map.put("loanObligation1", loanObligation != null ?
 		 * CommonUtils.CurrencyFormat(loanObligation.toString()) : 0);
 		 */
+		
+		
 
 		try {
 			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
-			map.put("loanApp",primaryCorporateDetail.getLoanAmount()!= null ? CommonUtils.convertValueIndianCurrency(primaryCorporateDetail.getLoanAmount()) : 0);
+			map.put("loanAmtApplied", primaryCorporateDetail.getLoanAmount()!= null ? CommonUtils.convertValueIndianCurrency(primaryCorporateDetail.getLoanAmount()) : 0);
 			map.put("loanType",!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getPurposeOfLoanId())? PurposeOfLoan.getById(primaryCorporateDetail.getPurposeOfLoanId()).getValue().toString(): " ");
 			map.put("promotorsContribution",CommonUtils.convertValueIndianCurrency(primaryCorporateRequest.getPromoterContribution()));
 			map.put("productDesc", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getProductServiceDescription()) ? StringEscapeUtils.escapeXml(primaryCorporateDetail.getProductServiceDescription()) : null);
@@ -748,6 +916,11 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		} catch (Exception e) {
 			logger.error("Error while getting perfios data : ", e);
 		}
+		
+		
+		
+		
+		
 
 		return map;
 
@@ -1653,5 +1826,101 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		financials.put((currentYear - 3), yrBeforePrevFinYear);
 		logger.info("financials=========" + financials.toString());
 	}
+	
+	public Map<String ,Object> getBranchDetails(Long applicationId ,Long userId ,Long proposalId){
+		//Fetch Bank Details
+		Map<String, Object> bankData = new HashMap<String, Object>();
+		try {
+			Long orgId = null;
+			if(proposalId != null) {
+				orgId = proposalDetailsRepository.getOrgIdByProposalId(proposalId);
+			}else {
+				orgId = ineligibleProposalDetailsRepository.getOrgId(applicationId);
+			}
+			List<Object[]> listBankData = commonRepository.getBankDetails(applicationId, orgId);
+			if(!CommonUtils.isListNullOrEmpty(listBankData) && !CommonUtils.isObjectNullOrEmpty(listBankData.get(0))) {
+				
+				String bankAddress = (listBankData.get(0)[5] != null ? listBankData.get(0)[5] : "") + (listBankData.get(0)[6] != null ? " ," + listBankData.get(0)[6] : "") 
+						+ (listBankData.get(0)[7] != null ? " ," +listBankData.get(0)[7] : "") + (listBankData.get(0)[8] != null ? " - " + listBankData.get(0)[8] : "");
+				bankData.put("currentBankAddress", !CommonUtils.isObjectNullOrEmpty(bankAddress) ? StringEscapeUtils.escapeXml(bankAddress) : "-");
+				bankData.put("bankName", listBankData.get(0)[9] != null ? listBankData.get(0)[9] : "-");
+				if(listBankData.size() > 1 && !CommonUtils.isObjectNullOrEmpty(listBankData.get(1))) {
+					String prevBankAddress = (listBankData.get(1)[5] != null ? listBankData.get(1)[5] : "") + (listBankData.get(1)[6] != null ? " ," + listBankData.get(1)[6] : "") 
+							+ (listBankData.get(1)[7] != null ? " ," +listBankData.get(1)[7] : "") + (listBankData.get(1)[8] != null ? " - " + listBankData.get(1)[8] : "");
+					bankData.put("previousBankAddress", !CommonUtils.isObjectNullOrEmpty(bankAddress) ? StringEscapeUtils.escapeXml(prevBankAddress) : "-");
+				}
+			}
+			
+			LocalDate today = LocalDate.now();
+            List<BankRelationshipRequest> bankRelationshipRequests = new ArrayList<>();
+            List<BankingRelation> bankingRelations = bankingRelationlRepository.listBankRelationAppId(applicationId);
+            for(BankingRelation bankingRelation : bankingRelations) {
+            	BankRelationshipRequest bankRelationshipRequest	= new BankRelationshipRequest();
+            	BeanUtils.copyProperties(bankingRelation, bankRelationshipRequest);
+            	if (bankingRelation.getSinceYear() != null && bankingRelation.getSinceMonth() != null) {
+					LocalDate since = LocalDate.of(bankingRelation.getSinceYear(), bankingRelation.getSinceMonth(),1);
+					Period age = Period.between(since, today);
+					bankRelationshipRequest.setSinceYear(age.getYears());
+					bankRelationshipRequest.setSinceMonth(age.getMonths());
+					bankRelationshipRequest.setSinceWhen((bankRelationshipRequest.getSinceYear() != null ? bankRelationshipRequest.getSinceYear() +" year " : "") + " " +(bankRelationshipRequest.getSinceMonth() != null ? bankRelationshipRequest.getSinceMonth()+" months" :  "" ));
+				}
+            	bankRelationshipRequests.add(bankRelationshipRequest);
+            }
+            bankData.put("bankingRelationShip", bankRelationshipRequests);
+			
+			try {
+	            UserResponse campaignUser = usersClient.isExists(userId ,null);
+	            if(campaignUser != null && campaignUser.getData() != null && campaignUser.getData().equals(true)) {
+	                bankData.put("typeOfUser", "Bank Specific");
+	            }else {
+	            	bankData.put("typeOfUser", "Market Place");
+	            }
+	        } catch (Exception e2) {
+	            logger.info("error while campaign user check ==>" , e2);
+	        }
+			
+			return !bankData.isEmpty() ? bankData : null;
+		}catch (Exception e) {
+			logger.error("Error/Exception while getting Bank Details Of ApplicationId==>{}  ..Error==>{}",applicationId ,e);
+		}
+		return null;
+	}
+	
+	public void setAssociateAddress(AssociatedConcernDetailRequest asso) {
+		String address = "";
+		
+		if (!CommonUtils.isObjectListNull(asso.getPremiseNumber())) {
+			address = address + asso.getPremiseNumber();
+		}
+		
+		if (!CommonUtils.isObjectListNull(asso.getLandMark())) {
+			address = address + ", " + asso.getLandMark();
+		}
+		
+		Long cityId = asso.getCityId() ;
+		Integer stateId = asso.getStateId();
+		Integer countryId = asso.getCountryId();
+		
+		if(cityId != null || stateId != null || countryId != null) {
+			Map<String ,Object> mapData = commonService.getCityStateCountryNameFromOneForm(cityId, stateId, countryId);
+			
+			if(mapData != null) {	
+				String cityName = mapData.get(CommonUtils.CITY_NAME).toString();
+				String stateName = mapData.get(CommonUtils.STATE_NAME).toString();
+				String countryName = mapData.get(CommonUtils.COUNTRY_NAME).toString();
+				
+				if (cityName != null) {					
+					address = address + ", " + cityName; 
+				}
+				if (stateName != null) {					
+					address = address + ", " + stateName; 
+				}
+				if (countryName != null) {					
+					address = address + ", " + countryName; 
+				}
+			}
+		}
+		asso.setAddress(address);
+	}	
 
 }

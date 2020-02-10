@@ -2143,6 +2143,16 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			                        }
 			                        /*data.put("monthWiseMomSales", responseMom);*/
 			                        resp1.setMonthWiseMomSales(responseMom);
+			                        // get only last 12 month gst data
+			                        List<MomSales> last12momSales = responseMom.subList(responseMom.size() - 12 , responseMom.size());
+			                        resp1.setLastTwelveMonthMomSales(last12momSales);
+			                        
+			                        // calculate last 12 month mom total
+			                        Double last12totalSales =0.0d;
+			                        for (MomSales sales : last12momSales) {
+			                        	last12totalSales += Double.valueOf(CommonUtils.convertStringCurrencyToDouble(sales.getValue()));
+									}
+			                        resp1.setLast12totalSales(last12totalSales);
 			                    }
 								Double totalSales =0.0d;
 								if(resp1.getMomSales() != null) {

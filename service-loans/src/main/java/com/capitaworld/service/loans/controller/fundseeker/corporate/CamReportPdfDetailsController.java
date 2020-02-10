@@ -63,7 +63,10 @@ public class CamReportPdfDetailsController {
 	private static final String ORIGINAL_FILE_NAME = "originalFileName";
 	private static final String ERROR_WHILE_GETTING_MAP_DETAILS = "Error while getting MAP Details==>";
 	private static final String INELIGIBLE_CAM_REPORT = "INELIGIBLECAMREPORT";
+	private static final String INELIGIBLE_CAM_REPORT_MUDRA = "MUDRALOANINELIGIBLECAM";
 
+	
+	/* MUDRA LOAN PRIMARY CAM REPORT */
 	@GetMapping(value = {"/getPrimaryDataMap/{applicationId}/{productMappingId}/{proposalId}" ,"/getPrimaryDataMap/{applicationId}"}, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getPrimaryDataMap(@PathVariable(value = "applicationId") Long applicationId,@PathVariable(name = "productMappingId" ,required = false) Long productId,
 			@PathVariable(name ="proposalId" ,required = false) Long proposalId ,HttpServletRequest request)  {
@@ -246,8 +249,8 @@ public class CamReportPdfDetailsController {
 			Map<String,Object> response = inEligibleProposalCamReportService.getInEligibleCamReport(applicationId);
 			ReportRequest reportRequest = new ReportRequest();
 			reportRequest.setParams(response);
-			reportRequest.setTemplate(INELIGIBLE_CAM_REPORT);
-			reportRequest.setType(INELIGIBLE_CAM_REPORT);
+			reportRequest.setTemplate("MUDRALOANINELIGIBLECAM");
+			reportRequest.setType("MUDRALOANINELIGIBLECAM");
 			byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
 			MultipartFile multipartFile = new DDRMultipart(byteArr);
 			  JSONObject jsonObj = new JSONObject();
