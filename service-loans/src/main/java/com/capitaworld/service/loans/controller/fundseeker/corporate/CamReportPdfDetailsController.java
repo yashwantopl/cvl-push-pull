@@ -354,6 +354,8 @@ public class CamReportPdfDetailsController {
 		return gstResponse.getData();
 	}
 	
+	
+	//APPLICATION FORM MUDRA LOAN
 	@GetMapping(value = {"/getApplicationForm/{applicationId}/{loanTypeId}","/getApplicationForm/{applicationId}/{productMappingId}/{proposalId}","/getApplicationForm/{applicationId}/{productMappingId}/{proposalId}/{loanTypeId}"} , produces = MediaType.APPLICATION_JSON_VALUE)
 	public byte[] getApplicationFormReport(@PathVariable(value = "applicationId") Long applicationId ,@PathVariable(name = "productMappingId" , required = false) Long productId, 
 			@PathVariable(name = "proposalId" , required = false) Long proposalId ,@PathVariable(name = "loanTypeId" , required = false) Long loanTypeId, HttpServletResponse  httpServletResponse,HttpServletRequest httpReq) {
@@ -377,8 +379,8 @@ public class CamReportPdfDetailsController {
 				response = camReportPdfDetailsService.getDetailsForApplicationForm(applicationId, productId, proposalId);
 				reportRequest = new ReportRequest();
 				reportRequest.setParams(response);
-				reportRequest.setTemplate("MSMEAPPLICATIONFORM");
-				reportRequest.setType("MSMEAPPLICATIONFORM");
+				reportRequest.setTemplate("MUDRALOANAPPLICATIONFORM");
+				reportRequest.setType("MUDRALOANAPPLICATIONFORM");
 			}
 			if(reportRequest != null && !response.isEmpty()) {
 				byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
