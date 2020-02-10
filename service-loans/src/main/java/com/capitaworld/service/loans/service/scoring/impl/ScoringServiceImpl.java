@@ -1827,6 +1827,7 @@ public class ScoringServiceImpl implements ScoringService {
                     assetsDetailsTY = assetsDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 1 + "");
                 }*/
                 IndustryResponse industryResponse =null;
+                Integer businessTypeId= null;
                 logger.info("corporateApplicantDetail.getKeyVerticalSubsector()"+corporateApplicantDetail.getKeyVerticalSubsector());
                 if(corporateApplicantDetail.getKeyVerticalSector()!=null && corporateApplicantDetail.getKeyVerticalSubsector()!=null) {
                 	
@@ -1855,6 +1856,7 @@ public class ScoringServiceImpl implements ScoringService {
 						e.printStackTrace();
 					}
 					industryResponse = irrIndustryRequest.getIndustryResponse();
+					businessTypeId = industryResponse.getBusinessTypeId();
 					logger.info("::::::industryResponse.getBusinessTypeId()::::::"+industryResponse.getBusinessTypeId());
                 }
                 if (!CommonUtils.isObjectNullOrEmpty(scoreModelId)) {
@@ -2290,9 +2292,16 @@ public class ScoringServiceImpl implements ScoringService {
                             
                             case ScoreParameter.MudraLoan.TYPE_OF_ACTIVITY_ML: {
         						if (!CommonUtils.isObjectNullOrEmpty(industryResponse)) {
+        							/*if (com.capitaworld.service.rating.utils.CommonUtils.BusinessType.MANUFACTURING == businessTypeId) {
+        								natureOfEntity = "Manufacturer";
+        							} else if (com.capitaworld.service.rating.utils.CommonUtils.BusinessType.SERVICE == businessTypeId) {
+        								natureOfEntity = "Service";
+        							} else if (com.capitaworld.service.rating.utils.CommonUtils.BusinessType.TRADING == businessTypeId) {
+        								natureOfEntity = "Trader";
+        							}*/
 
         							scoringParameterRequest.setTypeOfActivity_p(true);
-        							scoringParameterRequest.setTypeOfActivity(industryResponse.getBusinessTypeId());
+        							scoringParameterRequest.setTypeOfActivity(businessTypeId);
         						}
         						else {
             						scoringParameterRequest.setTypeOfActivity_p(false);
