@@ -945,7 +945,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		    	Double salesValue = yearEntry.getValue() != null ? Double.parseDouble(yearEntry.getValue().toString()) : 0.0d;
 		    	operatingStatementDetails.setYear(yearEntry.getKey());
 		    	operatingStatementDetails.setNetSales(salesValue);
-		    	if(finYearStmt.equals("Projected")) {
+		    	if((!CommonUtils.isObjectNullOrEmpty(isItrManualFilled) && isItrManualFilled) || finYearStmt.equalsIgnoreCase("Projected")) { // Discussed with Captain Akki	
 		    		operatingStatementDetails.setDomesticSales(salesValue); // Discussed with gaurav bhai		    		
 		    	}
 		    	operatingStatementDetails.setCreatedDate(new Date());
