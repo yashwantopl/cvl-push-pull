@@ -414,16 +414,6 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 				Boolean result = saveLoanSanctionDetail(loanSanctionRequest);
 				return !result ? 0 : 4;
 			}
-			/*loanSanctionRequest.setSanctionDate(new Date());
-			return saveLoanSanctionDetail(loanSanctionRequest);*/
-			/*logger.info("going to fetch username/password");
-			UserOrganisationRequest userOrganisationRequest = userClient.getByOrgId(loanSanctionRequest.getOrgId());
-			if(CommonUtils.isObjectListNull( userOrganisationRequest, userOrganisationRequest.getUsername(),  userOrganisationRequest.getPassword() )){
-				logger.warn("username/password found null ");
-				return false;
-			}
-			loanSanctionRequest.setUserName(userOrganisationRequest.getUsername());
-			loanSanctionRequest.setPassword(userOrganisationRequest.getPassword());*/
 		} catch (Exception e) {
 			logger.error("Error/Exception in saveSanctionDetailFromPopup() ----------------------->  Message : ",e);
 			return 0;
