@@ -38,6 +38,7 @@ import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateCoApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.SubSectorListRequest;
 import com.capitaworld.service.loans.repository.common.CommonRepository;
+import com.capitaworld.service.loans.repository.common.LoanRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
@@ -117,6 +118,9 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	
 	@Autowired
 	private OperatingStatementDetailsRepository operatingStatementDetailsRepository;
+	
+	@Autowired
+	private LoanRepository loanRepository;   
 
 	@Override
 	public void saveITRMappingData (CorporateApplicantRequest applicantRequest) {
@@ -894,6 +898,8 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	@SuppressWarnings("unchecked")
 	public boolean saveSalesITRResponse(CorporateApplicantRequest applicantRequest) throws LoansException {
 		try {
+			Boolean isItrManualFilled = loanRepository.getIsItrManualFilled(applicantRequest.getApplicationId());
+			
 			logger.info("Enter in saveSalesITRResponse");
 			Map<String, Object> incomeDetails = applicantRequest.getIncomeDetails();
 			
@@ -939,7 +945,9 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		    	Double salesValue = yearEntry.getValue() != null ? Double.parseDouble(yearEntry.getValue().toString()) : 0.0d;
 		    	operatingStatementDetails.setYear(yearEntry.getKey());
 		    	operatingStatementDetails.setNetSales(salesValue);
-		    	operatingStatementDetails.setDomesticSales(salesValue); // Discussed with gaurav bhai
+		    	if((!CommonUtils.isObjectNullOrEmpty(isItrManualFilled) && isItrManualFilled) || finYearStmt.equalsIgnoreCase("Projected")) { // Discussed with Captain Akki	
+		    		operatingStatementDetails.setDomesticSales(salesValue); // Discussed with gaurav bhai		    		
+		    	}
 		    	operatingStatementDetails.setCreatedDate(new Date());
 		    	operatingStatementDetails.setCreatedBy(applicantRequest.getUserId());
 		    	operatingStatementDetails.setLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));

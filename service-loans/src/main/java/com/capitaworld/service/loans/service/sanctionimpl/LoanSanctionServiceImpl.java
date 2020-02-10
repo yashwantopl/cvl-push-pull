@@ -171,9 +171,6 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			loanSanctionDomainOld.setStatus(SanctionedStatusMaster.IN_PROGRES.getId());
 			/*loanSanctionDomainOld.setIsSanctionedFrom(1l);*/
 		}
-
-		if(loanSanctionRequest.getBusinessTypeId().intValue() != CommonUtils.BusinessType.MFI.getId())
-		{
 			//==================Sending Mail notification to Maker=============================
 			try{
 				fpAsyncComponent.sendEmailToFSWhenCheckerSanctionLoan(loanSanctionDomainOld);
@@ -183,7 +180,8 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			Integer count = proposalDetailsRepository.getCountOfProposalDetailsByApplicationId(loanSanctionDomainOld.getApplicationId());
 			if(count > 1) {
 				try {
-					sendMailToHOBOCheckerMakerForMultipleBanks(loanSanctionDomainOld.getApplicationId());
+					fpAsyncComponent.sendEmailToMakerHOBOWhenCheckerSanctionLoan(loanSanctionDomainOld);
+					//sendMailToHOBOCheckerMakerForMultipleBanks(loanSanctionDomainOld.getApplicationId());
 				}catch (IndexOutOfBoundsException e) {
 					logger.info("Application not from multiple bank applicationid:{}",loanSanctionDomainOld.getApplicationId());
 				}
@@ -197,7 +195,6 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 					logger.error("Exception : {}",e);
 				}
 			}
-		}
 		//=================================================================================
 		return loanSanctionRepository.save(loanSanctionDomainOld) != null;
 		}catch (Exception e) {
@@ -402,7 +399,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 		logger.info("Enter in saveSanctionDetailFromPopup() ----------------------------- sanctionRequest Data : "+ loanSanctionRequest.toString());
 		try {
 
-			if(loanSanctionRequest.getIsSanctionedFrom() == 2 && loanSanctionRequest.getBusinessTypeId() == 1){
+			if(loanSanctionRequest.getIsSanctionedFrom() == 2 && loanSanctionRequest.getBusinessTypeId() == 10){
 				//FIRST CHECK IF CURRENT PROPOSAL IS ELIGIBL FOR SANCTIONED OR NOT
 				Integer status = offlineProcessedAppRepository.checkBeforeOfflineSanctioned(loanSanctionRequest.getApplicationId());
 				if(status == 4) {//OFFLINE

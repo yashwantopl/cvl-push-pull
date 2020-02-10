@@ -2065,6 +2065,31 @@ public class LoanApplicationController {
 					HttpStatus.OK);
 		}
 	}
+	
+	@RequestMapping(value = "/getDetailsForSanctionPopup", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getDetailsForSanctionPopup(@RequestBody DisbursementRequest disbursementRequest, HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) {
+		try {
+			logger.info("start getDetailsForApproval()");
+			if(disbursementRequest.getIsIneligibleProposal() == null || disbursementRequest.getIsIneligibleProposal() == false) {
+				if (CommonUtils.isObjectListNull(disbursementRequest.getApplicationId(),disbursementRequest.getProductMappingId())) {
+					logger.warn(ALL_PARAMETER_MUST_NOT_BE_NULL_MSG);
+					return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+				}
+			}else if(disbursementRequest.getIsIneligibleProposal() != null && disbursementRequest.getIsIneligibleProposal() == true && CommonUtils.isObjectNullOrEmpty(disbursementRequest.getApplicationId()) ) {
+					logger.warn("Application Id must not be null");
+					return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			LoansResponse response = new LoansResponse(CommonUtils.SUCCESS, HttpStatus.OK.value());
+			response.setData(loanApplicationService.getDetailsForSanction(disbursementRequest));
+			logger.info("end getDetailsForApproval()");
+			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getDetailsForApproval", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
 
 	@RequestMapping(value = "/saveDetailsForSanctionPopup", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> saveDetailsForSanctionPopup(@RequestBody LoanSanctionRequest loanSanctionRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
