@@ -67,6 +67,8 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 	private FormulaEvaluator evaluator;
 
 	private static final Logger logger = LoggerFactory.getLogger(DownloadCMAFileServiceImpl.class);
+	
+	private static final String FINANCIAL_YEAR = "Audited";
     
 /*	private static final String PROFITIBILITY_SHEET ="PS";
 	
@@ -289,7 +291,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 			temp = 0.0 ;
 
 			List<LiabilitiesDetails> liabilitiesDetailsList = liabilitiesDetailsRepository.getByApplicationIdAndProposalIdNULL(applicationId);
-
+			
 			//------------------------------- START FOR FIX FIRST THREE ROW IN EXCEL SHEET
 			List<Integer> libYearList = new ArrayList<>(liabilitiesDetailsList.size());
 			for (LiabilitiesDetails liabilitiesDetails : liabilitiesDetailsList) {
@@ -641,12 +643,12 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 
 			evaluator = wb.getCreationHelper().createFormulaEvaluator();
 
-			List<OperatingStatementDetails> operatingStatementDetailsList = operatingStatementDetailsRepository.getByApplicationId(applicationId);
+			List<OperatingStatementDetails> operatingStatementDetailsList = operatingStatementDetailsRepository.getOSByApplicationId(applicationId);
 			//------------------------------- START FOR FIX FIRST THREE ROW IN EXCEL SHEET
 			List<Integer> yearList = new ArrayList<>(operatingStatementDetailsList.size());
 			for (OperatingStatementDetails operatingStatementDetails : operatingStatementDetailsList) {
 				String year = operatingStatementDetails.getYear();
-				if(!CommonUtils.isObjectNullOrEmpty(year)) {
+				if(!CommonUtils.isObjectNullOrEmpty(year) && FINANCIAL_YEAR.equalsIgnoreCase(operatingStatementDetails.getFinancialYearlyStatement())) {
 					yearList.add(Integer.parseInt(year));
 				}
 			}
@@ -803,13 +805,13 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 			// Liabilities Starts
 			temp = 0.0 ;
 
-			List<LiabilitiesDetails> liabilitiesDetailsList = liabilitiesDetailsRepository.getByApplicationId(applicationId);
+			List<LiabilitiesDetails> liabilitiesDetailsList = liabilitiesDetailsRepository.getLiabilitiesDetailsByApplicationId(applicationId);
 
 			//------------------------------- START FOR FIX FIRST THREE ROW IN EXCEL SHEET
 			List<Integer> libYearList = new ArrayList<>(liabilitiesDetailsList.size());
 			for (LiabilitiesDetails liabilitiesDetails : liabilitiesDetailsList) {
 				String year = liabilitiesDetails.getYear();
-				if(!CommonUtils.isObjectNullOrEmpty(year)) {
+				if(!CommonUtils.isObjectNullOrEmpty(year) && FINANCIAL_YEAR.equalsIgnoreCase(liabilitiesDetails.getFinancialYearlyStatement())) {
 					libYearList.add(Integer.parseInt(year));
 				}
 			}
@@ -930,13 +932,13 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 			
 			// Asset Starts
 
-			List<AssetsDetails> assetsDetailsList = assetsDetailsRepository.getByApplicationId(applicationId);
+			List<AssetsDetails> assetsDetailsList = assetsDetailsRepository.getAssetsByApplicationId(applicationId);
 
 			//------------------------------- START FOR FIX FIRST THREE ROW IN EXCEL SHEET
 			List<Integer> assetYearList = new ArrayList<>(assetsDetailsList.size());
 			for (AssetsDetails assetsDetails : assetsDetailsList) {
 				String year = assetsDetails.getYear();
-				if(!CommonUtils.isObjectNullOrEmpty(year)) {
+				if(!CommonUtils.isObjectNullOrEmpty(year) && FINANCIAL_YEAR.equalsIgnoreCase(assetsDetails.getFinancialYearlyStatement())) {
 					assetYearList.add(Integer.parseInt(year));
 				}
 			}
