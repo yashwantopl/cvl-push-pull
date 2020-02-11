@@ -3,9 +3,6 @@ package com.capitaworld.service.loans.service.scoring.impl;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -39,7 +36,6 @@ import com.capitaworld.cibil.api.model.CibilRequest;
 import com.capitaworld.cibil.api.model.CibilResponse;
 import com.capitaworld.cibil.api.model.CibilScoreLogRequest;
 import com.capitaworld.cibil.client.CIBILClient;
-import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.itr.api.model.ITRBasicDetailsResponse;
 import com.capitaworld.itr.api.model.ITRConnectionResponse;
 import com.capitaworld.itr.client.ITRClient;
@@ -66,9 +62,7 @@ import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.score.ScoreParameterRequestLoans;
 import com.capitaworld.service.loans.model.score.ScoringCibilRequest;
 import com.capitaworld.service.loans.model.score.ScoringRequestLoans;
-import com.capitaworld.service.loans.repository.CspCodeRepository;
 import com.capitaworld.service.loans.repository.common.LoanRepository;
-import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.ScoringRequestDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
@@ -80,16 +74,9 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingSt
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailMudraLoanRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.BankingRelationlRepository;
-import com.capitaworld.service.loans.repository.fundseeker.retail.CoApplicantDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.retail.CreditCardsDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryAutoLoanDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryHomeLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantIncomeRepository;
 import com.capitaworld.service.loans.service.common.BankBureauResponseService;
 import com.capitaworld.service.loans.service.fundprovider.FSParameterMappingService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.scoring.ScoringService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
@@ -115,7 +102,6 @@ import com.capitaworld.service.scoring.model.ScoringRequest;
 import com.capitaworld.service.scoring.model.ScoringResponse;
 import com.capitaworld.service.scoring.model.scoringmodel.ScoringModelReqRes;
 import com.capitaworld.service.scoring.utils.ScoreParameter;
-import com.capitaworld.service.thirdpaty.client.ThirdPartyClient;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -123,6 +109,7 @@ import com.google.gson.Gson;
 
 @Service
 @Transactional
+@SuppressWarnings({"unchecked","unused"})
 public class ScoringServiceImpl implements ScoringService {
 
 
@@ -168,8 +155,6 @@ public class ScoringServiceImpl implements ScoringService {
     @Autowired
     private UsersClient usersClient;
 
-    @Autowired
-    private ThirdPartyClient thirdPartyClient;
 
     @Autowired
     private CorporateDirectorIncomeDetailsRepository corporateDirectorIncomeDetailsRepository;
@@ -179,25 +164,10 @@ public class ScoringServiceImpl implements ScoringService {
 
     
     @Autowired
-    private CreditCardsDetailRepository creditCardsDetailRepository;
-    
-    @Autowired
-    private FinancialArrangementDetailsService financialArrangementDetailsService;
-
-    @Autowired
     private ITRClient itrClient;
 
     @Autowired
     private RetailApplicantDetailRepository retailApplicantDetailRepository;
-
-    @Autowired
-    private CoApplicantDetailRepository coApplicantDetailRepository;
-
-    @Autowired
-    private RetailApplicantIncomeRepository retailApplicantIncomeRepository;
-
-    @Autowired
-    private LoanApplicationService loanApplicationService;
 
     @Autowired
     private RatingClient ratingClient;
@@ -209,19 +179,7 @@ public class ScoringServiceImpl implements ScoringService {
     private ScoringRequestDetailRepository scoringRequestDetailRepository;
 
     @Autowired
-    private PrimaryHomeLoanDetailRepository primaryHomeLoanDetailRepository;
-
-    @Autowired
-    private PrimaryAutoLoanDetailRepository primaryAutoLoanDetailRepository;
-
-    @Autowired
-    private EligibilityClient eligibilityClient;
-
-    @Autowired
     private LoanRepository loanRepository;
-
-    @Autowired
-    private ProductMasterRepository productMasterRepository;
 
     @Autowired
     private BankBureauResponseService bankBureauResponseService;
@@ -230,13 +188,8 @@ public class ScoringServiceImpl implements ScoringService {
     private FSParameterMappingService fsParameterMappingService;
     
     @Autowired
-    private CspCodeRepository cspCodeRepository;
-    
-    @Autowired
     private PrimaryCorporateDetailMudraLoanRepository primaryCorporateDetailMudraLoanRepository;
     
-    private static final String ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING = "Error while getting retail applicant detail for personal loan scoring : ";
-    private static final String ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_HOME_LOAN_SCORING = "Error while getting retail applicant detail for Home loan scoring : ";
     private static final String ERROR_WHILE_GETTING_FIELD_LIST = "error while getting field list : ";
     private static final String ERROR_WHILE_CALLING_SCORING = "error while calling scoring : ";
 
@@ -1425,7 +1378,7 @@ public class ScoringServiceImpl implements ScoringService {
         }
     }
     
-    @SuppressWarnings("unchecked")
+    
 	private void setBureauScore(List<ScoringRequestLoans> scorReqLoansList, Long orgId) throws Exception {
     	logger.info("Enter setBureauScore --------------------------------->");
     	//put SET
@@ -1500,7 +1453,7 @@ public class ScoringServiceImpl implements ScoringService {
 		}
         
     }
-    @SuppressWarnings("unchecked")
+    
 	private void saveBureauScoringResponse(Map<String,Object> map,Long applicationId,Long fpProductId) {
     	BankBureauRequest bankBureauRequest = null;
 //    	Map<String,Map<String,Object>>
@@ -1539,7 +1492,8 @@ public class ScoringServiceImpl implements ScoringService {
     	
     }
 
-    private ScoringCibilRequest filterScore(Map<String,Object> map, Long scoringModelId,Long fieldMasterId) {
+    
+	private ScoringCibilRequest filterScore(Map<String,Object> map, Long scoringModelId,Long fieldMasterId) {
 		Object fieldMap = map.entrySet().stream().filter(x -> x.getKey().equalsIgnoreCase(fieldMasterId.toString())).map(x -> x.getValue()).findFirst().orElse(null);
 		if(fieldMap == null) {
 			logger.warn("No Object Found for Field master id == >{}-===Score ====>{}",fieldMasterId);			
@@ -1616,7 +1570,7 @@ public class ScoringServiceImpl implements ScoringService {
 		try {
 			cibilResponseDPD = cibilClient.getDPDLastXMonth(applicationId);
 			 if(!CommonUtils.isObjectNullOrEmpty(cibilResponseDPD) && !CommonUtils.isObjectNullOrEmpty(cibilResponseDPD.getListData())){
-                 List cibilDirectorsResponseList = cibilResponseDPD.getListData();
+                 List<?> cibilDirectorsResponseList = cibilResponseDPD.getListData();
                  int commercialVal = 0;
                  for (int j = 0; j < cibilDirectorsResponseList.size(); j++) {
                      String cibilResponseObj = cibilDirectorsResponseList.get(j).toString();
@@ -1725,7 +1679,7 @@ public class ScoringServiceImpl implements ScoringService {
         
         // Get Director Background detail
         Double age = 0.0d;
-        DirectorBackgroundDetail mainDirectorBackgroundDetail = directorBackgroundDetailsRepository.getMainDirectorByApplicationId(applicationId);
+        DirectorBackgroundDetail mainDirectorBackgroundDetail = directorBackgroundDetailsRepository.findFirstByApplicationIdIdAndIsMainDirectorIsTrueAndIsActiveIsTrueOrderByIdDesc(applicationId);
         if(!CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail) && !CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail.getDob()) ){
         	age = Math.ceil(CommonUtils.getAgeFromBirthDate(mainDirectorBackgroundDetail.getDob()).doubleValue());
         }
