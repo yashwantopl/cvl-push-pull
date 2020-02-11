@@ -44,6 +44,10 @@ public interface OperatingStatementDetailsRepository  extends JpaRepository<Oper
 	@Query(value=" SELECT * FROM ( SELECT * FROM fs_corporate_cma_operating_statement_details o WHERE o.application_id = :applicationId AND o.proposal_mapping_id IS NULL AND o.financial_yearly_statement = 'Audited'  AND o.is_active = TRUE ORDER BY o.year DESC LIMIT 3 ) AS t ORDER BY t.year " , nativeQuery = true )
 	public List<OperatingStatementDetails> getByApplicationId(@Param("applicationId") Long applicationId);
 	
+	//@Query(value="SELECT * FROM fs_corporate_cma_operating_statement_details o WHERE o.application_id = :applicationId AND o.proposal_mapping_id IS NULL AND o.financial_yearly_statement = 'Audited'  AND o.is_active = TRUE ORDER BY o.year LIMIT 3" , nativeQuery = true )
+	@Query(value = "SELECT o FROM OperatingStatementDetails o WHERE o.loanApplicationMaster.id = :applicationId AND o.isActive = true and o.applicationProposalMapping.proposalId = NULL ORDER BY o.year ASC ")
+	public List<OperatingStatementDetails> getOSByApplicationId(@Param("applicationId") Long applicationId);
+	
 	@Query(value=" SELECT * FROM ( SELECT * FROM fs_corporate_cma_operating_statement_details o WHERE o.application_id = :applicationId AND o.proposal_mapping_id = :proposalId AND o.financial_yearly_statement = 'Audited'  AND o.is_active = TRUE ORDER BY o.year DESC LIMIT 3 ) AS t ORDER BY t.year " , nativeQuery = true )
 	public List<OperatingStatementDetails> getByApplicationIdAndProposalIdForPushAPI(@Param("applicationId") Long applicationId,@Param("proposalId") Long proposalId);
 
