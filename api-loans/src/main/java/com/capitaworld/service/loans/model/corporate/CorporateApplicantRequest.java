@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.model.corporate;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -103,7 +104,9 @@ public class CorporateApplicantRequest implements Serializable {
 
 	private String registeredStreetName;
     
-    private Map<String, Object> incomeDetails;
+    //private Map<String, Object> incomeDetails;
+	private LinkedHashMap<String, Object> incomeDetails;
+	
     
     private Date dob;
     
@@ -464,16 +467,26 @@ public class CorporateApplicantRequest implements Serializable {
 		this.registeredStreetName = registeredStreetName;
 	}
 	
-	public Map<String, Object> getIncomeDetails() {
-		return incomeDetails;
-	}
-
-	public void setIncomeDetails(Map<String, Object> incomeDetails) {
-		this.incomeDetails = incomeDetails;
-	}
+//	public Map<String, Object> getIncomeDetails() {
+//		return incomeDetails;
+//	}
+//
+//	public void setIncomeDetails(Map<String, Object> incomeDetails) {
+//		this.incomeDetails = incomeDetails;
+//	}
+	
+	
 
 	public Date getDob() {
 		return dob;
+	}
+
+	public LinkedHashMap<String, Object> getIncomeDetails() {
+		return incomeDetails;
+	}
+
+	public void setIncomeDetails(LinkedHashMap<String, Object> incomeDetails) {
+		this.incomeDetails = incomeDetails;
 	}
 
 	public void setDob(Date dob) {

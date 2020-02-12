@@ -1109,7 +1109,8 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		}
 		
 		/******* GET INCOME DETAILS *******/
-		Map<String, Object> incomeDetails = new HashMap<>();
+		//Map<String, Object> incomeDetails = new HashMap<>();
+		LinkedHashMap<String, Object> incomeDetails = new LinkedHashMap<String, Object>();
 		
 		String sales = operatingStatementDetailsRepository.getNetSales(applicationId );
 		incomeDetails.put("sales", sales);
