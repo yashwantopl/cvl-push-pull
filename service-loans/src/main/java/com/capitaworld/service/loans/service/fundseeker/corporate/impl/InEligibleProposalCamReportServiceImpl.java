@@ -807,8 +807,6 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 			logger.error("Problem to get Data of Financial Arrangements Details {}", e);
 		}
 		
-		SortTool sortTool = new SortTool();
-		map.put("sortTool", sortTool);
 		/*
 		 * get loan obligation of dir Double loanObligation =
 		 * financialArrangementDetailsService.getTotalEmiOfAllDirByApplicationId(
