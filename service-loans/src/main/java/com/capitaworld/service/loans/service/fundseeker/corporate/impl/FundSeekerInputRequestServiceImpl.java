@@ -811,6 +811,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		ConnectResponse postOneForm;
 		try {
 			postOneForm = connectClient.postOneForm(applicationId, userId, businessTypeId,isNbfcUser);
+			logger.info("postOneForm Reponse = >{}",postOneForm);
 			if (postOneForm != null) {
 				/*logger.info("postOneForm=======================>Client Connect Response=============>{}",
 						postOneForm.toString());*/
