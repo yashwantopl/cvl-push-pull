@@ -5,15 +5,18 @@ package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -393,56 +396,65 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 		corpApp.getIncomeDetails().get("creditors");
 		loansResponse.setData(corpApp.getIncomeDetails());
+		Date dateNoItr = new Date();
+		dateNoItr = corpApp.getDob();
+		int ii = (int) (dateNoItr.getTime()/1000);
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeInMillis(ii);
+		map.put("noItrYear", cal.get(Calendar.YEAR));
 		
-		
-		
+		String month = cal.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault());
+		map.put("noItrMonth",month);
 		try {
-				Map<String, Object> incomeDetails = corpApp.getIncomeDetails();
-				
-				Map<String, Object> creditor = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("creditors").toString(), Map.class) ; 
-				creditor.put("label", "Creditors");
-				incomeDetails.put("creditors", creditor);
-				
-	
-				  Map<String, Object> profitAfterTax = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("profitAfterTax").toString(), Map.class) ;
-				  profitAfterTax.put("label","Net Profit / Loss"); 
-				  incomeDetails.put("profitAfterTax", profitAfterTax);
-				  
-				  Map<String, Object> totalAssets = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("totalAssets").toString(), Map.class) ;
-				  totalAssets.put("label", "Total Assets");
-				  incomeDetails.put("totalAssets", totalAssets);
-				  
-				 Map<String, Object> investmentInPlantMachinery = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("investmentInPlantMachinery").toString(), Map.class) ;
-				  investmentInPlantMachinery.put("label","Investment in Plant and Machinery / Equipments");
-				  incomeDetails.put("investmentInPlantMachinery", investmentInPlantMachinery);
-				  
-				  Map<String, Object> totalLiabilities = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("totalLiabilities").toString(), Map.class) ;
-				  totalLiabilities.put("label", "Total Liabilities");
-				  incomeDetails.put("totalLiabilities", totalLiabilities);
-				  
-				  Map<String, Object> networth = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("networth").toString(), Map.class) ;
-				  networth.put("label", "Networth");
-				  incomeDetails.put("networth", networth);
-				  
-				  Map<String, Object> debtors = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("debtors").toString(), Map.class) ;
-				  debtors.put("label", "Debtors");
-				  incomeDetails.put("debtors", debtors);
-				  
-				  Map<String, Object> inventory =  MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("inventory").toString(), Map.class) ;
-				  inventory.put("label", "Inventory");
-				  incomeDetails.put("inventory", inventory);
-				  
-				  Map<String, Object> sales = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("sales").toString(), Map.class) ;
-				  sales.put("label", "Sales"); 
-				  incomeDetails.put("sales", sales);
-	 
-				
-				
-				map.put("noItrIncomeMudra", incomeDetails);
+			//Map<String, Object> incomeDetails = response.getIncomeDetails();
+			LinkedHashMap<String, Object> incomeDetails = corpApp.getIncomeDetails();
+			
+			Map<String, Object> sales = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("sales").toString(), Map.class) ;
+			  sales.put("label", "Sales"); 
+			  incomeDetails.put("sales", sales);
+			
+			  Map<String, Object> profitAfterTax = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("profitAfterTax").toString(), Map.class) ;
+			  profitAfterTax.put("label","Net Profit / Loss"); 
+			  incomeDetails.put("profitAfterTax", profitAfterTax);	  
+			  
+			  Map<String, Object> inventory =  MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("inventory").toString(), Map.class) ;
+			  inventory.put("label", "Inventory");
+			  incomeDetails.put("inventory", inventory); 
+			  
+			  Map<String, Object> debtors = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("debtors").toString(), Map.class) ;
+			  debtors.put("label", "Debtors");
+			  incomeDetails.put("debtors", debtors);
+			
+			Map<String, Object> creditor = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("creditors").toString(), Map.class) ; 
+			creditor.put("label", "Creditors");
+			incomeDetails.put("creditors", creditor);
+			
+			 
+			 Map<String, Object> investmentInPlantMachinery = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("investmentInPlantMachinery").toString(), Map.class) ;
+			  investmentInPlantMachinery.put("label","Investment in Plant and Machinery / Equipments");
+			  incomeDetails.put("investmentInPlantMachinery", investmentInPlantMachinery);
+			  
+			  Map<String, Object> networth = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("networth").toString(), Map.class) ;
+			  networth.put("label", "Networth");
+			  incomeDetails.put("networth", networth);
+			  
+			  Map<String, Object> totalAssets = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("totalAssets").toString(), Map.class) ;
+			  totalAssets.put("label", "Total Assets");
+			  incomeDetails.put("totalAssets", totalAssets);
+			 
+			  
+			  Map<String, Object> totalLiabilities = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("totalLiabilities").toString(), Map.class) ;
+			  totalLiabilities.put("label", "Total Liabilities");
+			  incomeDetails.put("totalLiabilities", totalLiabilities);
 
-		} catch (Exception e) {
-				// TODO: handle exception
-			}
+			
+			  
+			map.put("noItrIncomeMudra", incomeDetails);
+
+	} catch (Exception e) {
+			// TODO: handle exception
+		e.printStackTrace();
+		}
 		
 		// GET ASSOCIATE CONCERN DETAILS
 		List<AssociatedConcernDetailRequest> associatedConcernResList = new ArrayList<>(); 
@@ -506,6 +518,8 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 			map.put("knowHow",!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getKnowHow())? StringEscapeUtils.escapeXml(KnowHowMst.getById(primaryCorporateDetail.getKnowHow()).getValue().toString()): "-");
 			map.put("competition", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCompetition())? StringEscapeUtils.escapeXml(CompetitionMst_SBI.getById(primaryCorporateDetail.getCompetition()).getValue().toString()): "-");
 		}
+		
+
 
 		// ONE-FORM DATA
 		try {
@@ -513,7 +527,9 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 			map.put("corporateApplicant", corporateApplicantRequest);
 			map.put("orgName", CommonUtils.printFields(corporateApplicantRequest.getOrganisationName(), null));
 			map.put("constitution",!CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getConstitutionId())? StringEscapeUtils.escapeXml(Constitution.getById(corporateApplicantRequest.getConstitutionId()).getValue()): " ");
-
+			Integer industry = corporateApplicantRequest.getKeyVericalFunding().intValue();
+			map.put("keyVerticalFunding",!CommonUtils.isObjectNullOrEmpty(industry)? CommonUtils.printFields(Industry.getById(industry).getValue(), null): " ");
+			
 			String establishMentYear = !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getEstablishmentMonth())? EstablishmentMonths.getById(corporateApplicantRequest.getEstablishmentMonth()).getValue(): "";
 			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getEstablishmentYear())) {
 				try {
@@ -529,8 +545,8 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 			}
 			map.put("establishmentYr",!CommonUtils.isObjectNullOrEmpty(establishMentYear)? CommonUtils.printFields(establishMentYear, null): " ");
 			// INDUSTRY DATA
-			Integer industry = corporateApplicantRequest.getKeyVericalFunding().intValue();
-			map.put("keyVerticalFunding",!CommonUtils.isObjectNullOrEmpty(industry)? CommonUtils.printFields(Industry.getById(industry).getValue(), null): " ");
+//			Integer industry = corporateApplicantRequest.getKeyVericalFunding().intValue();
+//			map.put("keyVerticalFunding",!CommonUtils.isObjectNullOrEmpty(industry)? CommonUtils.printFields(Industry.getById(industry).getValue(), null): " ");
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION, e);
 		}
@@ -700,6 +716,11 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 			map.put("govtAuthority", govAuthValue);
 		}
 		
+		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+		if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getCastCategory())) {
+			map.put("castCategory", corporateApplicantDetail.getCastCategory());
+		}
+		
 		
 		// MUDRA LOAN DETAILS
 		PrimaryCorporateDetailMudraLoan mlDetail = mudraLoanRepo.findFirstByApplicationIdAndApplicationProposalMappingProposalIdIsNullOrderByIdDesc(applicationId);
@@ -784,7 +805,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Financial Arrangements Details {}", e);
 		}
-
+		
 		/*
 		 * get loan obligation of dir Double loanObligation =
 		 * financialArrangementDetailsService.getTotalEmiOfAllDirByApplicationId(

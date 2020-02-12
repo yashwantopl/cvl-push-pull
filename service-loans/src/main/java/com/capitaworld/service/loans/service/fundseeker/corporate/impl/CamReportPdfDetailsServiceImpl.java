@@ -9,11 +9,13 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
@@ -517,6 +519,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			for (MachineDetailMudraLoan machineDetailMudraLoan : machineDetails) {
 				MachineDetailMudraLoanRequestResponse machineDetail = new MachineDetailMudraLoanRequestResponse(); 
 				BeanUtils.copyProperties(machineDetailMudraLoan, machineDetail);
+				machineDetail.setNameOfSupplier(StringEscapeUtils.escapeXml(machineDetailMudraLoan.getNameOfSupplier()));
 				machineDetailsRes.add(machineDetail);
 			}				
 			mlDetailsRes.setMachineDetails(machineDetailsRes);
@@ -673,55 +676,71 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 				response.getIncomeDetails().get("creditors");
 				loansResponse.setData(response.getIncomeDetails());
-				
+				Date dateNoItr = new Date();
+				dateNoItr = response.getDob();
+				if (!CommonUtils.isObjectNullOrEmpty(dateNoItr)) {
+					int ii = (int) (dateNoItr.getTime()/1000);
+					Calendar cal = Calendar.getInstance();
+					cal.setTimeInMillis(ii);
+					map.put("noItrYear", cal.get(Calendar.YEAR));
+					
+					String month = cal.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault());
+					map.put("noItrMonth",month);			
+				}else {
+					map.put("noItrYear", "-");
+					map.put("noItrMonth","-");			
+				}
 				
 				
 				try {
-						Map<String, Object> incomeDetails = response.getIncomeDetails();
+						//Map<String, Object> incomeDetails = response.getIncomeDetails();
+						LinkedHashMap<String, Object> incomeDetails = response.getIncomeDetails();
+						
+						Map<String, Object> sales = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("sales").toString(), Map.class) ;
+						  sales.put("label", "Sales"); 
+						  incomeDetails.put("sales", sales);
+						
+						  Map<String, Object> profitAfterTax = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("profitAfterTax").toString(), Map.class) ;
+						  profitAfterTax.put("label","Net Profit / Loss"); 
+						  incomeDetails.put("profitAfterTax", profitAfterTax);	  
+						  
+						  Map<String, Object> inventory =  MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("inventory").toString(), Map.class) ;
+						  inventory.put("label", "Inventory");
+						  incomeDetails.put("inventory", inventory); 
+						  
+						  Map<String, Object> debtors = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("debtors").toString(), Map.class) ;
+						  debtors.put("label", "Debtors");
+						  incomeDetails.put("debtors", debtors);
 						
 						Map<String, Object> creditor = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("creditors").toString(), Map.class) ; 
 						creditor.put("label", "Creditors");
 						incomeDetails.put("creditors", creditor);
 						
-			
-						  Map<String, Object> profitAfterTax = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("profitAfterTax").toString(), Map.class) ;
-						  profitAfterTax.put("label","Net Profit / Loss"); 
-						  incomeDetails.put("profitAfterTax", profitAfterTax);
-						  
-						  Map<String, Object> totalAssets = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("totalAssets").toString(), Map.class) ;
-						  totalAssets.put("label", "Total Assets");
-						  incomeDetails.put("totalAssets", totalAssets);
-						  
+						 
 						 Map<String, Object> investmentInPlantMachinery = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("investmentInPlantMachinery").toString(), Map.class) ;
 						  investmentInPlantMachinery.put("label","Investment in Plant and Machinery / Equipments");
 						  incomeDetails.put("investmentInPlantMachinery", investmentInPlantMachinery);
-						  
-						  Map<String, Object> totalLiabilities = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("totalLiabilities").toString(), Map.class) ;
-						  totalLiabilities.put("label", "Total Liabilities");
-						  incomeDetails.put("totalLiabilities", totalLiabilities);
 						  
 						  Map<String, Object> networth = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("networth").toString(), Map.class) ;
 						  networth.put("label", "Networth");
 						  incomeDetails.put("networth", networth);
 						  
-						  Map<String, Object> debtors = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("debtors").toString(), Map.class) ;
-						  debtors.put("label", "Debtors");
-						  incomeDetails.put("debtors", debtors);
+						  Map<String, Object> totalAssets = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("totalAssets").toString(), Map.class) ;
+						  totalAssets.put("label", "Total Assets");
+						  incomeDetails.put("totalAssets", totalAssets);
+						 
 						  
-						  Map<String, Object> inventory =  MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("inventory").toString(), Map.class) ;
-						  inventory.put("label", "Inventory");
-						  incomeDetails.put("inventory", inventory);
+						  Map<String, Object> totalLiabilities = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("totalLiabilities").toString(), Map.class) ;
+						  totalLiabilities.put("label", "Total Liabilities");
+						  incomeDetails.put("totalLiabilities", totalLiabilities);
+ 
+						
 						  
-						  Map<String, Object> sales = MultipleJSONObjectHelper.getObjectFromString(incomeDetails.get("sales").toString(), Map.class) ;
-						  sales.put("label", "Sales"); 
-						  incomeDetails.put("sales", sales);
-			 
-						
-						
 						map.put("noItrIncomeMudra", incomeDetails);
 
 				} catch (Exception e) {
 						// TODO: handle exception
+					e.printStackTrace();
 					}
 				
 		
@@ -2170,7 +2189,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 									}							
 								}
 								Map<String, Object> convertExpVal = convertExpVal(resp1);
-								resp1.getGstNotApplicable().setMomSalesBigDecimal(convertExpVal);
+								Map<String, Object> sortedMap = new TreeMap<String, Object>(convertExpVal);
+								resp1.getGstNotApplicable().setMomSalesBigDecimal(sortedMap);
 								resp.add(resp1);
 							}		
 							
