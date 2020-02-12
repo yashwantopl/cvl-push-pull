@@ -67,15 +67,13 @@ import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRe
 import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterTempRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorTempRepository;
-import com.capitaworld.service.loans.service.common.FundProviderSequenceService;
+import com.capitaworld.service.loans.service.fundprovider.FPParameterMappingService;
 import com.capitaworld.service.loans.service.fundprovider.MsmeValueMappingService;
 import com.capitaworld.service.loans.service.fundprovider.TermLoanParameterService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.model.OneFormResponse;
-import com.capitaworld.service.scoring.ScoringClient;
-import com.capitaworld.service.scoring.model.scoringmodel.ScoringModelReqRes;
 
 @Service
 @Transactional
@@ -163,16 +161,14 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 	private NbfcRatioMappingRepository nbfcRatioMappingRepository;
 	
 	@Autowired
-	private ScoringClient  scoringClient;
-	
-	@Autowired
-	private FundProviderSequenceService fundProviderSequenceService;
-	
-	@Autowired
 	private FpConstitutionMappingRepository fpConstitutionMappingRepository;
 	
 	@Autowired
 	private FpConstitutionMappingTempRepository fpConstitutionMappingTempRepository;
+	
+	@Autowired
+	private FPParameterMappingService fPParameterMappingService;
+	
 
 	@Override
 	public boolean saveOrUpdate(TermLoanParameterRequest termLoanParameterRequest, Long mappingId, Integer roleId) {
@@ -248,7 +244,10 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		saveConstitutionType(termLoanParameterRequest);
 
 		//save nbfc ratio mapping
-		nbfcRatioMappingRepository.inActiveByFpProductId(termLoanParameterRequest.getId());
+//		nbfcRatioMappingRepository.inActiveByFpProductId(termLoanParameterRequest.getId());
+		
+		fPParameterMappingService.inactiveAndSave(termLoanParameterRequest.getId(),CommonUtils.ParameterTypes.BUREAU_SCORE, termLoanParameterRequest.getBureauScoreIds());
+		fPParameterMappingService.inactiveAndSave(termLoanParameterRequest.getId(),CommonUtils.ParameterTypes.BUREAU_SCORE_MAIN_DIR, termLoanParameterRequest.getMainDirBureauScoreIds());
 		//add duplicate productmaster entries based on nbfc ids
 		if(termLoanParameterRequest.getProductType()!=null && termLoanParameterRequest.getProductType()==2){
 			addduplicateEntriesForNbfc(termLoanParameterRequest,mappingId);
@@ -302,7 +301,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		
 	}
 
-	private void addduplicateEntriesForNbfc(TermLoanParameterRequest termLoanParameterRequest, Long mappingId) {
+	private void addduplicateEntriesForNbfc(TermLoanParameterRequest termLoanParameterRequest, Long mappingId) {/*
 		// TODO Auto-generated method stub
 		
 		for(Long l:termLoanParameterRequest.getNbfcRatioIds())
@@ -384,7 +383,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		
 		
 		
-	}
+	*/}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -510,47 +509,6 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 				logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG, e);
 			}
 		}
-		
-		List<DataRequest>  ratioMasterList;
-		List<CoLendingRatio> listAllActiveByOrgkId;
-		if(!CommonUtils.isObjectNullOrEmpty(role))
-		{
-		if(role.equals(WorkflowUtils.Role.NBFC_CHECKER) || role.equals(WorkflowUtils.Role.NBFC_MAKER))
-		{
-			listAllActiveByOrgkId =coLendingRatioRepository.listAllActiveProposalByOrgId(loanParameter.getUserOrgId());
-			ratioMasterList=new ArrayList<>(listAllActiveByOrgkId.size());
-			
-		}
-		else
-		{
-			listAllActiveByOrgkId = coLendingRatioRepository.listAllActiveByBankId(loanParameter.getUserOrgId());
-			ratioMasterList=new ArrayList<>(listAllActiveByOrgkId.size());
-		}
-		//List<FpCoLendingBanks> bankList = coLendingService.getBankList();
-		for(CoLendingRatio coLendingRatio:listAllActiveByOrgkId)
-		{
-			DataRequest dataRequest=new DataRequest();
-			dataRequest.setId(coLendingRatio.getId());
-			dataRequest.setValue(coLendingRatio.getName());
-			dataRequest.setTenure(coLendingRatio.getTenure());
-			String label="Bank:"+coLendingRatio.getBankRatio().toString()+" Nbfc:"+coLendingRatio.getNbfcRatio()+" tenure:"+coLendingRatio.getTenure();
-			dataRequest.setLabel(label);
-			dataRequest.setUserOrgId(coLendingRatio.getUserOrgId());
-			dataRequest.setBankId(coLendingRatio.getBankId());
-			ratioMasterList.add(dataRequest);
-			//create text for ratio
-			
-			
-					
-			
-			
-		}
-		
-		termLoanParameterRequest.setNbfcRatioMasterList(ratioMasterList);
-		}
-		
-		
-		
 		termLoanParameterRequest.setMsmeFundingIds(
 				msmeValueMappingService.getDataListFromFpProductId(2, id, termLoanParameterRequest.getUserId()));
 		termLoanParameterRequest.setGstType(fpGstTypeMappingRepository.getIdsByFpProductId(termLoanParameterRequest.getId()));
@@ -560,6 +518,9 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		termLoanParameterRequest.setNbfcRatioIds(nbfcRatioMappingRepository.getIdsByFpProductId(termLoanParameterRequest.getId()));
 		
 		termLoanParameterRequest.setConstitutionIds(fpConstitutionMappingRepository.getIdsByFpProductId(termLoanParameterRequest.getId()));
+		
+		termLoanParameterRequest.setBureauScoreIds(fPParameterMappingService.getParameters(termLoanParameterRequest.getId(), CommonUtils.ParameterTypes.BUREAU_SCORE));
+		termLoanParameterRequest.setMainDirBureauScoreIds(fPParameterMappingService.getParameters(termLoanParameterRequest.getId(), CommonUtils.ParameterTypes.BUREAU_SCORE_MAIN_DIR));
 		
 		CommonDocumentUtils.endHook(logger, GET_TERM_LOAN_PARAMETER_REQUEST);
 		return termLoanParameterRequest;
@@ -883,8 +844,10 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		termLoanParameterRequest.setLoanArrangementIds(
 				loanArrangementMappingTempRepository.getIdsByFpProductId(termLoanParameterRequest.getId()));
 		termLoanParameterRequest.setGstType(fpGstTypeMappingTempRepository.getIdsByFpProductId(termLoanParameterRequest.getId()));
-		termLoanParameterRequest.setNbfcRatioIds(nbfcRatioMappingTempRepository.getTempIdsByFpProductId(termLoanParameterRequest.getId()));
+//		termLoanParameterRequest.setNbfcRatioIds(nbfcRatioMappingTempRepository.getTempIdsByFpProductId(termLoanParameterRequest.getId()));
 		termLoanParameterRequest.setConstitutionIds(fpConstitutionMappingTempRepository.getIdsByFpProductId(termLoanParameterRequest.getId()));
+		termLoanParameterRequest.setBureauScoreIds(fPParameterMappingService.getParametersTemp(termLoanParameterRequest.getId(), CommonUtils.ParameterTypes.BUREAU_SCORE));
+		termLoanParameterRequest.setMainDirBureauScoreIds(fPParameterMappingService.getParametersTemp(termLoanParameterRequest.getId(), CommonUtils.ParameterTypes.BUREAU_SCORE_MAIN_DIR));
 		logger.info("end getTermLoanParameterRequestTemp");
 		return termLoanParameterRequest;
 	}
@@ -978,7 +941,8 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		saveConstitutionTypeTemp(termLoanParameterRequest);
 		
 		//save nbfc ratio mapping
-		nbfcRatioMappingTempRepository.inActiveTempByFpProductId(termLoanParameter.getId());
+		fPParameterMappingService.inactiveAndSaveTemp(termLoanParameterRequest.getId(),CommonUtils.ParameterTypes.BUREAU_SCORE, termLoanParameterRequest.getBureauScoreIds());
+		fPParameterMappingService.inactiveAndSaveTemp(termLoanParameterRequest.getId(),CommonUtils.ParameterTypes.BUREAU_SCORE_MAIN_DIR, termLoanParameterRequest.getMainDirBureauScoreIds());
 
 		boolean isUpdate = msmeValueMappingService.updateMsmeValueMappingTemp(
 				termLoanParameterRequest.getMsmeFundingIds(), termLoanParameterRequest.getId(),

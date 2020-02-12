@@ -497,6 +497,10 @@ public class CorporateProduct extends ProductMasterRequest implements Serializab
 	private Boolean isConstitutionDisplay = false;
 
 	private Boolean isConstitutionMandatory = false;
+	
+	private List<Integer> bureauScoreIds = Collections.emptyList();
+	
+	private List<Integer> mainDirBureauScoreIds = Collections.emptyList();
 
 	public Boolean getIsGeographicalDisplayMFI() {
 		return isGeographicalDisplayMFI;
@@ -2457,4 +2461,21 @@ public class CorporateProduct extends ProductMasterRequest implements Serializab
 	public void setWcRequirement(Double wcRequirement) {
 		this.wcRequirement = wcRequirement;
 	}
+
+	public List<Integer> getBureauScoreIds() {
+		return bureauScoreIds;
+	}
+
+	public void setBureauScoreIds(List<Integer> bureauScoreIds) {
+		this.bureauScoreIds = bureauScoreIds;
+	}
+
+	public List<Integer> getMainDirBureauScoreIds() {
+		return mainDirBureauScoreIds;
+	}
+
+	public void setMainDirBureauScoreIds(List<Integer> mainDirBureauScoreIds) {
+		this.mainDirBureauScoreIds = mainDirBureauScoreIds;
+	}
+	
 }
