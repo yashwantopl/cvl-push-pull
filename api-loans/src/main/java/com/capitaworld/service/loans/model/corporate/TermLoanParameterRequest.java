@@ -449,8 +449,10 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 
 		private Boolean isConstitutionMandatory = false;
 		
-
-	
+		private List<Integer> bureauScoreIds = Collections.emptyList();
+		
+		private List<Integer> mainDirBureauScoreIds = Collections.emptyList();
+		
 	
 
 	public BigDecimal getPromotorContri() {
@@ -2261,5 +2263,22 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 
 	public void setIsIndividualCibilDpdMandatory(Boolean isIndividualCibilDpdMandatory) {
 		this.isIndividualCibilDpdMandatory = isIndividualCibilDpdMandatory;
+	}
+
+	public List<Integer> getBureauScoreIds() {
+		return bureauScoreIds;
+	}
+
+	public void setBureauScoreIds(List<Integer> bureauScoreIds) {
+		this.bureauScoreIds = bureauScoreIds;
+
+	}
+
+	public List<Integer> getMainDirBureauScoreIds() {
+		return mainDirBureauScoreIds;
+	}
+
+	public void setMainDirBureauScoreIds(List<Integer> mainDirBureauScoreIds) {
+		this.mainDirBureauScoreIds = mainDirBureauScoreIds;
 	}
 }

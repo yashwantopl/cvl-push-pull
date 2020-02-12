@@ -372,10 +372,9 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 
 	private Boolean isConstitutionMandatory = false;
 	
+	private List<Integer> bureauScoreIds = Collections.emptyList();
 	
-	
-
-	
+	private List<Integer> mainDirBureauScoreIds = Collections.emptyList();
 
 	public Integer getIndividualCibil() {
 		return individualCibil;
@@ -2027,5 +2026,21 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 
 	public void setWcRequirement(Double wcRequirement) {
 		this.wcRequirement = wcRequirement;
+	}
+
+	public List<Integer> getBureauScoreIds() {
+		return bureauScoreIds;
+	}
+
+	public void setBureauScoreIds(List<Integer> bureauScoreIds) {
+		this.bureauScoreIds = bureauScoreIds;
+	}
+
+	public List<Integer> getMainDirBureauScoreIds() {
+		return mainDirBureauScoreIds;
+	}
+
+	public void setMainDirBureauScoreIds(List<Integer> mainDirBureauScoreIds) {
+		this.mainDirBureauScoreIds = mainDirBureauScoreIds;
 	}
 }

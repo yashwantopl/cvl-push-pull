@@ -58,6 +58,7 @@ import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParam
 import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterTempRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorTempRepository;
+import com.capitaworld.service.loans.service.fundprovider.FPParameterMappingService;
 import com.capitaworld.service.loans.service.fundprovider.MsmeValueMappingService;
 import com.capitaworld.service.loans.service.fundprovider.WorkingCapitalParameterService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
@@ -131,6 +132,9 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 	
 	@Autowired
 	private FpConstitutionMappingTempRepository fpConstitutionMappingTempRepository;
+	
+	@Autowired
+	private FPParameterMappingService fPParameterMappingService;
 
 
 	@Override
@@ -210,7 +214,8 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		fpGstTypeMappingRepository.inActiveMasterByFpProductId(workingCapitalParameterRequest.getId());
 		saveLoanGstType(workingCapitalParameterRequest);
 		
-
+		fPParameterMappingService.inactiveAndSave(workingCapitalParameterRequest.getId(),CommonUtils.ParameterTypes.BUREAU_SCORE, workingCapitalParameterRequest.getBureauScoreIds());
+		fPParameterMappingService.inactiveAndSave(workingCapitalParameterRequest.getId(),CommonUtils.ParameterTypes.BUREAU_SCORE_MAIN_DIR, workingCapitalParameterRequest.getMainDirBureauScoreIds());
 		//Dhaval
 		boolean isUpdate = msmeValueMappingService.updateMsmeValueMapping(false, mappingId,workingCapitalParameter2.getId());
 		logger.info("updated = {}",isUpdate);
@@ -423,7 +428,8 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		workingCapitalParameterRequest.setGstType(fpGstTypeMappingRepository.getIdsByFpProductId(workingCapitalParameterRequest.getId()));
 		workingCapitalParameterRequest.setLoanArrangementIds(loanArrangementMappingRepository.getIdsByFpProductId(workingCapitalParameterRequest.getId()));
 		workingCapitalParameterRequest.setConstitutionIds(fpConstitutionMappingRepository.getIdsByFpProductId(workingCapitalParameterRequest.getId()));
-		
+		workingCapitalParameterRequest.setBureauScoreIds(fPParameterMappingService.getParameters(workingCapitalParameterRequest.getId(), CommonUtils.ParameterTypes.BUREAU_SCORE));
+		workingCapitalParameterRequest.setMainDirBureauScoreIds(fPParameterMappingService.getParameters(workingCapitalParameterRequest.getId(), CommonUtils.ParameterTypes.BUREAU_SCORE_MAIN_DIR));
 		
 		logger.info("end getWorkingCapitalParameter");
 		return workingCapitalParameterRequest;
@@ -710,6 +716,8 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		workingCapitalParameterRequest.setLoanArrangementIds(loanArrangementMappingTempRepository.getIdsByFpProductId(workingCapitalParameterRequest.getId()));
 		workingCapitalParameterRequest.setGstType(fpGstTypeMappingTempRepository.getIdsByFpProductId(workingCapitalParameterRequest.getId()));
 		workingCapitalParameterRequest.setConstitutionIds(fpConstitutionMappingTempRepository.getIdsByFpProductId(workingCapitalParameterRequest.getId()));
+		workingCapitalParameterRequest.setBureauScoreIds(fPParameterMappingService.getParametersTemp(workingCapitalParameterRequest.getId(), CommonUtils.ParameterTypes.BUREAU_SCORE));
+		workingCapitalParameterRequest.setMainDirBureauScoreIds(fPParameterMappingService.getParametersTemp(workingCapitalParameterRequest.getId(), CommonUtils.ParameterTypes.BUREAU_SCORE_MAIN_DIR));
 		logger.info("end getWorkingCapitalParameterTemp");
 		return workingCapitalParameterRequest;
 	}
@@ -719,37 +727,32 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		logger.info("start saveOrUpdateTemp");
 		WorkingCapitalParameterTemp workingCapitalParameter = null;
 
-		if(workingCapitalParameterRequest.getAppstage()==1)
-		{
+		if(workingCapitalParameterRequest.getAppstage() == 1){
 			workingCapitalParameter = workingCapitalParameterTempRepository.findOne(workingCapitalParameterRequest.getId());
-		}
-		else
-		{
-			
+		}else{
 			workingCapitalParameter = workingCapitalParameterTempRepository.getworkingCapitalParameterTempByFpProductMappingId(workingCapitalParameterRequest.getId());
-			
 		}
 		
 		if (workingCapitalParameter == null) {
 			workingCapitalParameter=new WorkingCapitalParameterTemp();
 		}
 
-		if (!CommonUtils.isObjectListNull(workingCapitalParameterRequest.getMaxTenure()))
-			workingCapitalParameterRequest.setMaxTenure(workingCapitalParameterRequest.getMaxTenure() * 12);
-		if (!CommonUtils.isObjectListNull(workingCapitalParameterRequest.getMinTenure()))
-			workingCapitalParameterRequest.setMinTenure(workingCapitalParameterRequest.getMinTenure() * 12);
+		if (!CommonUtils.isObjectListNull(workingCapitalParameterRequest.getMaxTenure())){
+			workingCapitalParameterRequest.setMaxTenure(workingCapitalParameterRequest.getMaxTenure() * 12);			
+		}
+		
+		if (!CommonUtils.isObjectListNull(workingCapitalParameterRequest.getMinTenure())){
+			workingCapitalParameterRequest.setMinTenure(workingCapitalParameterRequest.getMinTenure() * 12);			
+		}
 
-		if(workingCapitalParameterRequest.getAppstage()!=1)
-		{
+		if(workingCapitalParameterRequest.getAppstage() != 1){
 			workingCapitalParameter.setFpProductMappingId(workingCapitalParameterRequest.getId());
 		}
-		if(workingCapitalParameterRequest.getAppstage()==1)
-		{
-		BeanUtils.copyProperties(workingCapitalParameterRequest, workingCapitalParameter,"id");
-		}
-		else
-		{
-		BeanUtils.copyProperties(workingCapitalParameterRequest, workingCapitalParameter,"jobId","id");
+
+		if(workingCapitalParameterRequest.getAppstage() == 1){
+			BeanUtils.copyProperties(workingCapitalParameterRequest, workingCapitalParameter,"id");
+		}else{
+			BeanUtils.copyProperties(workingCapitalParameterRequest, workingCapitalParameter,"jobId","id");
 		}
 		
 		workingCapitalParameter.setUserId(workingCapitalParameterRequest.getUserId()!=null?workingCapitalParameterRequest.getUserId():null);
@@ -795,6 +798,8 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		// negative industry save
 		negativeIndustryTempRepository.inActiveMappingByFpProductMasterId(workingCapitalParameter.getId());
 		saveNegativeIndustryTemp(workingCapitalParameterRequest);
+		fPParameterMappingService.inactiveAndSaveTemp(workingCapitalParameterRequest.getId(),CommonUtils.ParameterTypes.BUREAU_SCORE, workingCapitalParameterRequest.getBureauScoreIds());
+		fPParameterMappingService.inactiveAndSaveTemp(workingCapitalParameterRequest.getId(),CommonUtils.ParameterTypes.BUREAU_SCORE_MAIN_DIR, workingCapitalParameterRequest.getMainDirBureauScoreIds());
 		
 
 		//save constitution mapping
