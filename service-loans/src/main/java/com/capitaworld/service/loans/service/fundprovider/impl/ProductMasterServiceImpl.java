@@ -1342,7 +1342,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						else if(productStatus == CommonUtils.Status.OPEN){
 							try {
 								Long count = commonRepository.getCountOfJobId(workflowData.getJobId(), workflowData.getWorkflowStep(), workflowData.getActionId());
-								if(count > 1) {
+								if(count > 2) {
 									logger.info("Inside sending mail to Checker when Admin Maker resend product for Approval");
 									fpAsyncComponent.sendEmailToCheckerWhenAdminMakerResendProductForApproval(productMasterTemp,workflowData.getUserId(),productType);
 								}else {
