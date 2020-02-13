@@ -313,7 +313,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 		ineligibleProposalDetailsRepository.save(ineligibleProposalDetails);
 		
 		/** send mail to fs when application is for Retail and ineligible and reason is "Unable to contact client " */
-		asyncComp.sendNotificationToFsWhenProposalIneligibleInRetail(ineligibleProposalDetails);
+		//asyncComp.sendNotificationToFsWhenProposalIneligibleInRetail(ineligibleProposalDetails);
 		
 		return true;
 	}

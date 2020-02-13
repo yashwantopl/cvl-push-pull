@@ -2001,10 +2001,6 @@ public class FPAsyncComponent {
 					productMasterTemp.getName() != null ? productMasterTemp.getName() : "NA");
 			mailParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "NA");
 			
-			//Aruns Modification
-			Integer businessTypeId = appProposalMappingRepo.getBusinessIdByUserId(userId);
-			if (!CommonUtils.isObjectNullOrEmpty(businessTypeId) && ! businessTypeId.equals(CommonUtils.BusinessType.ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS.getId())) {
-			
 			UsersRequest adminForChecker = new UsersRequest();
 			adminForChecker.setId(userId);
 
@@ -2164,7 +2160,7 @@ public class FPAsyncComponent {
 				logger.info("No Admin Maker found=================>");
 			}*/
 
-		} }catch (Exception e) {
+		}catch (Exception e) {
 			logger.error("An exception getting while sending Mail to Maker when Admin Checker reverted product=============>{}",e);
 		}
 

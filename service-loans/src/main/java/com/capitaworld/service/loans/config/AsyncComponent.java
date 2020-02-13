@@ -19,6 +19,7 @@ import com.capitaworld.service.loans.domain.fundseeker.IneligibleProposalDetails
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.model.InEligibleProposalDetailsRequest;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
@@ -947,13 +948,14 @@ public class AsyncComponent {
 	@Autowired
 	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
 	
-	public Boolean sendNotificationToFsWhenProposalIneligibleInRetail(IneligibleProposalDetails inProp) {
+	public Boolean sendNotificationToFsWhenProposalIneligibleInRetail(InEligibleProposalDetailsRequest inProp) {
 		Boolean isSent=false;
         try {
+        	logger.info("Ineligible mail to FS with ApplicationId==>{} , BranchId==>{} , OrgId==>{} and UserId==>{}", inProp.getApplicationId() , inProp.getBranchId() , inProp.getUserOrgId() , inProp.getUserId());
             Map<String, Object> notiParam = new HashMap<String, Object>();
             LoanApplicationMaster lonaApplication = loanApplicationRepository.findOne(inProp.getApplicationId());
             if(lonaApplication.getBusinessTypeId() != null && BusinessType.MUDRA_LOAN.getId().equals(lonaApplication.getBusinessTypeId())) {
-                UsersRequest fsRequest = getUserNameAndEmail(inProp.getCreatedBy());
+                UsersRequest fsRequest = getUserNameAndEmail(inProp.getUserId());
                
                 Object[] checkerName = commonRepo.getLastCheckerNameByBranchId(inProp.getBranchId());
                 if(checkerName != null) {
