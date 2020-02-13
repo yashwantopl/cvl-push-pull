@@ -81,7 +81,11 @@ public class WorkflowData implements Serializable {
 	public void setRoleId(Integer roleId) {
 		this.roleId = roleId;
 	}
-	
-	
+	@Override
+	public String toString() {
+		return "WorkflowData [id=" + id + ", nextworkflowStep=" + nextworkflowStep + ", workflowStep=" + workflowStep
+				+ ", actionId=" + actionId + ", fpProductId=" + fpProductId + ", jobId=" + jobId + ", userId=" + userId
+				+ ", actionFor=" + actionFor + ", roleId=" + roleId + ", stage=" + stage + "]";
+	}
 	
 }

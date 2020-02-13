@@ -1301,7 +1301,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	public Boolean clickOnWorkFlowButton(WorkflowData workflowData) {
 
 		try {
-
+			logger.info("Click on workflow Button with WorkFlow Data==>{}", workflowData.toString());
 			WorkflowRequest request = new WorkflowRequest();
 			request.setActionId(workflowData.getActionId());
 			request.setCurrentStep(workflowData.getWorkflowStep());
