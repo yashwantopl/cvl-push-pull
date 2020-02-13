@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.capitaworld.service.loans.config.AsyncComponent;
 import com.capitaworld.service.loans.model.InEligibleProposalDetailsRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.ProposalDetailsAdminRequest;
@@ -39,6 +40,9 @@ public class IneligibleProposalDetailsController {
 	
 	@Autowired
 	private LoanRepository loanRepository;
+	
+	@Autowired
+	private AsyncComponent asyncComp;
 	
 /**
  * need to change the method sendMailToFsAndBankBranch of applicationId to proposalId
@@ -95,9 +99,13 @@ public class IneligibleProposalDetailsController {
 			}	
 			if(!isEligible && (isSendMail != null && isSendMail)) {
 				//If users is not from sbi and sidbi specific then this email shoot
-				Boolean isSent = ineligibleProposalDetailsService.sendMailToFsAndBankBranch(
-						inEligibleProposalDetailsRequest.getApplicationId(),
-						inEligibleProposalDetailsRequest.getBranchId(),inEligibleProposalDetailsRequest.getUserOrgId());
+				/*
+				 * Boolean isSent = ineligibleProposalDetailsService.sendMailToFsAndBankBranch(
+				 * inEligibleProposalDetailsRequest.getApplicationId(),
+				 * inEligibleProposalDetailsRequest.getBranchId(),
+				 * inEligibleProposalDetailsRequest.getUserOrgId());
+				 */
+				Boolean isSent = asyncComp.sendNotificationToFsWhenProposalIneligibleInRetail(inEligibleProposalDetailsRequest);
 				if (isSent) {
 					logger.info("Email sent to fs and branch");
 				} else {
