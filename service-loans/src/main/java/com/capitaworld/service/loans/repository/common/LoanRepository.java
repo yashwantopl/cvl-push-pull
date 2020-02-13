@@ -1,10 +1,9 @@
 package com.capitaworld.service.loans.repository.common;
 
+import java.util.List;
+
 import com.capitaworld.service.loans.domain.fundseeker.retail.BankingRelation;
 import com.capitaworld.service.loans.model.TutorialsViewAudits;
-import com.capitaworld.service.loans.model.score.ScoringCibilRequest;
-
-import java.util.List;
 
 public interface LoanRepository{
 
@@ -106,4 +105,6 @@ public interface LoanRepository{
 	public List<BankingRelation> listBankRelationAppId(Long id);
 	
     public List<BankingRelation> listBankRelationAppId(Long id,Long applicantId);
+    
+    public Double getAllDirectorAverageBureauScore(Long applicationId);
 }

@@ -1560,7 +1560,8 @@ public class ScoringServiceImpl implements ScoringService {
 		try {
 			CibilRequest cibilRequest = new CibilRequest();
              cibilRequest.setApplicationId(applicationId);
-             cibilResponseScore = cibilClient.getCibilScore(cibilRequest);
+//             cibilResponseScore = cibilClient.getCibilScore(cibilRequest);
+//             loanRepository.getAllDirectorAverageBureauScore(applicationId);
 		} catch (Exception e) {
 			logger.error("Error while getting Score from CIBIL = >",e);
 		}
