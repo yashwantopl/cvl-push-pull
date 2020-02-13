@@ -218,4 +218,16 @@ public class CommonRepositoryImpl  implements CommonRepository {
 		return 	!CommonUtils.isListNullOrEmpty(states) ? states.get(0) : "";  
 	}
 	
+	@Override
+	public Long getCountOfJobId(Long jobId , Long stepId , Long actionId) {
+		try {
+			Object count1 = (Object) manager.createNativeQuery("SELECT COUNT(*) FROM workflow.workflow_jobs_tracker WHERE job_id=:jobId AND step_id=:stepId AND action_id=:actionId")
+					.setParameter("jobId", jobId).setParameter("stepId", stepId).setParameter("actionId", actionId).getSingleResult();
+			return ((BigInteger)count1).longValue();
+		}catch (Exception e) {
+			logger.error("Error/Exception while getting count with jobId==>{} , stepId==>{} and actionId==>{} exception {}",jobId , stepId , actionId ,e);
+		}
+		return null;
+	}
+	
 }

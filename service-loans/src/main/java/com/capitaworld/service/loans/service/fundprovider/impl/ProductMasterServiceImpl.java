@@ -60,6 +60,7 @@ import com.capitaworld.service.loans.model.corporate.TermLoanParameterRequest;
 import com.capitaworld.service.loans.model.corporate.UnsecuredLoanParameterRequest;
 import com.capitaworld.service.loans.model.corporate.WcTlParameterRequest;
 import com.capitaworld.service.loans.model.corporate.WorkingCapitalParameterRequest;
+import com.capitaworld.service.loans.repository.common.CommonRepository;
 import com.capitaworld.service.loans.repository.common.LoanRepository;
 import com.capitaworld.service.loans.repository.fundprovider.AutoLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.FpGstTypeMappingRepository;
@@ -1297,6 +1298,9 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		return false;
 	}
 
+	@Autowired
+	private CommonRepository commonRepository;
+	
 	@Override
 	public Boolean clickOnWorkFlowButton(WorkflowData workflowData) {
 
@@ -1329,8 +1333,8 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						
 						if(productStatus == CommonUtils.Status.REVERTED) {
 							try {
-								logger.info("Inside sending mail to Checker when Admin Maker resend product for Approval");
-								fpAsyncComponent.sendEmailToCheckerWhenAdminMakerResendProductForApproval(productMasterTemp,workflowData.getUserId(),productType);	
+								logger.info("Inside sending mail to Maker when Admin Checker reverted Product");
+								fpAsyncComponent.sendEmailToMakerWhenAdminCheckerRevertedProduct(productMasterTemp,workflowData.getUserId(),productType);	
 							}
 							catch(Exception e) {
 								logger.error("Exception occured while sending mail to Checker when Admin Maker resend product for Approval : ",e);
@@ -1338,8 +1342,14 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						}
 						else if(productStatus == CommonUtils.Status.OPEN){
 							try {
-								logger.info("Inside sending mail to Checker when Admin Maker send product for Approval");
-								fpAsyncComponent.sendEmailToCheckerWhenAdminMakerSendProductForApproval(productMasterTemp,workflowData.getUserId(),productType);	
+								Long count = commonRepository.getCountOfJobId(workflowData.getJobId(), workflowData.getWorkflowStep(), workflowData.getActionId());
+								if(count > 1) {
+									logger.info("Inside sending mail to Checker when Admin Maker resend product for Approval");
+									fpAsyncComponent.sendEmailToCheckerWhenAdminMakerResendProductForApproval(productMasterTemp,workflowData.getUserId(),productType);
+								}else {
+									logger.info("Inside sending mail to Checker when Admin Maker send product for Approval");
+									fpAsyncComponent.sendEmailToCheckerWhenAdminMakerSendProductForApproval(productMasterTemp,workflowData.getUserId(),productType);
+								}
 							}
 							catch(Exception e) {
 								logger.error("Exception occured while sending mail to Checker when Admin Maker send product for Approval : ",e);
@@ -1376,8 +1386,8 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				if (rowUpdated > 0 && workflowResponse.getStatus() == 200) {
 					if(!CommonUtils.isObjectNullOrEmpty(productMasterTemp)) {
 						try {
-							logger.info("Inside sending mail to Maker when Admin Checker reverted Product");
-							fpAsyncComponent.sendEmailToMakerWhenAdminCheckerRevertedProduct(productMasterTemp,workflowData.getUserId(),productType);	
+							//logger.info("Inside sending mail to Maker when Admin Checker reverted Product");
+							//fpAsyncComponent.sendEmailToMakerWhenAdminCheckerRevertedProduct(productMasterTemp,workflowData.getUserId(),productType);	
 						}
 						catch(Exception e) {
 							logger.error("Exception occured while sending mail to Maker when Admin Checker reverted Product : ",e);
