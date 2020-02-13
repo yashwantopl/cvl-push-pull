@@ -62,21 +62,15 @@ import com.capitaworld.service.loans.model.corporate.WcTlParameterRequest;
 import com.capitaworld.service.loans.model.corporate.WorkingCapitalParameterRequest;
 import com.capitaworld.service.loans.repository.common.CommonRepository;
 import com.capitaworld.service.loans.repository.common.LoanRepository;
-import com.capitaworld.service.loans.repository.fundprovider.AutoLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.FpGstTypeMappingRepository;
 import com.capitaworld.service.loans.repository.fundprovider.FpGstTypeMappingTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalCityTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalCountryRepository;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalCountryTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalStateTempRepository;
-import com.capitaworld.service.loans.repository.fundprovider.HomeLoanParameterRepository;
-import com.capitaworld.service.loans.repository.fundprovider.LapParameterRepository;
-import com.capitaworld.service.loans.repository.fundprovider.LasParameterRepository;
-import com.capitaworld.service.loans.repository.fundprovider.MFILoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.MsmeValueMappingRepository;
 import com.capitaworld.service.loans.repository.fundprovider.MsmeValueMappingTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.NegativeIndustryTempRepository;
-import com.capitaworld.service.loans.repository.fundprovider.PersonalLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
@@ -84,6 +78,7 @@ import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRe
 import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorTempRepository;
 import com.capitaworld.service.loans.service.common.FundProviderSequenceService;
+import com.capitaworld.service.loans.service.fundprovider.FPParameterMappingService;
 import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.service.fundprovider.TermLoanParameterService;
 import com.capitaworld.service.loans.service.fundprovider.UnsecuredLoanParameterService;
@@ -106,6 +101,7 @@ import com.capitaworld.service.users.model.UsersRequest;
 
 @Service
 @Transactional
+@SuppressWarnings("unchecked")
 public class ProductMasterServiceImpl implements ProductMasterService {
 	private static final Logger logger = LoggerFactory.getLogger(ProductMasterServiceImpl.class);
 
@@ -130,24 +126,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	@Autowired
 	private TermLoanParameterRepository termLoanParameterRepository;
-
-	@Autowired
-	private HomeLoanParameterRepository homeLoanParameterRepository;
-
-	@Autowired
-	private AutoLoanParameterRepository carLoanParameterRepository;
-
-	@Autowired
-	private PersonalLoanParameterRepository personalLoanParameterRepository;
-
-	@Autowired
-	private LasParameterRepository lasParameterRepository;
-
-	@Autowired
-	private LapParameterRepository lapParameterRepository;
-
-	@Autowired
-	private MFILoanParameterRepository mfiLoanParameterRepository;
 
 	@Autowired
 	private FundProviderSequenceService fundProviderSequenceService;
@@ -215,6 +193,9 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	@Autowired
 	private LoanRepository loanRepository;
+	
+	@Autowired
+	private FPParameterMappingService fPParameterMappingService;
 	
 	@Override
 	public Boolean saveOrUpdate(AddProductRequest addProductRequest, Long userOrgId) {
@@ -382,6 +363,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				productMasterTemp.setBusinessTypeId(addProductRequest.getBusinessTypeId());
 				productMasterTemp.setWcRenewalStatus(addProductRequest.getWcRenewalStatus());
 				productMasterTemp.setFinId(addProductRequest.getFinId());
+//				productMasterTemp.setBankStatementOption(addProductRequest.getBankStatementOption());
 				productMasterTemp.setIsCopied(false);
 				productMasterTemp.setIsActive(true);
 				productMasterTemp.setUserOrgId(userOrgId);
@@ -395,14 +377,13 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				
 				if(loanType==LoanType.WORKING_CAPITAL || loanType==LoanType.TERM_LOAN || loanType==LoanType.WCTL_LOAN)
 				{
+					fPParameterMappingService.inactiveAndSaveTemp(productMaster2.getId(),CommonUtils.ParameterTypes.BANK_STATEMENT_OPTIONS, addProductRequest.getBankStatementOptions());
+					
 					fpGstTypeMappingTempRepository.inActiveMasterByFpProductId(productMaster2.getId());
 					if(!CommonUtils.isListNullOrEmpty(addProductRequest.getGstType()))
 						saveGstTypeTemp(productMaster2.getId(),addProductRequest.getGstType(),(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
 							? addProductRequest.getUserId() : addProductRequest.getClientId()));
-				}
 
-				if(loanType==LoanType.WORKING_CAPITAL || loanType==LoanType.TERM_LOAN || loanType==LoanType.WCTL_LOAN || loanType==LoanType.PERSONAL_LOAN || loanType==LoanType.HOME_LOAN )
-				{
 					industrySectorTempRepository.inActiveMappingByFpProductId(productMaster2.getId());
 					// industry data save
 					if(!CommonUtils.isListNullOrEmpty(industrySecIdList))
@@ -433,7 +414,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						saveNegativeIndustryTemp(productMaster2.getId(),negativeIndList,(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
 								? addProductRequest.getUserId() : addProductRequest.getClientId()));
 
-
+					fPParameterMappingService.inactiveAndSaveTemp(productMaster2.getId(),CommonUtils.ParameterTypes.BANK_STATEMENT_OPTIONS, addProductRequest.getBankStatementOptions());
 					//msme value
 					tempRepository.inActiveTempByFpProductId(productMaster2.getId());
 					List<MsmeValueMapping> masterList = masterRepository.findByFpProductIdAndIsActive(addProductRequest.getLoanId(), true);
@@ -622,22 +603,11 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		
 	}
 
-	private void saveSectorTemp(List<DataRequest> secIdList,Long userId) {
-		// Do nothing because of X and Y.
-		
-	}
-
-	private void saveIndustryTemp(List<DataRequest> industrySecIdList,Long userId) {
-		// Do nothing because of X and Y.
-		
-	}
-
 	@Override
 	public ProductMaster getProductMaster(Long id) {
 		return productMasterRepository.findOne(id);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public JSONObject checkParameterIsFilled(Long productId) {
 		CommonDocumentUtils.startHook(logger, "checkParameterIsFilled");
@@ -1044,6 +1014,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				ProductMasterRequest productMasterRequest = new ProductMasterRequest();
 				BeanUtils.copyProperties(productMaster, productMasterRequest);
 				List<Integer> gstTypes = fpGstTypeMappingTempRepository.getIdsByFpProductId(productMaster.getId());
+				productMasterRequest.setBankStatementOptions(fPParameterMappingService.getParametersTemp(productMaster.getId(), CommonUtils.ParameterTypes.BANK_STATEMENT_OPTIONS));
 				productMasterRequest.setGstType(gstTypes);
 				productMasterRequests.add(productMasterRequest);
 			}
@@ -1065,6 +1036,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				BeanUtils.copyProperties(productMaster, productMasterRequest);
 				List<Integer> gstTypes = fpGstTypeMappingRepository.getIdsByFpProductId(productMaster.getId());
 				productMasterRequest.setGstType(gstTypes);
+				productMasterRequest.setBankStatementOptions(fPParameterMappingService.getParameters(productMaster.getId(), CommonUtils.ParameterTypes.BANK_STATEMENT_OPTIONS));
 				productMasterRequests.add(productMasterRequest);
 			}
 		}
