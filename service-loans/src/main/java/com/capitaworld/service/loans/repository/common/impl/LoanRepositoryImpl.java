@@ -710,7 +710,15 @@ public class LoanRepositoryImpl implements LoanRepository {
 				.getResultList(); 
 		return !CommonUtils.isListNullOrEmpty(result) ? result.get(0) : null;
 	}
-	
-	
-	
+
+	@Override
+	public Double getAllDirectorAverageBureauScore(Long applicationId) {
+		Double averageScore = null;
+		try{
+			averageScore = (Double)entityManager.createNativeQuery("SELECT AVG(MaxData) AS ScoreData FROM (SELECT CAST(MAX(adrr.actual_score) AS UNSIGNED) AS MaxData FROM cibil.cibil_score_log_details adrr,cibil.cibil_mstr ms WHERE ms.cibil_id = adrr.cibil_id AND ms.application_id =:applicationId AND ms.is_active = TRUE GROUP BY adrr.pan) AS a").setParameter("applicationId", applicationId).getSingleResult();
+		}catch(Exception e){
+			logger.error("Error while getting all director Average score for ApplicationId = >{}====>{}",applicationId,e);
+		}
+		return averageScore;
+	}
 }

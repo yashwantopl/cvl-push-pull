@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -1556,15 +1557,40 @@ public class ScoringServiceImpl implements ScoringService {
 			logger.error("Error while getting DPD years from CIBIL = >",e);
 		}
      			
-		CibilResponse cibilResponseScore = null;
-		try {
-			CibilRequest cibilRequest = new CibilRequest();
-             cibilRequest.setApplicationId(applicationId);
-             cibilResponseScore = cibilClient.getCibilScore(cibilRequest);
-		} catch (Exception e) {
-			logger.error("Error while getting Score from CIBIL = >",e);
-		}
-		
+		Integer mainDirectorCibil = 0;
+		DirectorBackgroundDetail mainDirectorBackgroundDetail = directorBackgroundDetailsRepository.findFirstByApplicationIdIdAndIsMainDirectorIsTrueAndIsActiveIsTrueOrderByIdDesc(applicationId);
+		if(!CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail)){
+			try {
+	             CibilResponse cibilResponse = cibilClient.getAllDirectorScore(applicationId);
+	//             loanRepository.getAllDirectorAverageBureauScore(applicationId);
+	             if(!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isListNullOrEmpty(cibilResponse.getListData())){
+	 				List<Map<String, Object>> cibilDirectorsResponseList = (List<Map<String, Object>>) cibilResponse.getListData();
+	 				List<Integer> minBureauScoreList = new ArrayList<>(cibilDirectorsResponseList.size());
+	 				for (int i = 0; i < cibilDirectorsResponseList.size(); i++) {
+	 					CibilScoreLogRequest cibilScoreLogRequest = MultipleJSONObjectHelper.getObjectFromMap(cibilDirectorsResponseList.get(i),CibilScoreLogRequest.class);
+	 					if(CommonUtils.isObjectNullOrEmpty(cibilScoreLogRequest) || CommonUtils.isObjectNullOrEmpty(cibilScoreLogRequest.getActualScore())){
+	 						logger.warn("Score Not Found For ApplicationId  = >{}",applicationId);
+	 						continue;
+	 					}
+	 					if(mainDirectorBackgroundDetail.getPanNo().equals(cibilScoreLogRequest.getPan())){
+	 						if("000-1".equals(cibilScoreLogRequest.getActualScore())){
+		 						cibilScoreLogRequest.setActualScore("-1"); // to Resolve Casting issue of 000-1 to -1
+		 					}
+		 					minBureauScoreList.add(Integer.parseInt(cibilScoreLogRequest.getActualScore()));	 						
+	 					}
+	 				}
+	 				//Check Logic of Min Bureau Score
+	 				if(!CommonUtils.isListNullOrEmpty(minBureauScoreList)){
+	 					mainDirectorCibil = Collections.min(minBureauScoreList);
+	 	 				logger.info("Minimum Bureau score For ApplicationId  = >{} and Score ===>{}",applicationId,mainDirectorCibil);
+	 				}else{
+	 					logger.warn("Score Not Found to find minimum For ApplicationId  = >{}",applicationId);
+	 				}
+	 			}
+			} catch (Exception e) {
+				logger.error("Error while getting Score from CIBIL = >",e);
+			}
+	}
 		CibilResponse cibilResponseDPD = null;
 		int maxDpd = 0;
 		try {
@@ -1679,7 +1705,6 @@ public class ScoringServiceImpl implements ScoringService {
         
         // Get Director Background detail
         Double age = 0.0d;
-        DirectorBackgroundDetail mainDirectorBackgroundDetail = directorBackgroundDetailsRepository.findFirstByApplicationIdIdAndIsMainDirectorIsTrueAndIsActiveIsTrueOrderByIdDesc(applicationId);
         if(!CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail) && !CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail.getDob()) ){
         	age = Math.ceil(CommonUtils.getAgeFromBirthDate(mainDirectorBackgroundDetail.getDob()).doubleValue());
         }
@@ -1866,11 +1891,9 @@ public class ScoringServiceImpl implements ScoringService {
                             }
                             case ScoreParameter.MudraLoan.CIBIL_TRANSUNION_SCORE_ML: {
                             	if(!isCibilCheck) {
-                            		Double cibil_score_avg_promotor = null;
                                     try {
-                                        if (!CommonUtils.isObjectNullOrEmpty(cibilResponseScore) && !CommonUtils.isObjectNullOrEmpty(cibilResponseScore.getData())) {
-                                            cibil_score_avg_promotor = Double.parseDouble(cibilResponseScore.getData().toString());
-                                            scoringParameterRequest.setCibilTransuniunScore(cibil_score_avg_promotor);
+                                        if (!CommonUtils.isObjectNullOrEmpty(mainDirectorCibil)) {
+                                            scoringParameterRequest.setCibilTransuniunScore(mainDirectorCibil.doubleValue());
                                             scoringParameterRequest.setCibilTransunionScore_p(true);
                                         } else {
                                             scoringParameterRequest.setCibilTransunionScore_p(false);
