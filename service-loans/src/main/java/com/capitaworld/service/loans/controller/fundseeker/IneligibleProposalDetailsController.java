@@ -118,6 +118,8 @@ public class IneligibleProposalDetailsController {
 	
 	@RequestMapping(value = "/update/ineligible/status", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> update( @RequestBody InEligibleProposalDetailsRequest inEligibleProposalDetailsRequest, HttpServletRequest request) {
+		
+		logger.info("Update Ineligible status and send mail of Ineligible with Data==>{}",inEligibleProposalDetailsRequest.toString());
 		if (CommonUtils.isObjectNullOrEmpty(inEligibleProposalDetailsRequest) || CommonUtils.isObjectNullOrEmpty(inEligibleProposalDetailsRequest.getApplicationId())
 				|| CommonUtils.isObjectNullOrEmpty(inEligibleProposalDetailsRequest.getStatus()) ||
 				CommonUtils.isObjectNullOrEmpty(inEligibleProposalDetailsRequest.getReason())) {
