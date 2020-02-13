@@ -1333,11 +1333,10 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						
 						if(productStatus == CommonUtils.Status.REVERTED) {
 							try {
-								logger.info("Inside sending mail to Maker when Admin Checker reverted Product");
-								fpAsyncComponent.sendEmailToMakerWhenAdminCheckerRevertedProduct(productMasterTemp,workflowData.getUserId(),productType);	
+								//	
 							}
 							catch(Exception e) {
-								logger.error("Exception occured while sending mail to Checker when Admin Maker resend product for Approval : ",e);
+								//logger.error("Exception occured while sending mail to Checker when Admin Maker resend product for Approval : ",e);
 							}
 						}
 						else if(productStatus == CommonUtils.Status.OPEN){
@@ -1386,8 +1385,8 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				if (rowUpdated > 0 && workflowResponse.getStatus() == 200) {
 					if(!CommonUtils.isObjectNullOrEmpty(productMasterTemp)) {
 						try {
-							//logger.info("Inside sending mail to Maker when Admin Checker reverted Product");
-							//fpAsyncComponent.sendEmailToMakerWhenAdminCheckerRevertedProduct(productMasterTemp,workflowData.getUserId(),productType);	
+							logger.info("Inside sending mail to Maker when Admin Checker reverted Product");
+							fpAsyncComponent.sendEmailToMakerWhenAdminCheckerRevertedProduct(productMasterTemp,workflowData.getUserId(),productType);	
 						}
 						catch(Exception e) {
 							logger.error("Exception occured while sending mail to Maker when Admin Checker reverted Product : ",e);
