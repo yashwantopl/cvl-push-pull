@@ -118,6 +118,8 @@ public class FPAsyncComponent {
 
 	private static final String URL_WWW_PSBLOANS_COM = "https://www.psbloansin59minutes.com";
 	private static final String DATE_FORMAT_DD_MM_YYYY = "dd/MM/yyyy";
+	
+	SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy"); 
 
     /*By Maaz*/
 //    private static final String PROPOSAL_ID="proposalId";
@@ -1704,7 +1706,7 @@ public class FPAsyncComponent {
 			Map<String, Object> mailParameters = new HashMap<>();
 			mailParameters.put(PARAMETERS_PRODUCT_NAME,productMasterTemp.getName() != null ? productMasterTemp.getName() : "NA");
 			mailParameters.put("product_type",productType != null ? productType : "NA");
-			mailParameters.put("date",productMasterTemp.getModifiedDate() != null ? productMasterTemp.getModifiedDate() : "NA");
+			mailParameters.put("date",productMasterTemp.getModifiedDate() != null ? simpleDateFormat.format(productMasterTemp.getModifiedDate()) : "NA");
 			UsersRequest adminForMaker = new UsersRequest();
 			adminForMaker.setId(userId);
 			String adminMakerName = null;
@@ -1872,10 +1874,10 @@ public class FPAsyncComponent {
 					com.capitaworld.service.users.utils.CommonUtils.UserRoles.ADMIN_MAKER);
 //			List<Map<String, Object>> usersRespList = (List<Map<String, Object>>) userResponse.getListData();
 			for (Object obj: userResponse.getListData()) {
-				UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap((Map<?,?>) obj,Object.class);
+				UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap((Map<?,?>) obj,UsersRequest.class);
 				ccList.add(userObj.getEmail());
 			}
-			String[] cc= (String[]) ccList.toArray();
+			String[] cc = Arrays.copyOf(ccList.toArray(), ccList.size(),String[].class); 
 			String to = null;
 			if (!CommonUtils.isObjectNullOrEmpty(assignedMaker.getEmail())) {
 				to = assignedMaker.getEmail();
