@@ -48,6 +48,8 @@ public interface CommonRepository {
 	
 	public Object[] getLastCheckerNameByBranchId(Long branchId) throws Exception;
 	
-	public String getStateByStateCode(Long id); 
+	public String getStateByStateCode(Long id);
+	
+	public Long getCountOfJobId(Long jobId , Long stepId , Long actionId);
 	
 }
