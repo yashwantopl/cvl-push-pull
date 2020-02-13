@@ -844,6 +844,7 @@ public class CommonUtils {
 		public static final Integer REPAYMENT_MODE = 11;
 		public static final Integer BUREAU_SCORE = 12;
 		public static final Integer BUREAU_SCORE_MAIN_DIR = 13;
+		public static final Integer BANK_STATEMENT_OPTIONS = 14;
 	}
 
 	public static final class InEligibleProposalStatus {

@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.Column;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
@@ -87,11 +85,11 @@ public class ProductMasterRequest implements Serializable {
 
 	private Boolean isManualFill;
 	
-	
-	//total limits
 	private List<Integer> gstType;
 	
 	private Integer productType;
+	
+	private List<Integer> bankStatementOptions;
 	
 
 	public ProductMasterRequest() {
@@ -405,7 +403,12 @@ public class ProductMasterRequest implements Serializable {
 	public void setProductType(Integer productType) {
 		this.productType = productType;
 	}
-	
-	
-	
+
+	public List<Integer> getBankStatementOptions() {
+		return bankStatementOptions;
+	}
+
+	public void setBankStatementOptions(List<Integer> bankStatementOptions) {
+		this.bankStatementOptions = bankStatementOptions;
+	}
 }

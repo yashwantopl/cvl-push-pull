@@ -216,6 +216,7 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		
 		fPParameterMappingService.inactiveAndSave(workingCapitalParameterRequest.getId(),CommonUtils.ParameterTypes.BUREAU_SCORE, workingCapitalParameterRequest.getBureauScoreIds());
 		fPParameterMappingService.inactiveAndSave(workingCapitalParameterRequest.getId(),CommonUtils.ParameterTypes.BUREAU_SCORE_MAIN_DIR, workingCapitalParameterRequest.getMainDirBureauScoreIds());
+		fPParameterMappingService.inactiveAndSave(workingCapitalParameterRequest.getId(),CommonUtils.ParameterTypes.BANK_STATEMENT_OPTIONS, workingCapitalParameterRequest.getBankStatementOptions());
 		//Dhaval
 		boolean isUpdate = msmeValueMappingService.updateMsmeValueMapping(false, mappingId,workingCapitalParameter2.getId());
 		logger.info("updated = {}",isUpdate);
@@ -430,6 +431,7 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		workingCapitalParameterRequest.setConstitutionIds(fpConstitutionMappingRepository.getIdsByFpProductId(workingCapitalParameterRequest.getId()));
 		workingCapitalParameterRequest.setBureauScoreIds(fPParameterMappingService.getParameters(workingCapitalParameterRequest.getId(), CommonUtils.ParameterTypes.BUREAU_SCORE));
 		workingCapitalParameterRequest.setMainDirBureauScoreIds(fPParameterMappingService.getParameters(workingCapitalParameterRequest.getId(), CommonUtils.ParameterTypes.BUREAU_SCORE_MAIN_DIR));
+		workingCapitalParameterRequest.setBankStatementOptions(fPParameterMappingService.getParameters(workingCapitalParameterRequest.getId(), CommonUtils.ParameterTypes.BANK_STATEMENT_OPTIONS));
 		
 		logger.info("end getWorkingCapitalParameter");
 		return workingCapitalParameterRequest;
@@ -718,6 +720,7 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		workingCapitalParameterRequest.setConstitutionIds(fpConstitutionMappingTempRepository.getIdsByFpProductId(workingCapitalParameterRequest.getId()));
 		workingCapitalParameterRequest.setBureauScoreIds(fPParameterMappingService.getParametersTemp(workingCapitalParameterRequest.getId(), CommonUtils.ParameterTypes.BUREAU_SCORE));
 		workingCapitalParameterRequest.setMainDirBureauScoreIds(fPParameterMappingService.getParametersTemp(workingCapitalParameterRequest.getId(), CommonUtils.ParameterTypes.BUREAU_SCORE_MAIN_DIR));
+		workingCapitalParameterRequest.setBankStatementOptions(fPParameterMappingService.getParametersTemp(workingCapitalParameterRequest.getId(), CommonUtils.ParameterTypes.BANK_STATEMENT_OPTIONS));
 		logger.info("end getWorkingCapitalParameterTemp");
 		return workingCapitalParameterRequest;
 	}

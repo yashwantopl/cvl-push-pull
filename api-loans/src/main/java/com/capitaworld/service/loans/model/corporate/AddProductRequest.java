@@ -50,6 +50,8 @@ public class AddProductRequest {
 	private Integer productType;
 	
 	private Long roleId;
+	
+	private List<Integer> bankStatementOptions;
 
 	
 	public Integer getProductId() {
@@ -229,8 +231,11 @@ public class AddProductRequest {
 		this.roleId = roleId;
 	}
 
-	
-	
-	
-	
+	public List<Integer> getBankStatementOptions() {
+		return bankStatementOptions;
+	}
+
+	public void setBankStatementOptions(List<Integer> bankStatementOptions) {
+		this.bankStatementOptions = bankStatementOptions;
+	}
 }

@@ -116,6 +116,9 @@ public abstract class ProductMaster implements Serializable {
 	
 	@Column(name = "bureau_version")
 	private Integer bureauVersion;
+	
+//	@Column(name = "bank_statement_option")
+//	private Integer bankStatementOption;
 
 	@Column(name = "min_roi")
 	private Double minRoi;
@@ -378,4 +381,12 @@ public abstract class ProductMaster implements Serializable {
 	public void setMaxRoi(Double maxRoi) {
 		this.maxRoi = maxRoi;
 	}
+
+//	public Integer getBankStatementOption() {
+//		return bankStatementOption;
+//	}
+//
+//	public void setBankStatementOption(Integer bankStatementOption) {
+//		this.bankStatementOption = bankStatementOption;
+//	}
 }

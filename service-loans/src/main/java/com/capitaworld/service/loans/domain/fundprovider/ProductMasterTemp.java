@@ -168,6 +168,9 @@ public class ProductMasterTemp implements Serializable {
 	
 	@Column(name = "bureau_version")
 	private Integer bureauVersion;
+	
+//	@Column(name = "bank_statement_option")
+//	private Integer bankStatementOption;
 
 
 	public ProductMasterTemp() {
@@ -536,4 +539,10 @@ public class ProductMasterTemp implements Serializable {
 	public void setBureauVersion(Integer bureauVersion) {
 		this.bureauVersion = bureauVersion;
 	}
+//	public Integer getBankStatementOption() {
+//		return bankStatementOption;
+//	}
+//	public void setBankStatementOption(Integer bankStatementOption) {
+//		this.bankStatementOption = bankStatementOption;
+//	}
 }

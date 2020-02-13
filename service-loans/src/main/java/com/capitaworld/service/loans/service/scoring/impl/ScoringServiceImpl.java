@@ -1572,7 +1572,7 @@ public class ScoringServiceImpl implements ScoringService {
 	 						logger.warn("Score Not Found For ApplicationId  = >{}",applicationId);
 	 						continue;
 	 					}
-	 					if(mainDirectorBackgroundDetail.getPanNo().equals(cibilScoreLogRequest.getPan())){
+	 					if(mainDirectorBackgroundDetail.getPanNo().equalsIgnoreCase(cibilScoreLogRequest.getPan())){
 	 						if("000-1".equals(cibilScoreLogRequest.getActualScore())){
 		 						cibilScoreLogRequest.setActualScore("-1"); // to Resolve Casting issue of 000-1 to -1
 		 					}
