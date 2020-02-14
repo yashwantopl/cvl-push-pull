@@ -1713,7 +1713,8 @@ public class ScoringServiceImpl implements ScoringService {
 
         PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateDetailRepository.findOneByApplicationIdId(applicationId);
 
-        
+        Boolean isNoBankStatement = loanRepository.isNoBankStatement(applicationId);
+        Integer noOfRelationWithBanks = loanRepository.getMinRelationshipInMonthByApplicationId(applicationId);
         // Primary Corporate details for Mudra loans
         
         PrimaryCorporateDetailMudraLoan corporateDetailMudraLoan  = primaryCorporateDetailMudraLoanRepository.findFirstByApplicationIdAndApplicationProposalMappingProposalIdIsNullOrderByIdDesc(applicationId);
@@ -1729,6 +1730,9 @@ public class ScoringServiceImpl implements ScoringService {
         for(ScoringRequestLoans scoringRequestLoans:scoringRequestLoansList)
         {
         	Integer minBankRelationshipInMonths = null;
+        	if(isNoBankStatement) {
+        		minBankRelationshipInMonths = noOfRelationWithBanks;
+        	}else {
         	  if(scoringRequestLoans.getOrgId() != null) {
               	BankList bankEnum = BankList.fromOrgId(scoringRequestLoans.getOrgId().toString());
               	if(bankEnum != null) {
@@ -1737,6 +1741,7 @@ public class ScoringServiceImpl implements ScoringService {
               	}
               	logger.info("Min Banking Relationship in Month === >{}",minBankRelationshipInMonths);
               }
+        	}
             Long scoreModelId = scoringRequestLoans.getScoringModelId();
             Long fpProductId = scoringRequestLoans.getFpProductId();
 
@@ -2288,7 +2293,7 @@ public class ScoringServiceImpl implements ScoringService {
                             }
                             case ScoreParameter.MudraLoan.RELATIONSHIP_WITH_BANK_ML: {
                             	try {
-                            	if(minBankRelationshipInMonths!=null) {
+                            	if(!isNoBankStatement && minBankRelationshipInMonths!=null) {
                             		logger.info("Relationship With Bank :: "+minBankRelationshipInMonths);
                             		scoringParameterRequest.setBankRelation_p(true);
                             		/*Long monthsBetween = ChronoUnit.MONTHS.between(
