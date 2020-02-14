@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.ParameterMode;
 import javax.persistence.Query;
 import javax.persistence.StoredProcedureQuery;
@@ -228,6 +229,20 @@ public class CommonRepositoryImpl  implements CommonRepository {
 			logger.error("Error/Exception while getting count with jobId==>{} , stepId==>{} and actionId==>{} exception {}",jobId , stepId , actionId ,e);
 		}
 		return null;
+	}
+	
+	@Override
+	public Boolean checkUserForMudraLoanByUserId(Long userId) {
+		try{
+			Object obj = manager.createNativeQuery("SELECT * FROM users.user_role_product_mapping WHERE user_id =:userId AND business_type_id=10")
+					.setParameter("userId", userId).getSingleResult();
+			return obj != null ? true : false;
+		}catch (NoResultException e) {
+			logger.error("Error/Exception while check User For Mudra Loan for UserId==>{} .... No User Found For CoOrigination",userId);
+		}catch (Exception e) {
+			logger.error("Error/Exception while check User For Mudra Loan for UserId==>{} exception {}",userId ,e);
+		}
+		return false;
 	}
 	
 }

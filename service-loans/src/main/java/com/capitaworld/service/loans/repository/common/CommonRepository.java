@@ -52,4 +52,6 @@ public interface CommonRepository {
 	
 	public Long getCountOfJobId(Long jobId , Long stepId , Long actionId);
 	
+	public Boolean checkUserForMudraLoanByUserId(Long userId);
+	
 }
