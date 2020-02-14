@@ -2169,7 +2169,6 @@ public class FPAsyncComponent {
 	@Async
 	public void sendEmailToMakerHOBOWhenCheckerSanctionLoan(LoanSanctionDomain loanSanctionDomainOld) {
 		try {
-//			Long domainId=DomainValue.MSME.getId();
 			logger.info("Into sending Mail to Maker/HO/BO when Checker sanction loan ");
 //			String subject = "Intimation: Sanction - #ApplicationId=" + loanSanctionDomainOld.getApplicationId();
 			Map<String, Object> mailParameters = new HashMap<>();
