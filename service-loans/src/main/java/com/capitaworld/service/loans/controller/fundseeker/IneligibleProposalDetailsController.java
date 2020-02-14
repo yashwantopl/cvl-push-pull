@@ -66,6 +66,8 @@ public class IneligibleProposalDetailsController {
 				inEligibleProposalDetailsRequest.setUserId(userId);
 			}
 		}
+		
+		logger.info("Ineligible data save for InEligibleProposalDetailsRequest with Data==>{}",inEligibleProposalDetailsRequest.toString());
 
 		Boolean isSendMail = null;
 		InEligibleProposalDetailsRequest proposalDetailsRequest = ineligibleProposalDetailsService.get(inEligibleProposalDetailsRequest.getApplicationId());
@@ -86,6 +88,7 @@ public class IneligibleProposalDetailsController {
 			}
 		}
 		Integer isDetailsSaved = ineligibleProposalDetailsService.save(inEligibleProposalDetailsRequest);
+		logger.info("Ineligible Details Saved for ApplicationId==>{} with isDetailsSaved==>{}",inEligibleProposalDetailsRequest.getApplicationId() , isDetailsSaved);
 		Integer fsBusinessType = ineligibleProposalDetailsService.getBusinessTypeIdFromApplicationId(inEligibleProposalDetailsRequest.getApplicationId());
 		if (isDetailsSaved == 2) {
 			Boolean isEligible = false;
