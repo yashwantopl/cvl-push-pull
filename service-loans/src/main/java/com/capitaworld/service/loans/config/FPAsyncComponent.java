@@ -42,6 +42,7 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgr
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
+import com.capitaworld.service.loans.utils.CommonUtils.UsersRoles;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
@@ -2185,19 +2186,12 @@ public class FPAsyncComponent {
 				logger.info("Error calling Proposal Details Client {}" , loanSanctionDomainOld.getApplicationId());
 				logger.error(CommonUtils.EXCEPTION,e);
 			}
-//			String productType = null;
-//			if (!CommonUtils.isObjectNullOrEmpty(applicationRequest)) {
-//				if (!CommonUtils.isObjectNullOrEmpty(applicationRequest.getProductId())) {
-//					productType = CommonUtils.LoanType.getType(applicationRequest.getProductId()).getName();
-//				} else {
-//					productType = "NA";
-//				}
-//			} else {
-//				productType = "NA";
-//			}
 
 			SimpleDateFormat form = new SimpleDateFormat(DATE_FORMAT_DD_MM_YYYY);
 			String fpName = proposalresp.get(CommonUtils.PARAMETERS_FP_NAME) != null ? proposalresp.get(CommonUtils.PARAMETERS_FP_NAME).toString() : "NA";
+			
+			mailParameters.put("application_code", applicationRequest.getApplicationCode() != null ? applicationRequest.getApplicationCode() : loanSanctionDomainOld.getApplicationId());
+			
 			mailParameters.put(CommonUtils.PARAMETERS_FP_NAME, fpName != null ? fpName : "NA");
 			mailParameters.put(CommonUtils.LITERAL_AMOUNT,
 					loanSanctionDomainOld.getSanctionAmount() != null ? loanSanctionDomainOld.getSanctionAmount()
@@ -2226,246 +2220,132 @@ public class FPAsyncComponent {
 			if(loanSanctionDomainOld.getModifiedBy() != null) {
 				checkerForName.setId(Long.valueOf(loanSanctionDomainOld.getModifiedBy()));
 				logger.info(MSG_INTO_GETTING_FP_NAME , checkerForName);
-			}
- 
-			UsersRequest makerForName = new UsersRequest();
-			makerForName.setId(applicationRequest.getFpMakerId());
-			String makerName = null;
-			try {
-				logger.info(MSG_INTO_GETTING_FP_NAME , makerForName);
-				UserResponse userResponseForName = userClient.getFPDetails(makerForName);
+				UserResponse userResponseForName = userClient.getFPDetails(checkerForName);
 				FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
 						(Map<Object, Object>) userResponseForName.getData(), FundProviderDetailsRequest.class);
-				makerName = fundProviderDetailsRequest.getFirstName() + " "
+				checkerName = fundProviderDetailsRequest.getFirstName() + " "
 						+ (fundProviderDetailsRequest.getLastName() == null ? ""
 						: fundProviderDetailsRequest.getLastName());
-				if (LITERAL_NULL.equals(makerName)) {
-					makerName = PARAMETERS_SIR_MADAM;
+				if (LITERAL_NULL.equals(checkerName)) {
+					checkerName = LITERAL_CHECKER;
 				} else {
-					makerName = makerName != null ? makerName : PARAMETERS_SIR_MADAM;
+					checkerName = checkerName != null ? checkerName : LITERAL_CHECKER;
 				}
-				mailParameters.put(PARAMETERS_MAKER_NAME, makerName);
-			} catch (Exception e) {
-				logger.error(ERROR_WHILE_FETCHING_FP_NAME,e);
 			}
+ 
 			mailParameters.put(CommonUtils.PARAMETERS_LOAN_AMOUNT,loanSanctionDomainOld.getSanctionAmount() != null ? loanSanctionDomainOld.getSanctionAmount(): "NA");
 			mailParameters.put(PARAMETERS_CHECKER_NAME, checkerName != null ? checkerName : LITERAL_CHECKER);
 			mailParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
 			mailParameters.put(PARAMETERS_PRODUCT_TYPE, "Mudra Loan");
 			
 			UsersRequest maker = new UsersRequest();
-			if(!CommonUtils.isObjectNullOrEmpty(applicationRequest) && !applicationRequest.getBusinessTypeId().equals(CommonUtils.BusinessType.ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS.getId())){
-				/** attaching branch user in cc */
-				try {
-					UserResponse allBranchUsers = userClient.getAllBranchUsers(prpo.getBranchId());
-					List<Map<String, Object>> branchUser= (List<Map<String, Object>>) allBranchUsers.getListData();
-					List<String> ccList=new ArrayList<>();
-					if(branchUser != null && !branchUser.isEmpty()) {
-						for (Map<String, Object> map : branchUser) {
-							BranchUserResponse resp= MultipleJSONObjectHelper.getObjectFromMap(map, BranchUserResponse.class);
-							if(applicationRequest.getFpMakerId() != null && applicationRequest.getFpMakerId().equals(Long.valueOf(resp.getUserId()))) {
+			
+			/** attaching branch user in cc */
+			try {
+				UserResponse allBranchUsers = userClient.getAllBranchUsers(prpo.getBranchId());
+				List<Map<String, Object>> branchUser= (List<Map<String, Object>>) allBranchUsers.getListData();
+				List<String> ccList=new ArrayList<>();
+				if(branchUser != null && !branchUser.isEmpty()) {
+					for (Map<String, Object> map : branchUser) {
+						BranchUserResponse resp= MultipleJSONObjectHelper.getObjectFromMap(map, BranchUserResponse.class);
+						
+						if(resp.getUserRole().equals(String.valueOf(UserRoles.FP_MAKER)) || resp.getUserRole().equals(String.valueOf(UserRoles.FP_CHECKER))) {
+						
+							if(resp.getEmail() != null && maker.getEmail() == null) {
 								maker.setEmail(resp.getEmail());
 								maker.setMobile(resp.getMobile());
+								maker.setUserId(Long.valueOf(resp.getUserId()));
+							}else {
+								ccList.add(resp.getEmail());
 							}
 							
-							if(resp.getUserRole().equals(String.valueOf(UserRoles.HEAD_OFFICER)) || resp.getUserRole().equals(String.valueOf(UserRoles.BRANCH_OFFICER))) {
-								ccList.add(resp.getEmail());
+							if (!CommonUtils.isObjectNullOrEmpty(applicationRequest.getFpMakerId())) {
+								/** sending system notification to Ho,BO user*/
+								sendSYSNotification(loanSanctionDomainOld.getApplicationId(),
+										resp.getUserId().toString(), mailParameters,NotificationAlias.ML_SYS_ALL_FP_WHEN_CHECKER_SANCTIONED,
+										applicationRequest.getFpMakerId().toString(), null,applicationRequest.getProductId(),prpo.getUserOrgId(),NotificationMasterAlias.ML_SYS_ALL_FP_WHEN_CHECKER_SANCTIONED.getMasterId() ,resp.getUserId().toString());
+							}
+							/** sending sms notification to Ho,BO user*/
+							if (!CommonUtils.isObjectNullOrEmpty(resp.getMobile())) {
 								
-								if (!CommonUtils.isObjectNullOrEmpty(applicationRequest.getFpMakerId())) {
-									/** sending system notification to Ho,BO user*/
-									sendSYSNotification(loanSanctionDomainOld.getApplicationId(),
-											resp.getUserId().toString(), mailParameters,NotificationAlias.ML_SYS_ALL_FP_WHEN_CHECKER_SANCTIONED,
-											applicationRequest.getFpMakerId().toString(), null,applicationRequest.getProductId(),prpo.getUserOrgId(),NotificationMasterAlias.ML_SYS_ALL_FP_WHEN_CHECKER_SANCTIONED.getMasterId() ,resp.getUserId().toString());
-								}
-								/** sending sms notification to Ho,BO user*/
-								if (!CommonUtils.isObjectNullOrEmpty(resp.getMobile())) {
-									
-									mailParameters.put("url", URL_WWW_PSBLOANS_COM);
-									sendSMSNotification(resp.getUserId().toString(), mailParameters,NotificationAlias.ML_SMS_ALL_FP_WHEN_CHECKER_SANCTIONED,null,
-											applicationRequest.getProductId(),prpo.getUserOrgId(),NotificationMasterAlias.ML_SMS_ALL_FP_WHEN_CHECKER_SANCTIONED.getMasterId() ,resp.getMobile());
-								}
+								mailParameters.put("url", URL_WWW_PSBLOANS_COM);
+								sendSMSNotification(resp.getUserId().toString(), mailParameters,NotificationAlias.ML_SMS_ALL_FP_WHEN_CHECKER_SANCTIONED,null,
+										applicationRequest.getProductId(),prpo.getUserOrgId(),NotificationMasterAlias.ML_SMS_ALL_FP_WHEN_CHECKER_SANCTIONED.getMasterId() ,resp.getMobile());
 							}
 						}
 					}
-					
-					if(!ccList.isEmpty()) {
-						cc=new String[ccList.size()];
-						cc= Arrays.copyOf(ccList.toArray(),ccList.size(),String[].class);
+				}
+				
+				allBranchUsers = userClient.getUserDetailByOrgRoleId(prpo.getUserOrgId(), UsersRoles.HO);
+				branchUser= (List<Map<String, Object>>) allBranchUsers.getListData();
+				if(branchUser != null && !branchUser.isEmpty()) {
+					for (Map<String, Object> map : branchUser) {
+						BranchUserResponse resp= MultipleJSONObjectHelper.getObjectFromMap(map, BranchUserResponse.class);
+						if(resp != null && resp.getEmail() != null) {
+							ccList.add(resp.getEmail());
+						}
 					}
-					UserResponse userResponseForName = userClient.getFPDetails(checkerForName);
+				}
+				
+				if(maker != null && maker.getEmail() == null && !ccList.isEmpty()) {
+					maker.setEmail(ccList.get(0));
+					ccList.remove(0);
+				}
+				
+				if(!ccList.isEmpty()) {
+					cc = new String[ccList.size()];
+					cc = Arrays.copyOf(ccList.toArray(),ccList.size(),String[].class);
+				}
+				
+			} catch (Exception e) {
+				logger.error("Exception in attaching branch user in cc {}",e);
+			}
+
+			// ===========================Email to Maker==and branch users are in cc======================
+			if (!CommonUtils.isObjectNullOrEmpty(maker) && !CommonUtils.isObjectNullOrEmpty(maker.getEmail())) {
+				String toIds = maker.getEmail();
+				
+				UsersRequest makerForName = new UsersRequest();
+				makerForName.setId(maker.getUserId());
+				String makerName = null;
+				try {
+					logger.info(MSG_INTO_GETTING_FP_NAME , makerForName);
+					UserResponse userResponseForName = userClient.getFPDetails(makerForName);
 					FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
 							(Map<Object, Object>) userResponseForName.getData(), FundProviderDetailsRequest.class);
-					checkerName = fundProviderDetailsRequest.getFirstName() + " "
+					makerName = fundProviderDetailsRequest.getFirstName() + " "
 							+ (fundProviderDetailsRequest.getLastName() == null ? ""
 							: fundProviderDetailsRequest.getLastName());
-					if (LITERAL_NULL.equals(checkerName)) {
-						checkerName = LITERAL_CHECKER;
+					if (LITERAL_NULL.equals(makerName)) {
+						makerName = PARAMETERS_SIR_MADAM;
 					} else {
-						checkerName = checkerName != null ? checkerName : LITERAL_CHECKER;
+						makerName = makerName != null ? makerName : PARAMETERS_SIR_MADAM;
 					}
+					
 				} catch (Exception e) {
-					logger.error("Exception in attaching branch user in cc {}",e);
+					logger.error(ERROR_WHILE_FETCHING_FP_NAME,e);
 				}
-				mailParameters.put(PARAMETERS_CHECKER_NAME, checkerName);
-//				if((applicationRequest.getProductId() == LoanType.HOME_LOAN.getValue() 
-//					|| applicationRequest.getProductId() == LoanType.PERSONAL_LOAN.getValue())) {
-//					domainId= DomainValue.RETAIL.getId();
-//				}
-				// ===========================Email to Maker==and branch users are in cc======================
-				if (!CommonUtils.isObjectNullOrEmpty(maker) && !CommonUtils.isObjectNullOrEmpty(maker.getEmail())) {
-					String toIds = maker.getEmail();
-					logger.info("Email Sending TO MAKER when Checker sanction loan===to==>{}", toIds);
-					mailParameters.put(CommonUtils.PARAMETERS_IS_DYNAMIC, true);
-					createNotificationForEmail(toIds, applicationRequest.getFpMakerId().toString(), mailParameters,
-							NotificationAlias.ML_EMAIL_ALL_FP_WHEN_CHECKER_SANCTIONED, 
-							null,null,cc,
-							applicationRequest.getProductId(),prpo.getUserOrgId(),NotificationMasterAlias.ML_EMAIL_ALL_FP_WHEN_CHECKER_SANCTIONED.getMasterId());
-				}
-				/** sending system notification to maker user*/
-				if (!CommonUtils.isObjectNullOrEmpty(applicationRequest.getFpMakerId())) {
-					mailParameters.put(PARAMETERS_CHECKER_NAME, checkerName != null ? checkerName : LITERAL_CHECKER);
-					mailParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
-					sendSYSNotification(loanSanctionDomainOld.getApplicationId(),
-							applicationRequest.getFpMakerId().toString(), mailParameters,
-							NotificationAlias.ML_SYS_ALL_FP_WHEN_CHECKER_SANCTIONED,
-							applicationRequest.getFpMakerId().toString(), null,
-							applicationRequest.getProductId(),prpo.getUserOrgId(),NotificationMasterAlias.ML_SYS_ALL_FP_WHEN_CHECKER_SANCTIONED.getMasterId() ,applicationRequest.getFpMakerId().toString());
-				}
-			
 				
+				mailParameters.put("ho_name", makerName);
+				
+				logger.info("Email Sending TO MAKER when Checker sanction loan===to==>{}", toIds);
+				mailParameters.put(CommonUtils.PARAMETERS_IS_DYNAMIC, true);
+				createNotificationForEmail(toIds, maker.getUserId().toString() , mailParameters,
+						NotificationAlias.ML_EMAIL_ALL_FP_WHEN_CHECKER_SANCTIONED, 
+						null,null,cc,
+						applicationRequest.getProductId(),prpo.getUserOrgId(),NotificationMasterAlias.ML_EMAIL_ALL_FP_WHEN_CHECKER_SANCTIONED.getMasterId());
 			}
-			// ===========================Email to HO======================================
-		/*	Long branchId = null;
-			if (!CommonUtils.isObjectNullOrEmpty(loanSanctionDomainOld.getBranch())) {
-				branchId = loanSanctionDomainOld.getBranch();
+			/** sending system notification to maker user*/
+			if (!CommonUtils.isObjectNullOrEmpty(applicationRequest.getFpMakerId())) {
+				mailParameters.put(PARAMETERS_CHECKER_NAME, checkerName != null ? checkerName : LITERAL_CHECKER);
+				mailParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
+				sendSYSNotification(loanSanctionDomainOld.getApplicationId(),
+						applicationRequest.getFpMakerId().toString(), mailParameters,
+						NotificationAlias.ML_SYS_ALL_FP_WHEN_CHECKER_SANCTIONED,
+						applicationRequest.getFpMakerId().toString(), null,
+						applicationRequest.getProductId(),prpo.getUserOrgId(),NotificationMasterAlias.ML_SYS_ALL_FP_WHEN_CHECKER_SANCTIONED.getMasterId() ,applicationRequest.getFpMakerId().toString());
 			}
-			UserResponse userResponse = userClient.getUserDetailByOrgRoleBranchId(applicationRequest.getNpOrgId(),
-					com.capitaworld.service.users.utils.CommonUtils.UserRoles.HEAD_OFFICER, branchId);
-			List<Map<String, Object>> usersRespList = (List<Map<String, Object>>) userResponse.getListData();
-			String to = null;
-			if (!CommonUtils.isObjectNullOrEmpty(usersRespList)) {
-				for (int i = 0; i < usersRespList.size(); i++) {
-					UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap(usersRespList.get(i),
-							UsersRequest.class);
-					String name = null;
-					try {
-						logger.info(MSG_INTO_GETTING_FP_NAME , userObj);
-						UserResponse userResponseForName = userClient.getFPDetails(userObj);
-						FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper
-								.getObjectFromMap((Map<Object, Object>) userResponseForName.getData(),
-										FundProviderDetailsRequest.class);
-						name = fundProviderDetailsRequest.getFirstName() + " "
-								+ (fundProviderDetailsRequest.getLastName() == null ? ""
-								: fundProviderDetailsRequest.getLastName());
-					} catch (Exception e) {
-						logger.error(ERROR_WHILE_FETCHING_FP_NAME,e);
-					}
-
-					if (!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
-						logger.info(MSG_MAKER_ID,userObj.getEmail());
-						to = userObj.getEmail();
-						if (LITERAL_NULL.equals(name)) {
-							mailParameters.put(PARAMETERS_HO_NAME, PARAMETERS_SIR_MADAM);
-						} else {
-							mailParameters.put(PARAMETERS_HO_NAME, name != null ? name : PARAMETERS_SIR_MADAM);
-						}
-						mailParameters.put(CommonUtils.PARAMETERS_IS_DYNAMIC, true);
-						createNotificationForEmail(to, userObj.getId().toString(), mailParameters,
-								NotificationAlias.EMAIL_HO_CHECKER_SANCTIONED, subject,domainId);
-					}
-					if (!CommonUtils.isObjectNullOrEmpty(userObj.getMobile())) {
-						logger.info(MSG_MAKER_ID,userObj.getEmail());
-						Map<String, Object> smsParameters = new HashMap<>();
-						to = "91" + userObj.getMobile();
-						smsParameters.put(PARAMETERS_CHECKER_NAME, checkerName != null ? checkerName : LITERAL_CHECKER);
-						smsParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
-						smsParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "NA");
-						smsParameters.put(CommonUtils.PARAMETERS_LOAN_AMOUNT,loanSanctionDomainOld.getSanctionAmount() != null ? loanSanctionDomainOld.getSanctionAmount(): "NA");
-						smsParameters.put("url", URL_WWW_PSBLOANS_COM);
-
-						sendSMSNotification(userObj.getId().toString(), smsParameters,
-								NotificationAlias.SMS_HO_CHECKER_SANCTIONED,domainId, to);
-					}
-					if (!CommonUtils.isObjectNullOrEmpty(userObj.getId())) {
-						logger.info(MSG_MAKER_ID,userObj.getEmail());
-						Map<String, Object> sysParameters = new HashMap<String, Object>();
-						sysParameters.put(PARAMETERS_CHECKER_NAME, checkerName != null ? checkerName : LITERAL_CHECKER);
-						sysParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
-						sysParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "NA");
-
-						sendSYSNotification(loanSanctionDomainOld.getApplicationId(), userObj.getId().toString(),
-								sysParameters, NotificationAlias.SYS_HO_CHECKER_SANCTIONED, userObj.getId().toString(),domainId,
-								userObj.getId().toString());
-					}
-				}
-
-			} else {
-				logger.info(MSG_NO_HO_FOUND);
-			}*/
-			// ===========================Email to BO======================================
-/*
-			userResponse = userClient.getUserDetailByOrgRoleBranchId(applicationRequest.getNpOrgId(),
-					com.capitaworld.service.users.utils.CommonUtils.UserRoles.BRANCH_OFFICER, branchId);
-			List<Map<String, Object>> boRespList = (List<Map<String, Object>>) userResponse.getListData();
-			if (!CommonUtils.isObjectNullOrEmpty(boRespList)) {
-				for (int i = 0; i < boRespList.size(); i++) {
-					UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap(boRespList.get(i),
-							UsersRequest.class);
-					String name = null;
-					try {
-						logger.info(MSG_INTO_GETTING_FP_NAME , userObj);
-						UserResponse userResponseForName = userClient.getFPDetails(userObj);
-						FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper
-								.getObjectFromMap((Map<Object, Object>) userResponseForName.getData(),
-										FundProviderDetailsRequest.class);
-						name = fundProviderDetailsRequest.getFirstName() + " "
-								+ (fundProviderDetailsRequest.getLastName() == null ? ""
-								: fundProviderDetailsRequest.getLastName());
-					} catch (Exception e) {
-						logger.error(ERROR_WHILE_FETCHING_FP_NAME,e);
-					}
-					if (!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
-						logger.info(MSG_MAKER_ID,userObj.getEmail());
-						to = userObj.getEmail();
-						if (LITERAL_NULL.equals(name)) {
-							mailParameters.put(PARAMETERS_BO_NAME, PARAMETERS_SIR_MADAM);
-						} else {
-							mailParameters.put(PARAMETERS_BO_NAME, name != null ? name : PARAMETERS_SIR_MADAM);
-						}
-						mailParameters.put(CommonUtils.PARAMETERS_IS_DYNAMIC, true);
-						createNotificationForEmail(to, userObj.getId().toString(), mailParameters,NotificationAlias.EMAIL_ALL_BO_CHECKER_SANCTIONED, subject,domainId);
-					}
-
-					if (!CommonUtils.isObjectNullOrEmpty(userObj.getMobile())) {
-						logger.info(MSG_MAKER_ID,userObj.getEmail());
-						Map<String, Object> smsParameters = new HashMap<String, Object>();
-						to = "91" + userObj.getMobile();
-						smsParameters.put(PARAMETERS_CHECKER_NAME, checkerName != null ? checkerName : LITERAL_CHECKER);
-						smsParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
-						smsParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "NA");
-						smsParameters.put(CommonUtils.PARAMETERS_LOAN_AMOUNT,loanSanctionDomainOld.getSanctionAmount() != null ? loanSanctionDomainOld.getSanctionAmount(): "NA");
-
-						smsParameters.put("url", URL_WWW_PSBLOANS_COM);
-
-						sendSMSNotification(userObj.getId().toString(), smsParameters,
-								NotificationAlias.SMS_ALL_BO_CHECKER_SANCTIONED,domainId, to);
-					}
-
-					if (!CommonUtils.isObjectNullOrEmpty(userObj.getId())) {
-						logger.info(MSG_MAKER_ID,userObj.getEmail());
-						Map<String, Object> sysParameters = new HashMap<String, Object>();
-						sysParameters.put(PARAMETERS_CHECKER_NAME, checkerName != null ? checkerName : LITERAL_CHECKER);
-						sysParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
-						sysParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "NA");
-
-						sendSYSNotification(loanSanctionDomainOld.getApplicationId(), userObj.getId().toString(),
-								sysParameters, NotificationAlias.SYS_ALL_BO_CHECKER_SANCTIONED,
-								userObj.getId().toString(),domainId, userObj.getId().toString());
-					}
-				}
-			} else {
-				logger.info(MSG_NO_BO_FOUND);
-			}*/
+			
 		} catch (Exception e) {
 			logger.error(
 					"An exception getting while sending mail to Maker/HO/BO when Checker sanction loan=============>{}",e);
