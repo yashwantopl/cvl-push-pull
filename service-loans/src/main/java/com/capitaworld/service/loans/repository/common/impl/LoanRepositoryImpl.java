@@ -726,20 +726,20 @@ public class LoanRepositoryImpl implements LoanRepository {
 
 	@Override
 	public Boolean isNoBankStatement(Long applicationId) {
-		Integer count = null;
+		Double count = null;
 		try{
-			count = (Integer)entityManager.createNativeQuery("SELECT COUNT(a.id) FROM `pennydrop`.`audit_log_details` a WHERE a.application_id =:applicationId AND a.status = 1 AND a.request_type = '1' ORDER BY a.id DESC LIMIT 1").setParameter("applicationId", applicationId).getSingleResult();
+			count = (Double)entityManager.createNativeQuery("SELECT COUNT(a.id) FROM `pennydrop`.`audit_log_details` a WHERE a.application_id =:applicationId AND a.status = 1 AND a.request_type = '1' ORDER BY a.id DESC LIMIT 1").setParameter("applicationId", applicationId).getSingleResult();
 		}catch(Exception e){
 			logger.error("Error while getting count for pennydrop for ApplicationId = >{}====>{}",applicationId,e);
 		}
-		return count>0 ? true : false;
+		return count>0d ? true : false;
 	}
 	
 	@Override
-	public Integer getMinRelationshipInMonthByApplicationId(Long applicationId) {
-		Integer relationInMonths = null;
+	public Double getMinRelationshipInMonthByApplicationId(Long applicationId) {
+		Double relationInMonths = null;
 		try {
-		relationInMonths = (Integer)entityManager.createNativeQuery("SELECT TIMESTAMPDIFF(MONTH,STR_TO_DATE(CONCAT('01,',o.since_month,',',o.since_year),'%d,%m,%Y'),NOW()) AS res FROM pennydrop.account_details o WHERE o.application_id =:id").setParameter("id", applicationId).getSingleResult();
+		relationInMonths = (Double)entityManager.createNativeQuery("SELECT TIMESTAMPDIFF(MONTH,STR_TO_DATE(CONCAT('01,',o.since_month,',',o.since_year),'%d,%m,%Y'),NOW()) AS res FROM pennydrop.account_details o WHERE o.application_id =:id").setParameter("id", applicationId).getSingleResult();
 		}
 		catch (Exception e) {
 			logger.error("Error While fetching months in relation with banks =====>{}======{}",applicationId,e);

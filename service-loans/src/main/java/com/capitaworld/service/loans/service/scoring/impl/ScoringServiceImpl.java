@@ -1714,7 +1714,7 @@ public class ScoringServiceImpl implements ScoringService {
         PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateDetailRepository.findOneByApplicationIdId(applicationId);
 
         Boolean isNoBankStatement = loanRepository.isNoBankStatement(applicationId);
-        Integer noOfRelationWithBanks = loanRepository.getMinRelationshipInMonthByApplicationId(applicationId);
+        Double noOfRelationWithBanks = loanRepository.getMinRelationshipInMonthByApplicationId(applicationId);
         // Primary Corporate details for Mudra loans
         
         PrimaryCorporateDetailMudraLoan corporateDetailMudraLoan  = primaryCorporateDetailMudraLoanRepository.findFirstByApplicationIdAndApplicationProposalMappingProposalIdIsNullOrderByIdDesc(applicationId);
@@ -1731,7 +1731,7 @@ public class ScoringServiceImpl implements ScoringService {
         {
         	Integer minBankRelationshipInMonths = null;
         	if(isNoBankStatement) {
-        		minBankRelationshipInMonths = noOfRelationWithBanks;
+        		minBankRelationshipInMonths = Integer.valueOf(noOfRelationWithBanks.toString());
         	}else {
         	  if(scoringRequestLoans.getOrgId() != null) {
               	BankList bankEnum = BankList.fromOrgId(scoringRequestLoans.getOrgId().toString());
