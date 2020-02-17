@@ -107,4 +107,8 @@ public interface LoanRepository{
     public List<BankingRelation> listBankRelationAppId(Long id,Long applicantId);
     
     public Double getAllDirectorAverageBureauScore(Long applicationId);
+    
+    public Boolean isNoBankStatement(Long applicationId);
+    
+    public Double getMinRelationshipInMonthByApplicationId(Long applicationId);
 }

@@ -1713,7 +1713,8 @@ public class ScoringServiceImpl implements ScoringService {
 
         PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateDetailRepository.findOneByApplicationIdId(applicationId);
 
-        
+        Boolean isNoBankStatement = loanRepository.isNoBankStatement(applicationId);
+        Double noOfRelationWithBanks = loanRepository.getMinRelationshipInMonthByApplicationId(applicationId);
         // Primary Corporate details for Mudra loans
         
         PrimaryCorporateDetailMudraLoan corporateDetailMudraLoan  = primaryCorporateDetailMudraLoanRepository.findFirstByApplicationIdAndApplicationProposalMappingProposalIdIsNullOrderByIdDesc(applicationId);
@@ -1729,6 +1730,9 @@ public class ScoringServiceImpl implements ScoringService {
         for(ScoringRequestLoans scoringRequestLoans:scoringRequestLoansList)
         {
         	Integer minBankRelationshipInMonths = null;
+        	if(isNoBankStatement) {
+        		minBankRelationshipInMonths = Integer.valueOf(noOfRelationWithBanks.toString());
+        	}else {
         	  if(scoringRequestLoans.getOrgId() != null) {
               	BankList bankEnum = BankList.fromOrgId(scoringRequestLoans.getOrgId().toString());
               	if(bankEnum != null) {
@@ -1737,6 +1741,7 @@ public class ScoringServiceImpl implements ScoringService {
               	}
               	logger.info("Min Banking Relationship in Month === >{}",minBankRelationshipInMonths);
               }
+        	}
             Long scoreModelId = scoringRequestLoans.getScoringModelId();
             Long fpProductId = scoringRequestLoans.getFpProductId();
 
@@ -2218,7 +2223,12 @@ public class ScoringServiceImpl implements ScoringService {
                             
                             case ScoreParameter.MudraLoan.NO_OF_CHEQUES_BOUNCED_ML: {
                                 try{
-                                    scoringParameterRequest.setNoOfChequesBouncedLastMonth(noOfChequeBounce1Month);
+                                	if(isNoBankStatement) {
+                                		scoringParameterRequest.setNoOfChequesBouncedLastMonth(-1.0);
+                                	}
+                                	else {
+                                		scoringParameterRequest.setNoOfChequesBouncedLastMonth(noOfChequeBounce1Month);
+                                	}
                                     scoringParameterRequest.setChequesBouncedLastMonth_p(true);
                                 }catch (Exception e){
                                     logger.error("error while getting NO_OF_CHEQUES_BOUNCED parameter : ",e);
@@ -2229,7 +2239,12 @@ public class ScoringServiceImpl implements ScoringService {
 
                             case ScoreParameter.MudraLoan.NO_OF_CHEQUES_BOUNCED_LAST_SIX_MONTH_ML: {
                                 try{
-                                    scoringParameterRequest.setNoOfChequesBouncedLastSixMonth(noOfChequeBounce6Month);
+                                	if(isNoBankStatement) {
+                                		scoringParameterRequest.setNoOfChequesBouncedLastSixMonth(-1.0);
+                                	}
+                                	else {
+                                		scoringParameterRequest.setNoOfChequesBouncedLastSixMonth(noOfChequeBounce6Month);
+                                	}
                                     scoringParameterRequest.setChequesBouncedLastSixMonth_p(true);
                                 }catch (Exception e){
                                     logger.error("error while getting NO_OF_CHEQUES_BOUNCED_LAST_SIX_MONTH parameter : ",e);
@@ -2288,7 +2303,7 @@ public class ScoringServiceImpl implements ScoringService {
                             }
                             case ScoreParameter.MudraLoan.RELATIONSHIP_WITH_BANK_ML: {
                             	try {
-                            	if(minBankRelationshipInMonths!=null) {
+                            	if(!isNoBankStatement && minBankRelationshipInMonths!=null) {
                             		logger.info("Relationship With Bank :: "+minBankRelationshipInMonths);
                             		scoringParameterRequest.setBankRelation_p(true);
                             		/*Long monthsBetween = ChronoUnit.MONTHS.between(

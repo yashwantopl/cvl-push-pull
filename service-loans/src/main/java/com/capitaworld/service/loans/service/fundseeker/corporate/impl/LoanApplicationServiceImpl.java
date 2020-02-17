@@ -8306,7 +8306,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				logger.error(CommonUtils.EXCEPTION+e.getMessage(), e);
 			}
 
-			minMaxProductDetailList=minMaxProductDetailRepository.listMinMaxProductDetail();
+			minMaxProductDetailList=minMaxProductDetailRepository.listMinMaxProductDetailByOrgId(31l);
 			/*//User is Not from Campaign
 			if(CommonUtils.isObjectNullOrEmpty(fsOrgId))
 			{
