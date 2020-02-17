@@ -31,6 +31,7 @@ import com.capitaworld.service.dms.model.StorageDetailsResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.config.FPAsyncComponent;
 import com.capitaworld.service.loans.domain.IndustrySectorDetailTemp;
+import com.capitaworld.service.loans.domain.fundprovider.ConstitutionMappingTemp;
 import com.capitaworld.service.loans.domain.fundprovider.FpGstTypeMappingTemp;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalCityDetailTemp;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalCountryDetailTemp;
@@ -62,6 +63,7 @@ import com.capitaworld.service.loans.model.corporate.WcTlParameterRequest;
 import com.capitaworld.service.loans.model.corporate.WorkingCapitalParameterRequest;
 import com.capitaworld.service.loans.repository.common.CommonRepository;
 import com.capitaworld.service.loans.repository.common.LoanRepository;
+import com.capitaworld.service.loans.repository.fundprovider.FpConstitutionMappingTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.FpGstTypeMappingRepository;
 import com.capitaworld.service.loans.repository.fundprovider.FpGstTypeMappingTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalCityTempRepository;
@@ -195,6 +197,9 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	private LoanRepository loanRepository;
 	
 	@Autowired
+	private FpConstitutionMappingTempRepository fpConstitutionMappingTempRepository;
+	
+	@Autowired
 	private FPParameterMappingService fPParameterMappingService;
 	
 	@Override
@@ -261,7 +266,8 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 							workingCapitalParameterRequest.setNewTolTnw(null);
 						}
 						//END set multiple value in temp
-						BeanUtils.copyProperties(workingCapitalParameterRequest, workingCapitalParameterTemp,"id","profitabilityHistory","netWorth");
+						BeanUtils.copyProperties(workingCapitalParameterRequest, workingCapitalParameterTemp,"id");
+						saveConstitutionTypeTemp(workingCapitalParameterRequest);
 						productMasterTemp = workingCapitalParameterTemp;
 						productMasterTemp.setIsParameterFilled(true);
 						break;
@@ -284,7 +290,8 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 								termLoanParameterRequest.setIsNewTolTnwCheck(false);
 								termLoanParameterRequest.setNewTolTnw(null);
 							}
-							BeanUtils.copyProperties(termLoanParameterRequest, ntbTermLoanParameterTemp,"id","profitabilityHistory","netWorth");
+							BeanUtils.copyProperties(termLoanParameterRequest, ntbTermLoanParameterTemp,"id");
+							saveConstitutionTypeTemp(termLoanParameterRequest);
 							productMasterTemp = ntbTermLoanParameterTemp;
 							productMasterTemp.setIsParameterFilled(true);
 						} else {
@@ -304,7 +311,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 								termLoanParameterRequest.setIsNewTolTnwCheck(false);
 								termLoanParameterRequest.setNewTolTnw(null);
 							}
-							BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameterTemp,"id","profitabilityHistory","netWorth");
+							BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameterTemp,"id");
 							productMasterTemp = termLoanParameterTemp;
 							productMasterTemp.setIsParameterFilled(true);
 						}
@@ -326,7 +333,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 							wcTlParameterRequest.setIsNewTolTnwCheck(false);
 							wcTlParameterRequest.setNewTolTnw(null);
 						}
-						BeanUtils.copyProperties(wcTlParameterRequest, wcTlParameterTemp,"id","profitabilityHistory","netWorth");
+						BeanUtils.copyProperties(wcTlParameterRequest, wcTlParameterTemp,"id");
 						productMasterTemp = wcTlParameterTemp;
 						productMasterTemp.setIsParameterFilled(true);
 						break;
@@ -377,7 +384,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				
 				if(loanType==LoanType.WORKING_CAPITAL || loanType==LoanType.TERM_LOAN || loanType==LoanType.WCTL_LOAN)
 				{
-					fPParameterMappingService.inactiveAndSaveTemp(productMaster2.getId(),CommonUtils.ParameterTypes.BANK_STATEMENT_OPTIONS, addProductRequest.getBankStatementOptions());
+//					fPParameterMappingService.inactiveAndSaveTemp(productMaster2.getId(),CommonUtils.ParameterTypes.BANK_STATEMENT_OPTIONS, addProductRequest.getBankStatementOptions());
 					
 					fpGstTypeMappingTempRepository.inActiveMasterByFpProductId(productMaster2.getId());
 					if(!CommonUtils.isListNullOrEmpty(addProductRequest.getGstType()))
@@ -543,6 +550,46 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		
 	}
 
+	private void saveConstitutionTypeTemp(WorkingCapitalParameterRequest workingCapitalParameterRequest) {
+		// TODO Auto-generated method stub
+		CommonDocumentUtils.startHook(logger, "saveConstitutionTypeTemp");
+		ConstitutionMappingTemp constitutionMapping= null;
+		for (Integer dataRequest : workingCapitalParameterRequest.getConstitutionIds()) {
+			constitutionMapping = new ConstitutionMappingTemp();
+			constitutionMapping.setFpProductId(workingCapitalParameterRequest.getId());
+			constitutionMapping.setConstitutionId(dataRequest);
+			constitutionMapping.setCreatedBy(workingCapitalParameterRequest.getUserId());
+			constitutionMapping.setModifiedBy(workingCapitalParameterRequest.getUserId());
+			constitutionMapping.setCreatedDate(new Date());
+			constitutionMapping.setModifiedDate(new Date());
+			constitutionMapping.setIsActive(true);
+			// create by and update
+			fpConstitutionMappingTempRepository.save(constitutionMapping);
+		}
+		CommonDocumentUtils.endHook(logger, "saveConstitutionTypeTemp");
+		
+	}
+	
+	private void saveConstitutionTypeTemp(TermLoanParameterRequest termLoanParameterRequest) {
+		// TODO Auto-generated method stub
+		CommonDocumentUtils.startHook(logger, "saveConstitutionTypeTemp");
+		ConstitutionMappingTemp constitutionMapping= null;
+		for (Integer dataRequest : termLoanParameterRequest.getConstitutionIds()) {
+			constitutionMapping = new ConstitutionMappingTemp();
+			constitutionMapping.setFpProductId(termLoanParameterRequest.getId());
+			constitutionMapping.setConstitutionId(dataRequest);
+			constitutionMapping.setCreatedBy(termLoanParameterRequest.getUserId());
+			constitutionMapping.setModifiedBy(termLoanParameterRequest.getUserId());
+			constitutionMapping.setCreatedDate(new Date());
+			constitutionMapping.setModifiedDate(new Date());
+			constitutionMapping.setIsActive(true);
+			// create by and update
+			fpConstitutionMappingTempRepository.save(constitutionMapping);
+		}
+		CommonDocumentUtils.endHook(logger, "saveConstitutionTypeTemp");
+		
+	}
+	
 	private void saveCountryTemp(Long id, List<DataRequest> geogaphicallyCountry,Long userId) {
 
 		logger.info("save saveCountryTemp");
