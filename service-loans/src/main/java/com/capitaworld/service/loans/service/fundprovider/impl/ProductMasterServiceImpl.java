@@ -1435,6 +1435,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			BeanUtils.copyProperties(productMaster, productMasterRequest);
 			List<Integer> gstTypes = fpGstTypeMappingRepository.getIdsByFpProductId(productMaster.getId());
 			productMasterRequest.setGstType(gstTypes);
+			productMasterRequest.setBankStatementOptions(fPParameterMappingService.getParameters(productMaster.getId(), CommonUtils.ParameterTypes.BANK_STATEMENT_OPTIONS));
 			productMasterRequests.add(productMasterRequest);
 		}
 		return productMasterRequests;
