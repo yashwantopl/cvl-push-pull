@@ -39,7 +39,6 @@ import com.capitaworld.service.loans.domain.fundprovider.GeographicalStateDetail
 import com.capitaworld.service.loans.domain.fundprovider.MsmeValueMapping;
 import com.capitaworld.service.loans.domain.fundprovider.MsmeValueMappingTemp;
 import com.capitaworld.service.loans.domain.fundprovider.NegativeIndustryTemp;
-import com.capitaworld.service.loans.domain.fundprovider.NtbTermLoanParameterTemp;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMasterTemp;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameterTemp;
@@ -272,29 +271,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						productMasterTemp.setIsParameterFilled(true);
 						break;
 					case TERM_LOAN:
-						if (addProductRequest.getBusinessTypeId()==2) {
-							 
-							NtbTermLoanParameterTemp ntbTermLoanParameterTemp = new NtbTermLoanParameterTemp();
-							TermLoanParameterRequest termLoanParameterRequest=termLoanParameterService.getNtbTermLoanParameterRequest(addProductRequest.getLoanId(),addProductRequest.getRoleId());
-
-							//set multiple value in temp
-							industrySecIdList=termLoanParameterRequest.getIndustrylist();
-							secIdList=termLoanParameterRequest.getSectorlist();
-							geogaphicallyCountry=termLoanParameterRequest.getCountryList();
-							geogaphicallyState=termLoanParameterRequest.getStateList();
-							geogaphicallyCity=termLoanParameterRequest.getCityList();
-							negativeIndList=termLoanParameterRequest.getUnInterestedIndustrylist();
-							//END set multiple value in temp
-							if(addProductRequest.getFinId()==null ||addProductRequest.getFinId()==4)
-							{
-								termLoanParameterRequest.setIsNewTolTnwCheck(false);
-								termLoanParameterRequest.setNewTolTnw(null);
-							}
-							BeanUtils.copyProperties(termLoanParameterRequest, ntbTermLoanParameterTemp,"id");
-							saveConstitutionTypeTemp(termLoanParameterRequest);
-							productMasterTemp = ntbTermLoanParameterTemp;
-							productMasterTemp.setIsParameterFilled(true);
-						} else {
 							TermLoanParameterTemp termLoanParameterTemp = new TermLoanParameterTemp();
 							TermLoanParameterRequest termLoanParameterRequest=termLoanParameterService.getTermLoanParameterRequest(addProductRequest.getLoanId(),addProductRequest.getRoleId());
 
@@ -312,9 +288,9 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 								termLoanParameterRequest.setNewTolTnw(null);
 							}
 							BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameterTemp,"id");
+							saveConstitutionTypeTemp(termLoanParameterRequest);
 							productMasterTemp = termLoanParameterTemp;
 							productMasterTemp.setIsParameterFilled(true);
-						}
 						break;
 					case WCTL_LOAN:
 						WcTlParameterTemp wcTlParameterTemp= new WcTlParameterTemp();
