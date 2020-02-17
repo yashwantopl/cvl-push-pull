@@ -1621,26 +1621,37 @@ public class ScoringServiceImpl implements ScoringService {
 		AnalyzerResponse analyzerResponse = null;
 		Double noOfChequeBounce1Month = 0.0;
 		Double noOfChequeBounce6Month = 0.0;
-		try {
-			ReportRequest reportRequest = new ReportRequest();
-            reportRequest.setApplicationId(applicationId);
-            reportRequest.setDirectorId(null);
-			analyzerResponse = analyzerClient.getDetailsFromReportByDirector(reportRequest);
-            if(!CommonUtils.isObjectNullOrEmpty(analyzerResponse)){
-            	Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) analyzerResponse.getData(),
-                        Data.class);
-            	if(!CommonUtils.isObjectNullOrEmpty(data)){
-            		if (!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast1Month())) {
-                        noOfChequeBounce1Month = data.getCheckBounceForLast1Month().doubleValue();
-                    }
-                    if (!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month())) {
-                         noOfChequeBounce6Month = data.getCheckBounceForLast6Month().doubleValue();
-                    }                		
-            	}
-            }
-		} catch (Exception e) {
-			logger.error("Error while getting Bank Statement Response = >",e);
-		}
+		Boolean isNoBankStatement = loanRepository.isNoBankStatement(applicationId);
+        logger.info("isNoBankStatement ==>{}==>for ApplicationId===>{}",applicationId,isNoBankStatement);
+        Double noOfRelationWithBanks = loanRepository.getMinRelationshipInMonthByApplicationId(applicationId);
+        logger.info("noOfRelationWithBanks ==>{}==>for ApplicationId===>{}",applicationId,noOfRelationWithBanks); 
+        
+        if(isNoBankStatement){
+        	noOfChequeBounce1Month = -1d;
+    		noOfChequeBounce6Month = -1d;
+        }else{
+        	try {
+    			ReportRequest reportRequest = new ReportRequest();
+                reportRequest.setApplicationId(applicationId);
+                reportRequest.setDirectorId(null);
+    			analyzerResponse = analyzerClient.getDetailsFromReportByDirector(reportRequest);
+                if(!CommonUtils.isObjectNullOrEmpty(analyzerResponse)){
+                	Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) analyzerResponse.getData(),
+                            Data.class);
+                	if(!CommonUtils.isObjectNullOrEmpty(data)){
+                		if (!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast1Month())) {
+                            noOfChequeBounce1Month = data.getCheckBounceForLast1Month().doubleValue();
+                        }
+                        if (!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month())) {
+                             noOfChequeBounce6Month = data.getCheckBounceForLast6Month().doubleValue();
+                        }                		
+                	}
+                }
+    		} catch (Exception e) {
+    			logger.error("Error while getting Bank Statement Response = >",e);
+    		}
+        }
+		
 		
 		ITRBasicDetailsResponse itrClientResponse = null;
 		try {
@@ -1713,10 +1724,6 @@ public class ScoringServiceImpl implements ScoringService {
 
         PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateDetailRepository.findOneByApplicationIdId(applicationId);
 
-        Boolean isNoBankStatement = loanRepository.isNoBankStatement(applicationId);
-        logger.info("isNoBankStatement ==>{}==>for ApplicationId===>{}",applicationId,isNoBankStatement);
-        Double noOfRelationWithBanks = loanRepository.getMinRelationshipInMonthByApplicationId(applicationId);
-        logger.info("noOfRelationWithBanks ==>{}==>for ApplicationId===>{}",applicationId,noOfRelationWithBanks);
         // Primary Corporate details for Mudra loans
         
         PrimaryCorporateDetailMudraLoan corporateDetailMudraLoan  = primaryCorporateDetailMudraLoanRepository.findFirstByApplicationIdAndApplicationProposalMappingProposalIdIsNullOrderByIdDesc(applicationId);
@@ -2216,12 +2223,7 @@ public class ScoringServiceImpl implements ScoringService {
                             
                             case ScoreParameter.MudraLoan.NO_OF_CHEQUES_BOUNCED_ML: {
                                 try{
-                                	if(isNoBankStatement) {
-                                		scoringParameterRequest.setNoOfChequesBouncedLastMonth(-1.0);
-                                	}
-                                	else {
-                                		scoringParameterRequest.setNoOfChequesBouncedLastMonth(noOfChequeBounce1Month);
-                                	}
+                                	scoringParameterRequest.setNoOfChequesBouncedLastMonth(noOfChequeBounce1Month);
                                     scoringParameterRequest.setChequesBouncedLastMonth_p(true);
                                 }catch (Exception e){
                                     logger.error("error while getting NO_OF_CHEQUES_BOUNCED parameter : ",e);
@@ -2232,12 +2234,7 @@ public class ScoringServiceImpl implements ScoringService {
 
                             case ScoreParameter.MudraLoan.NO_OF_CHEQUES_BOUNCED_LAST_SIX_MONTH_ML: {
                                 try{
-                                	if(isNoBankStatement) {
-                                		scoringParameterRequest.setNoOfChequesBouncedLastSixMonth(-1.0);
-                                	}
-                                	else {
-                                		scoringParameterRequest.setNoOfChequesBouncedLastSixMonth(noOfChequeBounce6Month);
-                                	}
+                                	scoringParameterRequest.setNoOfChequesBouncedLastSixMonth(noOfChequeBounce6Month);
                                     scoringParameterRequest.setChequesBouncedLastSixMonth_p(true);
                                 }catch (Exception e){
                                     logger.error("error while getting NO_OF_CHEQUES_BOUNCED_LAST_SIX_MONTH parameter : ",e);
