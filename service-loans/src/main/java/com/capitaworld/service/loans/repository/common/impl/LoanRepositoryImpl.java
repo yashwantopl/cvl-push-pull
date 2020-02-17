@@ -12,6 +12,8 @@ import javax.persistence.StoredProcedureQuery;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.capitaworld.service.loans.domain.fundseeker.retail.BankingRelation;
@@ -720,5 +722,28 @@ public class LoanRepositoryImpl implements LoanRepository {
 			logger.error("Error while getting all director Average score for ApplicationId = >{}====>{}",applicationId,e);
 		}
 		return averageScore;
+	}
+
+	@Override
+	public Boolean isNoBankStatement(Long applicationId) {
+		Double count = null;
+		try{
+			count = (Double)entityManager.createNativeQuery("SELECT COUNT(a.id) FROM `pennydrop`.`audit_log_details` a WHERE a.application_id =:applicationId AND a.status = 1 AND a.request_type = '1' ORDER BY a.id DESC LIMIT 1").setParameter("applicationId", applicationId).getSingleResult();
+		}catch(Exception e){
+			logger.error("Error while getting count for pennydrop for ApplicationId = >{}====>{}",applicationId,e);
+		}
+		return count>0d ? true : false;
+	}
+	
+	@Override
+	public Double getMinRelationshipInMonthByApplicationId(Long applicationId) {
+		Double relationInMonths = null;
+		try {
+		relationInMonths = (Double)entityManager.createNativeQuery("SELECT TIMESTAMPDIFF(MONTH,STR_TO_DATE(CONCAT('01,',o.since_month,',',o.since_year),'%d,%m,%Y'),NOW()) AS res FROM pennydrop.account_details o WHERE o.application_id =:id").setParameter("id", applicationId).getSingleResult();
+		}
+		catch (Exception e) {
+			logger.error("Error While fetching months in relation with banks =====>{}======{}",applicationId,e);
+		}
+		return relationInMonths;
 	}
 }
