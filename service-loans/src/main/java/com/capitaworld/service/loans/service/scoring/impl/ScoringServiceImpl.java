@@ -1624,7 +1624,10 @@ public class ScoringServiceImpl implements ScoringService {
 		Boolean isNoBankStatement = loanRepository.isNoBankStatement(applicationId);
         logger.info("isNoBankStatement ==>{}==>for ApplicationId===>{}",applicationId,isNoBankStatement);
         Double noOfRelationWithBanks = loanRepository.getMinRelationshipInMonthByApplicationId(applicationId);
-        logger.info("noOfRelationWithBanks ==>{}==>for ApplicationId===>{}",applicationId,noOfRelationWithBanks); 
+        logger.info("noOfRelationWithBanks ==>{}==>for ApplicationId===>{}",applicationId,noOfRelationWithBanks);
+        if(CommonUtils.isObjectNullOrEmpty(noOfRelationWithBanks)){
+        	noOfRelationWithBanks = 0.0d;
+        }
         
         if(isNoBankStatement){
         	noOfChequeBounce1Month = -1d;
