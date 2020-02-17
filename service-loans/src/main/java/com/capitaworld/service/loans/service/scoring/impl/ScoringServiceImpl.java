@@ -1714,7 +1714,9 @@ public class ScoringServiceImpl implements ScoringService {
         PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateDetailRepository.findOneByApplicationIdId(applicationId);
 
         Boolean isNoBankStatement = loanRepository.isNoBankStatement(applicationId);
+        logger.info("isNoBankStatement ==>{}==>for ApplicationId===>{}",applicationId,isNoBankStatement);
         Double noOfRelationWithBanks = loanRepository.getMinRelationshipInMonthByApplicationId(applicationId);
+        logger.info("noOfRelationWithBanks ==>{}==>for ApplicationId===>{}",applicationId,noOfRelationWithBanks);
         // Primary Corporate details for Mudra loans
         
         PrimaryCorporateDetailMudraLoan corporateDetailMudraLoan  = primaryCorporateDetailMudraLoanRepository.findFirstByApplicationIdAndApplicationProposalMappingProposalIdIsNullOrderByIdDesc(applicationId);
@@ -1727,6 +1729,32 @@ public class ScoringServiceImpl implements ScoringService {
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
         }
 		
+     // CMA
+        OperatingStatementDetails operatingStatementDetailsFY = null;
+        OperatingStatementDetails operatingStatementDetailsSY = null;
+        OperatingStatementDetails operatingStatementDetailsTY = null;
+
+
+        LiabilitiesDetails liabilitiesDetailsFY = null;
+        LiabilitiesDetails liabilitiesDetailsSY = null;
+        LiabilitiesDetails liabilitiesDetailsTY = null;
+
+        AssetsDetails assetsDetailsFY = null;
+        AssetsDetails assetsDetailsSY = null;
+        AssetsDetails assetsDetailsTY = null;
+
+            operatingStatementDetailsTY = operatingStatementDetailsRepository.findByLoanApplicationMasterIdAndYearAndApplicationProposalMappingIsNullAndIsActiveIsTrue(applicationId, currentYear - 1 + "");
+            operatingStatementDetailsSY = operatingStatementDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 2 + "");
+            operatingStatementDetailsFY = operatingStatementDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 3 + "");
+
+            liabilitiesDetailsTY = liabilitiesDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 1 + "");
+            liabilitiesDetailsSY = liabilitiesDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 2 + "");
+            liabilitiesDetailsFY = liabilitiesDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 3 + "");
+
+            assetsDetailsTY = assetsDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 1 + "");
+            assetsDetailsSY = assetsDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 2 + "");
+            assetsDetailsFY = assetsDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 3 + "");
+        
         for(ScoringRequestLoans scoringRequestLoans:scoringRequestLoansList)
         {
         	Integer minBankRelationshipInMonths = null;
@@ -1775,41 +1803,6 @@ public class ScoringServiceImpl implements ScoringService {
 
                 logger.info(MSG_APPLICATION_ID + applicationId + MSG_FP_PRODUCT_ID + fpProductId + MSG_SCORING_MODEL_ID + scoreModelId);
 
-                // CMA
-                OperatingStatementDetails operatingStatementDetailsFY = null;
-                OperatingStatementDetails operatingStatementDetailsSY = null;
-                OperatingStatementDetails operatingStatementDetailsTY = null;
-
-
-                LiabilitiesDetails liabilitiesDetailsFY = null;
-                LiabilitiesDetails liabilitiesDetailsSY = null;
-                LiabilitiesDetails liabilitiesDetailsTY = null;
-
-                AssetsDetails assetsDetailsFY = null;
-                AssetsDetails assetsDetailsSY = null;
-                AssetsDetails assetsDetailsTY = null;
-
-//                if (ScoreParameter.FinancialTypeForITR.THREE_YEAR_ITR == scoringRequest.getFinancialTypeId()) {
-                    operatingStatementDetailsTY = operatingStatementDetailsRepository.findByLoanApplicationMasterIdAndYearAndApplicationProposalMappingIsNullAndIsActiveIsTrue(applicationId, currentYear - 1 + "");
-                    operatingStatementDetailsSY = operatingStatementDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 2 + "");
-                    operatingStatementDetailsFY = operatingStatementDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 3 + "");
-
-                    liabilitiesDetailsTY = liabilitiesDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 1 + "");
-                    liabilitiesDetailsSY = liabilitiesDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 2 + "");
-                    liabilitiesDetailsFY = liabilitiesDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 3 + "");
-
-                    assetsDetailsTY = assetsDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 1 + "");
-                    assetsDetailsSY = assetsDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 2 + "");
-                    assetsDetailsFY = assetsDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 3 + "");
-                /*} else if (ScoreParameter.FinancialTypeForITR.ONE_YEAR_ITR == scoringRequest.getFinancialTypeId()) {
-                    operatingStatementDetailsTY = operatingStatementDetailsRepository.findByLoanApplicationMasterIdAndYearAndApplicationProposalMappingIsNullAndIsActiveIsTrue(applicationId, currentYear - 1 + "");
-                    liabilitiesDetailsTY = liabilitiesDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 1 + "");
-                    assetsDetailsTY = assetsDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 1 + "");
-                } else if (ScoreParameter.FinancialTypeForITR.PRESUMPTIVE == scoringRequest.getFinancialTypeId()) {
-                    operatingStatementDetailsTY = operatingStatementDetailsRepository.findByLoanApplicationMasterIdAndYearAndApplicationProposalMappingIsNullAndIsActiveIsTrue(applicationId, currentYear - 1 + "");
-                    liabilitiesDetailsTY = liabilitiesDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 1 + "");
-                    assetsDetailsTY = assetsDetailsRepository.getByApplicationIdAndYearAndProposalIdNULL(applicationId, currentYear - 1 + "");
-                }*/
                 IndustryResponse industryResponse =null;
                 Integer businessTypeId= null;
                 logger.info("corporateApplicantDetail.getKeyVerticalSubsector()"+corporateApplicantDetail.getKeyVerticalSubsector());
