@@ -250,9 +250,9 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		fPParameterMappingService.inactiveAndSave(termLoanParameterRequest.getId(),CommonUtils.ParameterTypes.BUREAU_SCORE_MAIN_DIR, termLoanParameterRequest.getMainDirBureauScoreIds());
 //		fPParameterMappingService.inactiveAndSave(termLoanParameterRequest.getId(),CommonUtils.ParameterTypes.BANK_STATEMENT_OPTIONS, termLoanParameterRequest.getBankStatementOptions());
 		//add duplicate productmaster entries based on nbfc ids
-		if(termLoanParameterRequest.getProductType()!=null && termLoanParameterRequest.getProductType()==2){
-			addduplicateEntriesForNbfc(termLoanParameterRequest,mappingId);
-		}
+//		if(termLoanParameterRequest.getProductType()!=null && termLoanParameterRequest.getProductType()==2){
+//			addduplicateEntriesForNbfc(termLoanParameterRequest,mappingId);
+//		}
 
 		boolean isUpdate = msmeValueMappingService.updateMsmeValueMapping(false, mappingId, termLoanParameter2.getId());
 		logger.info(UPDATED_MSG, isUpdate);
@@ -647,7 +647,6 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 	public Boolean saveMasterFromTempTl(Long mappingId, Integer roleId) throws LoansException {
 		try {
 			TermLoanParameterRequest temp = getTermLoanParameterRequestTemp(mappingId, null, null);
-
 			return saveOrUpdate(temp, mappingId,roleId);
 
 		} catch (Exception e) {
