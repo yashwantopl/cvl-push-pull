@@ -99,11 +99,14 @@ import com.capitaworld.service.mca.model.verifyApi.VerifyAPIRequest;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.Constitution;
 import com.capitaworld.service.oneform.enums.FSParameterMst;
+import com.capitaworld.service.pennydrop.client.PennydropClient;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserOrganisationRequest;
 import com.capitaworld.service.users.model.UserResponse;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.opl.api.pennydrop.model.CommonResponse;
+import com.opl.api.pennydrop.model.PanVerificationRequest;
 
 @Service
 @Transactional
@@ -218,6 +221,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	
 	@Autowired
 	private MachineDetailsRepository machineDetailsRepository;
+	
+	@Autowired
+	private PennydropClient pennydropClient; 
 
 	/**
 	 * Save oneform details
@@ -1469,4 +1475,32 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		
 	}
 	
+	/**
+	 * Pan verification 
+	 */
+	@Override
+	public LoansResponse panVerification(List<DirectorBackgroundDetailRequest> directors) {
+
+		LoansResponse resp = new LoansResponse();
+		List<CommonResponse> response = new ArrayList<>();
+		
+		for (DirectorBackgroundDetailRequest dir : directors) {
+			PanVerificationRequest request = new PanVerificationRequest();
+			request.setPan(dir.getPanNo());
+			request.setDob(dir.getDobString());
+			request.setApplicationId(dir.getApplicationId());
+			request.setName(dir.getDirectorsName());
+
+			try {
+				response.add(pennydropClient.panVerification(request));
+			} catch (Exception e) {
+				logger.error("Exception in panVerification :{} ",e);
+				resp.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+				resp.setMessage("Some thing went wrong");
+				e.printStackTrace();
+			}
+		}
+		resp.setData(response);
+		return resp;
+	}
 }
