@@ -30,6 +30,7 @@ import com.capitaworld.service.matchengine.ProposalDetailsClient;
 import com.capitaworld.service.mca.client.McaClient;
 import com.capitaworld.service.notification.client.NotificationClient;
 import com.capitaworld.service.oneform.client.OneFormClient;
+import com.capitaworld.service.pennydrop.client.PennydropClient;
 import com.capitaworld.service.rating.RatingClient;
 import com.capitaworld.service.scoring.ScoringClient;
 import com.capitaworld.service.thirdpaty.client.ThirdPartyClient;
@@ -124,8 +125,11 @@ public class LoansMain {
 	
 	@Value("${capitaworld.service.bodmas.url}")
 	private String bodmasBaseUrl;
-
 	
+	@Value("${capitaworld.service.pennydrop.url}")
+	private String pennydropBaseUrl;
+
+
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(LoansMain.class, args);
 	}
@@ -289,6 +293,13 @@ public class LoansMain {
 		BodmasClient bodmasClient = new BodmasClient(bodmasBaseUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(bodmasClient);
 		return bodmasClient;		
+	}
+	
+	@Bean
+	public PennydropClient pennyDropClient() {
+		PennydropClient pennyDropClient = new PennydropClient(pennydropBaseUrl);
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(pennyDropClient);
+		return pennyDropClient;		
 	}
 
 }
