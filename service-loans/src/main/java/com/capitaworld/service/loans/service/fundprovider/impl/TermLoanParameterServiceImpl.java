@@ -248,7 +248,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		
 		fPParameterMappingService.inactiveAndSave(termLoanParameterRequest.getId(),CommonUtils.ParameterTypes.BUREAU_SCORE, termLoanParameterRequest.getBureauScoreIds());
 		fPParameterMappingService.inactiveAndSave(termLoanParameterRequest.getId(),CommonUtils.ParameterTypes.BUREAU_SCORE_MAIN_DIR, termLoanParameterRequest.getMainDirBureauScoreIds());
-//		fPParameterMappingService.inactiveAndSave(termLoanParameterRequest.getId(),CommonUtils.ParameterTypes.BANK_STATEMENT_OPTIONS, termLoanParameterRequest.getBankStatementOptions());
+		fPParameterMappingService.inactiveAndSave(termLoanParameterRequest.getId(),CommonUtils.ParameterTypes.BANK_STATEMENT_OPTIONS, termLoanParameterRequest.getBankStatementOptions());
 		//add duplicate productmaster entries based on nbfc ids
 //		if(termLoanParameterRequest.getProductType()!=null && termLoanParameterRequest.getProductType()==2){
 //			addduplicateEntriesForNbfc(termLoanParameterRequest,mappingId);
