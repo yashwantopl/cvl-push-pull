@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.capitaworld.connect.api.ConnectResponse;
 import com.capitaworld.service.gst.GstResponse;
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.NTBRequest;
 import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
@@ -107,5 +108,12 @@ public interface FundSeekerInputRequestService {
 	 * @throws LoansException
 	 */
 	public PrimaryCorporateDetailMudraLoanReqRes getStatutoryObligationByApplicationId(Long applicationId) throws LoansException;
+	
+	/**
+	 * Multiple PAN Verification
+	 * @param directors
+	 * @return
+	 */
+	public LoansResponse panVerification(List<DirectorBackgroundDetailRequest> directors);
 	
 }

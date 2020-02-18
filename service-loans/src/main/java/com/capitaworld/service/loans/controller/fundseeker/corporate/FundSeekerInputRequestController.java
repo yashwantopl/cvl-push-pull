@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.capitaworld.connect.client.ConnectClient;
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.NTBRequest;
 import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
@@ -502,7 +503,25 @@ public class FundSeekerInputRequestController {
             return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
         }
     }
+
+    /**
+     * Multiple PAN Verification
+     * @param directors
+     * @param request
+     * @return
+     * @throws LoansException
+     */
     
-    
+    @RequestMapping(value = "/panVerification", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> panVerification(@RequestBody List<DirectorBackgroundDetailRequest> directors,HttpServletRequest request)
+            throws LoansException
+    {
+        try {
+            return new ResponseEntity<LoansResponse>(fundSeekerInputRequestService.panVerification(directors), HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error while saving director detail : ",e);
+            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     
 }

@@ -95,6 +95,12 @@
 			<artifactId>client-users</artifactId>
 			<version>1.0.0</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>com.opl.client.pennydrop</groupId>
+			<artifactId>client-pennydrop</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 
 		<dependency>
 			<groupId>com.capitaworld.service.dms</groupId>
