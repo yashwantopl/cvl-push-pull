@@ -1623,10 +1623,10 @@ public class ScoringServiceImpl implements ScoringService {
 		Double noOfChequeBounce6Month = 0.0;
 		Boolean isNoBankStatement = loanRepository.isNoBankStatement(applicationId);
         logger.info("isNoBankStatement ==>{}==>for ApplicationId===>{}",applicationId,isNoBankStatement);
-        Double noOfRelationWithBanks = loanRepository.getMinRelationshipInMonthByApplicationId(applicationId);
+        Integer noOfRelationWithBanks = loanRepository.getMinRelationshipInMonthByApplicationId(applicationId);
         logger.info("noOfRelationWithBanks ==>{}==>for ApplicationId===>{}",applicationId,noOfRelationWithBanks);
         if(CommonUtils.isObjectNullOrEmpty(noOfRelationWithBanks)){
-        	noOfRelationWithBanks = 0.0d;
+        	noOfRelationWithBanks = 0;
         }
         
         if(isNoBankStatement){
@@ -1769,7 +1769,7 @@ public class ScoringServiceImpl implements ScoringService {
         {
         	Integer minBankRelationshipInMonths = null;
         	if(isNoBankStatement) {
-        		minBankRelationshipInMonths = Integer.valueOf(noOfRelationWithBanks.toString());
+        		minBankRelationshipInMonths = noOfRelationWithBanks;
         	}else {
         	  if(scoringRequestLoans.getOrgId() != null) {
               	BankList bankEnum = BankList.fromOrgId(scoringRequestLoans.getOrgId().toString());
