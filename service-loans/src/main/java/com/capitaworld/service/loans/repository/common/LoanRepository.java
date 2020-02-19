@@ -110,5 +110,5 @@ public interface LoanRepository{
     
     public Boolean isNoBankStatement(Long applicationId);
     
-    public Double getMinRelationshipInMonthByApplicationId(Long applicationId);
+    public Integer getMinRelationshipInMonthByApplicationId(Long applicationId);
 }

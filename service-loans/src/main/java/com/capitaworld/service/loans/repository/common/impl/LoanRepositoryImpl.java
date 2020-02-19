@@ -12,8 +12,6 @@ import javax.persistence.StoredProcedureQuery;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.capitaworld.service.loans.domain.fundseeker.retail.BankingRelation;
@@ -740,14 +738,17 @@ public class LoanRepositoryImpl implements LoanRepository {
 	}
 	
 	@Override
-	public Double getMinRelationshipInMonthByApplicationId(Long applicationId) {
-		Double relationInMonths = null;
+	public Integer getMinRelationshipInMonthByApplicationId(Long applicationId) {
+		BigInteger relationInMonths = null;
 		try {
-		relationInMonths = (Double)entityManager.createNativeQuery("SELECT TIMESTAMPDIFF(MONTH,STR_TO_DATE(CONCAT('01,',o.since_month,',',o.since_year),'%d,%m,%Y'),NOW()) AS res FROM pennydrop.account_details o WHERE o.application_id =:id").setParameter("id", applicationId).getSingleResult();
+		relationInMonths = (BigInteger)entityManager.createNativeQuery("SELECT TIMESTAMPDIFF(MONTH,STR_TO_DATE(CONCAT('01,',o.since_month,',',o.since_year),'%d,%m,%Y'),NOW()) AS res FROM pennydrop.account_details o WHERE o.application_id =:id").setParameter("id", applicationId).getSingleResult();
 		}
 		catch (Exception e) {
 			logger.error("Error While fetching months in relation with banks =====>{}======{}",applicationId,e);
 		}
-		return relationInMonths;
+		if(CommonUtils.isObjectNullOrEmpty(relationInMonths)){
+			return 0;
+		}
+		return relationInMonths.intValue();
 	}
 }
