@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.capitaworld.api.eligibility.model.CalculationJSON;
@@ -200,6 +201,7 @@ import com.capitaworld.service.oneform.enums.WcRenewalType;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.oneform.model.SectorIndustryModel;
+import com.capitaworld.service.pennydrop.client.PennydropClient;
 import com.capitaworld.service.rating.model.FinancialInputRequest;
 import com.capitaworld.service.rating.model.RatingResponse;
 import com.capitaworld.service.scoring.ScoringClient;
@@ -214,6 +216,12 @@ import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.opl.api.pennydrop.model.AccountValidationResponse;
+import com.opl.api.pennydrop.model.AccountVerificationResponse;
+import com.opl.api.pennydrop.model.CommonResponse;
+import com.opl.api.pennydrop.model.VerificationRequestResponse;
+/*import com.opl.service.pennydrop.service.AccountDetailsService;
+import com.opl.service.pennydrop.utils.commonUtils;*/
 
 @Service
 @Transactional
@@ -407,6 +415,10 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
     
     @Autowired
     private PrimaryCorporateDetailMudraLoanRepository primaryCorporateDetailsMudra;
+    
+    @Autowired
+    private PennydropClient pennyDropClient;
+    
 
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -526,6 +538,33 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 		map.put("machineDetailsMudra", mlDetailsRes);			
         
+		
+		//get NO BS+ DATA
+		CommonResponse verificationrequestResponse = null;
+		//VerificationRequestResponse verificationResponse = null;
+		try {
+			if(!CommonUtils.isObjectNullOrEmpty(applicationId)) {
+				verificationrequestResponse =  pennyDropClient.getAccountDetails(applicationId);
+//				List<LinkedHashMap<String, Object>> verificationResponse = (List<LinkedHashMap<String, Object>>) verificationrequestResponse.getData();
+				
+//				VerificationRequestResponse bankResp = MultipleJSONObjectHelper.getObjectFromMap(verificationResponse.get(0),VerificationRequestResponse.class);
+				VerificationRequestResponse bankResp =  new VerificationRequestResponse(); //MultipleJSONObjectHelper.getObjectFromMap(verificationResponse.get(0),VerificationRequestResponse.class);
+				BeanUtils.copyProperties(verificationrequestResponse.getData(), bankResp);
+				
+				String sinceMonth = bankResp.getSinceMonth(); 
+				String sinceYear = bankResp.getSinceYear(); 
+//				verificationResponse.get(0)
+//				String sinceYear =  (String) verificationResponse.get("sinceYear");
+//				String sinceMonth =  (String) verificationResponse.get("sinceMonth");
+				map.put("boBSsinceMonth", sinceMonth);
+				map.put("boBSsinceMonth", sinceYear);
+				map.put("noBsData", verificationrequestResponse);
+			}
+			
+		} catch (Exception e) {
+			logger.error("Error while fetching Account data : ",e);			
+		}
+		
 		// Product Name
 		if(productId != null) {
 			String productName = productMasterRepository.getFpProductName(productId);
@@ -2063,6 +2102,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				}
             	bankRelationshipRequests.add(bankRelationshipRequest);
             }
+            
             bankData.put("bankingRelationShip", bankRelationshipRequests);
 			
 			try {
@@ -2251,6 +2291,18 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateRepository.getByApplicationAndUserId(applicationId, userId);
 		if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)) {
 			map.put("loanAmtApplied", primaryCorporateDetail.getLoanAmount()!= null ? CommonUtils.convertValueIndianCurrency(primaryCorporateDetail.getLoanAmount()) : 0);
+			if (primaryCorporateDetail.getLoanAmount() != null) {
+				if (primaryCorporateDetail.getLoanAmount() <= 50000) {
+					map.put("categoryType", "Shishu");
+				}
+				if(primaryCorporateDetail.getLoanAmount() >= 50001 && primaryCorporateDetail.getLoanAmount() <= 500000){
+					map.put("categoryType", "Kishor");
+				}
+				if(primaryCorporateDetail.getLoanAmount() >= 500001 && primaryCorporateDetail.getLoanAmount() <= 1000000){
+					map.put("categoryType", "Tarun");
+				}
+			}
+			
 			map.put("comercialOpDate",!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCommercialOperationDate())? CommonUtils.DATE_FORMAT.format(primaryCorporateDetail.getCommercialOperationDate()):"-");
 			map.put("factoryPremise", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getFactoryPremise())? StringEscapeUtils.escapeXml(FactoryPremiseMst.getById(primaryCorporateDetail.getFactoryPremise()).getValue()) : "-");
 			map.put("knowHow", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getKnowHow())? StringEscapeUtils.escapeXml(KnowHowMst.getById(primaryCorporateDetail.getKnowHow()).getValue()) : "-");
