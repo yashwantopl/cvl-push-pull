@@ -111,13 +111,12 @@ public class CamReportPdfDetailsController {
 	 * */
 
 	@GetMapping(value = "/getPrimaryDataInByteArray/{applicationId}/{productMappingId}/{proposalId}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getPrimaryDataInByteArray(@PathVariable(value = "applicationId") Long applicationId,@PathVariable(value = "productMappingId") Long productId, 
+	public byte[] getPrimaryDataInByteArray(@PathVariable(value = "applicationId") Long applicationId,@PathVariable(value = "productMappingId") Long productId, 
 			@PathVariable(value = "proposalId") Long proposalId)  {
 
 		if (CommonUtils.isObjectNullOrEmpty(applicationId)||CommonUtils.isObjectNullOrEmpty(productId)||CommonUtils.isObjectListNull(proposalId)) {
 				logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, applicationId + productId + proposalId);
-
-				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+				return null;
 		}
 		try {
 
@@ -128,7 +127,7 @@ public class CamReportPdfDetailsController {
 			reportRequest.setType("INPRINCIPLECAM");
 			byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
 			
-			if(byteArr != null){
+			if(byteArr != null && byteArr.length > 0){
 				try {
 					MultipartFile multipartFile = new DDRMultipart(byteArr);			  
 					JSONObject jsonObj = new JSONObject();
@@ -139,20 +138,23 @@ public class CamReportPdfDetailsController {
 					DocumentResponse  documentResponse  =  dmsClient.uploadFile(jsonObj.toString(), multipartFile);
 					logger.info("InPrinciple CAM Uploaded for ==>"+applicationId);
 				} catch (Exception e) {
-					logger.info("Error while Generated InPrinciple-Latter upload to dms for==>"+applicationId);
+					logger.info("Error while Generated InPrinciple-Letter upload to dms for==>"+applicationId);
 					logger.info("Error: "+e);
 				}
 				
-				return new ResponseEntity<LoansResponse>(new LoansResponse(SUCCESS_LITERAL,HttpStatus.OK.value(), byteArr),HttpStatus.OK);
+				return byteArr;
+//				return new ResponseEntity<LoansResponse>(new LoansResponse(SUCCESS_LITERAL,HttpStatus.OK.value(), byteArr),HttpStatus.OK);
 			}else{
 				 logger.info("Byte array not generated at inPrinciple time for ==>"+applicationId);
-				 return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+				 return null;
+//				 return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
 			}
 		} catch (Exception e) {
 			logger.error(ERROR_WHILE_GETTING_MAP_DETAILS, e);
-			return new ResponseEntity<LoansResponse>(
-					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-					HttpStatus.INTERNAL_SERVER_ERROR);
+			return null;
+//			return new ResponseEntity<LoansResponse>(
+//					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+//					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}
