@@ -734,7 +734,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 			return false;
 		}
 		
-		return count.intValue() > 0 ? true : false;
+		return count.intValue() > 0;
 	}
 	
 	@Override
