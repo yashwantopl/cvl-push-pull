@@ -52,6 +52,7 @@ public class CorporatePrimaryViewResponse {
     private List<Object> profilePic;
     private Double enhancementAmount;
     private String castCategory;
+    private String minorCastCategory;
     private Boolean isCampaignUser;
 
     /*private String  isBusinessAssetChecked;
@@ -1408,7 +1409,14 @@ public class CorporatePrimaryViewResponse {
 	public void setOngoingMudraLoan(String ongoingMudraLoan) {
 		this.ongoingMudraLoan = ongoingMudraLoan;
 	}
+	public String getMinorCastCategory() {
+		return minorCastCategory;
+	}
+	public void setMinorCastCategory(String minorCastCategory) {
+		this.minorCastCategory = minorCastCategory;
+	}
 
+	
 	/*
 	 * public List<CorporatePrimaryViewResponseNbfc> getNbfcListList() { return
 	 * nbfcListList; } public void
