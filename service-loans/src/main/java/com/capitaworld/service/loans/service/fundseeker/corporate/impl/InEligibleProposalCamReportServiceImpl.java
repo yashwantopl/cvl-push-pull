@@ -4,6 +4,7 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -400,16 +401,24 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		CorporateApplicantRequest corpApp = applicantService.getCorporateApplicantDetails(applicationId);
 		LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 		corpApp.getIncomeDetails().get("creditors");
+		DateFormat dfYear = new SimpleDateFormat("yyyy");
+		DateFormat dfMonth = new SimpleDateFormat("MM");
 		loansResponse.setData(corpApp.getIncomeDetails());
 		Date dateNoItr = new Date();
-		dateNoItr = corpApp.getDob();
-		int ii = (int) (dateNoItr.getTime()/1000);
-		Calendar cal = Calendar.getInstance();
-		cal.setTimeInMillis(ii);
-		map.put("noItrYear", cal.get(Calendar.YEAR));
+		if (!CommonUtils.isObjectNullOrEmpty(dateNoItr)) {
+//			int ii = (int) (dateNoItr.getTime()/1000);
+			Calendar cal = Calendar.getInstance();
+			cal.setTimeInMillis(corpApp.getDob().getTime());
+			map.put("noItrYear", dfYear.format(dateNoItr));
+			
+			String month = cal.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault());
+//			map.put("noItrMonth",dfMonth.format(response.getDob()));			
+			map.put("noItrMonth",month);
+		}else {
+			map.put("noItrYear", "-");
+			map.put("noItrMonth","-");			
+		}
 		
-		String month = cal.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault());
-		map.put("noItrMonth",month);
 		try {
 			//Map<String, Object> incomeDetails = response.getIncomeDetails();
 			LinkedHashMap<String, Object> incomeDetails = corpApp.getIncomeDetails();

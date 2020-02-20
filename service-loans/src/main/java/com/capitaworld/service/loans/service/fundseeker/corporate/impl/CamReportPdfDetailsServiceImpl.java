@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -706,16 +707,19 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 				response.getIncomeDetails().get("creditors");
 				loansResponse.setData(response.getIncomeDetails());
+				DateFormat dfYear = new SimpleDateFormat("yyyy");
+				DateFormat dfMonth = new SimpleDateFormat("MM");
 				Date dateNoItr = new Date();
 				dateNoItr = response.getDob();
 				if (!CommonUtils.isObjectNullOrEmpty(dateNoItr)) {
-					int ii = (int) (dateNoItr.getTime()/1000);
+//					int ii = (int) (dateNoItr.getTime()/1000);
 					Calendar cal = Calendar.getInstance();
-					cal.setTimeInMillis(ii);
-					map.put("noItrYear", cal.get(Calendar.YEAR));
+					cal.setTimeInMillis(response.getDob().getTime());
+					map.put("noItrYear", dfYear.format(dateNoItr));
 					
 					String month = cal.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault());
-					map.put("noItrMonth",month);			
+//					map.put("noItrMonth",dfMonth.format(response.getDob()));			
+					map.put("noItrMonth",month);
 				}else {
 					map.put("noItrYear", "-");
 					map.put("noItrMonth","-");			
@@ -2381,20 +2385,22 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				map.put("orgName", CommonUtils.printFields(corporateApplicantRequest.getOrganisationName(),null));
 				map.put("constitution", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getConstitutionId()) ? StringEscapeUtils.escapeXml(Constitution.getById(corporateApplicantRequest.getConstitutionId()).getValue()) : " ");
 				
-				String establishMentYear = !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getEstablishmentMonth()) ? EstablishmentMonths.getById(corporateApplicantRequest.getEstablishmentMonth()).getValue() : "";
+				
+				String establishMentYear = !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getEstablishmentMonth())? EstablishmentMonths.getById(corporateApplicantRequest.getEstablishmentMonth()).getValue(): "";
 				if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getEstablishmentYear())) {
 					try {
-						OneFormResponse establishmentYearResponse = oneFormClient.getYearByYearId(CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getEstablishmentYear()) ? null : corporateApplicantRequest.getEstablishmentYear().longValue());
+						OneFormResponse establishmentYearResponse = oneFormClient.getYearByYearId(CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getEstablishmentYear()) ? null: corporateApplicantRequest.getEstablishmentYear().longValue());
 						List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) establishmentYearResponse.getListData();
 						if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
 							MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-							establishMentYear += " "+ masterResponse.getValue();
-						} 
+							establishMentYear += " " + masterResponse.getValue();
+						}
 					} catch (Exception e) {
-						logger.error("Error in getting establishment year : ",e);
+						logger.error("Error in getting establishment year : ", e);
 					}
 				}
-				map.put("establishmentYr",!CommonUtils.isObjectNullOrEmpty(establishMentYear) ? CommonUtils.printFields(establishMentYear,null) : " ");
+				map.put("establishmentYr",!CommonUtils.isObjectNullOrEmpty(establishMentYear)? CommonUtils.printFields(establishMentYear, null): " ");
+
 				
 				//INDUSTRY DATA
 				Integer industry = corporateApplicantRequest.getKeyVericalFunding().intValue();
