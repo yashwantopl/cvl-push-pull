@@ -741,7 +741,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	public Integer getMinRelationshipInMonthByApplicationId(Long applicationId) {
 		BigInteger relationInMonths = null;
 		try {
-		relationInMonths = (BigInteger)entityManager.createNativeQuery("SELECT TIMESTAMPDIFF(MONTH,STR_TO_DATE(CONCAT('01,',o.since_month,',',o.since_year),'%d,%m,%Y'),NOW()) AS res FROM pennydrop.account_details o WHERE o.application_id =:id").setParameter("id", applicationId).getSingleResult();
+			relationInMonths = (BigInteger)entityManager.createNativeQuery("SELECT TIMESTAMPDIFF(MONTH,STR_TO_DATE(CONCAT('01,',o.since_month,',',o.since_year),'%d,%m,%Y'),NOW()) AS res FROM pennydrop.account_details o WHERE o.application_id =:id").setParameter("id", applicationId).getSingleResult();
 		}
 		catch (Exception e) {
 			logger.error("Error While fetching months in relation with banks =====>{}======{}",applicationId,e);
