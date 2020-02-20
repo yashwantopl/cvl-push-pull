@@ -144,10 +144,12 @@ import com.capitaworld.service.oneform.enums.VisuallyImpairedMst;
 import com.capitaworld.service.oneform.enums.WcRenewalType;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
+import com.capitaworld.service.pennydrop.client.PennydropClient;
 import com.capitaworld.service.rating.model.FinancialInputRequest;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
+import com.opl.api.pennydrop.model.CommonResponse;
 
 /**
  * @author nilay.darji
@@ -267,6 +269,9 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
     
     @Autowired
     private PrimaryCorporateDetailMudraLoanRepository primaryCorporateDetailsMudra;
+    
+    @Autowired
+    private PennydropClient pennyDropClient;
 
 	private static final Logger logger = LoggerFactory.getLogger(InEligibleProposalCamReportServiceImpl.class);
 	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -510,14 +515,56 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		map.put("gstDetailedResp", camReportPdfDetailsService.getGstDetails(applicationId, userId));
 		
 		
-		
+		String categoryType = "";
 		PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateRepository.getByApplicationAndUserId(applicationId, userId);
 		if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)) {
+				if (primaryCorporateDetail.getLoanAmount() != null) {
+					if (primaryCorporateDetail.getLoanAmount() <= 50000) {
+						categoryType = "Shishu"; 
+//						map.put("categoryType", "Shishu");
+					}
+					if(primaryCorporateDetail.getLoanAmount() >= 50001 && primaryCorporateDetail.getLoanAmount() <= 500000){
+						categoryType = "Kishor"; 
+//						map.put("categoryType", "Kishor");
+					}
+					if(primaryCorporateDetail.getLoanAmount() >= 500001 && primaryCorporateDetail.getLoanAmount() <= 1000000){
+						categoryType = "Kishor"; 
+//						map.put("categoryType", "Tarun");
+					}
+				}			
+			map.put("categoryType", categoryType);
 			map.put("comercialOpDate",!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCommercialOperationDate())? simpleDateFormat.format(primaryCorporateDetail.getCommercialOperationDate()): "-");
 			map.put("factoryPremise", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getFactoryPremise())? StringEscapeUtils.escapeXml(FactoryPremiseMst.getById(primaryCorporateDetail.getFactoryPremise()).getValue().toString()): "-");
 			map.put("knowHow",!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getKnowHow())? StringEscapeUtils.escapeXml(KnowHowMst.getById(primaryCorporateDetail.getKnowHow()).getValue().toString()): "-");
 			map.put("competition", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCompetition())? StringEscapeUtils.escapeXml(CompetitionMst_SBI.getById(primaryCorporateDetail.getCompetition()).getValue().toString()): "-");
 		}
+		
+		//get NO BS+ DATA
+				CommonResponse verificationrequestResponse = null;
+				//VerificationRequestResponse verificationResponse = null;
+				try {
+					if(!CommonUtils.isObjectNullOrEmpty(applicationId)) {
+						verificationrequestResponse =  pennyDropClient.getAccountDetails(applicationId);
+						LinkedHashMap<String, Object> noBs = (LinkedHashMap<String, Object>) verificationrequestResponse.getData();	
+						String year = (String) noBs.get("sinceYear");
+						String months = (String) noBs.get("sinceMonth");
+						if (!CommonUtils.isObjectNullOrEmpty(year) || !CommonUtils.isObjectNullOrEmpty(months)) {
+							LocalDate today = LocalDate.now();
+							LocalDate since = LocalDate.of(Integer.parseInt(year), Integer.parseInt(months),1);
+							Period age = Period.between(since, today);
+							map.put("noBsSinceYear", age.getYears());
+							map.put("noBsSinceMonths", age.getMonths());
+							map.put("noBsSinceWhen", (!CommonUtils.isObjectNullOrEmpty(age.getYears()) ? age.getYears() +" year " : "") + " " +(!CommonUtils.isObjectNullOrEmpty(age.getMonths()) ? age.getMonths()+" months" :  "" ));
+
+						}
+
+						map.put("noBsData", verificationrequestResponse);
+					}
+					
+				} catch (Exception e) {
+					logger.error("Error while fetching Account data : ",e);			
+				}
+				
 		
 
 
@@ -817,6 +864,10 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 
 		try {
 			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
+			
+			
+			
+			
 			map.put("loanAmtApplied", primaryCorporateDetail.getLoanAmount()!= null ? CommonUtils.convertValueIndianCurrency(primaryCorporateDetail.getLoanAmount()) : 0);
 			map.put("loanType",!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getPurposeOfLoanId())? PurposeOfLoan.getById(primaryCorporateDetail.getPurposeOfLoanId()).getValue().toString(): " ");
 			map.put("promotorsContribution",CommonUtils.convertValueIndianCurrency(primaryCorporateRequest.getPromoterContribution()));
