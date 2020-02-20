@@ -405,6 +405,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		DateFormat dfMonth = new SimpleDateFormat("MM");
 		loansResponse.setData(corpApp.getIncomeDetails());
 		Date dateNoItr = new Date();
+		dateNoItr = corpApp.getDob();
 		if (!CommonUtils.isObjectNullOrEmpty(dateNoItr)) {
 //			int ii = (int) (dateNoItr.getTime()/1000);
 			Calendar cal = Calendar.getInstance();
