@@ -1476,7 +1476,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	}
 	
 	/**
-	 * Pan verification 
+	 * Multiple director PAN verification 
 	 */
 	@Override
 	public LoansResponse panVerification(List<DirectorBackgroundDetailRequest> directors) {
