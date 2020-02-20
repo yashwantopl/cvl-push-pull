@@ -511,7 +511,6 @@ public class FundSeekerInputRequestController {
      * @return
      * @throws LoansException
      */
-    
     @RequestMapping(value = "/panVerification", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> panVerification(@RequestBody List<DirectorBackgroundDetailRequest> directors,HttpServletRequest request)
             throws LoansException
@@ -519,7 +518,7 @@ public class FundSeekerInputRequestController {
         try {
             return new ResponseEntity<LoansResponse>(fundSeekerInputRequestService.panVerification(directors), HttpStatus.OK);
         } catch (Exception e) {
-            logger.error("Error while saving director detail : ",e);
+            logger.error("Error multiple director panVerification : ",e);
             return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

@@ -87,7 +87,7 @@ public class CamReportPdfDetailsController {
 				jsonObj.put(CommonUtils.APPLICATION_ID, applicationId);
 				jsonObj.put(PRODUCT_DOCUMENT_MAPPING_ID, 355L);
 				jsonObj.put(USER_TYPE, CommonUtils.UploadUserType.UERT_TYPE_APPLICANT);
-				jsonObj.put(ORIGINAL_FILE_NAME, "CAMREPORTSIDBIPRIMARY"+proposalId +".pdf");
+				jsonObj.put(ORIGINAL_FILE_NAME, "MUDRALOANPRIMARYCAM"+proposalId +".pdf");
 				
 				DocumentResponse  documentResponse  =  dmsClient.uploadFile(jsonObj.toString(), multipartFile);
 				if(documentResponse.getStatus() == 200){

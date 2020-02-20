@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -29,7 +30,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.capitaworld.api.eligibility.model.CalculationJSON;
@@ -216,12 +216,7 @@ import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.opl.api.pennydrop.model.AccountValidationResponse;
-import com.opl.api.pennydrop.model.AccountVerificationResponse;
 import com.opl.api.pennydrop.model.CommonResponse;
-import com.opl.api.pennydrop.model.VerificationRequestResponse;
-/*import com.opl.service.pennydrop.service.AccountDetailsService;
-import com.opl.service.pennydrop.utils.commonUtils;*/
 
 @Service
 @Transactional
@@ -541,23 +536,20 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		//get NO BS+ DATA
 		CommonResponse verificationrequestResponse = null;
-		//VerificationRequestResponse verificationResponse = null;
 		try {
 			if(!CommonUtils.isObjectNullOrEmpty(applicationId)) {
 				verificationrequestResponse =  pennyDropClient.getAccountDetails(applicationId);
-//				List<LinkedHashMap<String, Object>> verificationResponse = (List<LinkedHashMap<String, Object>>) verificationrequestResponse.getData();
-				
-//				VerificationRequestResponse bankResp = MultipleJSONObjectHelper.getObjectFromMap(verificationResponse.get(0),VerificationRequestResponse.class);
-				VerificationRequestResponse bankResp =  new VerificationRequestResponse(); //MultipleJSONObjectHelper.getObjectFromMap(verificationResponse.get(0),VerificationRequestResponse.class);
-				BeanUtils.copyProperties(verificationrequestResponse.getData(), bankResp);
-				
-				String sinceMonth = bankResp.getSinceMonth(); 
-				String sinceYear = bankResp.getSinceYear(); 
-//				verificationResponse.get(0)
-//				String sinceYear =  (String) verificationResponse.get("sinceYear");
-//				String sinceMonth =  (String) verificationResponse.get("sinceMonth");
-				map.put("boBSsinceMonth", sinceMonth);
-				map.put("boBSsinceMonth", sinceYear);
+				LinkedHashMap<String, Object> noBs = (LinkedHashMap<String, Object>) verificationrequestResponse.getData();	
+				String year = (String) noBs.get("sinceYear");
+				String months = (String) noBs.get("sinceMonth");
+				if (!CommonUtils.isObjectNullOrEmpty(year) || !CommonUtils.isObjectNullOrEmpty(months)) {
+					LocalDate today = LocalDate.now();
+					LocalDate since = LocalDate.of(Integer.parseInt(year), Integer.parseInt(months),1);
+					Period age = Period.between(since, today);
+					map.put("noBsSinceYear", age.getYears());
+					map.put("noBsSinceMonths", age.getMonths());
+					map.put("noBsSinceWhen", (!CommonUtils.isObjectNullOrEmpty(age.getYears()) ? age.getYears() +" year " : "") + " " +(!CommonUtils.isObjectNullOrEmpty(age.getMonths()) ? age.getMonths()+" months" :  "" ));
+				}
 				map.put("noBsData", verificationrequestResponse);
 			}
 			
@@ -715,16 +707,19 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 				response.getIncomeDetails().get("creditors");
 				loansResponse.setData(response.getIncomeDetails());
+				DateFormat dfYear = new SimpleDateFormat("yyyy");
+				DateFormat dfMonth = new SimpleDateFormat("MM");
 				Date dateNoItr = new Date();
 				dateNoItr = response.getDob();
 				if (!CommonUtils.isObjectNullOrEmpty(dateNoItr)) {
-					int ii = (int) (dateNoItr.getTime()/1000);
+//					int ii = (int) (dateNoItr.getTime()/1000);
 					Calendar cal = Calendar.getInstance();
-					cal.setTimeInMillis(ii);
-					map.put("noItrYear", cal.get(Calendar.YEAR));
+					cal.setTimeInMillis(response.getDob().getTime());
+					map.put("noItrYear", dfYear.format(dateNoItr));
 					
 					String month = cal.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault());
-					map.put("noItrMonth",month);			
+//					map.put("noItrMonth",dfMonth.format(response.getDob()));			
+					map.put("noItrMonth",month);
 				}else {
 					map.put("noItrYear", "-");
 					map.put("noItrMonth","-");			
@@ -2287,22 +2282,25 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		 * Long userId =
 		 * loanApplicationRepository.getUserIdByApplicationId(applicationId);
 		 */
-		
+		String categoryType = "";
 		PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateRepository.getByApplicationAndUserId(applicationId, userId);
 		if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)) {
 			map.put("loanAmtApplied", primaryCorporateDetail.getLoanAmount()!= null ? CommonUtils.convertValueIndianCurrency(primaryCorporateDetail.getLoanAmount()) : 0);
 			if (primaryCorporateDetail.getLoanAmount() != null) {
 				if (primaryCorporateDetail.getLoanAmount() <= 50000) {
-					map.put("categoryType", "Shishu");
+					categoryType = "Shishu"; 
+//					map.put("categoryType", "Shishu");
 				}
 				if(primaryCorporateDetail.getLoanAmount() >= 50001 && primaryCorporateDetail.getLoanAmount() <= 500000){
-					map.put("categoryType", "Kishor");
+					categoryType = "Kishor"; 
+//					map.put("categoryType", "Kishor");
 				}
 				if(primaryCorporateDetail.getLoanAmount() >= 500001 && primaryCorporateDetail.getLoanAmount() <= 1000000){
-					map.put("categoryType", "Tarun");
+					categoryType = "Tarun"; 
+//					map.put("categoryType", "Tarun");
 				}
-			}
-			
+			}	
+			map.put("categoryType", categoryType);
 			map.put("comercialOpDate",!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCommercialOperationDate())? CommonUtils.DATE_FORMAT.format(primaryCorporateDetail.getCommercialOperationDate()):"-");
 			map.put("factoryPremise", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getFactoryPremise())? StringEscapeUtils.escapeXml(FactoryPremiseMst.getById(primaryCorporateDetail.getFactoryPremise()).getValue()) : "-");
 			map.put("knowHow", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getKnowHow())? StringEscapeUtils.escapeXml(KnowHowMst.getById(primaryCorporateDetail.getKnowHow()).getValue()) : "-");
@@ -2310,7 +2308,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			map.put("productDesc", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getProductServiceDescription()) ? StringEscapeUtils.escapeXml(primaryCorporateDetail.getProductServiceDescription()) : null);
 			map.put("incrementalTurnOver", primaryCorporateDetail.getIncrementalTurnover()!= null ? CommonUtils.convertValueIndianCurrency(primaryCorporateDetail.getIncrementalTurnover()) : 0);
 			map.put("incrementalMarginMudra", primaryCorporateDetail.getIncrementalMargin()!= null ? CommonUtils.convertValueIndianCurrency(primaryCorporateDetail.getIncrementalMargin()) : 0);
-			map.put("commOperationDate", primaryCorporateDetail.getCommercialOperationDate() != null ? primaryCorporateDetail.getCommercialOperationDate() : "-");
+			DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+			map.put("commOperationDate", primaryCorporateDetail.getCommercialOperationDate() != null ? df.format(primaryCorporateDetail.getCommercialOperationDate()) : "-");
 			map.put("totalCostOfMachineryForMudraLoan", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCostOfMachinery())? primaryCorporateDetail.getCostOfMachinery() : "-");
 			//map.put("additionalLimit", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getAdditionalLoanAmount()) ? primaryCorporateDetail.getAdditionalLoanAmount() : "-" );
 			//map.put("costOfMachinery", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCostOfMachinery()) ? primaryCorporateDetail.getCostOfMachinery() : "-" );
@@ -2387,20 +2386,22 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				map.put("orgName", CommonUtils.printFields(corporateApplicantRequest.getOrganisationName(),null));
 				map.put("constitution", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getConstitutionId()) ? StringEscapeUtils.escapeXml(Constitution.getById(corporateApplicantRequest.getConstitutionId()).getValue()) : " ");
 				
-				String establishMentYear = !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getEstablishmentMonth()) ? EstablishmentMonths.getById(corporateApplicantRequest.getEstablishmentMonth()).getValue() : "";
+				
+				String establishMentYear = !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getEstablishmentMonth())? EstablishmentMonths.getById(corporateApplicantRequest.getEstablishmentMonth()).getValue(): "";
 				if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getEstablishmentYear())) {
 					try {
-						OneFormResponse establishmentYearResponse = oneFormClient.getYearByYearId(CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getEstablishmentYear()) ? null : corporateApplicantRequest.getEstablishmentYear().longValue());
+						OneFormResponse establishmentYearResponse = oneFormClient.getYearByYearId(CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getEstablishmentYear()) ? null: corporateApplicantRequest.getEstablishmentYear().longValue());
 						List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) establishmentYearResponse.getListData();
 						if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
 							MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-							establishMentYear += " "+ masterResponse.getValue();
-						} 
+							establishMentYear += " " + masterResponse.getValue();
+						}
 					} catch (Exception e) {
-						logger.error("Error in getting establishment year : ",e);
+						logger.error("Error in getting establishment year : ", e);
 					}
 				}
-				map.put("establishmentYr",!CommonUtils.isObjectNullOrEmpty(establishMentYear) ? CommonUtils.printFields(establishMentYear,null) : " ");
+				map.put("establishmentYr",!CommonUtils.isObjectNullOrEmpty(establishMentYear)? CommonUtils.printFields(establishMentYear, null): " ");
+
 				
 				//INDUSTRY DATA
 				Integer industry = corporateApplicantRequest.getKeyVericalFunding().intValue();
