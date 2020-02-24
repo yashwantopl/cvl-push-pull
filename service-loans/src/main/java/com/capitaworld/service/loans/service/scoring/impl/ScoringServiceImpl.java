@@ -1629,6 +1629,7 @@ public class ScoringServiceImpl implements ScoringService {
         	logger.info("Ifsc Code ==>{}==>for ApplicationId===>{}",applicationId,ifscCode);
         	if(!CommonUtils.isObjectNullOrEmpty(ifscCode)){
         		noBankStatementBankName = loanRepository.getBankNameByIFSC(ifscCode.substring(0,4));
+        		logger.info("Bank Name ==>{}==>for ApplicationId===>{}",applicationId,noBankStatementBankName);
         	}
         	
         }
