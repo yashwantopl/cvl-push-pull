@@ -1360,6 +1360,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				map.put("sharePriceFace", CommonUtils.convertValue(corporateApplicantDetail.getSharePriceFace()));
 				map.put("sharePriceMarket", CommonUtils.convertValue(corporateApplicantDetail.getSharePriceMarket()));
 				map.put("castCategory", corporateApplicantDetail.getCastCategory());
+				map.put("minorityCastCategory", corporateApplicantDetail.getMinorCastCategory());
 			}
 		}catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
@@ -2789,6 +2790,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 						CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.getByApplicationAndProposalIdAndUserId(userId, applicationId,applicationProposalMapping.getProposalId());
 						if(corporateApplicantDetail != null) {
 							map.put("castCategory", corporateApplicantDetail.getCastCategory());
+							map.put("minorityCastCategory", corporateApplicantDetail.getMinorCastCategory());
 						}
 					}catch (Exception e) {
 						logger.error(CommonUtils.EXCEPTION,e);
@@ -3005,17 +3007,86 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		
-		// MUDRA LOAN DETAILS
-			PrimaryCorporateDetailMudraLoan mlDetail = 	mudraLoanRepo.findFirstByApplicationIdAndApplicationProposalMappingProposalIdOrderByIdDesc(applicationId, proposalId); 
-			if (!CommonUtils.isObjectNullOrEmpty(mlDetail)) {			
-				PrimaryCorporateDetailMudraLoanReqRes mlDetailsRes = new PrimaryCorporateDetailMudraLoanReqRes();
-				BeanUtils.copyProperties(mlDetail, mlDetailsRes);
-				if (!CommonUtils.isObjectNullOrEmpty(mlDetail.getMrktArragementFinishedGoods())) {					
-					mlDetailsRes.setMrktArragementFinishedGoodsValue(MrktArrFinishedGoodsList.fromId(mlDetail.getMrktArragementFinishedGoods()).getValue());
+		String establishMentYear = !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getEstablishmentMonth())? EstablishmentMonths.getById(corporateApplicantRequest.getEstablishmentMonth()).getValue(): "";
+		if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getEstablishmentYear())) {
+			try {
+				OneFormResponse establishmentYearResponse = oneFormClient.getYearByYearId(CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getEstablishmentYear()) ? null: corporateApplicantRequest.getEstablishmentYear().longValue());
+				List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) establishmentYearResponse.getListData();
+				if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+					MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+					establishMentYear += " " + masterResponse.getValue();
 				}
-				//corporatePrimaryViewResponse.setMlDetail(mlDetailsRes);
-				map.put("mlDetail", !CommonUtils.isObjectNullOrEmpty(mlDetailsRes) ? mlDetailsRes : Collections.EMPTY_LIST);
+			} catch (Exception e) {
+				logger.error("Error in getting establishment year : ", e);
 			}
+		}
+		try {
+			map.put("establishmentYr",!CommonUtils.isObjectNullOrEmpty(establishMentYear)? CommonUtils.printFields(establishMentYear, null): " ");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		//get NO BS+ DATA
+		CommonResponse verificationrequestResponse = null;
+		try {
+			if(!CommonUtils.isObjectNullOrEmpty(applicationId)) {
+				verificationrequestResponse =  pennyDropClient.getAccountDetails(applicationId);
+				LinkedHashMap<String, Object> noBs = (LinkedHashMap<String, Object>) verificationrequestResponse.getData();	
+				String year = (String) noBs.get("sinceYear");
+				String months = (String) noBs.get("sinceMonth");
+				if (!CommonUtils.isObjectNullOrEmpty(year) || !CommonUtils.isObjectNullOrEmpty(months)) {
+					LocalDate today = LocalDate.now();
+					LocalDate since = LocalDate.of(Integer.parseInt(year), Integer.parseInt(months),1);
+					Period age = Period.between(since, today);
+					map.put("noBsSinceYear", age.getYears());
+					map.put("noBsSinceMonths", age.getMonths());
+					map.put("noBsSinceWhen", (!CommonUtils.isObjectNullOrEmpty(age.getYears()) ? age.getYears() +" year " : "") + " " +(!CommonUtils.isObjectNullOrEmpty(age.getMonths()) ? age.getMonths()+" months" :  "" ));
+				}
+				map.put("noBsData", verificationrequestResponse);
+			}
+			
+		} catch (Exception e) {
+			logger.error("Error while fetching Account data : ",e);			
+		}
+		
+		//ITR (CHECK IF UPLOADED USING XML OR ONLINE)
+		try {
+			ITRConnectionResponse itrConnectionResponse= itrClient.getIsUploadAndYearDetails(applicationId);
+			if(!CommonUtils.isObjectNullOrEmpty(itrConnectionResponse)) {
+				map.put("checkItr", itrConnectionResponse.getData());
+			}
+		}catch(Exception e) {
+			logger.error("Error while getting ITR data : ",e);
+		}
+		
+		//FOR NO-ITR DATA (MUDRA - CAM)
+		CorporateApplicantRequest response = applicantService.getCorporateApplicantDetails(applicationId);
+		DateFormat dfYear = new SimpleDateFormat("yyyy");
+		Date dateNoItr = new Date();
+		dateNoItr = response.getDob();
+		if (!CommonUtils.isObjectNullOrEmpty(dateNoItr)) {
+			Calendar cal = Calendar.getInstance();
+			cal.setTimeInMillis(response.getDob().getTime());
+			map.put("noItrYear", dfYear.format(dateNoItr));
+			String month = cal.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault());
+			map.put("noItrMonth",month);
+		}else {
+			map.put("noItrYear", "-");
+			map.put("noItrMonth","-");			
+		}
+		
+		// MUDRA LOAN DETAILS
+		PrimaryCorporateDetailMudraLoan mlDetail = 	mudraLoanRepo.findFirstByApplicationIdAndApplicationProposalMappingProposalIdOrderByIdDesc(applicationId, proposalId); 
+		if (!CommonUtils.isObjectNullOrEmpty(mlDetail)) {			
+			PrimaryCorporateDetailMudraLoanReqRes mlDetailsRes = new PrimaryCorporateDetailMudraLoanReqRes();
+			BeanUtils.copyProperties(mlDetail, mlDetailsRes);
+			if (!CommonUtils.isObjectNullOrEmpty(mlDetail.getMrktArragementFinishedGoods())) {					
+				mlDetailsRes.setMrktArragementFinishedGoodsValue(MrktArrFinishedGoodsList.fromId(mlDetail.getMrktArragementFinishedGoods()).getValue());
+			}
+			//corporatePrimaryViewResponse.setMlDetail(mlDetailsRes);
+			map.put("mlDetail", !CommonUtils.isObjectNullOrEmpty(mlDetailsRes) ? mlDetailsRes : Collections.EMPTY_LIST);
+		}
 		// GET MACHINE DETAILS
 		List<MachineDetailMudraLoan> machineDetails = machineDetailsRepo.findByApplicationIdAndIsActive(applicationId, true);
 		PrimaryCorporateDetailMudraLoanReqRes mlDetailsRes = new PrimaryCorporateDetailMudraLoanReqRes();
@@ -3028,7 +3099,15 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			}				
 			mlDetailsRes.setMachineDetails(machineDetailsRes);
 		}
-		map.put("machineDetailsMudra", mlDetailsRes);	
+		map.put("machineDetailsMudra", mlDetailsRes);
+		
+		
+		//Get BankStatement
+				try {
+					map.putAll(getBankStatementDetails(applicationId, userId));
+				}catch (Exception e) {
+					logger.error("Error in getting Bank Statemnt from Perfios in MSME Cam Report with applicationId==>{}",applicationId);
+				}
 		
 		PrimaryCorporateDetailMudraLoanReqRes primaryCorporateDetailMudraLoanReqRes = new PrimaryCorporateDetailMudraLoanReqRes(); 
 		PrimaryCorporateDetailMudraLoan primaryCorporateDetailMudraLoan = primaryCorporateDetailsMudra.findFirstByApplicationIdAndApplicationProposalMappingProposalIdOrderByIdDesc(applicationId, proposalId);
