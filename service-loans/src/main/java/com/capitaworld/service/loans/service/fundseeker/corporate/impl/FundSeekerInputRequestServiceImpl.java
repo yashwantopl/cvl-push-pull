@@ -518,13 +518,15 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			// Rohit
 			/*** SAVE ASSOCIATED CONCERN DETAILS***/
 			associatedConcernDetailRepository.inActive(fundSeekerInputRequest.getUserId(), fundSeekerInputRequest.getApplicationId());
-			for (AssociatedConcernDetailRequest associateDetail : fundSeekerInputRequest.getAssociatedConcernDetailRequestsList()) {
-				AssociatedConcernDetail associatedConcernDetail = new AssociatedConcernDetail();
-				BeanUtils.copyProperties(associateDetail, associatedConcernDetail);
-				associatedConcernDetail.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
-				associatedConcernDetail.setCreatedBy(fundSeekerInputRequest.getUserId());
-				associatedConcernDetail.setCreatedDate(new Date());
-				associatedConcernDetailRepository.save(associatedConcernDetail); 
+			if (fundSeekerInputRequest.getIsAssociateConcern()) {
+				for (AssociatedConcernDetailRequest associateDetail : fundSeekerInputRequest.getAssociatedConcernDetailRequestsList()) {
+					AssociatedConcernDetail associatedConcernDetail = new AssociatedConcernDetail();
+					BeanUtils.copyProperties(associateDetail, associatedConcernDetail);
+					associatedConcernDetail.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
+					associatedConcernDetail.setCreatedBy(fundSeekerInputRequest.getUserId());
+					associatedConcernDetail.setCreatedDate(new Date());
+					associatedConcernDetailRepository.save(associatedConcernDetail); 
+				}
 			}
 			
 			

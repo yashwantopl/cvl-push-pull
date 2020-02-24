@@ -242,7 +242,10 @@ public class CorporateApplicantDetail implements Serializable {
 	
 	@Column(name="dob")
 	private Date dob;
-
+	
+	@Column(name="is_associate_concern")
+	private Boolean isAssociateConcern;
+	
     
 	/**
 	 * @return the isMultiGST
@@ -814,6 +817,14 @@ public class CorporateApplicantDetail implements Serializable {
 
 	public void setDob(Date dob) {
 		this.dob = dob;
+	}
+
+	public Boolean getIsAssociateConcern() {
+		return isAssociateConcern;
+	}
+
+	public void setIsAssociateConcern(Boolean isAssociateConcern) {
+		this.isAssociateConcern = isAssociateConcern;
 	}
 	
 	
