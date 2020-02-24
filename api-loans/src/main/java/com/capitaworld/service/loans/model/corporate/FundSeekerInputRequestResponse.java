@@ -210,6 +210,8 @@ public class FundSeekerInputRequestResponse {
 	
 	private List<Long> deletedMachine;
 	
+	private Boolean isAssociateConcern;
+	
 	
 	public Boolean getIsIsoCertified() {
 		return isIsoCertified;
@@ -971,6 +973,14 @@ public class FundSeekerInputRequestResponse {
 
 	public void setIsItrManualFilled(Boolean isItrManualFilled) {
 		this.isItrManualFilled = isItrManualFilled;
+	}
+	
+	public Boolean getIsAssociateConcern() {
+		return isAssociateConcern;
+	}
+
+	public void setIsAssociateConcern(Boolean isAssociateConcern) {
+		this.isAssociateConcern = isAssociateConcern;
 	}
 
 	@Override
