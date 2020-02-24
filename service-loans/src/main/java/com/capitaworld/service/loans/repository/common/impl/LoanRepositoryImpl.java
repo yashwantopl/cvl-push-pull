@@ -741,7 +741,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	public Integer getMinRelationshipInMonthByApplicationId(Long applicationId) {
 		BigInteger relationInMonths = null;
 		try {
-			relationInMonths = (BigInteger)entityManager.createNativeQuery("SELECT TIMESTAMPDIFF(MONTH,STR_TO_DATE(CONCAT('01,',o.since_month,',',o.since_year),'%d,%m,%Y'),NOW()) AS res FROM pennydrop.account_details o WHERE o.application_id =:id").setParameter("id", applicationId).getSingleResult();
+			relationInMonths = (BigInteger)entityManager.createNativeQuery("SELECT TIMESTAMPDIFF(MONTH,STR_TO_DATE(CONCAT('01,',o.since_month,',',o.since_year),'%d,%m,%Y'),NOW()) AS res FROM pennydrop.account_details o WHERE o.application_id =:id and o.is_active = true and o.since_month IS NOT NULL and o.since_year IS NOT NULL order by o.id desc limit 1").setParameter("id", applicationId).getSingleResult();
 		}
 		catch (Exception e) {
 			logger.error("Error While fetching months in relation with banks =====>{}======{}",applicationId,e);
@@ -751,4 +751,30 @@ public class LoanRepositoryImpl implements LoanRepository {
 		}
 		return relationInMonths.intValue();
 	}
+
+	@Override
+	public String getIFSCByApplicationId(Long applicationId) {
+		String ifsc = null;
+		try {
+			ifsc = (String)entityManager.createNativeQuery("SELECT o.ifsc_prefix FROM pennydrop.account_details o WHERE o.application_id =:id and o.is_active = true and o.since_month IS NOT NULL and o.since_year IS NOT NULL order by o.id desc limit 1").setParameter("id", applicationId).getSingleResult();
+		}
+		catch (Exception e) {
+			logger.error("Error While fetching IFSC by Application =====>{}======{}",applicationId,e);
+		}
+		return ifsc;
+	}
+
+	@Override
+	public String getBankNameByIFSC(String ifscPrefix) {
+		String bankName = null;
+		try {
+			bankName = (String)entityManager.createNativeQuery("SELECT sb.name FROM statement_analyzer.banklist_data sb WHERE LOWER(sb.ifsc_prefix) = LOWER(:ifscPrefix) ORDER BY sb.id DESC LIMIT 1").setParameter("ifscPrefix", ifscPrefix).getSingleResult();
+		}
+		catch (Exception e) {
+			logger.error("Error While fetching Bank Name by IFSC =====>{}======{}",ifscPrefix,e);
+		}
+		return bankName;
+	}
+	
+	
 }

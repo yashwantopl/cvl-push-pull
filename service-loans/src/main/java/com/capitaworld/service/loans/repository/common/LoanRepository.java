@@ -111,4 +111,8 @@ public interface LoanRepository{
     public Boolean isNoBankStatement(Long applicationId);
     
     public Integer getMinRelationshipInMonthByApplicationId(Long applicationId);
+    
+    public String getIFSCByApplicationId(Long applicationId);
+    
+    public String getBankNameByIFSC(String ifscPrefix);
 }

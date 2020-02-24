@@ -1623,13 +1623,14 @@ public class ScoringServiceImpl implements ScoringService {
 		Double noOfChequeBounce6Month = 0.0;
 		Boolean isNoBankStatement = loanRepository.isNoBankStatement(applicationId);
         logger.info("isNoBankStatement ==>{}==>for ApplicationId===>{}",applicationId,isNoBankStatement);
-        Integer noOfRelationWithBanks = 0;
+        String noBankStatementBankName = null;
         if(isNoBankStatement){
-        	noOfRelationWithBanks = loanRepository.getMinRelationshipInMonthByApplicationId(applicationId);
-        	logger.info("noOfRelationWithBanks ==>{}==>for ApplicationId===>{}",applicationId,noOfRelationWithBanks);
-            if(CommonUtils.isObjectNullOrEmpty(noOfRelationWithBanks)){
-            	noOfRelationWithBanks = 0;
-            }
+        	String ifscCode = loanRepository.getIFSCByApplicationId(applicationId);
+        	logger.info("Ifsc Code ==>{}==>for ApplicationId===>{}",applicationId,ifscCode);
+        	if(!CommonUtils.isObjectNullOrEmpty(ifscCode)){
+        		noBankStatementBankName = loanRepository.getBankNameByIFSC(ifscCode.substring(0,4));
+        	}
+        	
         }
         if(isNoBankStatement){
         	noOfChequeBounce1Month = -1d;
@@ -1770,18 +1771,29 @@ public class ScoringServiceImpl implements ScoringService {
         for(ScoringRequestLoans scoringRequestLoans:scoringRequestLoansList)
         {
         	Integer minBankRelationshipInMonths = null;
-        	if(isNoBankStatement) {
-        		minBankRelationshipInMonths = noOfRelationWithBanks;
-        	}else {
-        	  if(scoringRequestLoans.getOrgId() != null) {
+        	if(scoringRequestLoans.getOrgId() != null) {
               	BankList bankEnum = BankList.fromOrgId(scoringRequestLoans.getOrgId().toString());
-              	if(bankEnum != null) {
-              		logger.info("Bank Name====>{}==>Application Id===>{}===> Fp Product Id===>{}",bankEnum.getName(),applicationId,scoringRequestLoans.getFpProductId());
-              		minBankRelationshipInMonths = bankingRelationlRepository.getMinRelationshipInMonthByApplicationAndOrgName(applicationId, bankEnum.getName());
-              	}
-              	logger.info("Min Banking Relationship in Month === >{}",minBankRelationshipInMonths);
+            	if(isNoBankStatement) {
+            		if(!CommonUtils.isObjectNullOrEmpty(bankEnum) && !CommonUtils.isObjectNullOrEmpty(bankEnum.getName())) {
+            			logger.info("Enum Bank Name = >{} and DB Bank Name = >{}",bankEnum.getName(),noBankStatementBankName);
+            			if(bankEnum.getName().equalsIgnoreCase(noBankStatementBankName)){
+            				minBankRelationshipInMonths = loanRepository.getMinRelationshipInMonthByApplicationId(applicationId);
+            			}else{
+            				minBankRelationshipInMonths = -1;
+            			}
+            			logger.info("Min Banking Relationship in Month when no Bank statement === >{}",minBankRelationshipInMonths);
+            		}
+            	}else {
+            		if(bankEnum != null) {
+                  		logger.info("Bank Name====>{}==>Application Id===>{}===> Fp Product Id===>{}",bankEnum.getName(),applicationId,scoringRequestLoans.getFpProductId());
+                  		minBankRelationshipInMonths = bankingRelationlRepository.getMinRelationshipInMonthByApplicationAndOrgName(applicationId, bankEnum.getName());
+                  		if(CommonUtils.isObjectNullOrEmpty(minBankRelationshipInMonths)){
+                    		minBankRelationshipInMonths = -1;
+                    	}
+                  	}
+                  	logger.info("Min Banking Relationship in Month when Upload Bank statement === >{}",minBankRelationshipInMonths);
+            	}
               }
-        	}
         	
         	if(CommonUtils.isObjectNullOrEmpty(minBankRelationshipInMonths)){
         		minBankRelationshipInMonths = 0;
