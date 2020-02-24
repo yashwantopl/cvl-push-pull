@@ -667,7 +667,7 @@ public class CorporateApplicantController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			applicantService.saveITRResponse(applicantRequest);
-			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value()),
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INCOME_DETAILS_SUCCESSFULLY_SAVED, HttpStatus.OK.value()),
 					HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
