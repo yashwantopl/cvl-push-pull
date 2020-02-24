@@ -1623,12 +1623,16 @@ public class ScoringServiceImpl implements ScoringService {
 		Double noOfChequeBounce6Month = 0.0;
 		Boolean isNoBankStatement = loanRepository.isNoBankStatement(applicationId);
         logger.info("isNoBankStatement ==>{}==>for ApplicationId===>{}",applicationId,isNoBankStatement);
-        Integer noOfRelationWithBanks = loanRepository.getMinRelationshipInMonthByApplicationId(applicationId);
-        logger.info("noOfRelationWithBanks ==>{}==>for ApplicationId===>{}",applicationId,noOfRelationWithBanks);
-        if(CommonUtils.isObjectNullOrEmpty(noOfRelationWithBanks)){
-        	noOfRelationWithBanks = 0;
+        String noBankStatementBankName = null;
+        if(isNoBankStatement){
+        	String ifscCode = loanRepository.getIFSCByApplicationId(applicationId);
+        	logger.info("Ifsc Code ==>{}==>for ApplicationId===>{}",applicationId,ifscCode);
+        	if(!CommonUtils.isObjectNullOrEmpty(ifscCode)){
+        		noBankStatementBankName = loanRepository.getBankNameByIFSC(ifscCode.substring(0,4));
+        		logger.info("Bank Name ==>{}==>for ApplicationId===>{}",applicationId,noBankStatementBankName);
+        	}
+        	
         }
-        
         if(isNoBankStatement){
         	noOfChequeBounce1Month = -1d;
     		noOfChequeBounce6Month = -1d;
@@ -1768,17 +1772,32 @@ public class ScoringServiceImpl implements ScoringService {
         for(ScoringRequestLoans scoringRequestLoans:scoringRequestLoansList)
         {
         	Integer minBankRelationshipInMonths = null;
-        	if(isNoBankStatement) {
-        		minBankRelationshipInMonths = noOfRelationWithBanks;
-        	}else {
-        	  if(scoringRequestLoans.getOrgId() != null) {
+        	if(scoringRequestLoans.getOrgId() != null) {
               	BankList bankEnum = BankList.fromOrgId(scoringRequestLoans.getOrgId().toString());
-              	if(bankEnum != null) {
-              		logger.info("Bank Name====>{}==>Application Id===>{}===> Fp Product Id===>{}",bankEnum.getName(),applicationId,scoringRequestLoans.getFpProductId());
-              		minBankRelationshipInMonths = bankingRelationlRepository.getMinRelationshipInMonthByApplicationAndOrgName(applicationId, bankEnum.getName());
-              	}
-              	logger.info("Min Banking Relationship in Month === >{}",minBankRelationshipInMonths);
+            	if(isNoBankStatement) {
+            		if(!CommonUtils.isObjectNullOrEmpty(bankEnum) && !CommonUtils.isObjectNullOrEmpty(bankEnum.getName())) {
+            			logger.info("Enum Bank Name = >{} and DB Bank Name = >{}",bankEnum.getName(),noBankStatementBankName);
+            			if(bankEnum.getName().equalsIgnoreCase(noBankStatementBankName)){
+            				minBankRelationshipInMonths = loanRepository.getMinRelationshipInMonthByApplicationId(applicationId);
+            			}else{
+            				minBankRelationshipInMonths = -1;
+            			}
+            			logger.info("Min Banking Relationship in Month when no Bank statement === >{}",minBankRelationshipInMonths);
+            		}
+            	}else {
+            		if(bankEnum != null) {
+                  		logger.info("Bank Name====>{}==>Application Id===>{}===> Fp Product Id===>{}",bankEnum.getName(),applicationId,scoringRequestLoans.getFpProductId());
+                  		minBankRelationshipInMonths = bankingRelationlRepository.getMinRelationshipInMonthByApplicationAndOrgName(applicationId, bankEnum.getName());
+                  		if(CommonUtils.isObjectNullOrEmpty(minBankRelationshipInMonths)){
+                    		minBankRelationshipInMonths = -1;
+                    	}
+                  	}
+                  	logger.info("Min Banking Relationship in Month when Upload Bank statement === >{}",minBankRelationshipInMonths);
+            	}
               }
+        	
+        	if(CommonUtils.isObjectNullOrEmpty(minBankRelationshipInMonths)){
+        		minBankRelationshipInMonths = 0;
         	}
             Long scoreModelId = scoringRequestLoans.getScoringModelId();
             Long fpProductId = scoringRequestLoans.getFpProductId();
@@ -2296,26 +2315,15 @@ public class ScoringServiceImpl implements ScoringService {
                             }
                             case ScoreParameter.MudraLoan.RELATIONSHIP_WITH_BANK_ML: {
                             	try {
-                            	if(!isNoBankStatement && minBankRelationshipInMonths!=null) {
-                            		logger.info("Relationship With Bank :: "+minBankRelationshipInMonths);
+                            		logger.info("Relationship With Bank :: "+ minBankRelationshipInMonths);
                             		scoringParameterRequest.setBankRelation_p(true);
-                            		/*Long monthsBetween = ChronoUnit.MONTHS.between(
-                            		        LocalDate.parse(br.get(0).getSinceYear()+"-"+String.format("%02d", br.get(0).getSinceMonth())+"-"+"01").withDayOfMonth(1),
-                            		        LocalDate.parse(new SimpleDateFormat("yyyy-MM-dd").format(new Date())).withDayOfMonth(1));*/
-                            		scoringParameterRequest.setBankRelation(Long.valueOf(minBankRelationshipInMonths));
-                            	}
-                            	else {
-                            		logger.info("in Else");
-                            		scoringParameterRequest.setBankRelation(0L);
-                            		scoringParameterRequest.setBankRelation_p(true);
-                            	}
+                            		scoringParameterRequest.setBankRelation(minBankRelationshipInMonths.longValue());
                             	}
                             	catch (Exception e) {
                             		e.printStackTrace();
                             		logger.info("in Caatch");
                             		scoringParameterRequest.setBankRelation_p(false);
 								}
-                            	
                             	logger.info("Relationship With Bank :: "+scoringParameterRequest.getBankRelation_p());
                             	logger.info("Relationship With Bank Data :: "+scoringParameterRequest.getBankRelation());
                                  break;
