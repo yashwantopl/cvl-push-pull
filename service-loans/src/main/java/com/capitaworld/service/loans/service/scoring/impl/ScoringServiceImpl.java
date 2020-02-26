@@ -574,6 +574,7 @@ public class ScoringServiceImpl implements ScoringService {
     						logger.error("Error While Casting Analyser object=====>{}====>{}",e);
     					}
     				}
+                	logger.info("noOfMonths ==>{} for ApplicationId = >{}",noOfMonths,applicationId);
                 	if(totalCreditLast6Month > 0){
                 		totalCredit = totalCreditLast6Month / noOfMonths;
                 	}
@@ -661,7 +662,7 @@ public class ScoringServiceImpl implements ScoringService {
         }
         
         GstResponse gstResponse = null;
-        GstCalculation gstCalculation = new GstCalculation();
+        GstCalculation gstCalculation = null;
 
         try {
             GSTR1Request gstr1Request = new GSTR1Request();
@@ -1303,16 +1304,22 @@ public class ScoringServiceImpl implements ScoringService {
                             case ScoreParameter.MudraLoan.CREDIT_SUMMATION_ML:{
                             	if(!isNoBankStatement){
                             		Double projctedSales = null;
-                                    if(!CommonUtils.isObjectNullOrEmpty(gstCalculation.getHistoricalSales())) {
-                                        projctedSales = gstCalculation.getHistoricalSales()/12;
-                                    }else{
-                                        projctedSales = gstCalculation.getProjectedSales()/12;
-                                    }
-                                    if (!(CommonUtils.isObjectNullOrEmpty(projctedSales) || projctedSales == 0.0)) {
-                                    	scoringParameterRequest.setCreditSummation((totalCredit / (projctedSales / 12)) * 100);
-    								} else {
-    									scoringParameterRequest.setCreditSummation(0.0);
-    								}                            		
+                            		if(!CommonUtils.isObjectNullOrEmpty(gstCalculation)){
+                            			if(!CommonUtils.isObjectNullOrEmpty(gstCalculation.getHistoricalSales())) {
+                                            projctedSales = gstCalculation.getHistoricalSales()/12;
+                                        }else{
+                                            projctedSales = gstCalculation.getProjectedSales()/12;
+                                        }
+                                        logger.info("projctedSales = >{} for ApplicationId = >{}",projctedSales,applicationId);
+                                        logger.info("totalCredit = >{} for ApplicationId = >{}",totalCredit,applicationId);
+                                        if (!(CommonUtils.isObjectNullOrEmpty(projctedSales) || projctedSales == 0.0)) {
+                                        	scoringParameterRequest.setCreditSummation((totalCredit / (projctedSales / 12)) * 100);
+        								} else {
+        									scoringParameterRequest.setCreditSummation(0.0);
+        								}                            			
+                            		}else{
+                            			scoringParameterRequest.setCreditSummation_p(false);
+                            		}
                             	}else{
                             		scoringParameterRequest.setCreditSummation(-1d);
                             	}
