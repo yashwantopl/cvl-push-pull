@@ -40,7 +40,7 @@ public class FundSeekerInputRequestResponse {
 
     private String pan;
     
-    private String panNo;
+    private String panNumber;
 
     private String aadhar;
 
@@ -984,13 +984,13 @@ public class FundSeekerInputRequestResponse {
 	public void setIsAssociateConcern(Boolean isAssociateConcern) {
 		this.isAssociateConcern = isAssociateConcern;
 	}
-	
-	public String getPanNo() {
-		return panNo;
+
+	public String getPanNumber() {
+		return panNumber;
 	}
 
-	public void setPanNo(String panNo) {
-		this.panNo = panNo;
+	public void setPanNumber(String panNumber) {
+		this.panNumber = panNumber;
 	}
 
 	@Override

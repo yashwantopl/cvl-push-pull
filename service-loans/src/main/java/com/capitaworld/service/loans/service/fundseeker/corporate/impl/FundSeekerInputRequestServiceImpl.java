@@ -776,6 +776,8 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			Boolean isItrManualFilled = loanRepository.getIsItrManualFilled(fundSeekerInputRequest.getApplicationId());
 			fundSeekerInputResponse.setIsItrManualFilled(isItrManualFilled);
 			
+			//Set pan number 
+			fundSeekerInputResponse.setPanNumber(corporateApplicantDetail.getPanNo());
 			try {
 				LocalDate start = null;
 				if(corporateApplicantDetail.getConstitutionId() == 7) {
