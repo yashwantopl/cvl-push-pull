@@ -1621,6 +1621,7 @@ public class ScoringServiceImpl implements ScoringService {
 		AnalyzerResponse analyzerResponse = null;
 		Double noOfChequeBounce1Month = 0.0;
 		Double noOfChequeBounce6Month = 0.0;
+		Double totalCreditLast6Month = 0.0;
 		Boolean isNoBankStatement = loanRepository.isNoBankStatement(applicationId);
         logger.info("isNoBankStatement ==>{}==>for ApplicationId===>{}",applicationId,isNoBankStatement);
         String noBankStatementBankName = null;
@@ -1641,18 +1642,26 @@ public class ScoringServiceImpl implements ScoringService {
     			ReportRequest reportRequest = new ReportRequest();
                 reportRequest.setApplicationId(applicationId);
                 reportRequest.setDirectorId(null);
-    			analyzerResponse = analyzerClient.getDetailsFromReportByDirector(reportRequest);
-                if(!CommonUtils.isObjectNullOrEmpty(analyzerResponse)){
-                	Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) analyzerResponse.getData(),
-                            Data.class);
-                	if(!CommonUtils.isObjectNullOrEmpty(data)){
-                		if (!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast1Month())) {
-                            noOfChequeBounce1Month = data.getCheckBounceForLast1Month().doubleValue();
-                        }
-                        if (!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month())) {
-                             noOfChequeBounce6Month = data.getCheckBounceForLast6Month().doubleValue();
-                        }                		
-                	}
+    			analyzerResponse = analyzerClient.getDetailsFromReport(reportRequest);
+                if(!CommonUtils.isObjectNullOrEmpty(analyzerResponse) && !CommonUtils.isObjectNullOrEmpty(analyzerResponse.getData())){
+                	for(Object object : (List<?>)analyzerResponse.getData()) {
+    					try {
+    						Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) object, Data.class);
+    						if(!CommonUtils.isObjectNullOrEmpty(data)){
+    	                		if (!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast1Month())) {
+    	                            noOfChequeBounce1Month = noOfChequeBounce1Month + data.getCheckBounceForLast1Month().doubleValue();
+    	                        }
+    	                        if (!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month())) {
+    	                             noOfChequeBounce6Month = noOfChequeBounce6Month + data.getCheckBounceForLast6Month().doubleValue();
+    	                        }                		
+    	                        if(!CommonUtils.isObjectNullOrEmpty(data.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCredit())){
+    	                        	totalCreditLast6Month = totalCreditLast6Month + Double.parseDouble(data.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCredit());
+    	                        }
+    	                	}
+    					}catch(Exception e) {
+    						logger.error("Error While Casting Analyser object=====>{}====>{}",e);
+    					}
+    				}
                 }
     		} catch (Exception e) {
     			logger.error("Error while getting Bank Statement Response = >",e);
@@ -2284,17 +2293,23 @@ public class ScoringServiceImpl implements ScoringService {
                                 break;
                             }
                             case ScoreParameter.MudraLoan.ITR_RETURN_FILED_ML: {
-                            	if(itrClientResponse !=null && itrClientResponse.getIsFilledManual() !=null) {
-                            		if (itrClientResponse.getIsFilledManual()) {
-										scoringParameterRequest.setIsItReturnFiled(false);
-									}
-                            		else {
-                            			scoringParameterRequest.setIsItReturnFiled(true);
+                            	scoringParameterRequest.setIsItReturnFiled_p(true);
+                            	if(!CommonUtils.isObjectNullOrEmpty(itrClientResponse)){
+                            		if(CommonUtils.isObjectNullOrEmpty(itrClientResponse.getIsFilledManual())){
+                            			itrClientResponse.setIsFilledManual(false); // Assuming that 
                             		}
-                            		scoringParameterRequest.setIsItReturnFiled_p(true);
-                            	}
-                            	else {
-                            		scoringParameterRequest.setIsItReturnFiled_p(false);
+                            		
+                            		if(!itrClientResponse.getIsFilledManual()) {
+                            			scoringParameterRequest.setItReturnFiledId(1);                            			
+                                	} else {
+                                		// Manual Filed
+                                		if(isNoBankStatement){
+                                			scoringParameterRequest.setItReturnFiledId(2);	
+                                		}else{
+                                			// In Completed code. We will change when GST Client is Ready to return sales of last 6 month.
+                                			scoringParameterRequest.setItReturnFiledId(3);
+                                		}
+                                	}
                             	}
                             	
                                  break;
@@ -2302,14 +2317,6 @@ public class ScoringServiceImpl implements ScoringService {
                             
                             case ScoreParameter.MudraLoan.TYPE_OF_ACTIVITY_ML: {
         						if (!CommonUtils.isObjectNullOrEmpty(industryResponse)) {
-        							/*if (com.capitaworld.service.rating.utils.CommonUtils.BusinessType.MANUFACTURING == businessTypeId) {
-        								natureOfEntity = "Manufacturer";
-        							} else if (com.capitaworld.service.rating.utils.CommonUtils.BusinessType.SERVICE == businessTypeId) {
-        								natureOfEntity = "Service";
-        							} else if (com.capitaworld.service.rating.utils.CommonUtils.BusinessType.TRADING == businessTypeId) {
-        								natureOfEntity = "Trader";
-        							}*/
-
         							scoringParameterRequest.setTypeOfActivity_p(true);
         							scoringParameterRequest.setTypeOfActivity(businessTypeId);
         						}
