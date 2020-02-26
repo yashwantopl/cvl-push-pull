@@ -2300,7 +2300,7 @@ public class ScoringServiceImpl implements ScoringService {
                             		}
                             		
                             		if(!itrClientResponse.getIsFilledManual()) {
-                            			scoringParameterRequest.setItReturnFiledId(1); // Value is ONE                        			
+                            			scoringParameterRequest.setItReturnFiledId(1); // Value is YES                        			
                                 	} else {
                                 		// Manual Filed
                                 		if(isNoBankStatement){
