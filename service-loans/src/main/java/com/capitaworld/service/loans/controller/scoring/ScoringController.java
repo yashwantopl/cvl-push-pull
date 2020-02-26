@@ -64,7 +64,7 @@ public class ScoringController {
     @RequestMapping(value = "/calculate_score/corporate_existing_list", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> calculateScoreExisting(@RequestBody List<ScoringRequestLoans> scoringRequestLoansList) {
 
-        return scoringService.calculateExistingBusinessScoringList(scoringRequestLoansList);
+        return scoringService.calculateMudraScoringList(scoringRequestLoansList);
     }
 
     @RequestMapping(value = "/calculate_score/corporate/test", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
