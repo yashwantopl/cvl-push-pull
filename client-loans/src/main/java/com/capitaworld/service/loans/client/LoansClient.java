@@ -2969,9 +2969,9 @@ public class LoansClient {
 	 */
 	public LoansResponse getFinancialData(Long applicationId,Long proposalId) throws ExcelException {
 		String url = loansBaseUrl.concat(GET_FINANCIAL_DATA).concat("/" + applicationId);
-		if(proposalId != null) {
-			url.concat("?proposalId=" + proposalId);
-		}
+//		if(proposalId != null) {
+//			url.concat("?proposalId=" + proposalId); // Useless when there is no assignment
+//		}
 		logger.info("url for Getting FINANCIAL DETAILS=================>{} = {} = {}" , url , AND_FOR_APPLICATION_ID , applicationId);
 		try {
 			HttpHeaders headers = new HttpHeaders();

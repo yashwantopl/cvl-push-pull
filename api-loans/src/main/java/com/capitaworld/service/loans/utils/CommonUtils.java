@@ -90,7 +90,7 @@ public class CommonUtils {
 
 	public static final String SCORING_EXCEL = "score_result.xlsx";
 
-	public static final DateFormat formatter = new SimpleDateFormat("dd-mm-yyyy");
+	public static final DateFormat FORMATTER = new SimpleDateFormat("dd-mm-yyyy");
 
 	public static final String IN_PROGRESS = "In Progress";
 	public static final String COMPLETED = "Completed";

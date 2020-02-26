@@ -1769,8 +1769,8 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 									
 									LinkedHashMap<String,Object>gstPurchaseVsBankStatementMonthly = new LinkedHashMap<>();
 									gstPurchaseVsBankStatementMonthly.put("year", yearWisePurchase.getKey() != null ?yearWisePurchase.getKey().toString() : " - ");
-									gstPurchaseVsBankStatementMonthly.put("gstPurchase", yearWisePurchase.getValue()!= null && yearWisePurchase.getValue().toString() != "0" ?CommonUtils.convertStringFormate(yearWisePurchase.getValue()).toString() : " - ");
-									totalOfGstPurchase += Double.valueOf(yearWisePurchase.getValue().toString());
+									gstPurchaseVsBankStatementMonthly.put("gstPurchase", yearWisePurchase.getValue() != null && yearWisePurchase.getValue().toString() != "0" ?CommonUtils.convertStringFormate(yearWisePurchase.getValue()).toString() : " - ");
+									totalOfGstPurchase += Double.valueOf(yearWisePurchase.getValue() != null ?  yearWisePurchase.getValue().toString() : "0");
 									
 									gstPurchaseVsBankStatementMonthly.put("itrPurchase", fi.get("rowMaterialIndigenous") != null && Double.valueOf(fi.get("rowMaterialIndigenous").toString()) != 0?CommonUtils.convertStringFormate(fi.get("rowMaterialIndigenous").toString()):" - ");
 									
