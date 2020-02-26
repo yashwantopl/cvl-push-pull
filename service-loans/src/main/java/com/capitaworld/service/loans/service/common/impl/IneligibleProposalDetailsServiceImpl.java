@@ -44,7 +44,6 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateAppli
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.InEligibleProposalCamReportService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
-import com.capitaworld.service.loans.service.sidbi.SidbiSpecificService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.InEligibleProposalStatus;
@@ -136,8 +135,6 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
     @Autowired
 	private LoanApplicationRepository loanApplicationRepository;
     
-    @Autowired
-    private SidbiSpecificService sidbiService;
     
     @Autowired
     private LoanSanctionRepository sanctionRepository;
@@ -192,7 +189,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 					List<IneligibleProposalDetails> inlProposalList = ineligibleProposalDetailsRepository.findByGstinPan(gstin.substring(2, 12));
 					for(IneligibleProposalDetails inlProposal : inlProposalList) {
 						Integer loanTypeId = primaryCorporateDetailRepository.getPurposeLoanId(inlProposal.getApplicationId());
-						if(loanTypeId == currentAppLoanTypeId) {//CHECK IF SAME LOAN ID THEN WE NEED TO CHECK BELOW CONDITION
+						if(!CommonUtils.isObjectNullOrEmpty(currentAppLoanTypeId) && currentAppLoanTypeId.equals(loanTypeId)) {//CHECK IF SAME LOAN ID THEN WE NEED TO CHECK BELOW CONDITION
 							//CHECK IF SAME BANK PROPOSAL AVAILABLE FOR THIS GSTIN primaryCorporateDetailRepository
 							if(inlProposal.getUserOrgId() == inlPropReq.getUserOrgId()) {
 								// NEED TO CHECK IF ALREADY SANCTIONED OR NOT
@@ -917,8 +914,8 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 							if(user[0].equals("sbi") || (user[0].equals("sidbi") && isSIDBIFlowForIneligible && Integer.valueOf(user[1].toString()).equals(1))) {
 								try {
 									DecimalFormat decim = new DecimalFormat("####");
-									Double loanAmount = sidbiService.getLoanAmountByApplicationId(applicationId);
-									param.put("loanAmount", decim.format(loanAmount));
+//									Double loanAmount = sidbiService.getLoanAmountByApplicationId(applicationId);
+									param.put("loanAmount", 0.0d); // No Need For SIDBI 
 									ReportRequest request=new ReportRequest();
 									List<Map<String, Object>> dataList=new ArrayList<Map<String,Object>>();
 									dataList.add(param);

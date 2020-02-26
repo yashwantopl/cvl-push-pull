@@ -1607,11 +1607,11 @@ public class ScoringServiceImpl implements ScoringService {
                      }else {
                          commercialVal = Integer.parseInt(cibilDirectorsResponseList.get(j).toString());
                      }
-                     logger.info("commercialVal1::::::::::::::::::::::::::::::::::::::::::::::::::::::::"+commercialVal);
+                     logger.info("commercialVal1::::::::::::::::::::::::::::::::::::::::::::::::::::::::{}",commercialVal);
                      if(maxDpd <= commercialVal){
                          maxDpd = commercialVal;
                      }
-                     logger.info("maxDpd::::::::::::::::::::::::::::::::::::::::::::::::::::::::"+maxDpd);
+                     logger.info("maxDpd:::::::::::::::::::::::::::::::::::::::::::::::::::::::: {}",maxDpd);
                  }
              }
 		} catch (Exception e) {
@@ -1679,6 +1679,41 @@ public class ScoringServiceImpl implements ScoringService {
         Double loanAmount = primaryCorporateDetailRepository.getLoanAmountByApplication(applicationId);
 
         CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.getCorporateApplicantDetailByApplicationId(applicationId);
+        IndustryResponse industryResponse =null;
+        Integer businessTypeId= null;
+        logger.info("corporateApplicantDetail.getKeyVerticalSubsector()=> {}", corporateApplicantDetail.getKeyVerticalSubsector());
+        if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVerticalSector()) && !CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVerticalSubsector())) {
+        	
+        	IrrBySectorAndSubSector irr = new IrrBySectorAndSubSector();
+			irr.setSectorId(corporateApplicantDetail.getKeyVerticalSector());
+			irr.setSubSectorId(corporateApplicantDetail.getKeyVerticalSubsector());
+
+			// IrrBySectorAndSubSector res
+			// =(IrrBySectorAndSubSector)oneFormClient.getIrrBySectorAndSubSector(irr).getData();
+			IrrBySectorAndSubSector res = null;
+			try {
+				res = (IrrBySectorAndSubSector) MultipleJSONObjectHelper.getObjectFromMap(
+						(Map<String, Object>) oneFormClient.getIrrBySectorAndSubSector(irr).getData(),
+						IrrBySectorAndSubSector.class);
+				if(!CommonUtils.isObjectNullOrEmpty(res)){
+				    IrrRequest irrIndustryRequest = new IrrRequest();
+					irrIndustryRequest.setIrrIndustryId( res.getIrr());
+					try {
+						irrIndustryRequest = ratingClient.getIrrIndustry(irrIndustryRequest);
+					} catch (RatingException e) {
+						// TODO Auto-generated catch block
+						logger.error("Error while Getting IRR Industry by IRR Client Details = >{}",e);
+					}
+					industryResponse = irrIndustryRequest.getIndustryResponse();
+					businessTypeId = industryResponse.getBusinessTypeId();
+					logger.info("::::::industryResponse.getBusinessTypeId()::::::"+industryResponse.getBusinessTypeId());
+				}
+			} catch (IOException | OneFormException e1) {
+				// TODO Auto-generated catch block
+				logger.error("Error while Getting IRR Details = >{}",e1);
+			}
+        }
+        
         Double yearsInBusiness = null;
         if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)){
         	Integer yearsInBetween = corporateApplicantDetail.getBusinessSinceYear();
@@ -1831,40 +1866,7 @@ public class ScoringServiceImpl implements ScoringService {
                 logger.info("----------------------------START EXISTING LOAN ------------------------------");
 
                 logger.info(MSG_APPLICATION_ID + applicationId + MSG_FP_PRODUCT_ID + fpProductId + MSG_SCORING_MODEL_ID + scoreModelId);
-
-                IndustryResponse industryResponse =null;
-                Integer businessTypeId= null;
-                logger.info("corporateApplicantDetail.getKeyVerticalSubsector()"+corporateApplicantDetail.getKeyVerticalSubsector());
-                if(corporateApplicantDetail.getKeyVerticalSector()!=null && corporateApplicantDetail.getKeyVerticalSubsector()!=null) {
-                	
-                	IrrBySectorAndSubSector irr = new IrrBySectorAndSubSector();
-					irr.setSectorId(corporateApplicantDetail.getKeyVerticalSector());
-					irr.setSubSectorId(corporateApplicantDetail.getKeyVerticalSubsector());
-
-					// IrrBySectorAndSubSector res
-					// =(IrrBySectorAndSubSector)oneFormClient.getIrrBySectorAndSubSector(irr).getData();
-					IrrBySectorAndSubSector res = null;
-					try {
-						res = (IrrBySectorAndSubSector) MultipleJSONObjectHelper.getObjectFromMap(
-								(Map<String, Object>) oneFormClient.getIrrBySectorAndSubSector(irr).getData(),
-								IrrBySectorAndSubSector.class);
-					} catch (IOException | OneFormException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					
-	                IrrRequest irrIndustryRequest = new IrrRequest();
-					irrIndustryRequest.setIrrIndustryId( res.getIrr());
-					try {
-						irrIndustryRequest = ratingClient.getIrrIndustry(irrIndustryRequest);
-					} catch (RatingException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					industryResponse = irrIndustryRequest.getIndustryResponse();
-					businessTypeId = industryResponse.getBusinessTypeId();
-					logger.info("::::::industryResponse.getBusinessTypeId()::::::"+industryResponse.getBusinessTypeId());
-                }
+                
                 if (!CommonUtils.isObjectNullOrEmpty(scoreModelId)) {
                     // GET ALL FIELDS FOR CALCULATE SCORE BY MODEL ID
                     ScoringResponse scoringResponse = null;
@@ -1873,6 +1875,10 @@ public class ScoringServiceImpl implements ScoringService {
                     } catch (Exception e) {
                         logger.error(ERROR_WHILE_GETTING_FIELD_LIST,e);
                     }
+                    if(CommonUtils.isObjectNullOrEmpty(scoringResponse) || CommonUtils.isListNullOrEmpty(scoringResponse.getDataList())){
+                    	logger.warn("No Scoring Response Found for ApplicationId = >{}",applicationId);
+                    	continue;
+                    }
 
                     List<Map<String, Object>> dataList = (List<Map<String, Object>>) scoringResponse.getDataList();
 
@@ -1880,7 +1886,7 @@ public class ScoringServiceImpl implements ScoringService {
 
                     logger.info("dataList=====================================>>>>>>>>>>>>>>>>>>>>>>" + dataList.size());
 
-                    for (int i=0;i<dataList.size();i++){
+                    for (int i = 0; i < dataList.size(); i++){
 
                         ModelParameterResponse modelParameterResponse = null;
                         try {
