@@ -1621,7 +1621,7 @@ public class ScoringServiceImpl implements ScoringService {
 		AnalyzerResponse analyzerResponse = null;
 		Double noOfChequeBounce1Month = 0.0;
 		Double noOfChequeBounce6Month = 0.0;
-		Double totalCreditLast6Month = 0.0;
+		Double totalCredit = 0.0;
 		Boolean isNoBankStatement = loanRepository.isNoBankStatement(applicationId);
         logger.info("isNoBankStatement ==>{}==>for ApplicationId===>{}",applicationId,isNoBankStatement);
         String noBankStatementBankName = null;
@@ -1644,6 +1644,8 @@ public class ScoringServiceImpl implements ScoringService {
                 reportRequest.setDirectorId(null);
     			analyzerResponse = analyzerClient.getDetailsFromReport(reportRequest);
                 if(!CommonUtils.isObjectNullOrEmpty(analyzerResponse) && !CommonUtils.isObjectNullOrEmpty(analyzerResponse.getData())){
+                	int noOfMonths = 1;
+                	Double totalCreditLast6Month = 0.0;
                 	for(Object object : (List<?>)analyzerResponse.getData()) {
     					try {
     						Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) object, Data.class);
@@ -1657,11 +1659,17 @@ public class ScoringServiceImpl implements ScoringService {
     	                        if(!CommonUtils.isObjectNullOrEmpty(data.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCredit())){
     	                        	totalCreditLast6Month = totalCreditLast6Month + Double.parseDouble(data.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCredit());
     	                        }
+    	                        if(!CommonUtils.isListNullOrEmpty(data.getMonthlyDetailList().getMonthlyDetails())){
+                                    noOfMonths = noOfMonths + data.getMonthlyDetailList().getMonthlyDetails().size();
+                                }
     	                	}
     					}catch(Exception e) {
     						logger.error("Error While Casting Analyser object=====>{}====>{}",e);
     					}
     				}
+                	if(totalCreditLast6Month > 0){
+                		totalCredit = totalCreditLast6Month / noOfMonths;
+                	}
                 }
     		} catch (Exception e) {
     			logger.error("Error while getting Bank Statement Response = >",e);
@@ -2372,11 +2380,6 @@ public class ScoringServiceImpl implements ScoringService {
                             	}
                                  break;
                              }
-                            case ScoreParameter.MudraLoan.CREDIT_RELATION_WITH_BANK_ML: {
-                                // TODO
-//                            	corporateApplicantDetail.cre
-                                 break;
-                             }
                             case ScoreParameter.MudraLoan.ACCESS_TO_INPUTS_ML: {
                             	
                             	logger.info("corporateApplicantDetail.getAccessInput() : " +corporateApplicantDetail.getAccessInput());
@@ -2390,7 +2393,19 @@ public class ScoringServiceImpl implements ScoringService {
                             	logger.info("AccessInputs :" + scoringParameterRequest.getAccessInputs());
                                  break;
                              }
-                           
+                            
+                            case ScoreParameter.MudraLoan.CREDIT_SUMMATION_ML:{
+                                Double projctedSales = null;
+                                Integer noOfMonths = 1;
+                                if(!CommonUtils.isObjectNullOrEmpty(gstCalculation.getHistoricalSales())) {
+                                    projctedSales = gstCalculation.getHistoricalSales()/12;
+                                }else{
+                                    projctedSales = gstCalculation.getProjectedSales()/12;
+                                }
+                                scoringParameterRequest.setTotalCredit(totalCredit);
+                                scoringParameterRequest.setProjectedSale(projctedSales);
+                                scoringParameterRequest.setCreditSummation_p(true);
+                            }
                             default:
                             	break;
                         }
