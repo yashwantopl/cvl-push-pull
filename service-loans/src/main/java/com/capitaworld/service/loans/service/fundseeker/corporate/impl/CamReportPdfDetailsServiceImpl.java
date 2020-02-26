@@ -2687,7 +2687,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 						map.put("purpose", "");
 					}
 
-					if(primaryCorporateRequest.getHaveCollateralSecurity()) {
+					if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getHaveCollateralSecurity()) && primaryCorporateRequest.getHaveCollateralSecurity()) {
 						map.put("collateralSecurityList", collateralSecurityDetailService.getData(applicationId));
 						map.put("amtOfSecurity",!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getCollateralSecurityAmount()) ? CommonUtils.convertValueIndianCurrency(primaryCorporateRequest.getCollateralSecurityAmount()) : " ");
 					}
