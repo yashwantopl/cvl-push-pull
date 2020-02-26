@@ -1063,7 +1063,7 @@ public class ScoringServiceImpl implements ScoringService {
                             
                             case ScoreParameter.MudraLoan.TENURE_ML: {
                             	logger.info("scoringRequestLoans.getTenureFS() :: "+ scoringRequestLoans.getTenureFS());
-                            	if(scoringRequestLoans.getTenureFS()!=null) {
+                            	if(scoringRequestLoans.getTenureFS() != null) {
                             		scoringParameterRequest.setTenure(scoringRequestLoans.getTenureFS());
                             		scoringParameterRequest.setTenure_p(true);
                             	}
@@ -1301,15 +1301,21 @@ public class ScoringServiceImpl implements ScoringService {
                              }
                             
                             case ScoreParameter.MudraLoan.CREDIT_SUMMATION_ML:{
-                                Double projctedSales = null;
-                                Integer noOfMonths = 1;
-                                if(!CommonUtils.isObjectNullOrEmpty(gstCalculation.getHistoricalSales())) {
-                                    projctedSales = gstCalculation.getHistoricalSales()/12;
-                                }else{
-                                    projctedSales = gstCalculation.getProjectedSales()/12;
-                                }
-                                scoringParameterRequest.setTotalCredit(totalCredit);
-                                scoringParameterRequest.setProjectedSale(projctedSales);
+                            	if(!isNoBankStatement){
+                            		Double projctedSales = null;
+                                    if(!CommonUtils.isObjectNullOrEmpty(gstCalculation.getHistoricalSales())) {
+                                        projctedSales = gstCalculation.getHistoricalSales()/12;
+                                    }else{
+                                        projctedSales = gstCalculation.getProjectedSales()/12;
+                                    }
+                                    if (!(CommonUtils.isObjectNullOrEmpty(projctedSales) || projctedSales == 0.0)) {
+                                    	scoringParameterRequest.setCreditSummation((totalCredit / (projctedSales / 12)) * 100);
+    								} else {
+    									scoringParameterRequest.setCreditSummation(0.0);
+    								}                            		
+                            	}else{
+                            		scoringParameterRequest.setCreditSummation(-1d);
+                            	}
                                 scoringParameterRequest.setCreditSummation_p(true);
                             }
                             default:
