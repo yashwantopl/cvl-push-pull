@@ -1063,7 +1063,7 @@ public class ScoringServiceImpl implements ScoringService {
                             
                             case ScoreParameter.MudraLoan.TENURE_ML: {
                             	logger.info("scoringRequestLoans.getTenureFS() :: "+ scoringRequestLoans.getTenureFS());
-                            	if(scoringRequestLoans.getTenureFS()!=null) {
+                            	if(scoringRequestLoans.getTenureFS() != null) {
                             		scoringParameterRequest.setTenure(scoringRequestLoans.getTenureFS());
                             		scoringParameterRequest.setTenure_p(true);
                             	}
@@ -1308,8 +1308,11 @@ public class ScoringServiceImpl implements ScoringService {
                                 }else{
                                     projctedSales = gstCalculation.getProjectedSales()/12;
                                 }
-                                scoringParameterRequest.setTotalCredit(totalCredit);
-                                scoringParameterRequest.setProjectedSale(projctedSales);
+                                if (!(CommonUtils.isObjectNullOrEmpty(projctedSales) || projctedSales == 0.0)) {
+                                	scoringParameterRequest.setCreditSummation((totalCredit / (projctedSales / 12)) * 100);
+								} else {
+									scoringParameterRequest.setCreditSummation(0.0);
+								}
                                 scoringParameterRequest.setCreditSummation_p(true);
                             }
                             default:
