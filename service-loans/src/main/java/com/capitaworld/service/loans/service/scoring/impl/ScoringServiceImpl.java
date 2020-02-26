@@ -1301,17 +1301,21 @@ public class ScoringServiceImpl implements ScoringService {
                              }
                             
                             case ScoreParameter.MudraLoan.CREDIT_SUMMATION_ML:{
-                                Double projctedSales = null;
-                                if(!CommonUtils.isObjectNullOrEmpty(gstCalculation.getHistoricalSales())) {
-                                    projctedSales = gstCalculation.getHistoricalSales()/12;
-                                }else{
-                                    projctedSales = gstCalculation.getProjectedSales()/12;
-                                }
-                                if (!(CommonUtils.isObjectNullOrEmpty(projctedSales) || projctedSales == 0.0)) {
-                                	scoringParameterRequest.setCreditSummation((totalCredit / (projctedSales / 12)) * 100);
-								} else {
-									scoringParameterRequest.setCreditSummation(0.0);
-								}
+                            	if(isNoBankStatement){
+                            		Double projctedSales = null;
+                                    if(!CommonUtils.isObjectNullOrEmpty(gstCalculation.getHistoricalSales())) {
+                                        projctedSales = gstCalculation.getHistoricalSales()/12;
+                                    }else{
+                                        projctedSales = gstCalculation.getProjectedSales()/12;
+                                    }
+                                    if (!(CommonUtils.isObjectNullOrEmpty(projctedSales) || projctedSales == 0.0)) {
+                                    	scoringParameterRequest.setCreditSummation((totalCredit / (projctedSales / 12)) * 100);
+    								} else {
+    									scoringParameterRequest.setCreditSummation(0.0);
+    								}                            		
+                            	}else{
+                            		scoringParameterRequest.setCreditSummation(-1d);
+                            	}
                                 scoringParameterRequest.setCreditSummation_p(true);
                             }
                             default:
