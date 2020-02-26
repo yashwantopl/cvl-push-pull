@@ -19,9 +19,7 @@ public interface ScoringService {
 
     public ResponseEntity<LoansResponse> calculateScoring(ScoringRequestLoans scoringRequestLoans);
 
-    public ResponseEntity<LoansResponse> calculateExistingBusinessScoring(ScoringRequestLoans scoringRequestLoans);
-
-    public ResponseEntity<LoansResponse> calculateExistingBusinessScoringList(List<ScoringRequestLoans> scoringRequestLoansList);
+    public ResponseEntity<LoansResponse> calculateMudraScoringList(List<ScoringRequestLoans> scoringRequestLoansList);
 
     public ResponseEntity<LoansResponse> calculateScoringTest(ScoringRequestLoans scoringRequestLoans);
     
