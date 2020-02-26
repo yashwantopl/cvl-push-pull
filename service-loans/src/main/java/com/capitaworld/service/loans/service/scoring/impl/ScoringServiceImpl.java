@@ -2300,11 +2300,11 @@ public class ScoringServiceImpl implements ScoringService {
                             		}
                             		
                             		if(!itrClientResponse.getIsFilledManual()) {
-                            			scoringParameterRequest.setItReturnFiledId(1);                            			
+                            			scoringParameterRequest.setItReturnFiledId(1); // Value is ONE                        			
                                 	} else {
                                 		// Manual Filed
                                 		if(isNoBankStatement){
-                                			scoringParameterRequest.setItReturnFiledId(2);	
+                                			scoringParameterRequest.setItReturnFiledId(2); // Value is NO	
                                 		}else{
                                 			// In Completed code. We will change when GST Client is Ready to return sales of last 6 month.
                                 			scoringParameterRequest.setItReturnFiledId(3);
