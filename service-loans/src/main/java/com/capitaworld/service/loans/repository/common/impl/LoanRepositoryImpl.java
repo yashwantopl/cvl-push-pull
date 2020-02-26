@@ -756,7 +756,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	public String getIFSCByApplicationId(Long applicationId) {
 		String ifsc = null;
 		try {
-			ifsc = (String)entityManager.createNativeQuery("SELECT o.ifsc_prefix FROM pennydrop.account_details o WHERE o.application_id =:id and o.is_active = true and o.since_month IS NOT NULL and o.since_year IS NOT NULL order by o.id desc limit 1").setParameter("id", applicationId).getSingleResult();
+			ifsc = (String)entityManager.createNativeQuery("SELECT o.ifsc FROM pennydrop.account_details o WHERE o.application_id =:id and o.is_active = true and o.since_month IS NOT NULL and o.since_year IS NOT NULL order by o.id desc limit 1").setParameter("id", applicationId).getSingleResult();
 		}
 		catch (Exception e) {
 			logger.error("Error While fetching IFSC by Application =====>{}======{}",applicationId,e);

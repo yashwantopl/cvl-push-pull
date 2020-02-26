@@ -1320,7 +1320,7 @@ public class ScoringServiceImpl implements ScoringService {
                         //fundSeekerInputRequestList.add(fundSeekerInputRequest);
                     }
 
-                    logger.info(MSG_SCORE_PARAMETER + scoringParameterRequest.toString());
+//                    logger.info(MSG_SCORE_PARAMETER + scoringParameterRequest.toString());
 
                     logger.info("----------------------------END-----------------------------------------------");
                 }
