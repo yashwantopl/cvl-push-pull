@@ -1302,7 +1302,6 @@ public class ScoringServiceImpl implements ScoringService {
                             
                             case ScoreParameter.MudraLoan.CREDIT_SUMMATION_ML:{
                                 Double projctedSales = null;
-                                Integer noOfMonths = 1;
                                 if(!CommonUtils.isObjectNullOrEmpty(gstCalculation.getHistoricalSales())) {
                                     projctedSales = gstCalculation.getHistoricalSales()/12;
                                 }else{
