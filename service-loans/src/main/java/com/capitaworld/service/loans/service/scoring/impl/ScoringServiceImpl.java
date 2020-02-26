@@ -771,7 +771,6 @@ public class ScoringServiceImpl implements ScoringService {
             scoringRequest.setMap(scoringRequestLoans.getMapList());
 			
 
-            if (CommonUtils.isObjectNullOrEmpty(scoringParameterRequest)) {
                 if (CommonUtils.isObjectNullOrEmpty(scoringRequestLoans.getFinancialTypeIdProduct())) {
                     scoringRequest.setFinancialTypeId(ScoreParameter.FinancialType.THREE_YEAR_ITR);
                 } else {
@@ -1338,8 +1337,6 @@ public class ScoringServiceImpl implements ScoringService {
                 } catch (Exception e) {
                     logger.error(CommonUtils.EXCEPTION,e);
                 }
-            }
-
             scoringRequest.setScoringParameterRequest(scoringParameterRequest);
             scoringRequestList.add(scoringRequest);
         }
