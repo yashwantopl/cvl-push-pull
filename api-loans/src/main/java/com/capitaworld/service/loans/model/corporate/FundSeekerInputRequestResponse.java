@@ -39,6 +39,8 @@ public class FundSeekerInputRequestResponse {
     private String gstIn;
 
     private String pan;
+    
+    private String panNo;
 
     private String aadhar;
 
@@ -981,6 +983,14 @@ public class FundSeekerInputRequestResponse {
 
 	public void setIsAssociateConcern(Boolean isAssociateConcern) {
 		this.isAssociateConcern = isAssociateConcern;
+	}
+	
+	public String getPanNo() {
+		return panNo;
+	}
+
+	public void setPanNo(String panNo) {
+		this.panNo = panNo;
 	}
 
 	@Override

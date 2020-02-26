@@ -134,7 +134,6 @@ public class CorporateApplicantDetail implements Serializable {
 
 	@Convert(converter=EncryptionUtils.class)
 	@Column(name = "pan")
-
 	private String panNo;
 
 	@Column(name = "gstin")
