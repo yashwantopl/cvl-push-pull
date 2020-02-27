@@ -48,6 +48,7 @@ import com.capitaworld.service.analyzer.model.common.Xn;
 import com.capitaworld.service.gst.GstCalculation;
 import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
+import com.capitaworld.service.gst.exceptions.GstException;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
 import com.capitaworld.service.loans.domain.ScoringRequestDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
@@ -201,6 +202,7 @@ public class ScoringServiceImpl implements ScoringService {
     private static final String MSG_SCORING_MODEL_ID = " SCORING MODEL ID :: ";
     private static final String MSG_SCORE_PARAMETER = "SCORE PARAMETER ::::::::::";
     private static final String ORG_ID_IS_NULL_OR_EMPTY  = "org id is null or empty : ";
+    private static final Long GST_SIX_MONTHS_SALES = 6l;
 
 
     @Override
@@ -602,8 +604,31 @@ public class ScoringServiceImpl implements ScoringService {
 
         String gstNumber = corporateApplicantDetailRepository.getGstInByApplicationId(applicationId);
         Double loanAmount = primaryCorporateDetailRepository.getLoanAmountByApplication(applicationId);
+        
+        
 
         CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.getCorporateApplicantDetailByApplicationId(applicationId);
+     
+        // call gst client for gstr3b sales data for 6 months
+        GSTR1Request gstr =  new GSTR1Request();
+        gstr.setGstin(corporateApplicantDetail.getGstIn());
+        gstr.setRequestedMonths(GST_SIX_MONTHS_SALES);
+        Double gstSixMonthData = 0d;
+        GstResponse gstr3bSales;
+		try {
+			gstr3bSales = gstClient.getGstr3bSalesOfRequestedMonths(gstr);
+			if(gstr3bSales != null && gstr3bSales.getData() != null) {
+	        	gstSixMonthData = (Double)gstr3bSales.getData();
+	        }else {
+				logger.info("GSTR3B last 6 month data is not found :: for :: " + applicationId);
+			}
+		} catch (GstException e) {
+			logger.error("ERROR while calling GSTR3B last 6 month data :: for :: " + applicationId);
+			logger.info("ERROR :: "+e);
+		}
+        
+        
+        
         IndustryResponse industryResponse =null;
         Integer businessTypeId= null;
         logger.info("corporateApplicantDetail.getKeyVerticalSubsector()=> {}", corporateApplicantDetail.getKeyVerticalSubsector());
@@ -1221,8 +1246,11 @@ public class ScoringServiceImpl implements ScoringService {
                                 		if(isNoBankStatement){
                                 			scoringParameterRequest.setItReturnFiledId(2); // Value is NO	
                                 		}else{
-                                			// In Completed code. We will change when GST Client is Ready to return sales of last 6 month.
-                                			scoringParameterRequest.setItReturnFiledId(3);
+                                			if(totalCreditLast6Month >= gstSixMonthData) {
+                                    			scoringParameterRequest.setItReturnFiledId(3);                                				
+                                			}else {
+                                				scoringParameterRequest.setItReturnFiledId(2); // Value is NO
+                                			}
                                 		}
                                 	}
                             	}
