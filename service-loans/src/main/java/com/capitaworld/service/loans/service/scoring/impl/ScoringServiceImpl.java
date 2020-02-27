@@ -566,7 +566,7 @@ public class ScoringServiceImpl implements ScoringService {
     	                        if(!CommonUtils.isObjectNullOrEmpty(data.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCredit())){
     	                        	totalCreditLast6Month = totalCreditLast6Month + Double.parseDouble(data.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCredit());
     	                        }
-    	                        if(!CommonUtils.isListNullOrEmpty(data.getMonthlyDetailList().getMonthlyDetails())){
+    	                        if(!CommonUtils.isListNullOrEmpty(data.getMonthlyDetailList().getMonthlyDetails()) && noOfMonths <= 0){
                                     noOfMonths = noOfMonths + data.getMonthlyDetailList().getMonthlyDetails().size();
                                 }
     	                	}
