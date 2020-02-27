@@ -244,7 +244,9 @@ public class CorporateApplicantDetail implements Serializable {
 	
 	@Column(name="is_associate_concern")
 	private Boolean isAssociateConcern;
-	
+
+	@Column(name="employment_generation")
+	private Integer employmentGeneration;
     
 	/**
 	 * @return the isMultiGST
@@ -825,6 +827,13 @@ public class CorporateApplicantDetail implements Serializable {
 	public void setIsAssociateConcern(Boolean isAssociateConcern) {
 		this.isAssociateConcern = isAssociateConcern;
 	}
-	
+
+	public Integer getEmploymentGeneration() {
+		return employmentGeneration;
+	}
+
+	public void setEmploymentGeneration(Integer employmentGeneration) {
+		this.employmentGeneration = employmentGeneration;
+	}
 	
 }

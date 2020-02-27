@@ -29,6 +29,7 @@ public class DirectorPersonalDetailRequest implements Serializable {
     private Integer otherIncomeSource;
     private Integer certificationCourse;
     private Integer ongoingMudraLoan;
+    private Integer isWorkAndResidenceSamePlace;
     
     
     public Long getId() {
@@ -151,5 +152,14 @@ public class DirectorPersonalDetailRequest implements Serializable {
 	public void setCertificationCourse(Integer certificationCourse) {
 		this.certificationCourse = certificationCourse;
 	}
+
+	public Integer getIsWorkAndResidenceSamePlace() {
+		return isWorkAndResidenceSamePlace;
+	}
+
+	public void setIsWorkAndResidenceSamePlace(Integer isWorkAndResidenceSamePlace) {
+		this.isWorkAndResidenceSamePlace = isWorkAndResidenceSamePlace;
+	}
+	
 		
 }

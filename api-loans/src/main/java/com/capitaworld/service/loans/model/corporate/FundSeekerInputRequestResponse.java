@@ -214,6 +214,8 @@ public class FundSeekerInputRequestResponse {
 	
 	private Boolean isAssociateConcern;
 	
+	private Integer employmentGeneration;
+	
 	
 	public Boolean getIsIsoCertified() {
 		return isIsoCertified;
@@ -991,6 +993,14 @@ public class FundSeekerInputRequestResponse {
 
 	public void setPanNumber(String panNumber) {
 		this.panNumber = panNumber;
+	}
+	
+	public Integer getEmploymentGeneration() {
+		return employmentGeneration;
+	}
+
+	public void setEmploymentGeneration(Integer employmentGeneration) {
+		this.employmentGeneration = employmentGeneration;
 	}
 
 	@Override
