@@ -529,6 +529,7 @@ public class ScoringServiceImpl implements ScoringService {
 		Double noOfChequeBounce1Month = 0.0;
 		Double noOfChequeBounce6Month = 0.0;
 		Double totalCredit = 0.0;
+		Double totalCreditLast6Month = 0.0;
 		Boolean isNoBankStatement = loanRepository.isNoBankStatement(applicationId);
         logger.info("isNoBankStatement ==>{}==>for ApplicationId===>{}",applicationId,isNoBankStatement);
         String noBankStatementBankName = null;
@@ -552,7 +553,6 @@ public class ScoringServiceImpl implements ScoringService {
     			analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
                 if(!CommonUtils.isObjectNullOrEmpty(analyzerResponse) && !CommonUtils.isObjectNullOrEmpty(analyzerResponse.getData())){
                 	int noOfMonths = 0;
-                	Double totalCreditLast6Month = 0.0;
                 	for(Object object : (List<?>)analyzerResponse.getData()) {
     					try {
     						Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) object, Data.class);
