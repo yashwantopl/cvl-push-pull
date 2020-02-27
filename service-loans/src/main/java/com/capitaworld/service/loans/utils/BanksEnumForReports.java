@@ -61,9 +61,9 @@ public enum BanksEnumForReports {
                     return orgId;
                 }
 
-                public void setOrgId(Long orgId) {
-                    this.orgId = orgId;
-                }
+//                public void setOrgId(Long orgId) {
+//                    this.orgId = orgId;
+//                }
 
 	public static String getBankUrl(Long orgId){
 		 for(BanksEnumForReports banksEnum :  values()) {

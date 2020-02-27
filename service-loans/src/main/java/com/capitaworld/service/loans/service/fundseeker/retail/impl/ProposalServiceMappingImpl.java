@@ -3356,8 +3356,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				try {
 					response = com.capitaworld.service.scoring.utils.MultipleJSONObjectHelper.getObjectFromMap(list, StorageDetailsResponse.class);
 				} catch (IOException e) {
-					e.printStackTrace();
-					logger.error("IO exception while upload file on DMS");
+					logger.error("IO exception while upload file on DMS",e);
 				}
 			}
 
@@ -3374,8 +3373,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				return null;
 			}
 		} catch (DocumentException e) {
-			e.printStackTrace();
-			logger.error("Document exception while upload file on DMS");
+			logger.error("Document exception while upload file on DMS",e);
 			return null;
 		}
 	}
