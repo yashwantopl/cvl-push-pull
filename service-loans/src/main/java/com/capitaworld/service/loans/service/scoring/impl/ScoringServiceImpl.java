@@ -1313,7 +1313,7 @@ public class ScoringServiceImpl implements ScoringService {
                                         logger.info("projctedSales = >{} for ApplicationId = >{}",projctedSales,applicationId);
                                         logger.info("totalCredit = >{} for ApplicationId = >{}",totalCredit,applicationId);
                                         if (!(CommonUtils.isObjectNullOrEmpty(projctedSales) || projctedSales == 0.0)) {
-                                        	scoringParameterRequest.setCreditSummation((totalCredit / (projctedSales / 12)) * 100);
+                                        	scoringParameterRequest.setCreditSummation((totalCredit / projctedSales) * 100);
         								} else {
         									scoringParameterRequest.setCreditSummation(0.0);
         								}                            			
