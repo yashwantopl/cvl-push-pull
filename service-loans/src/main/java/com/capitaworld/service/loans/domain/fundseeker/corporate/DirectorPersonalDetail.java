@@ -54,7 +54,9 @@ public class DirectorPersonalDetail extends AuditActivity implements Serializabl
     
     @Column(name="certification_course")
     private Integer certificationCourse;
-
+    
+    @Column(name="is_workand_residence_sameplace")
+    private Integer isWorkAndResidenceSamePlace;
     
     public DirectorPersonalDetail(){
         // Do nothing because of X and Y.
@@ -179,6 +181,14 @@ public class DirectorPersonalDetail extends AuditActivity implements Serializabl
 
 	public void setCertificationCourse(Integer certificationCourse) {
 		this.certificationCourse = certificationCourse;
+	}
+
+	public Integer getIsWorkAndResidenceSamePlace() {
+		return isWorkAndResidenceSamePlace;
+	}
+
+	public void setIsWorkAndResidenceSamePlace(Integer isWorkAndResidenceSamePlace) {
+		this.isWorkAndResidenceSamePlace = isWorkAndResidenceSamePlace;
 	}
 
 }
