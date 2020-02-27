@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
+
 import com.capitaworld.service.auth.client.AuthClient;
 import com.capitaworld.service.auth.model.AuthClientResponse;
 import com.capitaworld.service.auth.model.AuthRequest;
@@ -29,7 +30,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 
 		String requestURI = request.getRequestURI();
 		logger.info("Loan Request URI------------------------------> {}" , requestURI);
-		if(CommonUtils.URLS_BRFORE_LOGIN.contains(requestURI.toLowerCase())){
+		if(CommonUtils.getUrlsBrforeLogin().contains(requestURI.toLowerCase())){
 			return true;
 		}
 		

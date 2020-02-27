@@ -1501,7 +1501,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				logger.error("Exception in panVerification :{} ",e);
 				resp.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 				resp.setMessage("Some thing went wrong");
-				e.printStackTrace();
+				logger.error("Error while Validating Pan For Director = >{}",e);
 			}
 		}
 		resp.setData(response);

@@ -6,7 +6,6 @@ package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
@@ -39,7 +38,6 @@ import com.capitaworld.cibil.api.model.CibilScoreLogRequest;
 import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.workflow.WorkflowClient;
 import com.capitaworld.connect.api.ConnectStage;
-import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.itr.api.model.ITRConnectionResponse;
 import com.capitaworld.itr.client.ITRClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
@@ -135,7 +133,6 @@ import com.capitaworld.service.oneform.enums.MaritalStatusMst;
 import com.capitaworld.service.oneform.enums.MrktArrFinishedGoodsList;
 import com.capitaworld.service.oneform.enums.MudraOwningHouseMst;
 import com.capitaworld.service.oneform.enums.OngoingMudraLoan;
-import com.capitaworld.service.oneform.enums.OwningHouseMst;
 import com.capitaworld.service.oneform.enums.PurposeOfLoan;
 import com.capitaworld.service.oneform.enums.RegistrationWithGovernmentAuthoritiesList;
 import com.capitaworld.service.oneform.enums.ResidentStatusMst;
@@ -156,6 +153,7 @@ import com.opl.api.pennydrop.model.CommonResponse;
  * @author nilay.darji
  *
  */
+@SuppressWarnings("unchecked")
 @Service
 @Transactional
 public class InEligibleProposalCamReportServiceImpl implements InEligibleProposalCamReportService {
@@ -213,9 +211,6 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 
 	@Autowired
 	private WorkflowClient workflowClient;
-
-	@Autowired
-	private ConnectClient connectClient;
 
 	@Autowired
 	private ITRClient itrClient;
@@ -402,7 +397,6 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 		corpApp.getIncomeDetails().get("creditors");
 		DateFormat dfYear = new SimpleDateFormat("yyyy");
-		DateFormat dfMonth = new SimpleDateFormat("MM");
 		loansResponse.setData(corpApp.getIncomeDetails());
 		Date dateNoItr = new Date();
 		dateNoItr = corpApp.getDob();
@@ -467,9 +461,8 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 			map.put("noItrIncomeMudra", incomeDetails);
 
 	} catch (Exception e) {
-			// TODO: handle exception
-		e.printStackTrace();
-		}
+		logger.error("Error while Getting ITR Income Details= >{}",e);
+	}
 		
 		// GET ASSOCIATE CONCERN DETAILS
 		List<AssociatedConcernDetailRequest> associatedConcernResList = new ArrayList<>(); 
@@ -487,7 +480,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		try {
 			map.put("associateConcern", CommonUtils.printFields(associatedConcernResList, null));
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while Associate convern Details= >{}",e);
 		}
 		
 		//GST Comparision by Maaz
@@ -1008,7 +1001,6 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 
 	}
 
-	@SuppressWarnings("unchecked")
 	private String getCityName(Long cityId) {
 		try {
 			if (CommonUtils.isObjectNullOrEmpty(cityId)) {
@@ -1028,7 +1020,6 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
 	private String getStateName(Integer stateId) {
 		try {
 			if (CommonUtils.isObjectNullOrEmpty(stateId)) {
@@ -1048,7 +1039,6 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
 	private String getCountryName(Integer country) {
 		try {
 			if (CommonUtils.isObjectNullOrEmpty(country)) {

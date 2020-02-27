@@ -774,7 +774,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 
 				} catch (Exception e) {
 						// TODO: handle exception
-					e.printStackTrace();
+					logger.error("Error while Getting No ITR Detail = >{}",e);
 					}
 				
 		
@@ -794,7 +794,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			try {
 				map.put("associateConcern", CommonUtils.printFields(associatedConcernResList, null));
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("Error while Getting Associate Concern Details = >{}",e);
 			}
 			
 				
@@ -2987,7 +2987,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		try {
 			map.put("associateConcern", CommonUtils.printFields(associatedConcernResList, null));
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while Getting Associate Concern Details = >{}",e);
 		}
 		
 		//PROPOSAL RESPONSE
@@ -3024,7 +3024,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			map.put("establishmentYr",!CommonUtils.isObjectNullOrEmpty(establishMentYear)? CommonUtils.printFields(establishMentYear, null): " ");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Error while Getting Year Details from oneform = >{}",e);
 		}
 		
 		//get NO BS+ DATA

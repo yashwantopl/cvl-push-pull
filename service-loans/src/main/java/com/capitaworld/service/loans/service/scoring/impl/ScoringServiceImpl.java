@@ -1248,7 +1248,7 @@ public class ScoringServiceImpl implements ScoringService {
                             		scoringParameterRequest.setBankRelation(minBankRelationshipInMonths.longValue());
                             	}
                             	catch (Exception e) {
-                            		e.printStackTrace();
+                            		logger.error("Error while Calculating Relationship With Bank = >{}",e);
                             		logger.info("in Caatch");
                             		scoringParameterRequest.setBankRelation_p(false);
 								}
