@@ -489,7 +489,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
 			try {
 				LocalDate start = null;
-				if(corporateApplicantDetail.getConstitutionId() == 7) {
+				if(Constitution.SOLE_PROPRIETORSHIP.getId().equals(corporateApplicantDetail.getConstitutionId()) || Constitution.ONE_PERSON.getId().equals(corporateApplicantDetail.getConstitutionId())) {
 					if (dobOfProprietor != null) {
 						start = dobOfProprietor.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 					}
@@ -723,7 +723,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			fundSeekerInputResponse.setSinceMonth(corporateApplicantDetail.getBusinessSinceMonth());
 			fundSeekerInputResponse.setSinceYear(corporateApplicantDetail.getBusinessSinceYear());
 			copyAddressFromDomainToRequest(corporateApplicantDetail, fundSeekerInputResponse);
-			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getConstitutionId()) && corporateApplicantDetail.getConstitutionId()==7){
+			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getConstitutionId()) && (Constitution.SOLE_PROPRIETORSHIP.getId().equals(corporateApplicantDetail.getConstitutionId()) || Constitution.ONE_PERSON.getId().equals(corporateApplicantDetail.getConstitutionId()))){
 				ReportRequest reportRequest = new ReportRequest();
 				reportRequest.setApplicationId(fundSeekerInputRequest.getApplicationId());
 				try {
@@ -780,7 +780,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			fundSeekerInputResponse.setPanNumber(corporateApplicantDetail.getPanNo());
 			try {
 				LocalDate start = null;
-				if(corporateApplicantDetail.getConstitutionId() == 7) {
+				if((Constitution.SOLE_PROPRIETORSHIP.getId().equals(corporateApplicantDetail.getConstitutionId()) || Constitution.ONE_PERSON.getId().equals(corporateApplicantDetail.getConstitutionId()))) {
 					if (dobOfProprietor != null) {
 						start = dobOfProprietor.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 					}
