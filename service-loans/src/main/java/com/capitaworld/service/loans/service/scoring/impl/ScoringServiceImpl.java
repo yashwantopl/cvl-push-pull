@@ -549,9 +549,9 @@ public class ScoringServiceImpl implements ScoringService {
     			ReportRequest reportRequest = new ReportRequest();
                 reportRequest.setApplicationId(applicationId);
                 reportRequest.setDirectorId(null);
-    			analyzerResponse = analyzerClient.getDetailsFromReport(reportRequest);
+    			analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
                 if(!CommonUtils.isObjectNullOrEmpty(analyzerResponse) && !CommonUtils.isObjectNullOrEmpty(analyzerResponse.getData())){
-                	int noOfMonths = 1;
+                	int noOfMonths = 0;
                 	Double totalCreditLast6Month = 0.0;
                 	for(Object object : (List<?>)analyzerResponse.getData()) {
     					try {
@@ -574,7 +574,7 @@ public class ScoringServiceImpl implements ScoringService {
     						logger.error("Error While Casting Analyser object=====>{}====>{}",e);
     					}
     				}
-                	logger.info("noOfMonths ==>{} for ApplicationId = >{}",noOfMonths,applicationId);
+                	logger.info("totalCreditLast6Month ==>{} = noOfMonths ==>{} for ApplicationId = >{}",totalCreditLast6Month,noOfMonths,applicationId);
                 	if(totalCreditLast6Month > 0){
                 		totalCredit = totalCreditLast6Month / noOfMonths;
                 	}
