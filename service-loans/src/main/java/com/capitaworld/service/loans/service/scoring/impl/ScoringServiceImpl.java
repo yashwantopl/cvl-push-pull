@@ -1,5 +1,7 @@
 package com.capitaworld.service.loans.service.scoring.impl;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -1248,10 +1250,13 @@ public class ScoringServiceImpl implements ScoringService {
                                 		if(isNoBankStatement){
                                 			scoringParameterRequest.setItReturnFiledId(2); // Value is NO	
                                 		}else{
-                                			
+                                			logger.info("totalCreditLast6Month value :: "+totalCreditLast6Month);
+                                			logger.info("gstSixMonthData value :: "+gstSixMonthData);
                                 			if(totalCreditLast6Month >= gstSixMonthData) {
+                                				logger.info("true ItReturnFiledId(3)");
                                     			scoringParameterRequest.setItReturnFiledId(3);                                				
                                 			}else {
+                                				logger.info("false ItReturnFiledId(2)");
                                 				scoringParameterRequest.setItReturnFiledId(2); // Value is NO
                                 			}
                                 		}
