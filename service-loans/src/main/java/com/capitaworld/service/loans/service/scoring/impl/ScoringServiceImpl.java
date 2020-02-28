@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.scoring.impl;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -611,6 +612,7 @@ public class ScoringServiceImpl implements ScoringService {
      
         // call gst client for gstr3b sales data for 6 months
         GSTR1Request gstr =  new GSTR1Request();
+        gstr.setApplicationId(applicationId);
         gstr.setGstin(corporateApplicantDetail.getGstIn());
         gstr.setRequestedMonths(GST_SIX_MONTHS_SALES);
         Double gstSixMonthData = 0d;
@@ -1246,7 +1248,7 @@ public class ScoringServiceImpl implements ScoringService {
                                 		if(isNoBankStatement){
                                 			scoringParameterRequest.setItReturnFiledId(2); // Value is NO	
                                 		}else{
-                                			if(totalCreditLast6Month >= gstSixMonthData) {
+                                			if(BigDecimal.valueOf(totalCreditLast6Month).equals(BigDecimal.valueOf(gstSixMonthData))) {
                                     			scoringParameterRequest.setItReturnFiledId(3);                                				
                                 			}else {
                                 				scoringParameterRequest.setItReturnFiledId(2); // Value is NO
