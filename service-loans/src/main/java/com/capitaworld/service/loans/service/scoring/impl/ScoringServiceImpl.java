@@ -1248,7 +1248,8 @@ public class ScoringServiceImpl implements ScoringService {
                                 		if(isNoBankStatement){
                                 			scoringParameterRequest.setItReturnFiledId(2); // Value is NO	
                                 		}else{
-                                			if(BigDecimal.valueOf(totalCreditLast6Month).equals(BigDecimal.valueOf(gstSixMonthData))) {
+                                			
+                                			if(totalCreditLast6Month >= gstSixMonthData) {
                                     			scoringParameterRequest.setItReturnFiledId(3);                                				
                                 			}else {
                                 				scoringParameterRequest.setItReturnFiledId(2); // Value is NO
