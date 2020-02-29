@@ -2464,6 +2464,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 						DirectorBackgroundDetailResponseString directorBackgroundDetailResponse = new DirectorBackgroundDetailResponseString();
 						//directorBackgroundDetailResponse.setAchivements(directorBackgroundDetailRequest.getAchivements());
 						directorBackgroundDetailResponse.setAddress(directorBackgroundDetailRequest.getAddress());
+						directorBackgroundDetailResponse.setPremiseNumber(directorBackgroundDetailRequest.getPremiseNumber());
+						directorBackgroundDetailResponse.setStreetName(directorBackgroundDetailRequest.getStreetName());
+						directorBackgroundDetailResponse.setLandmark(directorBackgroundDetailRequest.getLandmark());
 						//directorBackgroundDetailResponse.setAge(directorBackgroundDetailRequest.getAge());
 						directorBackgroundDetailResponse.setDirectorsName((directorBackgroundDetailRequest.getSalutationId() != null ? Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue() : null )+ " " + directorBackgroundDetailRequest.getDirectorsName());
 						if(directorBackgroundDetailRequest.getPanNo() != null) {
@@ -2578,8 +2581,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 									directorPersonalDetailResponse.setNoOfChildren(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getNoOfChildren()) ? directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getNoOfChildren() : 0 );
 									directorPersonalDetailResponse.setHaveLiPolicy(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveLiPolicy()) ? StringEscapeUtils.escapeXml(HaveLIMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveLiPolicy()).getValue().toString()) : "-");
 
-									Boolean isSameIdProof = directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getIsSameAddIdProof(); 									
-									directorPersonalDetailResponse.setIsSameAddIdProof(!CommonUtils.isObjectNullOrEmpty(isSameIdProof) ? (isSameIdProof ? "Yes" : "No") : "No");
+									Boolean isSameAddIdProof = directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getIsSameAddIdProof(); 									
+									directorPersonalDetailResponse.setIsSameAddIdProof((!CommonUtils.isObjectNullOrEmpty(isSameAddIdProof) ? (isSameAddIdProof ? "Yes" : "No") : "No")  + (isSameAddIdProof != null && isSameAddIdProof ? (!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getAddressYears()) ? " (" + directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getAddressYears() + " Years)" : "") : ""));
 									
 									directorPersonalDetailResponse.setCertificationCourse(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getCertificationCourse()) ? CertificationCourseMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getCertificationCourse()).getValue() : "-" );
 									directorPersonalDetailResponse.setOtherIncomeSource(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOtherIncomeSource()) ? directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOtherIncomeSource() : 0 );
