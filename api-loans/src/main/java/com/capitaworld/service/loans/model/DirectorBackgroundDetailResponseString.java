@@ -113,7 +113,16 @@ public class DirectorBackgroundDetailResponseString implements Serializable{
 	private Double loanObligation;
 	private DirectorPersonalDetailRequest directorPersonalDetailRequest;
 	private String isPhysicallyhandicapped;
+	private String isWorkPlaceResidenceSamePlace;
 	
+	public String getIsWorkPlaceResidenceSamePlace() {
+		return isWorkPlaceResidenceSamePlace;
+	}
+
+	public void setIsWorkPlaceResidenceSamePlace(String isWorkPlaceResidenceSamePlace) {
+		this.isWorkPlaceResidenceSamePlace = isWorkPlaceResidenceSamePlace;
+	}
+
 	public Double getLoanObligation() {
 		return loanObligation;
 	}

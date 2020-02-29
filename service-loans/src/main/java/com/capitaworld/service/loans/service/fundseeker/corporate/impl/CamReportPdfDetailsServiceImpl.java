@@ -2545,6 +2545,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 						directorBackgroundDetailResponse.setVisuallyImpaired(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getVisuallyImpaired()) ? StringEscapeUtils.escapeXml(VisuallyImpairedMst.getById(directorBackgroundDetailRequest.getVisuallyImpaired()).getValue().toString()) : "-");
 						directorBackgroundDetailResponse.setResidentStatus(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getResidentStatus()) ? StringEscapeUtils.escapeXml(ResidentStatusMst.getById(directorBackgroundDetailRequest.getResidentStatus()).getValue().toString()) : "-");
 						directorBackgroundDetailResponse.setDirectorPersonalInfo(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest()) ? directorBackgroundDetailRequest.getDirectorPersonalDetailRequest() : " " );
+						directorBackgroundDetailResponse.setIsWorkPlaceResidenceSamePlace(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest()) && !CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getIsWorkAndResidenceSamePlace()) ? (directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getIsWorkAndResidenceSamePlace() != 0 ? "Yes" : "No") : "No" );
 						directorBackgroundDetailResponse.setIsPhysicallyhandicapped(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getPhysicallyHandicapped()) ? VisuallyImpairedMst.getById(directorBackgroundDetailRequest.getPhysicallyHandicapped()).toString() : "-");
 					
 						//NATIONALITY
@@ -2792,6 +2793,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 						if(corporateApplicantDetail != null) {
 							map.put("castCategory", corporateApplicantDetail.getCastCategory());
 							map.put("minorityCastCategory", corporateApplicantDetail.getMinorCastCategory());
+							map.put("noOfWorker", corporateApplicantDetail.getEmploymentGeneration() != null ? corporateApplicantDetail.getEmploymentGeneration() : "-");
 						}
 					}catch (Exception e) {
 						logger.error(CommonUtils.EXCEPTION,e);
