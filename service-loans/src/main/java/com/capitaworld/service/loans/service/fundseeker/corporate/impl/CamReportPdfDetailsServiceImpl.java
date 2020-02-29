@@ -413,7 +413,6 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
     
     @Autowired
     private PennydropClient pennyDropClient;
-    
 
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -981,11 +980,10 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			if(!CommonUtils.isListNullOrEmpty(collect)) {
 				mudraScoringMap.put("ACCESS_TO_INPUTS_ML", CommonUtils.printFields(collect.get(0),null));
 			}
-			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("ACCESS_TO_INPUTS_ML")).collect(Collectors.toList());
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("CREDIT_SUMMATION_ML")).collect(Collectors.toList());
 			if(!CommonUtils.isListNullOrEmpty(collect)) {
-				mudraScoringMap.put("ACCESS_TO_INPUTS_ML", CommonUtils.printFields(collect.get(0),null));
+				mudraScoringMap.put("CREDIT_SUMMATION_ML", CommonUtils.printFields(collect.get(0),null));
 			}
-			
 			
 			scoreResponse.add(mudraScoringMap);
 			map.put("mudraScoringResp", scoreResponse);
