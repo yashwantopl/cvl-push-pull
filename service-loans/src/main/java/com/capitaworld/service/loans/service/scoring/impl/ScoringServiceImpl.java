@@ -611,7 +611,8 @@ public class ScoringServiceImpl implements ScoringService {
         
 
         CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.getCorporateApplicantDetailByApplicationId(applicationId);
-     
+        
+        
         // call gst client for gstr3b sales data for 6 months
         GSTR1Request gstr =  new GSTR1Request();
         gstr.setApplicationId(applicationId);
@@ -1361,6 +1362,39 @@ public class ScoringServiceImpl implements ScoringService {
                             	}
                                 scoringParameterRequest.setCreditSummation_p(true);
                             }
+                            
+                            case ScoreParameter.MudraLoan.DISTANCE_BETWEEN_WORKPLACE_AND_RESIDENCE_ML:{
+                            	if(mainDirectorBackgroundDetail !=null && mainDirectorBackgroundDetail.getDirectorPersonalDetail() != null && mainDirectorBackgroundDetail.getDirectorPersonalDetail().getIsWorkAndResidenceSamePlace() != null) {
+                            		scoringParameterRequest.setDistanceBtwWorkAndRes(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getIsWorkAndResidenceSamePlace());
+                            		scoringParameterRequest.setDistanceBtwWorkAndRes_p(true);
+                            	}
+                            	else {
+                            		scoringParameterRequest.setDistanceBtwWorkAndRes_p(false);
+                            	}
+                                 break;
+                             }
+                            case ScoreParameter.MudraLoan.EMPLOYMENT_GENERATION_ML:{
+                            	if(corporateApplicantDetail.getEmploymentGeneration() != null) {
+                            		scoringParameterRequest.setEmploymentGeneration(corporateApplicantDetail.getEmploymentGeneration());
+                            		scoringParameterRequest.setEmploymentGeneration_p(true);
+                            	}
+                            	else {
+                            		scoringParameterRequest.setEmploymentGeneration_p(false);
+                            	}
+                                 break;
+                             }
+                            case ScoreParameter.MudraLoan.PROMOTERS_CONTRIBUTION_ML:{
+                            	if(primaryCorporateDetail != null && primaryCorporateDetail.getPromoterContribution() != null) {
+                            		Double promoterContribution = (((primaryCorporateDetail.getPromoterContribution()) / (primaryCorporateDetail.getLoanAmount() + primaryCorporateDetail.getPromoterContribution())) * 100);
+                            		scoringParameterRequest.setPromotersComtributionML(promoterContribution);
+                            		scoringParameterRequest.setPromotersComtributionML_p(true);
+                            	}
+                            	else {
+                            		scoringParameterRequest.setPromotersComtributionML_p(false);
+                            	}
+                                 break;
+                             }
+                            
                             default:
                             	break;
                         }
