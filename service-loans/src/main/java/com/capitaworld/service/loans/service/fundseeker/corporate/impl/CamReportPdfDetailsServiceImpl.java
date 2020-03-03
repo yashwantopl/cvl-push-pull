@@ -984,6 +984,18 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			if(!CommonUtils.isListNullOrEmpty(collect)) {
 				mudraScoringMap.put("CREDIT_SUMMATION_ML", CommonUtils.printFields(collect.get(0),null));
 			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("DISTANCE_BETWEEN_WORKPLACE_AND_RESIDENCE_ML")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("DISTANCE_BETWEEN_WORKPLACE_AND_RESIDENCE_ML", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("EMPLOYMENT_GENERATION_ML")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("EMPLOYMENT_GENERATION_ML", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("PROMOTERS_CONTRIBUTION_ML")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("PROMOTERS_CONTRIBUTION_ML", CommonUtils.printFields(collect.get(0),null));
+			}
 			
 			scoreResponse.add(mudraScoringMap);
 			map.put("mudraScoringResp", scoreResponse);
