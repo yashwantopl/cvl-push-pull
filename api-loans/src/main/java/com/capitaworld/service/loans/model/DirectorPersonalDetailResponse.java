@@ -20,6 +20,7 @@ public class DirectorPersonalDetailResponse {
 	    private String certificationCourse;
 	    private String ongoingMudraLoan;
 	    private String govScheme;
+	    private String workAndResidenceSamePlace;
 	    
 	    
 	    
@@ -121,6 +122,11 @@ public class DirectorPersonalDetailResponse {
 		public void setGovScheme(String govScheme) {
 			this.govScheme = govScheme;
 		}
-		
+		public String getWorkAndResidenceSamePlace() {
+			return workAndResidenceSamePlace;
+		}
+		public void setWorkAndResidenceSamePlace(String workAndResidenceSamePlace) {
+			this.workAndResidenceSamePlace = workAndResidenceSamePlace;
+		}
 		
 }
