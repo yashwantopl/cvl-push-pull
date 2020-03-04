@@ -177,6 +177,16 @@ public class CorporatePrimaryViewResponse {
 	private List<BankRelationshipRequest> bankingRelationshipList; 
 	private String govScheme; 
 	private String ongoingMudraLoan; 
+	private String employeeGeneration; 
+	
+	private String mclrRoi;
+	private String spreadRoi;
+	private String effectiveRoi;
+	private String concessionRoi;
+	private String concessionRoiBased;
+	private String finalRoi;
+	private String scoringBasedOn;
+	
 	
 	public CorporatePrimaryViewResponseNbfc getNbfcData() {
 		return nbfcData;
@@ -1415,8 +1425,55 @@ public class CorporatePrimaryViewResponse {
 	public void setMinorCastCategory(String minorCastCategory) {
 		this.minorCastCategory = minorCastCategory;
 	}
+	public String getEmployeeGeneration() {
+		return employeeGeneration;
+	}
+	public void setEmployeeGeneration(String employeeGeneration) {
+		this.employeeGeneration = employeeGeneration;
+	}
+	public String getMclrRoi() {
+		return mclrRoi;
+	}
+	public void setMclrRoi(String mclrRoi) {
+		this.mclrRoi = mclrRoi;
+	}
+	public String getSpreadRoi() {
+		return spreadRoi;
+	}
+	public void setSpreadRoi(String spreadRoi) {
+		this.spreadRoi = spreadRoi;
+	}
+	public String getEffectiveRoi() {
+		return effectiveRoi;
+	}
+	public void setEffectiveRoi(String effectiveRoi) {
+		this.effectiveRoi = effectiveRoi;
+	}
+	public String getConcessionRoi() {
+		return concessionRoi;
+	}
+	public void setConcessionRoi(String concessionRoi) {
+		this.concessionRoi = concessionRoi;
+	}
+	public String getConcessionRoiBased() {
+		return concessionRoiBased;
+	}
+	public void setConcessionRoiBased(String concessionRoiBased) {
+		this.concessionRoiBased = concessionRoiBased;
+	}
+	public String getFinalRoi() {
+		return finalRoi;
+	}
+	public void setFinalRoi(String finalRoi) {
+		this.finalRoi = finalRoi;
+	}
+	public String getScoringBasedOn() {
+		return scoringBasedOn;
+	}
+	public void setScoringBasedOn(String scoringBasedOn) {
+		this.scoringBasedOn = scoringBasedOn;
+	}
 
-	
 	/*
 	 * public List<CorporatePrimaryViewResponseNbfc> getNbfcListList() { return
 	 * nbfcListList; } public void
