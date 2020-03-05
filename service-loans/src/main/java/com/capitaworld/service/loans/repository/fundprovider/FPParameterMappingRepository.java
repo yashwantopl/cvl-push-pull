@@ -19,4 +19,6 @@ public interface FPParameterMappingRepository extends JpaRepository<FPParameterM
 	
 	@Query("select fpm.parameterId from FPParameterMapping fpm where fpm.fpProductMappingId = :fpMappingId and fpm.type =:type and fpm.isActive = true")
 	public List<Integer> getParametersByFpProductIdAndType(@Param("fpMappingId") Long fpMappingId,@Param("type") Integer type);
+	
+	public List<FPParameterMapping> findByFpProductMappingIdAndTypeAndIsActiveIsTrue(Long fpMappingId,Integer type);
 }

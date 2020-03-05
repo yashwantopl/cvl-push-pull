@@ -217,6 +217,7 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		fPParameterMappingService.inactiveAndSave(workingCapitalParameterRequest.getId(),CommonUtils.ParameterTypes.BUREAU_SCORE, workingCapitalParameterRequest.getBureauScoreIds());
 		fPParameterMappingService.inactiveAndSave(workingCapitalParameterRequest.getId(),CommonUtils.ParameterTypes.BUREAU_SCORE_MAIN_DIR, workingCapitalParameterRequest.getMainDirBureauScoreIds());
 		fPParameterMappingService.inactiveAndSave(workingCapitalParameterRequest.getId(),CommonUtils.ParameterTypes.BANK_STATEMENT_OPTIONS, workingCapitalParameterRequest.getBankStatementOptions());
+		fPParameterMappingService.inactiveAndSaveWithObject(workingCapitalParameterRequest.getId(), CommonUtils.ParameterTypes.RISK_BASE_LOAN_AMOUNT, workingCapitalParameterRequest.getRiskLoanAmountList());
 		//Dhaval
 		boolean isUpdate = msmeValueMappingService.updateMsmeValueMapping(false, mappingId,workingCapitalParameter2.getId());
 		logger.info("updated = {}",isUpdate);
@@ -803,6 +804,7 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		saveNegativeIndustryTemp(workingCapitalParameterRequest);
 		fPParameterMappingService.inactiveAndSaveTemp(workingCapitalParameterRequest.getId(),CommonUtils.ParameterTypes.BUREAU_SCORE, workingCapitalParameterRequest.getBureauScoreIds());
 		fPParameterMappingService.inactiveAndSaveTemp(workingCapitalParameterRequest.getId(),CommonUtils.ParameterTypes.BUREAU_SCORE_MAIN_DIR, workingCapitalParameterRequest.getMainDirBureauScoreIds());
+		fPParameterMappingService.inactiveAndSaveTempWithObject(workingCapitalParameterRequest.getId(), CommonUtils.ParameterTypes.RISK_BASE_LOAN_AMOUNT, workingCapitalParameterRequest.getRiskLoanAmountList());
 		
 
 		//save constitution mapping
