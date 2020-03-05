@@ -433,6 +433,7 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		workingCapitalParameterRequest.setBureauScoreIds(fPParameterMappingService.getParameters(workingCapitalParameterRequest.getId(), CommonUtils.ParameterTypes.BUREAU_SCORE));
 		workingCapitalParameterRequest.setMainDirBureauScoreIds(fPParameterMappingService.getParameters(workingCapitalParameterRequest.getId(), CommonUtils.ParameterTypes.BUREAU_SCORE_MAIN_DIR));
 		workingCapitalParameterRequest.setBankStatementOptions(fPParameterMappingService.getParameters(workingCapitalParameterRequest.getId(), CommonUtils.ParameterTypes.BANK_STATEMENT_OPTIONS));
+		workingCapitalParameterRequest.setRiskLoanAmountList(fPParameterMappingService.getParametersWithObject(workingCapitalParameterRequest.getId(), CommonUtils.ParameterTypes.RISK_BASE_LOAN_AMOUNT));
 		
 		logger.info("end getWorkingCapitalParameter");
 		return workingCapitalParameterRequest;
@@ -722,6 +723,7 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		workingCapitalParameterRequest.setBureauScoreIds(fPParameterMappingService.getParametersTemp(workingCapitalParameterRequest.getId(), CommonUtils.ParameterTypes.BUREAU_SCORE));
 		workingCapitalParameterRequest.setMainDirBureauScoreIds(fPParameterMappingService.getParametersTemp(workingCapitalParameterRequest.getId(), CommonUtils.ParameterTypes.BUREAU_SCORE_MAIN_DIR));
 		workingCapitalParameterRequest.setBankStatementOptions(fPParameterMappingService.getParametersTemp(workingCapitalParameterRequest.getId(), CommonUtils.ParameterTypes.BANK_STATEMENT_OPTIONS));
+		workingCapitalParameterRequest.setRiskLoanAmountList(fPParameterMappingService.getParametersTempWithObject(workingCapitalParameterRequest.getId(), CommonUtils.ParameterTypes.RISK_BASE_LOAN_AMOUNT));
 		logger.info("end getWorkingCapitalParameterTemp");
 		return workingCapitalParameterRequest;
 	}
