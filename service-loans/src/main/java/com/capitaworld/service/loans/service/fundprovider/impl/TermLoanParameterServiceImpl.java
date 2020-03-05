@@ -523,6 +523,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		termLoanParameterRequest.setBureauScoreIds(fPParameterMappingService.getParameters(termLoanParameterRequest.getId(), CommonUtils.ParameterTypes.BUREAU_SCORE));
 		termLoanParameterRequest.setMainDirBureauScoreIds(fPParameterMappingService.getParameters(termLoanParameterRequest.getId(), CommonUtils.ParameterTypes.BUREAU_SCORE_MAIN_DIR));
 		termLoanParameterRequest.setBankStatementOptions(fPParameterMappingService.getParameters(termLoanParameterRequest.getId(), CommonUtils.ParameterTypes.BANK_STATEMENT_OPTIONS));
+		termLoanParameterRequest.setRiskLoanAmountList(fPParameterMappingService.getParametersWithObject(termLoanParameterRequest.getId(), CommonUtils.ParameterTypes.RISK_BASE_LOAN_AMOUNT));
 		CommonDocumentUtils.endHook(logger, GET_TERM_LOAN_PARAMETER_REQUEST);
 		return termLoanParameterRequest;
 	}
@@ -849,6 +850,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		termLoanParameterRequest.setBureauScoreIds(fPParameterMappingService.getParametersTemp(termLoanParameterRequest.getId(), CommonUtils.ParameterTypes.BUREAU_SCORE));
 		termLoanParameterRequest.setMainDirBureauScoreIds(fPParameterMappingService.getParametersTemp(termLoanParameterRequest.getId(), CommonUtils.ParameterTypes.BUREAU_SCORE_MAIN_DIR));
 		termLoanParameterRequest.setBankStatementOptions(fPParameterMappingService.getParametersTemp(termLoanParameterRequest.getId(), CommonUtils.ParameterTypes.BANK_STATEMENT_OPTIONS));
+		termLoanParameterRequest.setRiskLoanAmountList(fPParameterMappingService.getParametersTempWithObject(termLoanParameterRequest.getId(), CommonUtils.ParameterTypes.RISK_BASE_LOAN_AMOUNT));
 		logger.info("end getTermLoanParameterRequestTemp");
 		return termLoanParameterRequest;
 	}
