@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
+import com.capitaworld.service.loans.model.common.FPParameterMappingRequest;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
@@ -452,6 +453,8 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 		private List<Integer> bureauScoreIds = Collections.emptyList();
 		
 		private List<Integer> mainDirBureauScoreIds = Collections.emptyList();
+		
+		private List<FPParameterMappingRequest> riskLoanAmountList = Collections.emptyList();
 		
 	
 
@@ -2281,4 +2284,13 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	public void setMainDirBureauScoreIds(List<Integer> mainDirBureauScoreIds) {
 		this.mainDirBureauScoreIds = mainDirBureauScoreIds;
 	}
+
+	public List<FPParameterMappingRequest> getRiskLoanAmountList() {
+		return riskLoanAmountList;
+	}
+
+	public void setRiskLoanAmountList(List<FPParameterMappingRequest> riskLoanAmountList) {
+		this.riskLoanAmountList = riskLoanAmountList;
+	}
+	
 }
