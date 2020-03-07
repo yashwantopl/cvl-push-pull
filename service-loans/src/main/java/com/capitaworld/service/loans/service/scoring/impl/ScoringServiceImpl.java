@@ -90,7 +90,9 @@ import com.capitaworld.service.loans.utils.scoreexcel.ScoreExcelReader;
 import com.capitaworld.service.matchengine.model.BankBureauRequest;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.BankList;
+import com.capitaworld.service.oneform.enums.CertificationCourseMst;
 import com.capitaworld.service.oneform.enums.FSParameterMst;
+import com.capitaworld.service.oneform.enums.RegistrationWithGovernmentAuthoritiesList;
 import com.capitaworld.service.oneform.exceptions.OneFormException;
 import com.capitaworld.service.oneform.model.IrrBySectorAndSubSector;
 import com.capitaworld.service.rating.RatingClient;
@@ -601,6 +603,26 @@ public class ScoringServiceImpl implements ScoringService {
 		
 		List<Integer> paraGovScheme = fsParameterMappingService.getParameters(applicationId, FSParameterMst.GOV_SCHEMES.getId() );
 		List<Integer> parametersGovAuthorities = fsParameterMappingService.getParameters(applicationId, FSParameterMst.GOV_AUTHORITIES.getId());
+		Integer parametersGovAuthoritiesCombined = null;
+		if(!CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail) && !CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail.getDirectorPersonalDetail())){
+				if(!CommonUtils.isListNullOrEmpty(parametersGovAuthorities)){
+					if(parametersGovAuthorities.contains(RegistrationWithGovernmentAuthoritiesList.NOT_REGISTERED_GOV_AUTHORITIES.getId())){
+						parametersGovAuthoritiesCombined = 3;
+					}else{
+						if(parametersGovAuthorities.contains(RegistrationWithGovernmentAuthoritiesList.GST.getId()) 
+								|| parametersGovAuthorities.contains(RegistrationWithGovernmentAuthoritiesList.REGISTRATION_UNDER_ESTABLISHMENT.getId())
+								|| parametersGovAuthorities.contains(RegistrationWithGovernmentAuthoritiesList.UDYOG_AADHAR.getId())
+								|| parametersGovAuthorities.contains(RegistrationWithGovernmentAuthoritiesList.OTHERS.getId())){
+							
+							if(CertificationCourseMst.YES.getId().equals(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getCertificationCourse())){
+								parametersGovAuthoritiesCombined = 1;
+							}else{
+								parametersGovAuthoritiesCombined = 2;
+							}
+						}	
+					}
+				}
+		}
 //		List<BankingRelation> br = bankingRelationlRepository.listBankRelationAppId(applicationId);
 
 		// start Get GST Parameter
@@ -1392,6 +1414,15 @@ public class ScoringServiceImpl implements ScoringService {
                             	}
                             	else {
                             		scoringParameterRequest.setPromotersComtributionML_p(false);
+                            	}
+                                 break;
+                             }
+                            case ScoreParameter.MudraLoan.REGISTRATION_WITH_GOVERNMENT_AUTHORITIES_COMBINED_ML: {
+                            	if(!CommonUtils.isObjectNullOrEmpty(parametersGovAuthoritiesCombined)){
+                            		scoringParameterRequest.setRegistrationWithGovernmentAuthoritiesCombined(parametersGovAuthoritiesCombined);
+                            		scoringParameterRequest.setRegistrationWithGovernmentAuthoritiesCombined_p(true);
+                            	}else{
+                            		scoringParameterRequest.setRegistrationWithGovernmentAuthoritiesCombined_p(false);
                             	}
                                  break;
                              }
