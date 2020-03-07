@@ -814,6 +814,7 @@ public class ScoringServiceImpl implements ScoringService {
                 scoringParameterRequest=new ScoringParameterRequest();
                 scoringParameterRequest.setDpd(maxDpd);
                 scoringParameterRequest.setPaymentRecordsWithLenders_p(true);
+                scoringParameterRequest.setLoanAmount(scoringRequestLoans.getEligibleLoanAmountCircular());
 
                 logger.info("Scoring Data Fetched First Time  =====> " + applicationId);
 
