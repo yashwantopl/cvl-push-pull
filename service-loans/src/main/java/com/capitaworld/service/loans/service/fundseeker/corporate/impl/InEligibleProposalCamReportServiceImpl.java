@@ -531,7 +531,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 //						map.put("categoryType", "Kishor");
 					}
 					if(primaryCorporateDetail.getLoanAmount() >= 500001 && primaryCorporateDetail.getLoanAmount() <= 1000000){
-						categoryType = "Kishor"; 
+						categoryType = "Tarun"; 
 //						map.put("categoryType", "Tarun");
 					}
 				}			
@@ -609,6 +609,9 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 				DirectorBackgroundDetailResponseString directorBackgroundDetailResponse = new DirectorBackgroundDetailResponseString();
 				//directorBackgroundDetailResponse.setAchivements(directorBackgroundDetailRequest.getAchivements());
 				directorBackgroundDetailResponse.setAddress(directorBackgroundDetailRequest.getAddress());
+				directorBackgroundDetailResponse.setPremiseNumber(directorBackgroundDetailRequest.getPremiseNumber());
+				directorBackgroundDetailResponse.setStreetName(directorBackgroundDetailRequest.getStreetName());
+				directorBackgroundDetailResponse.setLandmark(directorBackgroundDetailRequest.getLandmark());
 				//directorBackgroundDetailResponse.setAge(directorBackgroundDetailRequest.getAge());
 				directorBackgroundDetailResponse.setDirectorsName((directorBackgroundDetailRequest.getSalutationId() != null ? Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue() : null )+ " " + directorBackgroundDetailRequest.getDirectorsName());
 				if(directorBackgroundDetailRequest.getPanNo() != null) {
@@ -687,6 +690,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 				directorBackgroundDetailResponse.setVisuallyImpaired(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getVisuallyImpaired()) ? StringEscapeUtils.escapeXml(VisuallyImpairedMst.getById(directorBackgroundDetailRequest.getVisuallyImpaired()).getValue().toString()) : "-");
 				directorBackgroundDetailResponse.setResidentStatus(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getResidentStatus()) ? StringEscapeUtils.escapeXml(ResidentStatusMst.getById(directorBackgroundDetailRequest.getResidentStatus()).getValue().toString()) : "-");
 				directorBackgroundDetailResponse.setDirectorPersonalInfo(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest()) ? directorBackgroundDetailRequest.getDirectorPersonalDetailRequest() : " " );
+				directorBackgroundDetailResponse.setIsWorkPlaceResidenceSamePlace(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest()) && !CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getIsWorkAndResidenceSamePlace()) ? (directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getIsWorkAndResidenceSamePlace() != 0 ? "Yes" : "No") : "No" );
 				directorBackgroundDetailResponse.setIsPhysicallyhandicapped(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getPhysicallyHandicapped()) ? VisuallyImpairedMst.getById(directorBackgroundDetailRequest.getPhysicallyHandicapped()).toString() : "-");
 			
 				//NATIONALITY
@@ -769,6 +773,8 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
 		if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getCastCategory())) {
 			map.put("castCategory", corporateApplicantDetail.getCastCategory());
+			map.put("noOfWorker", corporateApplicantDetail.getEmploymentGeneration() != null ? corporateApplicantDetail.getEmploymentGeneration() : "-");
+			map.put("nameAsperGST", corporateApplicantDetail.getOrganisationName() != null ? StringEscapeUtils.escapeXml(corporateApplicantDetail.getOrganisationName()) : "-");
 		}
 		
 		

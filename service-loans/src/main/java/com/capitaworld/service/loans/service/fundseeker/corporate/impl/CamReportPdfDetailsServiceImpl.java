@@ -996,6 +996,10 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			if(!CommonUtils.isListNullOrEmpty(collect)) {
 				mudraScoringMap.put("PROMOTERS_CONTRIBUTION_ML", CommonUtils.printFields(collect.get(0),null));
 			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("REGISTRATION_WITH_GOVERNMENT_AUTHORITIES_COMBINED_ML")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("REGISTRATION_WITH_GOVERNMENT_AUTHORITIES_COMBINED_ML", CommonUtils.printFields(collect.get(0),null));
+			}
 			
 			scoreResponse.add(mudraScoringMap);
 			map.put("mudraScoringResp", scoreResponse);
