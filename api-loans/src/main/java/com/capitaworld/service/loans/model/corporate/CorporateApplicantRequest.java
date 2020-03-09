@@ -130,8 +130,16 @@ public class CorporateApplicantRequest implements Serializable {
     
     private Long registeredDistMappingId;
     
+    private Integer employmentGeneration;
     
-    
+	public Integer getEmploymentGeneration() {
+		return employmentGeneration;
+	}
+
+	public void setEmploymentGeneration(Integer employmentGeneration) {
+		this.employmentGeneration = employmentGeneration;
+	}
+
 	/**
 	 * @return the isMultiGST
 	 */
