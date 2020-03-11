@@ -837,6 +837,7 @@ public class ScoringServiceImpl implements ScoringService {
                 scoringParameterRequest.setDpd(maxDpd);
                 scoringParameterRequest.setPaymentRecordsWithLenders_p(true);
                 scoringParameterRequest.setLoanAmount(scoringRequestLoans.getEligibleLoanAmountCircular());
+                scoringParameterRequest.setTenureFs(scoringRequestLoans.getTenureFS());
 
                 logger.info("Scoring Data Fetched First Time  =====> " + applicationId);
 
@@ -1116,9 +1117,9 @@ public class ScoringServiceImpl implements ScoringService {
                             }
                             
                             case ScoreParameter.MudraLoan.TENURE_ML: {
-                            	logger.info("scoringRequestLoans.getTenureFS() :: "+ scoringRequestLoans.getTenureFS());
-                            	if(scoringRequestLoans.getTenureFS() != null) {
-                            		scoringParameterRequest.setTenure(scoringRequestLoans.getTenureFS());
+                            	logger.info("scoringRequestLoans.getTenureScoring() :: "+ scoringRequestLoans.getTenureScoring());
+                            	if(scoringRequestLoans.getTenureScoring() != null) {
+                            		scoringParameterRequest.setTenure(scoringRequestLoans.getTenureScoring());
                             		scoringParameterRequest.setTenure_p(true);
                             	}
                             	else {
