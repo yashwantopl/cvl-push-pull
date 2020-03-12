@@ -681,6 +681,9 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				DirectorBackgroundDetailResponse directorBackgroundDetailResponse = new DirectorBackgroundDetailResponse();
 				// directorBackgroundDetailResponse.setAchivements(directorBackgroundDetailRequest.getAchivements());
 				directorBackgroundDetailResponse.setAddress(directorBackgroundDetailRequest.getAddress());
+				directorBackgroundDetailResponse.setPremiseNumber(directorBackgroundDetailRequest.getPremiseNumber());
+				directorBackgroundDetailResponse.setStreetName(directorBackgroundDetailRequest.getStreetName());
+				directorBackgroundDetailResponse.setLandmark(directorBackgroundDetailRequest.getLandmark());
 				// directorBackgroundDetailResponse.setAge(directorBackgroundDetailRequest.getAge());
 				// directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo());
 				directorBackgroundDetailResponse
