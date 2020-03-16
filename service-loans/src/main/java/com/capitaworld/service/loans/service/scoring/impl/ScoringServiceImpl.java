@@ -793,11 +793,11 @@ public class ScoringServiceImpl implements ScoringService {
             			if(bankEnum.getName().equalsIgnoreCase(noBankStatementBankName)){ // Same Bank
             				minBankRelationshipInMonths = loanRepository.getMinRelationshipInMonthByApplicationId(applicationId,noBankStatementBankName);
             				if(!CommonUtils.isObjectNullOrEmpty(minBankRelationshipInMonths)){
-            					if(minBankRelationshipInMonths > 3){ 
+            					if(minBankRelationshipInMonths > (12 * 3)){ 
             						minBankRelationshipInMonthsCombined = 1; //Relationship with my bank > 3 years
-            					}else if(minBankRelationshipInMonths >= 1 && minBankRelationshipInMonths <= 3){ 
+            					}else if(minBankRelationshipInMonths >= (12 * 1) && minBankRelationshipInMonths <= (12 * 3)){ 
             						minBankRelationshipInMonthsCombined = 3; //Relationship of 1-3 years with my bank or other Bank
-            					}else if(minBankRelationshipInMonths < 1){ 
+            					}else if(minBankRelationshipInMonths < (12 * 1)){ 
             						minBankRelationshipInMonthsCombined = 4; //No Relationship or less than 1-year relationship with any Bank
             					}
                         	}
@@ -809,11 +809,11 @@ public class ScoringServiceImpl implements ScoringService {
             					if(minBankRelationshipInMonthsOther > 0){
                 					minBankRelationshipInMonths = -1; // No Bank Statement            					
                 				}
-            					if(minBankRelationshipInMonthsOther > 3){
+            					if(minBankRelationshipInMonthsOther > (12 * 3)){
             						minBankRelationshipInMonthsCombined = 2; //Relationship with other bank > 3 years
-                				}else if(minBankRelationshipInMonthsOther >= 1 && minBankRelationshipInMonthsOther <= 3){ 
+                				}else if(minBankRelationshipInMonthsOther >= (12 * 1) && minBankRelationshipInMonthsOther <= (12 * 3)){ 
             						minBankRelationshipInMonthsCombined = 3; //Relationship of 1-3 years with my bank or other Bank
-            					}else if(minBankRelationshipInMonthsOther < 1){ 
+            					}else if(minBankRelationshipInMonthsOther < (12 * 1)){ 
             						minBankRelationshipInMonthsCombined = 4; //No Relationship or less than 1-year relationship with any Bank
             					}
             				}
@@ -828,11 +828,11 @@ public class ScoringServiceImpl implements ScoringService {
                   		if(CommonUtils.isObjectNullOrEmpty(minBankRelationshipInMonths) || minBankRelationshipInMonths == 0){
                   		// Check if Other Bank Has Relationship
                   			minBankRelationshipInMonths = bankingRelationlRepository.getMinRelationshipInMonthByApplicationAndNotOrgName(applicationId, bankEnum.getName());
-                  			if(minBankRelationshipInMonths > 3){ 
+                  			if(minBankRelationshipInMonths > (12 * 3)){ 
         						minBankRelationshipInMonthsCombined = 2; //Relationship with other bank > 3 years
-        					}else if(minBankRelationshipInMonths >= 1 && minBankRelationshipInMonths <= 3){ 
+        					}else if(minBankRelationshipInMonths >= (12 * 1) && minBankRelationshipInMonths <= (12 * 3)){ 
         						minBankRelationshipInMonthsCombined = 3; //Relationship of 1-3 years with my bank or other Bank
-        					}else if(minBankRelationshipInMonths < 1){ 
+        					}else if(minBankRelationshipInMonths < (12 * 1)){ 
         						minBankRelationshipInMonthsCombined = 4; //No Relationship or less than 1-year relationship with any Bank
         					}
                   			logger.info("Min Banking Relationship in Month when Upload Bank statement In My Bank === >{} And Combined =>{}",minBankRelationshipInMonths,minBankRelationshipInMonthsCombined);
@@ -841,11 +841,11 @@ public class ScoringServiceImpl implements ScoringService {
             				}
                   			
                     	}else{
-                    		if(minBankRelationshipInMonths > 3){ 
+                    		if(minBankRelationshipInMonths > (12 * 3)){ 
         						minBankRelationshipInMonthsCombined = 1; //Relationship with my bank > 3 years
-        					}else if(minBankRelationshipInMonths >= 1 && minBankRelationshipInMonths <= 3){ 
+        					}else if(minBankRelationshipInMonths >= (12 * 1) && minBankRelationshipInMonths <= (12 * 3)){ 
         						minBankRelationshipInMonthsCombined = 3; //Relationship of 1-3 years with my bank or other Bank
-        					}else if(minBankRelationshipInMonths < 1){ 
+        					}else if(minBankRelationshipInMonths < (12 * 1)){ 
         						minBankRelationshipInMonthsCombined = 4; //No Relationship or less than 1-year relationship with any Bank
         					}
                     		logger.info("Min Banking Relationship in Month when Upload Bank statement In Other Bank === >{} And Combined =>{}",minBankRelationshipInMonths,minBankRelationshipInMonthsCombined);
