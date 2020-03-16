@@ -738,10 +738,48 @@ public class LoanRepositoryImpl implements LoanRepository {
 	}
 	
 	@Override
+	public Integer getMinRelationshipInMonthByApplicationId(Long applicationId,String bankName) {
+		BigInteger relationInMonths = null;
+		try {
+			relationInMonths = (BigInteger)entityManager.createNativeQuery("SELECT TIMESTAMPDIFF(MONTH,STR_TO_DATE(CONCAT('01,',o.since_month,',',o.since_year),'%d,%m,%Y'),NOW()) AS res FROM pennydrop.account_details o WHERE o.application_id =:id and o.is_active = true and o.since_month IS NOT NULL and o.since_year IS NOT NULL and o.bank_name =:bankName order by o.id desc limit 1")
+					.setParameter("id", applicationId)
+					.setParameter("bankName", bankName).getSingleResult();
+		}
+		catch (Exception e) {
+			logger.error("Error While fetching months in relation with banks =====>{}======{}",applicationId,e);
+		}
+		if(CommonUtils.isObjectNullOrEmpty(relationInMonths)){
+			return 0;
+		}
+		return relationInMonths.intValue();
+	}
+	
+	
+	
+
+	@Override
 	public Integer getMinRelationshipInMonthByApplicationId(Long applicationId) {
 		BigInteger relationInMonths = null;
 		try {
-			relationInMonths = (BigInteger)entityManager.createNativeQuery("SELECT TIMESTAMPDIFF(MONTH,STR_TO_DATE(CONCAT('01,',o.since_month,',',o.since_year),'%d,%m,%Y'),NOW()) AS res FROM pennydrop.account_details o WHERE o.application_id =:id and o.is_active = true and o.since_month IS NOT NULL and o.since_year IS NOT NULL order by o.id desc limit 1").setParameter("id", applicationId).getSingleResult();
+			relationInMonths = (BigInteger)entityManager.createNativeQuery("SELECT TIMESTAMPDIFF(MONTH,STR_TO_DATE(CONCAT('01,',o.since_month,',',o.since_year),'%d,%m,%Y'),NOW()) AS res FROM pennydrop.account_details o WHERE o.application_id =:id and o.is_active = true and o.since_month IS NOT NULL and o.since_year IS NOT NULL order by o.id desc limit 1")
+					.setParameter("id", applicationId).getSingleResult();
+		}
+		catch (Exception e) {
+			logger.error("Error While fetching months in relation with banks =====>{}======{}",applicationId,e);
+		}
+		if(CommonUtils.isObjectNullOrEmpty(relationInMonths)){
+			return 0;
+		}
+		return relationInMonths.intValue();
+	}
+
+	@Override
+	public Integer getMinRelationshipInMonthByApplicationIdAndNotGivenBank(Long applicationId, String bankName) {
+		BigInteger relationInMonths = null;
+		try {
+			relationInMonths = (BigInteger)entityManager.createNativeQuery("SELECT TIMESTAMPDIFF(MONTH,STR_TO_DATE(CONCAT('01,',o.since_month,',',o.since_year),'%d,%m,%Y'),NOW()) AS res FROM pennydrop.account_details o WHERE o.application_id =:id and o.is_active = true and o.since_month IS NOT NULL and o.since_year IS NOT NULL and o.bank_name !=:bankName order by o.id desc limit 1")
+					.setParameter("id", applicationId)
+					.setParameter("bankName", bankName).getSingleResult();
 		}
 		catch (Exception e) {
 			logger.error("Error While fetching months in relation with banks =====>{}======{}",applicationId,e);

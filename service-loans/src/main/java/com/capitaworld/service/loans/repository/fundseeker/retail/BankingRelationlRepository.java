@@ -27,6 +27,9 @@ public interface BankingRelationlRepository extends JpaRepository<BankingRelatio
 	@Query(value = "SELECT TIMESTAMPDIFF(MONTH,STR_TO_DATE(CONCAT('01,',o.since_month,',',o.since_year),'%d,%m,%Y'),NOW()) AS res FROM loan_application.fs_pl_banking_relation o WHERE o.application_id =:id  AND o.bank =:bankName AND o.is_active = TRUE AND o.co_applicant_id IS NULL ORDER BY res DESC limit 1",nativeQuery = true)
 	public Integer getMinRelationshipInMonthByApplicationAndOrgName(@Param("id")Long id,@Param("bankName")String bankName);
 	
+	@Query(value = "SELECT TIMESTAMPDIFF(MONTH,STR_TO_DATE(CONCAT('01,',o.since_month,',',o.since_year),'%d,%m,%Y'),NOW()) AS res FROM loan_application.fs_pl_banking_relation o WHERE o.application_id =:id  AND o.bank !=:bankName AND o.is_active = TRUE AND o.co_applicant_id IS NULL ORDER BY res DESC limit 1",nativeQuery = true)
+	public Integer getMinRelationshipInMonthByApplicationAndNotOrgName(@Param("id")Long id,@Param("bankName")String bankName);
+	
 	@Query(value = "SELECT TIMESTAMPDIFF(MONTH,STR_TO_DATE(CONCAT('01,',o.since_month,',',o.since_year),'%d,%m,%Y'),NOW()) AS res FROM loan_application.fs_pl_banking_relation o WHERE o.application_id =:id  AND o.bank =:bankName AND o.is_active = TRUE AND o.co_applicant_id =:coAppId ORDER BY res DESC limit 1",nativeQuery = true)
 	public Integer getMinRelationshipInMonthByApplicationAndOrgNameAndCoApplicantId(@Param("id")Long id,@Param("bankName")String bankName,@Param("coAppId")Long coAppId);
 

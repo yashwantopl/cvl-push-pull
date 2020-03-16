@@ -784,32 +784,82 @@ public class ScoringServiceImpl implements ScoringService {
         for(ScoringRequestLoans scoringRequestLoans:scoringRequestLoansList)
         {
         	Integer minBankRelationshipInMonths = null;
+        	Integer minBankRelationshipInMonthsCombined = null;
         	if(scoringRequestLoans.getOrgId() != null) {
               	BankList bankEnum = BankList.fromOrgId(scoringRequestLoans.getOrgId().toString());
             	if(isNoBankStatement) {
             		if(!CommonUtils.isObjectNullOrEmpty(bankEnum) && !CommonUtils.isObjectNullOrEmpty(bankEnum.getName())) {
             			logger.info("Enum Bank Name = >{} and DB Bank Name = >{}",bankEnum.getName(),noBankStatementBankName);
-            			if(bankEnum.getName().equalsIgnoreCase(noBankStatementBankName)){
-            				minBankRelationshipInMonths = loanRepository.getMinRelationshipInMonthByApplicationId(applicationId);
-            			}else{
-            				minBankRelationshipInMonths = -1;
+            			if(bankEnum.getName().equalsIgnoreCase(noBankStatementBankName)){ // Same Bank
+            				minBankRelationshipInMonths = loanRepository.getMinRelationshipInMonthByApplicationId(applicationId,noBankStatementBankName);
+            				if(!CommonUtils.isObjectNullOrEmpty(minBankRelationshipInMonths)){
+            					if(minBankRelationshipInMonths > 3){ 
+            						minBankRelationshipInMonthsCombined = 1; //Relationship with my bank > 3 years
+            					}else if(minBankRelationshipInMonths >= 1 && minBankRelationshipInMonths <= 3){ 
+            						minBankRelationshipInMonthsCombined = 3; //Relationship of 1-3 years with my bank or other Bank
+            					}else if(minBankRelationshipInMonths < 1){ 
+            						minBankRelationshipInMonthsCombined = 4; //No Relationship or less than 1-year relationship with any Bank
+            					}
+                        	}
+            				logger.info("Min Banking Relationship in Month when no Bank statement === >{} and Combined = >{}",minBankRelationshipInMonths,minBankRelationshipInMonthsCombined);
+            			}else{ // Other Bank
+            				// Check if Other Bank Has Relationship
+            				Integer minBankRelationshipInMonthsOther = loanRepository.getMinRelationshipInMonthByApplicationIdAndNotGivenBank(applicationId,noBankStatementBankName);
+            				if(!CommonUtils.isObjectNullOrEmpty(minBankRelationshipInMonthsOther)){
+            					if(minBankRelationshipInMonthsOther > 0){
+                					minBankRelationshipInMonths = -1; // No Bank Statement            					
+                				}
+            					if(minBankRelationshipInMonthsOther > 3){
+            						minBankRelationshipInMonthsCombined = 2; //Relationship with other bank > 3 years
+                				}else if(minBankRelationshipInMonthsOther >= 1 && minBankRelationshipInMonthsOther <= 3){ 
+            						minBankRelationshipInMonthsCombined = 3; //Relationship of 1-3 years with my bank or other Bank
+            					}else if(minBankRelationshipInMonthsOther < 1){ 
+            						minBankRelationshipInMonthsCombined = 4; //No Relationship or less than 1-year relationship with any Bank
+            					}
+            				}
+            				logger.info("Min Banking Relationship in Month when no Bank statement For Other Banks === >{} and Combined = >{}",minBankRelationshipInMonths,minBankRelationshipInMonthsCombined);
             			}
-            			logger.info("Min Banking Relationship in Month when no Bank statement === >{}",minBankRelationshipInMonths);
             		}
             	}else {
             		if(bankEnum != null) {
                   		logger.info("Bank Name====>{}==>Application Id===>{}===> Fp Product Id===>{}",bankEnum.getName(),applicationId,scoringRequestLoans.getFpProductId());
+                  		 // Same Bank
                   		minBankRelationshipInMonths = bankingRelationlRepository.getMinRelationshipInMonthByApplicationAndOrgName(applicationId, bankEnum.getName());
-                  		if(CommonUtils.isObjectNullOrEmpty(minBankRelationshipInMonths)){
-                    		minBankRelationshipInMonths = -1;
+                  		if(CommonUtils.isObjectNullOrEmpty(minBankRelationshipInMonths) || minBankRelationshipInMonths == 0){
+                  		// Check if Other Bank Has Relationship
+                  			minBankRelationshipInMonths = bankingRelationlRepository.getMinRelationshipInMonthByApplicationAndNotOrgName(applicationId, bankEnum.getName());
+                  			if(minBankRelationshipInMonths > 3){ 
+        						minBankRelationshipInMonthsCombined = 2; //Relationship with other bank > 3 years
+        					}else if(minBankRelationshipInMonths >= 1 && minBankRelationshipInMonths <= 3){ 
+        						minBankRelationshipInMonthsCombined = 3; //Relationship of 1-3 years with my bank or other Bank
+        					}else if(minBankRelationshipInMonths < 1){ 
+        						minBankRelationshipInMonthsCombined = 4; //No Relationship or less than 1-year relationship with any Bank
+        					}
+                  			logger.info("Min Banking Relationship in Month when Upload Bank statement In My Bank === >{} And Combined =>{}",minBankRelationshipInMonths,minBankRelationshipInMonthsCombined);
+                  			if(!CommonUtils.isObjectNullOrEmpty(minBankRelationshipInMonths) && minBankRelationshipInMonths > 0){
+                  				minBankRelationshipInMonths = -1;  
+            				}
+                  			
+                    	}else{
+                    		if(minBankRelationshipInMonths > 3){ 
+        						minBankRelationshipInMonthsCombined = 1; //Relationship with my bank > 3 years
+        					}else if(minBankRelationshipInMonths >= 1 && minBankRelationshipInMonths <= 3){ 
+        						minBankRelationshipInMonthsCombined = 3; //Relationship of 1-3 years with my bank or other Bank
+        					}else if(minBankRelationshipInMonths < 1){ 
+        						minBankRelationshipInMonthsCombined = 4; //No Relationship or less than 1-year relationship with any Bank
+        					}
+                    		logger.info("Min Banking Relationship in Month when Upload Bank statement In Other Bank === >{} And Combined =>{}",minBankRelationshipInMonths,minBankRelationshipInMonthsCombined);
                     	}
                   	}
-                  	logger.info("Min Banking Relationship in Month when Upload Bank statement === >{}",minBankRelationshipInMonths);
             	}
               }
         	
         	if(CommonUtils.isObjectNullOrEmpty(minBankRelationshipInMonths)){
         		minBankRelationshipInMonths = 0;
+        	}
+        	
+        	if(CommonUtils.isObjectNullOrEmpty(minBankRelationshipInMonthsCombined)){
+        		minBankRelationshipInMonthsCombined = 4; //No Relationship or less than 1-year relationship with any Bank
         	}
             Long scoreModelId = scoringRequestLoans.getScoringModelId();
             Long fpProductId = scoringRequestLoans.getFpProductId();
@@ -1315,6 +1365,22 @@ public class ScoringServiceImpl implements ScoringService {
 								}
                             	logger.info("Relationship With Bank :: "+scoringParameterRequest.getBankRelation_p());
                             	logger.info("Relationship With Bank Data :: "+scoringParameterRequest.getBankRelation());
+                                 break;
+                             }
+                            
+                            case ScoreParameter.MudraLoan.RELATIONSHIP_WITH_BANK_COMBINED_ML: {
+                            	try {
+                            		logger.info("Relationship With Bank Combined :: "+ minBankRelationshipInMonthsCombined);
+                            		scoringParameterRequest.setBankRelationCombined_p(true);
+                            		scoringParameterRequest.setBankRelationCombined(minBankRelationshipInMonthsCombined);
+                            	}
+                            	catch (Exception e) {
+                            		logger.error("Error while Calculating Relationship With Bank Combined = >{}",e);
+                            		logger.info("in Caatch");
+                            		scoringParameterRequest.setBankRelationCombined_p(false);
+								}
+                            	logger.info("Relationship With Bank Combined :: "+scoringParameterRequest.getBankRelationCombined_p());
+                            	logger.info("Relationship With Bank Data Combined :: "+scoringParameterRequest.getBankRelationCombined());
                                  break;
                              }
                             case ScoreParameter.MudraLoan.MARKETING_ARRANGEMENT_FOR_FINISHED_GOODS_ML: {
