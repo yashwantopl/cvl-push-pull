@@ -507,31 +507,39 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 		
      // MUDRA LOAN DETAILS
-     			PrimaryCorporateDetailMudraLoan mlDetail = 	mudraLoanRepo.findFirstByApplicationIdAndApplicationProposalMappingProposalIdOrderByIdDesc(applicationId, proposalId); 
-     			if (!CommonUtils.isObjectNullOrEmpty(mlDetail)) {			
-     				PrimaryCorporateDetailMudraLoanReqRes mlDetailsRes = new PrimaryCorporateDetailMudraLoanReqRes();
-     				BeanUtils.copyProperties(mlDetail, mlDetailsRes);
-     				if (!CommonUtils.isObjectNullOrEmpty(mlDetail.getMrktArragementFinishedGoods())) {					
-     					mlDetailsRes.setMrktArragementFinishedGoodsValue(MrktArrFinishedGoodsList.fromId(mlDetail.getMrktArragementFinishedGoods()).getValue());
-     				}
-     				//corporatePrimaryViewResponse.setMlDetail(mlDetailsRes);
-     				map.put("mlDetail", !CommonUtils.isObjectNullOrEmpty(mlDetailsRes) ? mlDetailsRes : Collections.EMPTY_LIST);
-     			}
-	// GET MACHINE DETAILS
-		List<MachineDetailMudraLoan> machineDetails = machineDetailsRepo.findByApplicationIdAndIsActive(toApplicationId, true);
-		PrimaryCorporateDetailMudraLoanReqRes mlDetailsRes = new PrimaryCorporateDetailMudraLoanReqRes();
-		if (!CommonUtils.isListNullOrEmpty(machineDetails)) {
-			List<MachineDetailMudraLoanRequestResponse> machineDetailsRes =  new ArrayList<>(machineDetails.size());
-			for (MachineDetailMudraLoan machineDetailMudraLoan : machineDetails) {
-				MachineDetailMudraLoanRequestResponse machineDetail = new MachineDetailMudraLoanRequestResponse(); 
-				BeanUtils.copyProperties(machineDetailMudraLoan, machineDetail);
-				machineDetail.setNameOfSupplier(StringEscapeUtils.escapeXml(machineDetailMudraLoan.getNameOfSupplier()));
-				machineDetailsRes.add(machineDetail);
-			}				
-			mlDetailsRes.setMachineDetails(machineDetailsRes);
+        try {
+			PrimaryCorporateDetailMudraLoan mlDetail = 	mudraLoanRepo.findFirstByApplicationIdAndApplicationProposalMappingProposalIdOrderByIdDesc(applicationId, proposalId); 
+			if (!CommonUtils.isObjectNullOrEmpty(mlDetail)) {			
+				PrimaryCorporateDetailMudraLoanReqRes mlDetailsRes = new PrimaryCorporateDetailMudraLoanReqRes();
+				BeanUtils.copyProperties(mlDetail, mlDetailsRes);
+				if (!CommonUtils.isObjectNullOrEmpty(mlDetail.getMrktArragementFinishedGoods())) {					
+					mlDetailsRes.setMrktArragementFinishedGoodsValue(MrktArrFinishedGoodsList.fromId(mlDetail.getMrktArragementFinishedGoods()).getValue());
+				}
+				//corporatePrimaryViewResponse.setMlDetail(mlDetailsRes);
+				map.put("mlDetail", !CommonUtils.isObjectNullOrEmpty(mlDetailsRes) ? CommonUtils.printFields(mlDetailsRes , null) : Collections.EMPTY_LIST);
+			}
+        }catch (Exception e) {
+			logger.error("Error/Exception mlDetail==>{}",e);
 		}
-		map.put("machineDetailsMudra", mlDetailsRes);			
         
+        // GET MACHINE DETAILS
+        try {
+			List<MachineDetailMudraLoan> machineDetails = machineDetailsRepo.findByApplicationIdAndIsActive(toApplicationId, true);
+			PrimaryCorporateDetailMudraLoanReqRes mlDetailsRes = new PrimaryCorporateDetailMudraLoanReqRes();
+			if (!CommonUtils.isListNullOrEmpty(machineDetails)) {
+				List<MachineDetailMudraLoanRequestResponse> machineDetailsRes =  new ArrayList<>(machineDetails.size());
+				for (MachineDetailMudraLoan machineDetailMudraLoan : machineDetails) {
+					MachineDetailMudraLoanRequestResponse machineDetail = new MachineDetailMudraLoanRequestResponse(); 
+					BeanUtils.copyProperties(machineDetailMudraLoan, machineDetail);
+					machineDetail.setNameOfSupplier(StringEscapeUtils.escapeXml(machineDetailMudraLoan.getNameOfSupplier()));
+					machineDetailsRes.add(machineDetail);
+				}				
+				mlDetailsRes.setMachineDetails(machineDetailsRes);
+			}
+			map.put("machineDetailsMudra", CommonUtils.printFields(mlDetailsRes , null));
+        }catch (Exception e) {
+			logger.error("Error/Exception machineDetailsMudra==>{}",e);
+		}
 		
 		//get NO BS+ DATA
 		CommonResponse verificationrequestResponse = null;
@@ -559,15 +567,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		// Product Name
 		if(productId != null) {
 			String productName = productMasterRepository.getFpProductName(productId);
-			if(productName != null) {
-				try {
-					map.put("fpProductName",CommonUtils.printFields(productName, null));
-				} catch (Exception e) {
-					logger.info("error"+e);
-				}
-			}else {
-				logger.info("product name is null..of productId==>{}", productId);
-			}
+			map.put("fpProductName",productName != null ? StringEscapeUtils.escapeXml(productName) : " ");
 		}else {
 			logger.info("fpProductMapping id is null..");
 		}
@@ -585,7 +585,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			workflowRequest.setUserId(userId);
 			WorkflowResponse auditTrail = workflowClient.getAuditTrail(workflowRequest);
 			if(!CommonUtils.isObjectNullOrEmpty(auditTrail)) {
-				map.put("trailDates", auditTrail.getData());
+				map.put("trailDates", CommonUtils.printFields(auditTrail.getData() , null));
 			}
 		} catch (Exception e2) {
 			logger.error(CommonUtils.EXCEPTION,e2);
@@ -628,15 +628,16 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		map.putAll(getMatchesAndEligiblityDetails(applicationId,productId,proposalId));
 		
-		
-		PrimaryCorporateDetailMudraLoanReqRes primaryCorporateDetailMudraLoanReqRes = new PrimaryCorporateDetailMudraLoanReqRes(); 
-		PrimaryCorporateDetailMudraLoan primaryCorporateDetailMudraLoan = primaryCorporateDetailsMudra.findFirstByApplicationIdAndApplicationProposalMappingProposalIdOrderByIdDesc(toApplicationId, proposalId);
-		BeanUtils.copyProperties(primaryCorporateDetailMudraLoan, primaryCorporateDetailMudraLoanReqRes);
-		if (primaryCorporateDetailMudraLoanReqRes != null) {
-			map.put("statutoryObligation", primaryCorporateDetailMudraLoanReqRes);
+		try {
+			PrimaryCorporateDetailMudraLoanReqRes primaryCorporateDetailMudraLoanReqRes = new PrimaryCorporateDetailMudraLoanReqRes(); 
+			PrimaryCorporateDetailMudraLoan primaryCorporateDetailMudraLoan = primaryCorporateDetailsMudra.findFirstByApplicationIdAndApplicationProposalMappingProposalIdOrderByIdDesc(toApplicationId, proposalId);
+			BeanUtils.copyProperties(primaryCorporateDetailMudraLoan, primaryCorporateDetailMudraLoanReqRes);
+			if (primaryCorporateDetailMudraLoanReqRes != null) {
+				map.put("statutoryObligation", CommonUtils.printFields(primaryCorporateDetailMudraLoanReqRes , null));
+			}
+		}catch (Exception e) {
+			logger.error("Error/Exception statutoryObligation==>{}",e);
 		}
-		
-		
 		//FINANCIALS AND NOTES TO ACCOUNTS
 		try {
 			//PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(toApplicationId, userId);
@@ -687,16 +688,15 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 
 		//PROPOSAL RESPONSE
 		try {
-				ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
-				proposalMappingRequest.setApplicationId(toApplicationId);
-				proposalMappingRequest.setFpProductId(productId);
-				ProposalMappingResponse proposalMappingResponse= proposalDetailsClient.getActiveProposalDetails(proposalMappingRequest);
-				proposalMappingRequestString = new ProposalMappingRequestString();
-				logger.info("============proposalMappingRequestId==>{}",proposalMappingRequestString.getId());
-				BeanUtils.copyProperties(proposalMappingResponse.getData(), proposalMappingRequestString);
-				map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? proposalMappingResponse.getData() : " ");
-				
-		}
+			ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
+			proposalMappingRequest.setApplicationId(toApplicationId);
+			proposalMappingRequest.setFpProductId(productId);
+			ProposalMappingResponse proposalMappingResponse= proposalDetailsClient.getActiveProposalDetails(proposalMappingRequest);
+			proposalMappingRequestString = new ProposalMappingRequestString();
+			logger.info("============proposalMappingRequestId==>{}",proposalMappingRequestString.getId());
+			BeanUtils.copyProperties(proposalMappingResponse.getData(), proposalMappingRequestString);
+			map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? CommonUtils.printFields(proposalMappingResponse.getData() ,null): " ");
+		}		
 		catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
@@ -1146,7 +1146,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		//gstRelatedParty Data Fetch
 		try {
 			Map<String , Object> gstRelatedPartyRequests = loanApplicationService.getGstRelatedPartyDetails(applicationId);
-			map.put("gstPartyRelatedData", gstRelatedPartyRequests != null && !gstRelatedPartyRequests.isEmpty() ? gstRelatedPartyRequests : null);
+			map.put("gstPartyRelatedData", gstRelatedPartyRequests != null && !gstRelatedPartyRequests.isEmpty() ? CommonUtils.printFields(gstRelatedPartyRequests , null) : null);
 		}catch (Exception e) {
 			logger.error("Error/Exception while fetching list of gst Related Party List Data of APplicationId==>{}  ... Error==>{}",applicationId ,e);
 		}
@@ -3127,23 +3127,23 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		
 		//Get BankStatement
-				try {
-					map.putAll(getBankStatementDetails(applicationId, userId));
-				}catch (Exception e) {
-					logger.error("Error in getting Bank Statemnt from Perfios in MSME Cam Report with applicationId==>{}",applicationId);
-				}
+		try {
+			map.putAll(getBankStatementDetails(applicationId, userId));
+		}catch (Exception e) {
+			logger.error("Error in getting Bank Statemnt from Perfios in MSME Cam Report with applicationId==>{}",applicationId);
+		}
 		
-		PrimaryCorporateDetailMudraLoanReqRes primaryCorporateDetailMudraLoanReqRes = new PrimaryCorporateDetailMudraLoanReqRes(); 
-		PrimaryCorporateDetailMudraLoan primaryCorporateDetailMudraLoan = primaryCorporateDetailsMudra.findFirstByApplicationIdAndApplicationProposalMappingProposalIdOrderByIdDesc(applicationId, proposalId);
-		BeanUtils.copyProperties(primaryCorporateDetailMudraLoan, primaryCorporateDetailMudraLoanReqRes);
-		if (primaryCorporateDetailMudraLoanReqRes != null) {
-			map.put("statutoryObligation", primaryCorporateDetailMudraLoanReqRes);
+		try {
+			PrimaryCorporateDetailMudraLoanReqRes primaryCorporateDetailMudraLoanReqRes = new PrimaryCorporateDetailMudraLoanReqRes(); 
+			PrimaryCorporateDetailMudraLoan primaryCorporateDetailMudraLoan = primaryCorporateDetailsMudra.findFirstByApplicationIdAndApplicationProposalMappingProposalIdOrderByIdDesc(applicationId, proposalId);
+			BeanUtils.copyProperties(primaryCorporateDetailMudraLoan, primaryCorporateDetailMudraLoanReqRes);
+			if (primaryCorporateDetailMudraLoanReqRes != null) {
+				map.put("statutoryObligation", CommonUtils.printFields(primaryCorporateDetailMudraLoanReqRes,null));
+			}
+		}catch (Exception e) {
+			logger.error("Error/Exception statutoryObligation{}",e);
 		}
 	    return map;
 	}
-	
-	
-	
-	
 	
 }
