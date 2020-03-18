@@ -246,10 +246,10 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		//save nbfc ratio mapping
 //		nbfcRatioMappingRepository.inActiveByFpProductId(termLoanParameterRequest.getId());
 		
-		fPParameterMappingService.inactiveAndSave(termLoanParameter.getId(),CommonUtils.ParameterTypes.BUREAU_SCORE, termLoanParameterRequest.getBureauScoreIds());
-		fPParameterMappingService.inactiveAndSave(termLoanParameter.getId(),CommonUtils.ParameterTypes.BUREAU_SCORE_MAIN_DIR, termLoanParameterRequest.getMainDirBureauScoreIds());
-		fPParameterMappingService.inactiveAndSave(termLoanParameter.getId(),CommonUtils.ParameterTypes.BANK_STATEMENT_OPTIONS, termLoanParameterRequest.getBankStatementOptions());
-		fPParameterMappingService.inactiveAndSaveWithObject(termLoanParameter.getId(), CommonUtils.ParameterTypes.RISK_BASE_LOAN_AMOUNT, termLoanParameterRequest.getRiskLoanAmountList());
+		fPParameterMappingService.inactiveAndSave(termLoanParameter2.getId(),CommonUtils.ParameterTypes.BUREAU_SCORE, termLoanParameterRequest.getBureauScoreIds());
+		fPParameterMappingService.inactiveAndSave(termLoanParameter2.getId(),CommonUtils.ParameterTypes.BUREAU_SCORE_MAIN_DIR, termLoanParameterRequest.getMainDirBureauScoreIds());
+		fPParameterMappingService.inactiveAndSave(termLoanParameter2.getId(),CommonUtils.ParameterTypes.BANK_STATEMENT_OPTIONS, termLoanParameterRequest.getBankStatementOptions());
+		fPParameterMappingService.inactiveAndSaveWithObject(termLoanParameter2.getId(), CommonUtils.ParameterTypes.RISK_BASE_LOAN_AMOUNT, termLoanParameterRequest.getRiskLoanAmountList());
 		//add duplicate productmaster entries based on nbfc ids
 //		if(termLoanParameterRequest.getProductType()!=null && termLoanParameterRequest.getProductType()==2){
 //			addduplicateEntriesForNbfc(termLoanParameterRequest,mappingId);
