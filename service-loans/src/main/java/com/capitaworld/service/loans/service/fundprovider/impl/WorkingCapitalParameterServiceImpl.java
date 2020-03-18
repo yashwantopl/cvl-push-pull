@@ -214,10 +214,10 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		fpGstTypeMappingRepository.inActiveMasterByFpProductId(workingCapitalParameterRequest.getId());
 		saveLoanGstType(workingCapitalParameterRequest);
 		
-		fPParameterMappingService.inactiveAndSave(workingCapitalParameterRequest.getId(),CommonUtils.ParameterTypes.BUREAU_SCORE, workingCapitalParameterRequest.getBureauScoreIds());
-		fPParameterMappingService.inactiveAndSave(workingCapitalParameterRequest.getId(),CommonUtils.ParameterTypes.BUREAU_SCORE_MAIN_DIR, workingCapitalParameterRequest.getMainDirBureauScoreIds());
-		fPParameterMappingService.inactiveAndSave(workingCapitalParameterRequest.getId(),CommonUtils.ParameterTypes.BANK_STATEMENT_OPTIONS, workingCapitalParameterRequest.getBankStatementOptions());
-		fPParameterMappingService.inactiveAndSaveWithObject(workingCapitalParameterRequest.getId(), CommonUtils.ParameterTypes.RISK_BASE_LOAN_AMOUNT, workingCapitalParameterRequest.getRiskLoanAmountList());
+		fPParameterMappingService.inactiveAndSave(workingCapitalParameter.getId(),CommonUtils.ParameterTypes.BUREAU_SCORE, workingCapitalParameterRequest.getBureauScoreIds());
+		fPParameterMappingService.inactiveAndSave(workingCapitalParameter.getId(),CommonUtils.ParameterTypes.BUREAU_SCORE_MAIN_DIR, workingCapitalParameterRequest.getMainDirBureauScoreIds());
+		fPParameterMappingService.inactiveAndSave(workingCapitalParameter.getId(),CommonUtils.ParameterTypes.BANK_STATEMENT_OPTIONS, workingCapitalParameterRequest.getBankStatementOptions());
+		fPParameterMappingService.inactiveAndSaveWithObject(workingCapitalParameter.getId(), CommonUtils.ParameterTypes.RISK_BASE_LOAN_AMOUNT, workingCapitalParameterRequest.getRiskLoanAmountList());
 		//Dhaval
 		boolean isUpdate = msmeValueMappingService.updateMsmeValueMapping(false, mappingId,workingCapitalParameter2.getId());
 		logger.info("updated = {}",isUpdate);
