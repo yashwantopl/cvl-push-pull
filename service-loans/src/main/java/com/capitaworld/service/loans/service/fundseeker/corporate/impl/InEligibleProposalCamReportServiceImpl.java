@@ -888,7 +888,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 				map.put("purpose", "");
 			}
 
-			if (primaryCorporateRequest.getHaveCollateralSecurity()) {
+			if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getHaveCollateralSecurity()) && primaryCorporateRequest.getHaveCollateralSecurity()) {
 				map.put("amtOfSecurity",!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getCollateralSecurityAmount())? CommonUtils.convertValue(primaryCorporateRequest.getCollateralSecurityAmount()): " ");
 			}
 		} catch (Exception e) {
