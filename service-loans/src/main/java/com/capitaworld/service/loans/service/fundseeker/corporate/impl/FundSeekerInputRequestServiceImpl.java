@@ -496,8 +496,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				}else {
 					start = LocalDate.of(corporateApplicantDetail.getEstablishmentYear(), corporateApplicantDetail.getEstablishmentMonth(), 01);
 				}
-				LocalDate now = LocalDate.now();
+
 				if(start != null) {
+					LocalDate now = LocalDate.now();
 					Period diff = Period.between(start, now);
 					Integer diffYear = diff.getYears();
 					if(fundSeekerInputRequest.getSinceYear() > diffYear) {
