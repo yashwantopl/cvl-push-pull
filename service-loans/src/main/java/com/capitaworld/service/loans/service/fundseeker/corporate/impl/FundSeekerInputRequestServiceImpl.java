@@ -785,7 +785,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 						start = dobOfProprietor.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 					}
 				}else {
-					start = LocalDate.of(corporateApplicantDetail.getEstablishmentYear(), corporateApplicantDetail.getEstablishmentMonth(), 01);
+					if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getEstablishmentYear()) && !CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getEstablishmentMonth())){
+						start = LocalDate.of(corporateApplicantDetail.getEstablishmentYear(), corporateApplicantDetail.getEstablishmentMonth(), 01);						
+					}
 				}
 				LocalDate now = LocalDate.now();
 				if(start != null) {
