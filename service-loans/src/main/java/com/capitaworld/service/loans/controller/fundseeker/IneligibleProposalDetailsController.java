@@ -69,7 +69,7 @@ public class IneligibleProposalDetailsController {
 		
 		logger.info("Ineligible data save for InEligibleProposalDetailsRequest with Data==>{}",inEligibleProposalDetailsRequest.toString());
 
-		Boolean isSendMail = null;
+		Boolean isSendMail = true;
 		InEligibleProposalDetailsRequest proposalDetailsRequest = ineligibleProposalDetailsService.get(inEligibleProposalDetailsRequest.getApplicationId());
 		if(proposalDetailsRequest != null) {
 			Boolean isCampaignUser = loanRepository.isCampaignUser(inEligibleProposalDetailsRequest.getApplicationId());
@@ -77,13 +77,13 @@ public class IneligibleProposalDetailsController {
 				if(CommonUtils.OfflineApplicationConfig.BankSpecific.ON.equalsIgnoreCase(proposalDetailsRequest.getAddiFields())) {
 					isSendMail = true;
 				}else {
-					isSendMail = false;;
+					isSendMail = false;
 				}				
 			}else {
 				if(CommonUtils.OfflineApplicationConfig.MarketPlace.ON.equalsIgnoreCase(proposalDetailsRequest.getAddiFields())) {
 					isSendMail = true;
 				}else {
-					isSendMail = false;;
+					isSendMail = false;
 				}
 			}
 		}
@@ -97,7 +97,9 @@ public class IneligibleProposalDetailsController {
 				/** Trigger mail  to fs and bank branch
 					This email check if the selected bank is (sbi and wc_renewal) or sidbi specific then this email shoot*/
 				
-				Boolean isSent = asyncComp.sendNotificationToFsWhenProposalIneligibleInRetail(inEligibleProposalDetailsRequest);
+				Boolean isSent = ineligibleProposalDetailsService.sendMailToFsAndBankBranch(inEligibleProposalDetailsRequest.getApplicationId(),
+						inEligibleProposalDetailsRequest.getBranchId(),inEligibleProposalDetailsRequest.getUserOrgId());
+						//asyncComp.sendNotificationToFsWhenProposalIneligibleInRetail(inEligibleProposalDetailsRequest);
 				if (isSent) {
 					logger.info("Email sent to fs and branch");
 				} else {
