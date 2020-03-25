@@ -456,6 +456,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 						
 						String[] cc = ccList != null && !ccList.isEmpty() ? ccList.toArray(new String[ccList.size()]) : null;
 						
+
 						createNotificationForEmail(to, applicationRequest.getUserId().toString(),
 								mailParameters, NotificationAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE, subjectId,applicationId,false,bcc,cc,null,100,null,NotificationMasterAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE.getMasterId());
 					}
@@ -673,6 +674,10 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 		try {
 			if(!isFundSeeker)
 			{
+				if(content == null) {
+					content = new ArrayList<ContentAttachment>();
+				}
+				
 				logger.info("fetch Cam Report For==>{} with applicationId==>{}",toNo , applicationId);
 				byte[] camArr = getCamForNotification(applicationId);
 				

@@ -3017,14 +3017,18 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		//PROPOSAL RESPONSE
 		try {	
 			ProposalMappingRequestString proposalMappingRequestString = null;
-				ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
-				proposalMappingRequest.setApplicationId(applicationId);
+			ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
+			proposalMappingRequest.setApplicationId(applicationId);
+			if(productId != null) {
 				proposalMappingRequest.setFpProductId(productId);
-				ProposalMappingResponse proposalMappingResponse= proposalDetailsClient.getActiveProposalDetails(proposalMappingRequest);
-				proposalMappingRequestString = new ProposalMappingRequestString();
-				logger.info("============proposalMappingRequestId==>{}",proposalMappingRequestString.getId());
-				BeanUtils.copyProperties(proposalMappingResponse.getData(), proposalMappingRequestString);
-				map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? proposalMappingResponse.getData() : " ");
+			}
+			ProposalMappingResponse proposalMappingResponse= proposalDetailsClient.getActiveProposalDetails(proposalMappingRequest);
+			proposalMappingRequestString = new ProposalMappingRequestString();
+			logger.info("============proposalMappingRequestId==>{}",proposalMappingRequestString.getId());
+			if(!CommonUtils.isObjectNullOrEmpty(proposalMappingResponse) && !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData())) {
+				 BeanUtils.copyProperties(proposalMappingResponse.getData(), proposalMappingRequestString);
+			}
+			map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString) ? proposalMappingRequestString : " ");
 				
 		}
 		catch (Exception e) {
@@ -3056,16 +3060,18 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		try {
 			if(!CommonUtils.isObjectNullOrEmpty(applicationId)) {
 				verificationrequestResponse =  pennyDropClient.getAccountDetails(applicationId);
-				LinkedHashMap<String, Object> noBs = (LinkedHashMap<String, Object>) verificationrequestResponse.getData();	
-				String year = (String) noBs.get("sinceYear");
-				String months = (String) noBs.get("sinceMonth");
-				if (!CommonUtils.isObjectNullOrEmpty(year) || !CommonUtils.isObjectNullOrEmpty(months)) {
-					LocalDate today = LocalDate.now();
-					LocalDate since = LocalDate.of(Integer.parseInt(year), Integer.parseInt(months),1);
-					Period age = Period.between(since, today);
-					map.put("noBsSinceYear", age.getYears());
-					map.put("noBsSinceMonths", age.getMonths());
-					map.put("noBsSinceWhen", (!CommonUtils.isObjectNullOrEmpty(age.getYears()) ? age.getYears() +" year " : "") + " " +(!CommonUtils.isObjectNullOrEmpty(age.getMonths()) ? age.getMonths()+" months" :  "" ));
+				if(!CommonUtils.isObjectNullOrEmpty(verificationrequestResponse) && !CommonUtils.isObjectNullOrEmpty(verificationrequestResponse.getData())) {
+					LinkedHashMap<String, Object> noBs = (LinkedHashMap<String, Object>) verificationrequestResponse.getData();	
+					String year = (String) noBs.get("sinceYear");
+					String months = (String) noBs.get("sinceMonth");
+					if (!CommonUtils.isObjectNullOrEmpty(year) || !CommonUtils.isObjectNullOrEmpty(months)) {
+						LocalDate today = LocalDate.now();
+						LocalDate since = LocalDate.of(Integer.parseInt(year), Integer.parseInt(months),1);
+						Period age = Period.between(since, today);
+						map.put("noBsSinceYear", age.getYears());
+						map.put("noBsSinceMonths", age.getMonths());
+						map.put("noBsSinceWhen", (!CommonUtils.isObjectNullOrEmpty(age.getYears()) ? age.getYears() +" year " : "") + " " +(!CommonUtils.isObjectNullOrEmpty(age.getMonths()) ? age.getMonths()+" months" :  "" ));
+					}
 				}
 				map.put("noBsData", verificationrequestResponse);
 			}

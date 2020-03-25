@@ -406,26 +406,22 @@ public class CamReportPdfDetailsController {
 	}
 		
 	//only to view cam data of All types
-	@GetMapping(value = {"/getCamData/{applicationId}/{productMappingId}/{proposalId}","/getCamData/{applicationId}/{productMappingId}/{proposalId}/{loanType}","/getCamData/{applicationId}/{productMappingId}/{proposalId}/{loanType}/{camType}","/getCamData/{applicationId}/{loanType}/{camType}"}, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getCamDataByProposalId(@PathVariable(value = "proposalId") Long proposalId, @PathVariable(value = "applicationId") Long applicationId, @PathVariable(value = "productMappingId") Long productId,
-			@PathVariable(name= "loanType" , required = false) Integer loanType, @PathVariable(name= "camType" , required = false) String camType, HttpServletRequest request) {
+	@GetMapping(value = {"/getCamData/{applicationId}/{productMappingId}/{proposalId}","/getCamData/{applicationId}/{productMappingId}/{proposalId}/{camType}","/getOfflineCamData/{applicationId}/{camType}"}, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getCamDataByProposalId(@PathVariable(value = "proposalId" , required = false) Long proposalId, @PathVariable(value = "applicationId") Long applicationId, @PathVariable(value = "productMappingId" , required = false) Long productId,
+			@PathVariable(name= "camType" , required = false) String camType, HttpServletRequest request) {
 		
 		if (CommonUtils.isObjectNullOrEmpty(applicationId)) {
 			logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, applicationId);
 			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
 		}
 		try {
-			logger.info("In getCamData Method With ApplicationId==>{} ProductMappingId==>{} ProposalId==>{} LoanType==>{} camType==>{}" , 
-					applicationId ,productId ,proposalId ,loanType ,camType);
+			logger.info("In getCamData Method With ApplicationId==>{} ProductMappingId==>{} ProposalId==>{} camType==>{}" , 
+					applicationId ,productId ,proposalId  ,camType);
 			
 			Boolean isFinalView = false;
 			
 			if("true".equals(camType)) {
 				isFinalView = true;
-			}
-			
-			if(loanType == null) {
-				loanType = 1;
 			}
 			
 			Map<String, Object> response = new HashMap<String, Object>();
