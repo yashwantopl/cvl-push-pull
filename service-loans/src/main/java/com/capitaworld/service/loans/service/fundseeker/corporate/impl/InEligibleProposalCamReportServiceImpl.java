@@ -874,22 +874,22 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		try {
 			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
 			
-			
-			
-			
-			map.put("loanAmtApplied", primaryCorporateDetail.getLoanAmount()!= null ? CommonUtils.convertValueIndianCurrency(primaryCorporateDetail.getLoanAmount()) : 0);
-			map.put("loanType",!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getPurposeOfLoanId())? PurposeOfLoan.getById(primaryCorporateDetail.getPurposeOfLoanId()).getValue().toString(): " ");
-			map.put("promotorsContribution",CommonUtils.convertValueIndianCurrency(primaryCorporateRequest.getPromoterContribution()));
-			map.put("productDesc", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getProductServiceDescription()) ? StringEscapeUtils.escapeXml(primaryCorporateDetail.getProductServiceDescription()) : null);
-			map.put("totalAmtPer",!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getTotalAmtPercentage())? " (" + CommonUtils.convertValue(primaryCorporateRequest.getTotalAmtPercentage()) + "%)": null);
-			if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getPurposeOfLoanId())) {
-				map.put("purpose", StringEscapeUtils.escapeXml(primaryCorporateDetail.getPurposeOfLoanId() != null && primaryCorporateDetail.getPurposeOfLoanId()==1 ? AssessmentOptionForFS.getById(primaryCorporateDetail.getAssessmentId()).getValue().toString() : PurposeOfLoan.getById(primaryCorporateDetail.getPurposeOfLoanId()).getValue().toString()));
-			} else {
-				map.put("purpose", "");
-			}
-
-			if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getHaveCollateralSecurity()) && primaryCorporateRequest.getHaveCollateralSecurity()) {
-				map.put("amtOfSecurity",!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getCollateralSecurityAmount())? CommonUtils.convertValue(primaryCorporateRequest.getCollateralSecurityAmount()): " ");
+			if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest)) {
+				//map.put("loanAmtApplied", primaryCorporateDetail.getLoanAmount()!= null ? CommonUtils.convertValueIndianCurrency(primaryCorporateDetail.getLoanAmount()) : 0);
+				map.put("loanAmtApplied", loanApplicationMaster != null && loanApplicationMaster.getWcRenewalStatus() != null && loanApplicationMaster.getWcRenewalStatus() == 2 ? (primaryCorporateDetail.getLoanAmount()!= null ? CommonUtils.convertValueIndianCurrency(primaryCorporateDetail.getLoanAmount()) : 0) : (primaryCorporateDetail.getAdditionalLoanAmount() != null ? CommonUtils.convertValueIndianCurrency(primaryCorporateDetail.getAdditionalLoanAmount()) : 0));
+				map.put("loanType",!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getPurposeOfLoanId())? PurposeOfLoan.getById(primaryCorporateDetail.getPurposeOfLoanId()).getValue().toString(): " ");
+				map.put("promotorsContribution",CommonUtils.convertValueIndianCurrency(primaryCorporateRequest.getPromoterContribution()));
+				map.put("productDesc", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getProductServiceDescription()) ? StringEscapeUtils.escapeXml(primaryCorporateDetail.getProductServiceDescription()) : null);
+				map.put("totalAmtPer",!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getTotalAmtPercentage())? " (" + CommonUtils.convertValue(primaryCorporateRequest.getTotalAmtPercentage()) + "%)": null);
+				if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getPurposeOfLoanId())) {
+					map.put("purpose", StringEscapeUtils.escapeXml(primaryCorporateDetail.getPurposeOfLoanId() != null && primaryCorporateDetail.getPurposeOfLoanId()==1 ? AssessmentOptionForFS.getById(primaryCorporateDetail.getAssessmentId()).getValue().toString() : PurposeOfLoan.getById(primaryCorporateDetail.getPurposeOfLoanId()).getValue().toString()));
+				} else {
+					map.put("purpose", "");
+				}
+	
+				if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getHaveCollateralSecurity()) && primaryCorporateRequest.getHaveCollateralSecurity()) {
+					map.put("amtOfSecurity",!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getCollateralSecurityAmount())? CommonUtils.convertValue(primaryCorporateRequest.getCollateralSecurityAmount()): " ");
+				}
 			}
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION, e);
@@ -912,7 +912,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 				map.put("financials", financials);
 				if (loanApplicationMaster.getTenure() != null) {
 					Map<Integer, Object[]> projectedFin = new HashMap<Integer, Object[]>(loanApplicationMaster.getTenure().intValue());
-					if (primaryCorporateRequest.getProductId() == 1) {
+					if (primaryCorporateRequest != null && primaryCorporateRequest.getProductId() == 1) {
 						projectedFin.put(currentYear,calculateFinancials(userId, applicationId, null, denominationValue, currentYear));
 						map.put("tenure", 1);
 					} else {
