@@ -295,5 +295,13 @@ public interface LoanApplicationService {
 	public UsersRequest getUserDetailsForUrlSepration(Long userId);
 	
 	public List<BankRelationshipRequest> getBankRelations(Long applicationId, Long coApplicantId);
+	
+	public Boolean checkAppliedForExisitingLoan(Long applicationId);
+	
+	public Integer checkLoanTypeByApplicationId(Long applicationId);
+	
+	public String getOrganisationNameByOrgId(Long userOrganisationId);
+	
+	public Boolean updateWcRenewalStatusByApplicationId(Integer wsRenwalStatusValue,Long applicationId);
 
 }
