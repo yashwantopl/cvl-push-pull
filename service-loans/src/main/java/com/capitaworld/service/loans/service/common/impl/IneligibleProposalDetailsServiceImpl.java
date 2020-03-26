@@ -697,11 +697,12 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 		try {
 			if(!isFundSeeker)
 			{
+				if(content == null) {
+					content = new ArrayList<ContentAttachment>();
+				}
+				
 				logger.info("fetch Application Form Report For==>{} with ApplicationId==>{}",toNo ,applicationId);
 				byte[] camArr = getApplicationFormForNotification(applicationId);
-				
-//				notification.setFileName("ApplicationForm.pdf");
-//				notification.setContentInBytes(camArr);
 				
 				if(camArr != null && camArr.length > 0) {
 					ContentAttachment contentAttach = new ContentAttachment();
@@ -753,6 +754,10 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 		try {
 			if(!isFundSeeker)
 			{
+				if(content == null) {
+					content = new ArrayList<ContentAttachment>();
+				}
+				
 				Integer productId = Integer.valueOf(mailParameters.get("productId").toString());
 				byte[] camArr = getCamForNotification(applicationId);
 				
