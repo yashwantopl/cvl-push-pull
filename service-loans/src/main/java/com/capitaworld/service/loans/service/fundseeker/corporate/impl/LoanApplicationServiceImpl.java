@@ -8622,4 +8622,28 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
         }
     	return bankRelationshipRequests;
     }
+	
+	@Override
+	public Boolean checkAppliedForExisitingLoan(Long applicationId) {
+		Integer existingLoanStatus = loanApplicationRepository.checkAppliedForExisitingLoan(applicationId);
+		if(!CommonUtils.isObjectNullOrEmpty(existingLoanStatus) && existingLoanStatus >0) {
+			return Boolean.TRUE;
+		}
+		return Boolean.FALSE;
+	}
+
+	@Override
+	public Integer checkLoanTypeByApplicationId(Long applicationId) {
+		return loanApplicationRepository.checkLoanTypeByApplicationId(applicationId);
+	}
+
+	@Override
+	public String getOrganisationNameByOrgId(Long userOrganisationId) {
+		return loanApplicationRepository.getOrganisationNameByOrgId(userOrganisationId);
+	}
+
+	@Override
+	public Boolean updateWcRenewalStatusByApplicationId(Integer wsRenwalStatus, Long applicationId) {
+		return loanApplicationRepository.updateWcRenewalStatusByApplicationId(wsRenwalStatus, applicationId) > 0;
+	}
 }
