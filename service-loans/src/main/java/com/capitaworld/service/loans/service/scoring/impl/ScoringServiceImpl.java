@@ -503,8 +503,8 @@ public class ScoringServiceImpl implements ScoringService {
 			}
 	}
 		CibilResponse cibilResponseDPD = null;
-		int maxDpd = -1;
 		Long existingLoansCount = financialArrangementDetailsRepository.getExistingLoansCount(applicationId);
+		int maxDpd = existingLoansCount > 0 ? 0 : -1;
 		try {
 			if (existingLoansCount > 0) {
 				cibilResponseDPD = cibilClient.getDPDLastXMonth(applicationId);
