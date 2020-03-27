@@ -87,7 +87,6 @@ import com.capitaworld.service.loans.service.fundprovider.UnsecuredLoanParameter
 import com.capitaworld.service.loans.service.fundprovider.WcTlParameterService;
 import com.capitaworld.service.loans.service.fundprovider.WorkingCapitalParameterService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
-import com.capitaworld.service.loans.utils.CommonUtility;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
