@@ -1,11 +1,8 @@
 package com.capitaworld.service.loans.service.scoring.impl;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -506,28 +503,31 @@ public class ScoringServiceImpl implements ScoringService {
 			}
 	}
 		CibilResponse cibilResponseDPD = null;
-		int maxDpd = 0;
+		int maxDpd = -1;
+		Long existingLoansCount = financialArrangementDetailsRepository.getExistingLoansCount(applicationId);
 		try {
-			cibilResponseDPD = cibilClient.getDPDLastXMonth(applicationId);
-			 if(!CommonUtils.isObjectNullOrEmpty(cibilResponseDPD) && !CommonUtils.isObjectNullOrEmpty(cibilResponseDPD.getListData())){
-                 List<?> cibilDirectorsResponseList = cibilResponseDPD.getListData();
-                 int commercialVal = 0;
-                 for (int j = 0; j < cibilDirectorsResponseList.size(); j++) {
-                     String cibilResponseObj = cibilDirectorsResponseList.get(j).toString();
-                     if(cibilResponseObj.contains("|")){
-                         String[] cibilDpdVal = cibilResponseObj.split(Pattern.quote("|"));
-                         if(!CommonUtils.isObjectNullOrEmpty(cibilDpdVal[1]))
-                             commercialVal = Integer.parseInt(cibilDpdVal[1]);
-                     }else {
-                         commercialVal = Integer.parseInt(cibilDirectorsResponseList.get(j).toString());
-                     }
-                     logger.info("commercialVal1::::::::::::::::::::::::::::::::::::::::::::::::::::::::{}",commercialVal);
-                     if(maxDpd <= commercialVal){
-                         maxDpd = commercialVal;
-                     }
-                     logger.info("maxDpd:::::::::::::::::::::::::::::::::::::::::::::::::::::::: {}",maxDpd);
-                 }
-             }
+			if (existingLoansCount > 0) {
+				cibilResponseDPD = cibilClient.getDPDLastXMonth(applicationId);
+				 if(!CommonUtils.isObjectNullOrEmpty(cibilResponseDPD) && !CommonUtils.isObjectNullOrEmpty(cibilResponseDPD.getListData())){
+	                 List<?> cibilDirectorsResponseList = cibilResponseDPD.getListData();
+	                 int commercialVal = 0;
+	                 for (int j = 0; j < cibilDirectorsResponseList.size(); j++) {
+	                     String cibilResponseObj = cibilDirectorsResponseList.get(j).toString();
+	                     if(cibilResponseObj.contains("|")){
+	                         String[] cibilDpdVal = cibilResponseObj.split(Pattern.quote("|"));
+	                         if(!CommonUtils.isObjectNullOrEmpty(cibilDpdVal[1]))
+	                             commercialVal = Integer.parseInt(cibilDpdVal[1]);
+	                     }else {
+	                         commercialVal = Integer.parseInt(cibilDirectorsResponseList.get(j).toString());
+	                     }
+	                     logger.info("commercialVal1::::::::::::::::::::::::::::::::::::::::::::::::::::::::{}",commercialVal);
+	                     if(maxDpd <= commercialVal){
+	                         maxDpd = commercialVal;
+	                     }
+	                     logger.info("maxDpd:::::::::::::::::::::::::::::::::::::::::::::::::::::::: {}",maxDpd);
+	                 }
+	             }
+			}
 		} catch (Exception e) {
 			logger.error("Error while getting Score from CIBIL = >",e);
 		}

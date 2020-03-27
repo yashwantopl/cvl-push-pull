@@ -20,7 +20,7 @@ public interface FinancialArrangementDetailsRepository extends JpaRepository<Fin
 	
 	@Query("select o from FinancialArrangementsDetail o where o.applicationId.id =:id and o.isActive = true and o.directorBackgroundDetail IS NULL")
 	public List<FinancialArrangementsDetail> listSecurityCorporateDetailFromAppId(@Param("id")Long id);
-	
+		
 	@Query("select o from FinancialArrangementsDetail o where o.applicationId.id =:id and o.isActive = true and o.directorBackgroundDetail IS NOT NULL")
 	public List<FinancialArrangementsDetail> listSecurityCorporateDetailFromAppIdForProprietorship(@Param("id")Long id);
 
@@ -110,8 +110,8 @@ public interface FinancialArrangementDetailsRepository extends JpaRepository<Fin
 	
 	@Query(value="SELECT count(o.id) FROM fs_corporate_current_financial_arrangements_details o WHERE o.id in (:ids) and o.dpd_details IS NOT NULL and o.dpd_details != '[]'",nativeQuery = true)
 	public Long checkDpdsWithBankByIds(@Param("ids") List<Long> ids);
-	
-	
-	
+
+	@Query("SELECT COUNT(*) FROM loan_application.fs_corporate_current_financial_arrangements_details o WHERE o.application_id =:id AND o.is_active = TRUE AND o.director_id IS NULL")
+	public Long getExistingLoansCount(@Param("id") Long id);
 	
 }
