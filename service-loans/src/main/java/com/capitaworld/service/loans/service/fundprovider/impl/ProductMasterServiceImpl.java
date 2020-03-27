@@ -1542,7 +1542,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	 */
 	@Override
 	public Long getWCRenewalProductsCount(CommonRequest request) {
-		return productMasterTempRepository.getWCRenewalProductsCount(CommonUtils.LoanType.WORKING_CAPITAL.getValue(), request.getUserOrgId(), request.getBusinessTypeId(), request.getWcRenewalStatus());
+		return productMasterRepository.getWCRenewalProductsCount(CommonUtils.LoanType.WORKING_CAPITAL.getValue(), request.getUserOrgId(), request.getBusinessTypeId(), request.getWcRenewalStatus());
 	}
 
 }
