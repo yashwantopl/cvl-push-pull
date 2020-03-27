@@ -28,6 +28,7 @@ import com.capitaworld.service.loans.model.colending.FpProductRoiResponse;
 import com.capitaworld.service.loans.model.common.ChatDetails;
 import com.capitaworld.service.loans.model.corporate.AddProductRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateProduct;
+import com.capitaworld.service.loans.model.teaser.primaryview.CommonRequest;
 import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -878,4 +879,22 @@ public class ProductMasterController {
 		}
 
 	}
+	
+	@RequestMapping(value = "/getWCRenewalProductsCount", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getWCRenewalProductsCount(@RequestBody CommonRequest commonRequest, HttpServletRequest request) {
+		try {
+			logger.info("start getWCRenewalProducts()");
+				
+			if (CommonUtils.isObjectNullOrEmpty(commonRequest.getBusinessTypeId()) || CommonUtils.isObjectNullOrEmpty(commonRequest.getWcRenewalStatus()) || CommonUtils.isObjectNullOrEmpty(commonRequest.getUserOrgId())) {
+				logger.error("Invalid request, Request parameter null or empty");
+				return new ResponseEntity<LoansResponse>(new LoansResponse("Invalid request, Request data is invalid!",HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			Long productCount = productMasterService.getWCRenewalProductsCount(commonRequest);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully get data", HttpStatus.OK.value(), productCount), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getWCRenewalProducts==>{}", e);
+			return new ResponseEntity<LoansResponse>( new LoansResponse( CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+		}
+	}
+	
 }

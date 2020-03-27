@@ -60,6 +60,7 @@ import com.capitaworld.service.loans.model.corporate.TermLoanParameterRequest;
 import com.capitaworld.service.loans.model.corporate.UnsecuredLoanParameterRequest;
 import com.capitaworld.service.loans.model.corporate.WcTlParameterRequest;
 import com.capitaworld.service.loans.model.corporate.WorkingCapitalParameterRequest;
+import com.capitaworld.service.loans.model.teaser.primaryview.CommonRequest;
 import com.capitaworld.service.loans.repository.common.CommonRepository;
 import com.capitaworld.service.loans.repository.common.LoanRepository;
 import com.capitaworld.service.loans.repository.fundprovider.FpConstitutionMappingTempRepository;
@@ -1534,6 +1535,14 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	public FpProductRoiResponse getMinMaxRoiFromFpProductId(Long fpProductId) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	/**
+	 * Get working capital product count
+	 */
+	@Override
+	public Long getWCRenewalProductsCount(CommonRequest request) {
+		return productMasterTempRepository.getWCRenewalProductsCount(CommonUtils.LoanType.WORKING_CAPITAL.getValue(), request.getUserOrgId(), request.getBusinessTypeId(), request.getWcRenewalStatus());
 	}
 
 }

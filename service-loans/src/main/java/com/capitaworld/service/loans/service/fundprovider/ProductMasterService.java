@@ -17,6 +17,8 @@ import com.capitaworld.service.loans.model.colending.FpProductRoiResponse;
 import com.capitaworld.service.loans.model.common.ChatDetails;
 import com.capitaworld.service.loans.model.corporate.AddProductRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateProduct;
+import com.capitaworld.service.loans.model.teaser.primaryview.CommonRequest;
+
 public interface ProductMasterService {
 	public Boolean saveOrUpdate(AddProductRequest addProductRequest, Long userOrgId);
 
@@ -78,4 +80,7 @@ public interface ProductMasterService {
 	public Boolean changeStatusWithWorkFlow(WorkflowData workflowData);
 
 	public FpProductRoiResponse getMinMaxRoiFromFpProductId(Long fpProductId);
+	
+	public Long getWCRenewalProductsCount(CommonRequest request);
+	
 }
