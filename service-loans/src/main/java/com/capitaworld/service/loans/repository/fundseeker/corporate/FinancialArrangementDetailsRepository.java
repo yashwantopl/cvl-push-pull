@@ -111,7 +111,7 @@ public interface FinancialArrangementDetailsRepository extends JpaRepository<Fin
 	@Query(value="SELECT count(o.id) FROM fs_corporate_current_financial_arrangements_details o WHERE o.id in (:ids) and o.dpd_details IS NOT NULL and o.dpd_details != '[]'",nativeQuery = true)
 	public Long checkDpdsWithBankByIds(@Param("ids") List<Long> ids);
 
-	@Query("SELECT COUNT(*) FROM loan_application.fs_corporate_current_financial_arrangements_details o WHERE o.application_id =:id AND o.is_active = TRUE AND o.director_id IS NULL")
+	@Query(value="SELECT COUNT(*) FROM loan_application.fs_corporate_current_financial_arrangements_details o WHERE o.application_id =:id AND o.is_active = TRUE AND o.director_id IS NULL",nativeQuery = true)
 	public Long getExistingLoansCount(@Param("id") Long id);
 	
 }
