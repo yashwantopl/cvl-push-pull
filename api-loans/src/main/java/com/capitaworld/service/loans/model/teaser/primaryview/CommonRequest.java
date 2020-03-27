@@ -1,11 +1,17 @@
 package com.capitaworld.service.loans.model.teaser.primaryview;
 
+import java.io.Serializable;
+
 /**
  * @author maaz.shaikh
  *
  */
-public class CommonRequest {
+public class CommonRequest implements  Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String emailId;
 	private String mobile;
 	private Long userId; 
@@ -13,6 +19,8 @@ public class CommonRequest {
 	private Long fpProductId;
 	private Long proposalId;
 	private Integer loanTypeId;
+	private Long businessTypeId;
+	private Integer wcRenewalStatus;
 	private Long userOrgId;
 	
 	
@@ -70,7 +78,17 @@ public class CommonRequest {
 	public void setLoanTypeId(Integer loanTypeId) {
 		this.loanTypeId = loanTypeId;
 	}
-	
-	
-	
+	public Integer getWcRenewalStatus() {
+		return wcRenewalStatus;
+	}
+	public void setWcRenewalStatus(Integer wcRenewalStatus) {
+		this.wcRenewalStatus = wcRenewalStatus;
+	}
+	public Long getBusinessTypeId() {
+		return businessTypeId;
+	}
+	public void setBusinessTypeId(Long businessTypeId) {
+		this.businessTypeId = businessTypeId;
+	}
+
 }
