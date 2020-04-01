@@ -828,13 +828,16 @@ public class ScoringServiceImpl implements ScoringService {
                   		if(CommonUtils.isObjectNullOrEmpty(minBankRelationshipInMonths) || minBankRelationshipInMonths == 0){
                   		// Check if Other Bank Has Relationship
                   			minBankRelationshipInMonths = bankingRelationlRepository.getMinRelationshipInMonthByApplicationAndNotOrgName(applicationId, bankEnum.getName());
-                  			if(minBankRelationshipInMonths > (12 * 3)){ 
-        						minBankRelationshipInMonthsCombined = 2; //Relationship with other bank > 3 years
-        					}else if(minBankRelationshipInMonths >= (12 * 1) && minBankRelationshipInMonths <= (12 * 3)){ 
-        						minBankRelationshipInMonthsCombined = 3; //Relationship of 1-3 years with my bank or other Bank
-        					}else if(minBankRelationshipInMonths < (12 * 1)){ 
-        						minBankRelationshipInMonthsCombined = 4; //No Relationship or less than 1-year relationship with any Bank
-        					}
+                  			
+                  			if (!CommonUtils.isObjectNullOrEmpty(minBankRelationshipInMonths)) {
+								if(minBankRelationshipInMonths > (12 * 3)){ 
+	        						minBankRelationshipInMonthsCombined = 2; //Relationship with other bank > 3 years
+	        					}else if(minBankRelationshipInMonths >= (12 * 1) && minBankRelationshipInMonths <= (12 * 3)){ 
+	        						minBankRelationshipInMonthsCombined = 3; //Relationship of 1-3 years with my bank or other Bank
+	        					}else if(minBankRelationshipInMonths < (12 * 1)){ 
+	        						minBankRelationshipInMonthsCombined = 4; //No Relationship or less than 1-year relationship with any Bank
+	        					}
+                  			}
                   			logger.info("Min Banking Relationship in Month when Upload Bank statement In My Bank === >{} And Combined =>{}",minBankRelationshipInMonths,minBankRelationshipInMonthsCombined);
                   			if(!CommonUtils.isObjectNullOrEmpty(minBankRelationshipInMonths) && minBankRelationshipInMonths > 0){
                   				minBankRelationshipInMonths = -1;  
