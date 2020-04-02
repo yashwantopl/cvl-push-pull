@@ -668,6 +668,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	        gstr1Request.setGstin(fsInputReq.getGstIn());
 			
 			GstResponse calculationForScoring = gstClient.getCalculations(gstr1Request);
+			
+			logger.info("gstClient *******************------->" + MultipleJSONObjectHelper.getStringfromObject(gstClient));
+			
             if(!CommonUtils.isObjectNullOrEmpty(calculationForScoring) && !CommonUtils.isObjectNullOrEmpty(calculationForScoring.getData())){
                 GstCalculation gstCalculation = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)calculationForScoring.getData(),GstCalculation.class);
                 if(!CommonUtils.isObjectNullOrEmpty(gstCalculation)){
