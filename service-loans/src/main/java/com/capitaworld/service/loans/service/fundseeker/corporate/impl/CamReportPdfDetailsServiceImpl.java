@@ -688,14 +688,24 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 
 		//PROPOSAL RESPONSE
 		try {
+			ObjectMapper mapper = new ObjectMapper();
 			ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
 			proposalMappingRequest.setApplicationId(toApplicationId);
 			proposalMappingRequest.setFpProductId(productId);
 			ProposalMappingResponse proposalMappingResponse= proposalDetailsClient.getActiveProposalDetails(proposalMappingRequest);
-			proposalMappingRequestString = new ProposalMappingRequestString();
+			proposalMappingRequestString = mapper.convertValue(proposalMappingResponse.getData(), ProposalMappingRequestString.class);
 			logger.info("============proposalMappingRequestId==>{}",proposalMappingRequestString.getId());
-			BeanUtils.copyProperties(proposalMappingResponse.getData(), proposalMappingRequestString);
 			map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? CommonUtils.printFields(proposalMappingResponse.getData() ,null): " ");
+			
+			//For ROI Calculation
+			Map<String , Object> roiData = new LinkedHashMap<String, Object>();
+			if(!CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString)) {
+				roiData.put("scoringBasedOn" , proposalMappingRequestString.getScoringModelBasedOn() != null && proposalMappingRequestString.getScoringModelBasedOn() == 2 ? "REPO" : "MCLR");
+				roiData.put("mclr", !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getMclrRoi()) ? proposalMappingRequestString.getMclrRoi() : "-");
+				roiData.put("spread", !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getSpreadRoi()) ? proposalMappingRequestString.getSpreadRoi() : "-");
+				roiData.put("effectiveRoi", !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getElRoi()) ? proposalMappingRequestString.getElRoi() : "-");
+			}
+			map.put("roiData", !CommonUtils.isObjectNullOrEmpty(roiData) ? roiData : null);
 		}		
 		catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
