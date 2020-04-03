@@ -700,7 +700,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			//For ROI Calculation
 			Map<String , Object> roiData = new LinkedHashMap<String, Object>();
 			if(!CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString)) {
-				roiData.put("scoringBasedOn" , proposalMappingRequestString.getScoringModelBasedOn() != null && proposalMappingRequestString.getScoringModelBasedOn() == 2 ? "REPO" : "MCLR");
+				roiData.put("scoringBasedOn" , proposalMappingRequestString.getScoringModelBasedOn() != null && proposalMappingRequestString.getScoringModelBasedOn() == 2 ? "MCLR" : "EBLR");
 				roiData.put("mclr", !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getMclrRoi()) ? proposalMappingRequestString.getMclrRoi() : "-");
 				roiData.put("spread", !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getSpreadRoi()) ? proposalMappingRequestString.getSpreadRoi() : "-");
 				roiData.put("effectiveRoi", !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getElRoi()) ? proposalMappingRequestString.getElRoi() : "-");
