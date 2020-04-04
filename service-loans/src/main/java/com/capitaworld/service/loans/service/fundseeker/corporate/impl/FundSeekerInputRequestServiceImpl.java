@@ -417,6 +417,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
 			copyAddressFromRequestToDomain(fundSeekerInputRequest, corporateApplicantDetail);
 
+			//inActive if any entry found at first time
+			directorBackgroundDetailsRepository.inActive(fundSeekerInputRequest.getUserId(), fundSeekerInputRequest.getApplicationId());
+			
 			// ==== Director details
 			List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList = fundSeekerInputRequest.getDirectorBackgroundDetailRequestsList();
 			VerifyAPIRequest verifyApiReq =new VerifyAPIRequest();
