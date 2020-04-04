@@ -700,7 +700,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			//For ROI Calculation
 			Map<String , Object> roiData = new LinkedHashMap<String, Object>();
 			if(!CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString)) {
-				roiData.put("scoringBasedOn" , proposalMappingRequestString.getScoringModelBasedOn() != null && proposalMappingRequestString.getScoringModelBasedOn() == 2 ? "REPO" : "MCLR");
+				roiData.put("scoringBasedOn" , proposalMappingRequestString.getScoringModelBasedOn() != null && proposalMappingRequestString.getScoringModelBasedOn() == 2 ? "MCLR" : "EBLR");
 				roiData.put("mclr", !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getMclrRoi()) ? proposalMappingRequestString.getMclrRoi() : "-");
 				roiData.put("spread", !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getSpreadRoi()) ? proposalMappingRequestString.getSpreadRoi() : "-");
 				roiData.put("effectiveRoi", !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getElRoi()) ? proposalMappingRequestString.getElRoi() : "-");
@@ -3025,20 +3025,18 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 		
 		//PROPOSAL RESPONSE
-		try {	
-			ProposalMappingRequestString proposalMappingRequestString = null;
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			ProposalMappingRequestString proposalMappingRequestString = new ProposalMappingRequestString();
 			ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
 			proposalMappingRequest.setApplicationId(applicationId);
 			if(productId != null) {
 				proposalMappingRequest.setFpProductId(productId);
 			}
 			ProposalMappingResponse proposalMappingResponse= proposalDetailsClient.getActiveProposalDetails(proposalMappingRequest);
-			proposalMappingRequestString = new ProposalMappingRequestString();
+			proposalMappingRequestString = mapper.convertValue(proposalMappingResponse.getData(), ProposalMappingRequestString.class);
 			logger.info("============proposalMappingRequestId==>{}",proposalMappingRequestString.getId());
-			if(!CommonUtils.isObjectNullOrEmpty(proposalMappingResponse) && !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData())) {
-				 BeanUtils.copyProperties(proposalMappingResponse.getData(), proposalMappingRequestString);
-			}
-			map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString) ? proposalMappingRequestString : " ");
+			map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString) ? CommonUtils.printFields(proposalMappingResponse.getData() ,null) : " ");
 				
 		}
 		catch (Exception e) {
