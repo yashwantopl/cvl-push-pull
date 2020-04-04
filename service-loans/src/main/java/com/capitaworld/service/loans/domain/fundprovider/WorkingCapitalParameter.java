@@ -370,6 +370,12 @@ public class WorkingCapitalParameter extends ProductMaster implements Serializab
 	@Column(name="trading")
 	private BigDecimal trading; // Consider as Tarun For Mudra
 	
+	@Column(name = "pc_women")
+	private BigDecimal pcWomen;
+	
+	@Column(name = "pc_minority_community")
+	private BigDecimal pcMinorityCommunity;
+	
 	@Column(name="max_drop_in_turnover")
 	private BigDecimal maxDropInTurnover;
 
@@ -2104,4 +2110,21 @@ public class WorkingCapitalParameter extends ProductMaster implements Serializab
 	public void setWcRequirement(Double wcRequirement) {
 		this.wcRequirement = wcRequirement;
 	}
+
+	public BigDecimal getPcWomen() {
+		return pcWomen;
+	}
+
+	public void setPcWomen(BigDecimal pcWomen) {
+		this.pcWomen = pcWomen;
+	}
+
+	public BigDecimal getPcMinorityCommunity() {
+		return pcMinorityCommunity;
+	}
+
+	public void setPcMinorityCommunity(BigDecimal pcMinorityCommunity) {
+		this.pcMinorityCommunity = pcMinorityCommunity;
+	}
+	
 }

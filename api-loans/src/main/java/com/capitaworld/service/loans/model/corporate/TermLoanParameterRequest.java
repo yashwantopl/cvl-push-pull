@@ -383,6 +383,8 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	private BigDecimal manufacturing;
 	private BigDecimal service;
 	private BigDecimal trading;
+	private BigDecimal pcWomen;
+	private BigDecimal pcMinorityCommunity;
 	
 	private BigDecimal promotorContri;
 	
@@ -2292,5 +2294,22 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	public void setRiskLoanAmountList(List<FPParameterMappingRequest> riskLoanAmountList) {
 		this.riskLoanAmountList = riskLoanAmountList;
 	}
+
+	public BigDecimal getPcWomen() {
+		return pcWomen;
+	}
+
+	public void setPcWomen(BigDecimal pcWomen) {
+		this.pcWomen = pcWomen;
+	}
+
+	public BigDecimal getPcMinorityCommunity() {
+		return pcMinorityCommunity;
+	}
+
+	public void setPcMinorityCommunity(BigDecimal pcMinorityCommunity) {
+		this.pcMinorityCommunity = pcMinorityCommunity;
+	}
+	
 	
 }
