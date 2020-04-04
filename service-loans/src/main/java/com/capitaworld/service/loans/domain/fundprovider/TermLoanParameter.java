@@ -507,6 +507,12 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 	@Column(name="trading")
 	private BigDecimal trading;// Consider as Tarun For Mudra
 	
+	@Column(name = "pc_women")
+	private BigDecimal pcWomen;
+	
+	@Column(name = "pc_minority_community")
+	private BigDecimal pcMinorityCommunity;
+	
 	@Column(name="promoter_contri")
 	private BigDecimal promotorContri;
 	
@@ -2119,4 +2125,21 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 	public void setIsIndividualCibilDpdMandatory(Boolean isIndividualCibilDpdMandatory) {
 		this.isIndividualCibilDpdMandatory = isIndividualCibilDpdMandatory;
 	}
+
+	public BigDecimal getPcWomen() {
+		return pcWomen;
+	}
+
+	public void setPcWomen(BigDecimal pcWomen) {
+		this.pcWomen = pcWomen;
+	}
+
+	public BigDecimal getPcMinorityCommunity() {
+		return pcMinorityCommunity;
+	}
+
+	public void setPcMinorityCommunity(BigDecimal pcMinorityCommunity) {
+		this.pcMinorityCommunity = pcMinorityCommunity;
+	}
+	
 }

@@ -5,6 +5,8 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 
+import javax.persistence.Column;
+
 import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
 import com.capitaworld.service.loans.model.common.FPParameterMappingRequest;
@@ -231,6 +233,8 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	private BigDecimal manufacturing;
 	private BigDecimal service;
 	private BigDecimal trading;
+	private BigDecimal pcWomen;
+	private BigDecimal pcMinorityCommunity;
 
 	private BigDecimal newTolTnw;
 
@@ -2054,4 +2058,21 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	public void setRiskLoanAmountList(List<FPParameterMappingRequest> riskLoanAmountList) {
 		this.riskLoanAmountList = riskLoanAmountList;
 	}
+
+	public BigDecimal getPcWomen() {
+		return pcWomen;
+	}
+
+	public void setPcWomen(BigDecimal pcWomen) {
+		this.pcWomen = pcWomen;
+	}
+
+	public BigDecimal getPcMinorityCommunity() {
+		return pcMinorityCommunity;
+	}
+
+	public void setPcMinorityCommunity(BigDecimal pcMinorityCommunity) {
+		this.pcMinorityCommunity = pcMinorityCommunity;
+	}
+	 
 }
