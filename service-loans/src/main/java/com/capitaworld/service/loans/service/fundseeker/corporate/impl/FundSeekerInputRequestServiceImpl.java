@@ -418,7 +418,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			copyAddressFromRequestToDomain(fundSeekerInputRequest, corporateApplicantDetail);
 
 			//inActive if any entry found at first time
-			directorBackgroundDetailsRepository.inActive(fundSeekerInputRequest.getUserId(), fundSeekerInputRequest.getApplicationId());
+			//directorBackgroundDetailsRepository.inActive(fundSeekerInputRequest.getUserId(), fundSeekerInputRequest.getApplicationId());
 			
 			// ==== Director details
 			List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList = fundSeekerInputRequest.getDirectorBackgroundDetailRequestsList();
@@ -433,14 +433,11 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			try {
 				for (DirectorBackgroundDetailRequest reqObj : directorBackgroundDetailRequestList) {
 					
-					DirectorBackgroundDetail saveDirObj = null;
-					if (!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
-						saveDirObj = directorBackgroundDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
+					DirectorBackgroundDetail saveDirObj = directorBackgroundDetailsRepository.findByApplicationIdIdAndIsActiveIsTrueAndPanNo(reqObj.getApplicationId(),reqObj.getPanNo());
+					if (!CommonUtils.isObjectNullOrEmpty(saveDirObj)) {
 						BeanUtils.copyProperties(reqObj, saveDirObj, "id", "createdBy", "createdDate", "modifiedBy", "modifiedDate");
 						saveDirObj.setModifiedBy(fundSeekerInputRequest.getUserId());
 						saveDirObj.setModifiedDate(new Date());
-						
-						
 					} else {
 						logger.info("New Object Created for Director");
 						saveDirObj = new DirectorBackgroundDetail();
