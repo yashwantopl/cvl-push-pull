@@ -89,6 +89,7 @@ import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.BankList;
 import com.capitaworld.service.oneform.enums.CertificationCourseMst;
 import com.capitaworld.service.oneform.enums.FSParameterMst;
+import com.capitaworld.service.oneform.enums.Gender;
 import com.capitaworld.service.oneform.enums.RegistrationWithGovernmentAuthoritiesList;
 import com.capitaworld.service.oneform.exceptions.OneFormException;
 import com.capitaworld.service.oneform.model.IrrBySectorAndSubSector;
@@ -1110,14 +1111,15 @@ public class ScoringServiceImpl implements ScoringService {
                             }
                             case ScoreParameter.MudraLoan.MAIN_DIRECTOR_CATEGORY_ML: {
                             	logger.info("corporateApplicantDetail.getCastCategory():::::::"+ corporateApplicantDetail.getCastCategory());
-                            	if(corporateApplicantDetail.getCastCategory()!=null) {
-                            		scoringParameterRequest.setCastCategory(corporateApplicantDetail.getCastCategory());
-                            		scoringParameterRequest.setCastCategory_p(true);
-                            	}
-                            	else {
-                            		scoringParameterRequest.setCastCategory_p(false);
-                            	}
-                            	
+                        	
+                            	scoringParameterRequest.setCastCategory_p(true);
+                        		if (Gender.FEMALE.getId().equals(mainDirectorBackgroundDetail.getGender())) {
+                            		scoringParameterRequest.setCastCategory(5+"");
+								} else if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getCastCategory())) {
+									scoringParameterRequest.setCastCategory(corporateApplicantDetail.getCastCategory());										
+								} else {
+									scoringParameterRequest.setCastCategory_p(false);
+								}
                             	break;
                             }
                             case ScoreParameter.MudraLoan.COVERED_UNDER_DIFF_SCHEMES_ML: {
