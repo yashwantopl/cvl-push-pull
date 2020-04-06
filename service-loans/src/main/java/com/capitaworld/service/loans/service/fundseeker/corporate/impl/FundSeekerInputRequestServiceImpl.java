@@ -433,7 +433,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			try {
 				for (DirectorBackgroundDetailRequest reqObj : directorBackgroundDetailRequestList) {
 					
-					DirectorBackgroundDetail saveDirObj = directorBackgroundDetailsRepository.findByApplicationIdIdAndIsActiveIsTrueAndPanNo(reqObj.getApplicationId(),reqObj.getPanNo());
+					DirectorBackgroundDetail saveDirObj = directorBackgroundDetailsRepository.findByApplicationIdIdAndIsActiveIsTrueAndPanNo(fundSeekerInputRequest.getApplicationId(),reqObj.getPanNo());
 					if (!CommonUtils.isObjectNullOrEmpty(saveDirObj)) {
 						BeanUtils.copyProperties(reqObj, saveDirObj, "id", "createdBy", "createdDate", "modifiedBy", "modifiedDate");
 						saveDirObj.setModifiedBy(fundSeekerInputRequest.getUserId());
@@ -443,8 +443,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 						saveDirObj = new DirectorBackgroundDetail();
 						BeanUtils.copyProperties(reqObj, saveDirObj, "id", "createdBy", "createdDate", "modifiedBy",
 								"modifiedDate", CommonUtils.IS_ACTIVE);
-						saveDirObj
-								.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
+						saveDirObj.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
 						saveDirObj.setCreatedBy(fundSeekerInputRequest.getUserId());
 						saveDirObj.setCreatedDate(new Date());
 						saveDirObj.setIsActive(true);
