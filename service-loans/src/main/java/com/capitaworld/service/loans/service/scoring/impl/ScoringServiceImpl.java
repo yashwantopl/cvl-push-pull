@@ -90,6 +90,7 @@ import com.capitaworld.service.oneform.enums.BankList;
 import com.capitaworld.service.oneform.enums.CertificationCourseMst;
 import com.capitaworld.service.oneform.enums.FSParameterMst;
 import com.capitaworld.service.oneform.enums.Gender;
+import com.capitaworld.service.oneform.enums.MudraCastCategory;
 import com.capitaworld.service.oneform.enums.RegistrationWithGovernmentAuthoritiesList;
 import com.capitaworld.service.oneform.exceptions.OneFormException;
 import com.capitaworld.service.oneform.model.IrrBySectorAndSubSector;
@@ -1114,9 +1115,9 @@ public class ScoringServiceImpl implements ScoringService {
                         	
                             	scoringParameterRequest.setCastCategory_p(true);
                         		if (Gender.FEMALE.getId().equals(mainDirectorBackgroundDetail.getGender())) {
-                            		scoringParameterRequest.setCastCategory(5+"");
+                            		scoringParameterRequest.setCastCategory(5l);
 								} else if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getCastCategory())) {
-									scoringParameterRequest.setCastCategory(corporateApplicantDetail.getCastCategory());										
+									scoringParameterRequest.setCastCategory(Long.valueOf(Arrays.asList(MudraCastCategory.getAll()).stream().filter(x -> x.getValue().equals(corporateApplicantDetail.getCastCategory())).findAny().get().getId()));										
 								} else {
 									scoringParameterRequest.setCastCategory_p(false);
 								}
