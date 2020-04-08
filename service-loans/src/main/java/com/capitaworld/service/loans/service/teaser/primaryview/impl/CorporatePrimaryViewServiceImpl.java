@@ -544,9 +544,12 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 					primaryCorporateDetail.getAmount() != null ? String.valueOf(primaryCorporateDetail.getAmount())
 							: null);*/ //PREVIOUS
 
-			corporatePrimaryViewResponse.setLoanAmount(
-					applicationProposalMapping.getLoanAmount() != null ? String.valueOf(applicationProposalMapping.getLoanAmount())
-							: null); // NEW PROPOSAL MAPPING ID BASED
+			
+			// corporatePrimaryViewResponse.setLoanAmount(applicationProposalMapping.getLoanAmount() != null ? String.valueOf(applicationProposalMapping.getLoanAmount()) : null); // NEW PROPOSAL MAPPING ID BASED
+			
+			// Set loan amount based on application (New or Renewal) 
+			Double loanAmount = WcRenewalType.RENEWAL.getId().equals(loanApplicationMaster.getWcRenewalStatus()) ? primaryCorporateDetail.getLoanAmount() : primaryCorporateDetail.getAdditionalLoanAmount();  
+			corporatePrimaryViewResponse.setLoanAmount(String.valueOf(loanAmount));
 
 			corporatePrimaryViewResponse.setGstIn(
 					corporateApplicantDetail.getGstIn() != null ? String.valueOf(corporateApplicantDetail.getGstIn())
