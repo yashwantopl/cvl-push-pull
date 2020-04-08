@@ -2293,6 +2293,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	//ONE_FORM COMMON
 	public Map<String ,Object> getOneFormData(Long applicationId, Long proposalId,Long userId){
 		
+		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
 		
 		ApplicationProposalMapping applicationProposalMapping = null;
         if(proposalId != null) {
@@ -2314,7 +2315,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		String categoryType = "";
 		PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateRepository.getByApplicationAndUserId(applicationId, userId);
 		if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)) {
-			map.put("loanAmtApplied", primaryCorporateDetail.getLoanAmount()!= null ? CommonUtils.convertValueIndianCurrency(primaryCorporateDetail.getLoanAmount()) : 0);
+			map.put("loanAmtApplied", loanApplicationMaster != null && WcRenewalType.RENEWAL.getId().equals(loanApplicationMaster.getWcRenewalStatus()) ? (primaryCorporateDetail.getLoanAmount() != null ? CommonUtils.convertValueIndianCurrency(primaryCorporateDetail.getLoanAmount()) : 0)
+					: (primaryCorporateDetail.getAdditionalLoanAmount() != null ? CommonUtils.convertValueIndianCurrency(primaryCorporateDetail.getAdditionalLoanAmount()) : 0));
 			if (primaryCorporateDetail.getLoanAmount() != null) {
 				if (primaryCorporateDetail.getLoanAmount() <= 50000) {
 					categoryType = "Shishu"; 
@@ -2788,7 +2790,6 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					}
 				}
 				
-				LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
 				map.put("applicationType", (loanApplicationMaster.getWcRenewalStatus() != null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue() : "New" ));
 				//MCA DATA
 				try {
