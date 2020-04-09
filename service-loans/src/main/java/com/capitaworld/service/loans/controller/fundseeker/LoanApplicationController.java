@@ -3228,7 +3228,7 @@ public class LoanApplicationController {
 							isStatusUpdated = loanApplicationService.updateWcRenewalStatusByApplicationId(NEWLOANTYPE,applicationId);
 						}
 						
-						if(isStatusUpdated.equals(Boolean.TRUE.booleanValue())) {
+						if(Boolean.TRUE.equals(isStatusUpdated)) {
 							return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully set wsRenewalStatus", HttpStatus.OK.value()),HttpStatus.OK);
 						}
 					}
