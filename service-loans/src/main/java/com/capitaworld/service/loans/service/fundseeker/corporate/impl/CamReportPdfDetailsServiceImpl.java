@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DateFormat;
+import java.text.DateFormatSymbols;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -2191,6 +2192,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		return map;
 	}
 	
+	public String getMonth(int month) {
+	    return new DateFormatSymbols().getMonths()[month-1];
+	}
 	
 	//GST COMMON METHOD
 			@Override
@@ -2218,8 +2222,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			                        List<MomSales> responseMom= new ArrayList<>();
 			                        
 			                        for (MomSales sales1 : momSalesResp1) {
-			                        	StringBuilder str = new StringBuilder(sales1.getMonth());
-			                        	sales1.setMonth(str.insert(2, '-').toString());
+			                        	String str = sales1.getMonth();
+			                        	sales1.setMonth(getMonth(Integer.valueOf(str.substring(0, 2)).intValue()) + " " +str.substring(2));
+			                        	//sales1.setMonth(str.insert(2, '-').toString());
 			                        	sales1.setValue((String)CommonUtils.convertValueIndianCurrency(Double.valueOf(sales1.getValue())));
 			                        	sales1.setIsManualEntry(sales1.getIsManualEntry());
 			                            responseMom.add(sales1);
