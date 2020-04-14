@@ -1,11 +1,13 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.json.simple.JSONObject;
 
+import com.capitaworld.service.loans.domain.fundseeker.retail.BankingRelation;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.AdminPanelLoanDetailsResponse;
 import com.capitaworld.service.loans.model.FrameRequest;
@@ -303,5 +305,8 @@ public interface LoanApplicationService {
 	public String getOrganisationNameByOrgId(Long userOrganisationId);
 	
 	public Boolean updateWcRenewalStatusByApplicationId(Integer wsRenwalStatusValue,Long applicationId);
+	
+    public Boolean inactivateBankRelation(Long id, Long userId);
+	
 
 }
