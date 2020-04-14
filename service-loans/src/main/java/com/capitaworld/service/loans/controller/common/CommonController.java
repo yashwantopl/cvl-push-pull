@@ -31,7 +31,6 @@ import com.capitaworld.service.loans.model.common.HunterRequestDataResponse;
 import com.capitaworld.service.loans.model.common.LongitudeLatitudeRequest;
 import com.capitaworld.service.loans.model.common.MinMaxProductDetailRequest;
 import com.capitaworld.service.loans.model.retail.BankRelationshipRequest;
-import com.capitaworld.service.loans.service.common.CommonService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
@@ -527,5 +526,18 @@ public class CommonController {
             return new ResponseEntity<>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+	
+	@GetMapping(value = "/inactiveBankRelation/{id}")
+    public ResponseEntity<LoansResponse> inactiveBankRelation(@PathVariable("id") Long id, HttpServletRequest request) {
+    	try {
+    		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+    		applicationService.inactivateBankRelation(id, userId);
+    		return new ResponseEntity<>(new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value()), HttpStatus.OK);
+    	} catch (Exception e) {
+    		logger.error(CommonUtils.EXCEPTION,e);
+    		return new ResponseEntity<>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+    	}
+    }
+	
 
 }
