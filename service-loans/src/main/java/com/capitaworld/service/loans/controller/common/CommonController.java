@@ -531,7 +531,6 @@ public class CommonController {
     public ResponseEntity<LoansResponse> inactiveBankRelation(@PathVariable("id") Long id, HttpServletRequest request) {
     	try {
     		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-    		System.out.println("Logger of user id =============================>> " + userId);
     		applicationService.inactivateBankRelation(id, userId);
     		return new ResponseEntity<>(new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value()), HttpStatus.OK);
     	} catch (Exception e) {
