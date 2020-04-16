@@ -8,6 +8,7 @@ import java.text.DateFormatSymbols;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
@@ -2258,8 +2260,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 									}							
 								}
 								Map<String, Object> convertExpVal = convertExpVal(resp1);
-								Map<String, Object> sortedMap = new TreeMap<String, Object>(convertExpVal);
-								resp1.getGstNotApplicable().setMomSalesBigDecimal(sortedMap);
+								resp1.getGstNotApplicable().setMomSalesBigDecimal(convertExpVal);
 								resp.add(resp1);
 							}		
 							
@@ -2279,19 +2280,17 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			}
 			
 			private Map<String,Object> convertExpVal(CAMGSTData dataMapList) {
-				Map<String,Object> momSalesmodified = new HashMap<String, Object>();
-				/* for (CAMGSTData dataMap : dataMapList) { */
-					/*Map gstNotApplicatbleMap = (Map) dataMap.get("gstNotApplicable");
-					Map<String, Map<String,Object>> momSalesMap = (Map<String, Map<String,Object>>) gstNotApplicatbleMap.get("momSales");*/
+				LinkedHashMap<String, Object> momSalesmodified = new LinkedHashMap<>();
+				
 					Map<Integer, Map<String, Double>> momSales = dataMapList.getGstNotApplicable().getMomSales();
 					for (Map<String,Double> momSalesMapValuesMap : momSales.values()) {
 						for (Entry<String,Double> entry : momSalesMapValuesMap.entrySet()) {
 							Double value = (Double) entry.getValue();
 							BigDecimal convertedVal = BigDecimal.valueOf(value).setScale(2);
-							momSalesmodified.put(entry.getKey(), convertedVal.toString());
+							String strKey = entry.getKey().toString();
+							momSalesmodified.put(getMonth(Integer.valueOf(strKey.substring(0, 2)).intValue()) + " " +strKey.substring(2), convertedVal.toString());
 						}
 					}
-				/* } */
 				return momSalesmodified;
 			}		
 	
