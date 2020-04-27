@@ -2642,7 +2642,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 						}
 						directorBackgroundDetailResponseList.add(directorBackgroundDetailResponse);
 					}
-					map.put("dirBackgroundTitle", corporateApplicantRequest.getPanNo() != null ? (String.valueOf(corporateApplicantRequest.getPanNo().charAt(3)).toUpperCase().equals("P") ? "Proprietor Details" : String.valueOf(corporateApplicantRequest.getPanNo().charAt(3)).toUpperCase().equals("F") ? "Partners Details" : "Directors Background") : "Directors Background");
+					map.put("dirBackgroundTitle", corporateApplicantRequest.getPanNo() != null ? (String.valueOf(corporateApplicantRequest.getPanNo().charAt(3)).toUpperCase().equals("P") ? "Proprietor" : String.valueOf(corporateApplicantRequest.getPanNo().charAt(3)).toUpperCase().equals("F") ? "Partners" : "Directors Background") : "Directors Background");
 					map.put("dirBackground", !CommonUtils.isListNullOrEmpty(directorBackgroundDetailResponseList) ? CommonUtils.printFields(directorBackgroundDetailResponseList,null) : " ");
 				}
 				catch (Exception e) {
