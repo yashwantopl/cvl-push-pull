@@ -8,7 +8,6 @@ import java.text.DateFormatSymbols;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.Month;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,7 +20,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
@@ -2644,6 +2642,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 						}
 						directorBackgroundDetailResponseList.add(directorBackgroundDetailResponse);
 					}
+					map.put("dirBackgroundTitle", corporateApplicantRequest.getPanNo() != null ? (String.valueOf(corporateApplicantRequest.getPanNo().charAt(3)).toUpperCase().equals("P") ? "Proprietor Details" : String.valueOf(corporateApplicantRequest.getPanNo().charAt(3)).toUpperCase().equals("F") ? "Partners Details" : "Directors Background") : "Directors Background");
 					map.put("dirBackground", !CommonUtils.isListNullOrEmpty(directorBackgroundDetailResponseList) ? CommonUtils.printFields(directorBackgroundDetailResponseList,null) : " ");
 				}
 				catch (Exception e) {
