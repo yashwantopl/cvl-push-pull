@@ -8648,7 +8648,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Override
 	public Boolean updateWcRenewalStatusByApplicationId(Integer wsRenwalStatus, Long applicationId) {
-		return loanApplicationRepository.updateWcRenewalStatusByApplicationId(wsRenwalStatus, applicationId) > 0;
+		return loanApplicationRepository.updateWcRenewalStatusByApplicationId(wsRenwalStatus, applicationId) > 0 && 
+				   loanApplicationRepository.updateWcRenewalStatusOfLoanApplicationByApplicationId(wsRenwalStatus, applicationId) > 0;
 	}
 	
 	@Override

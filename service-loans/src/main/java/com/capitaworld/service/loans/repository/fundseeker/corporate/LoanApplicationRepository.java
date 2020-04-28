@@ -424,4 +424,8 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	@Modifying
 	@Query(value = "UPDATE connect.connect_log cl SET cl.wc_renewal_status=:wsRenwalStatus WHERE cl.application_id=:applicationId",nativeQuery = true)
 	public int updateWcRenewalStatusByApplicationId(@Param("wsRenwalStatus") Integer wsRenwalStatus, @Param("applicationId") Long applicationId);
+	
+	@Modifying
+	@Query(value = "UPDATE loan_application.fs_loan_application_master cl SET cl.wc_renewal_status=:wsRenwalStatus WHERE cl.application_id=:applicationId",nativeQuery = true)
+	public int updateWcRenewalStatusOfLoanApplicationByApplicationId(@Param("wsRenwalStatus") Integer wsRenwalStatus, @Param("applicationId") Long applicationId);
 }
