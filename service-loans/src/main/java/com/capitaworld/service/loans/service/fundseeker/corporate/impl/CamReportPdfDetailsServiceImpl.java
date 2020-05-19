@@ -2241,6 +2241,12 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			                        	last12totalSales += Double.valueOf(CommonUtils.convertStringCurrencyToDouble(sales.getValue()));
 									}
 			                        resp1.setLast12totalSales(last12totalSales);
+			                        if(!CommonUtils.isObjectNullOrEmpty(last12totalSales)) {
+										Double last12totalSalesToConvert = (Double) last12totalSales;
+										BigDecimal convertedLst12TotalSales = BigDecimal.valueOf(last12totalSalesToConvert).setScale(2);
+										resp1.setLast12totalSalesInString(convertedLst12TotalSales.toString());
+									}
+			                        
 			                    }
 								Double totalSales =0.0d;
 								if(resp1.getMomSales() != null) {
