@@ -154,7 +154,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 		try {
 			String gstin = loanRepository.getGSTINByAppId(inlPropReq.getApplicationId());
 
-			IneligibleProposalDetails inlProposalDetails = ineligibleProposalDetailsRepository.findFirstApplicationIdAndIsActive(inlPropReq.getApplicationId(), true);
+			IneligibleProposalDetails inlProposalDetails = ineligibleProposalDetailsRepository.findFirstByApplicationIdAndIsActive(inlPropReq.getApplicationId(), true);
 			boolean isCreateNew = false;
 			if(!CommonUtils.isObjectNullOrEmpty(inlProposalDetails)) {
 				if(!CommonUtils.isObjectNullOrEmpty(inlProposalDetails.getIsSanctioned()) && inlProposalDetails.getIsSanctioned()) {//HANDLE MESSAGE
@@ -864,7 +864,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 	
 	@Override
 	public Boolean checkIsExistOfflineProposalByApplicationId(Long applicationId) {
-		return !CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetailsRepository.findFirstApplicationIdAndIsActive(applicationId, Boolean.TRUE));
+		return !CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetailsRepository.findFirstByApplicationIdAndIsActive(applicationId, Boolean.TRUE));
 	}
 
 	@Override
@@ -1092,7 +1092,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 
 	@Override
 	public InEligibleProposalDetailsRequest get(Long applicationId) {
-		IneligibleProposalDetails ineliApp = ineligibleProposalDetailsRepository.findFirstApplicationIdAndIsActive(applicationId, true);
+		IneligibleProposalDetails ineliApp = ineligibleProposalDetailsRepository.findFirstByApplicationIdAndIsActive(applicationId, true);
 		if(ineliApp == null) {
 			return null;
 		}
