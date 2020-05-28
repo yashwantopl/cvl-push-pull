@@ -48,7 +48,6 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicatio
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.InEligibleProposalStatus;
-import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.notification.client.NotificationClient;
 import com.capitaworld.service.notification.exceptions.NotificationException;
@@ -155,7 +154,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 		try {
 			String gstin = loanRepository.getGSTINByAppId(inlPropReq.getApplicationId());
 
-			IneligibleProposalDetails inlProposalDetails = ineligibleProposalDetailsRepository.findByApplicationIdAndIsActive(inlPropReq.getApplicationId(), true);
+			IneligibleProposalDetails inlProposalDetails = ineligibleProposalDetailsRepository.findFirstApplicationIdAndIsActive(inlPropReq.getApplicationId(), true);
 			boolean isCreateNew = false;
 			if(!CommonUtils.isObjectNullOrEmpty(inlProposalDetails)) {
 				if(!CommonUtils.isObjectNullOrEmpty(inlProposalDetails.getIsSanctioned()) && inlProposalDetails.getIsSanctioned()) {//HANDLE MESSAGE
@@ -865,7 +864,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 	
 	@Override
 	public Boolean checkIsExistOfflineProposalByApplicationId(Long applicationId) {
-		return !CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetailsRepository.findByApplicationIdAndIsActive(applicationId, Boolean.TRUE));
+		return !CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetailsRepository.findFirstApplicationIdAndIsActive(applicationId, Boolean.TRUE));
 	}
 
 	@Override
@@ -1093,7 +1092,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 
 	@Override
 	public InEligibleProposalDetailsRequest get(Long applicationId) {
-		IneligibleProposalDetails ineliApp = ineligibleProposalDetailsRepository.findByApplicationIdAndIsActive(applicationId, true);
+		IneligibleProposalDetails ineliApp = ineligibleProposalDetailsRepository.findFirstApplicationIdAndIsActive(applicationId, true);
 		if(ineliApp == null) {
 			return null;
 		}
