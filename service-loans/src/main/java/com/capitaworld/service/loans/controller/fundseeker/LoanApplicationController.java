@@ -2779,7 +2779,7 @@ public class LoanApplicationController {
 					Long orgId = loanDisbursementRequest.getOrgId();
 					if (!CommonUtils.isObjectNullOrEmpty(orgId)) {
 						loanDisbursementRequest = loanDisbursementService.disbursementRequestValidation(null , loanDisbursementRequest, orgId , CommonUtility.ApiType.DISBURSEMENT);
-						if (SUCCESS_LITERAL.equalsIgnoreCase(loanDisbursementRequest.getReason()) || "First Disbursement".equalsIgnoreCase(loanDisbursementRequest.getReason())) {
+						if (SUCCESS_LITERAL.equalsIgnoreCase(loanDisbursementRequest.getReason()) || "First Disbursement".equalsIgnoreCase(loanDisbursementRequest.getReason())||"Remaining".equalsIgnoreCase(loanDisbursementRequest.getReason()) || "lastAmount".equalsIgnoreCase(loanDisbursementRequest.getReason())) {
 							logger.info("Success msg while saveLoanDisbursementDetail()");
 							loansResponse = new LoansResponse(INFORMATION_SUCCESSFULLY_STORED_MSG,HttpStatus.OK.value());
 							loansResponse.setData(loanDisbursementService.saveLoanDisbursementDetail(loanDisbursementRequest));
