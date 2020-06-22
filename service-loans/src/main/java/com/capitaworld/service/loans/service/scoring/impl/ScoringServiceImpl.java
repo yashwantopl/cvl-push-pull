@@ -2308,4 +2308,60 @@ public class ScoringServiceImpl implements ScoringService {
 	public List<GenericCheckerReqRes> sendToChecker(List<GenericCheckerReqRes> genericCheckerReqResList, Long userId) throws ScoringException {
 		   return scoringClient.sendToChecker(genericCheckerReqResList, userId);
 	}
+	
+	@Override
+	public ScoringModelReqRes inactivateScoringDetails(ScoringModelReqRes scoringModelReqRes) {
+		// TODO Auto-generated method stub
+        try {
+            UserResponse userResponse = usersClient.getOrgIdFromUserId(scoringModelReqRes.getUserId());
+
+            if (!CommonUtils.isObjectNullOrEmpty(userResponse) && !CommonUtils.isObjectNullOrEmpty(userResponse.getData())) {
+                scoringModelReqRes.setOrgId(Long.parseLong(userResponse.getData().toString()));
+            } else {
+                logger.debug(ORG_ID_IS_NULL_OR_EMPTY + "In inactivateScoringDetails");
+                return new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+            }
+        } catch (Exception e) {
+            logger.error(ORG_ID_IS_NULL_OR_EMPTY,e);
+            return new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+        }
+
+        try {
+
+            return scoringClient.inactivateScoringDetails(scoringModelReqRes);
+        } catch (Exception e) {
+            logger.error("error while inactivateScoringDetails : ",e);
+            return new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+        }
+	}
+
+	@Override
+	public ScoringModelReqRes getScoringHistoryDetails(ScoringModelReqRes scoringModelReqRes) {
+		// TODO Auto-generated method stub
+
+		// TODO Auto-generated method stub
+        try {
+            UserResponse userResponse = usersClient.getOrgIdFromUserId(scoringModelReqRes.getUserId());
+
+            if (!CommonUtils.isObjectNullOrEmpty(userResponse) && !CommonUtils.isObjectNullOrEmpty(userResponse.getData())) {
+                scoringModelReqRes.setOrgId(Long.parseLong(userResponse.getData().toString()));
+            } else {
+                logger.debug(ORG_ID_IS_NULL_OR_EMPTY + "In getScoringHistoryDetails");
+                return new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+            }
+        } catch (Exception e) {
+            logger.error(ORG_ID_IS_NULL_OR_EMPTY,e);
+            return new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+        }
+
+        try {
+
+            return scoringClient.getScoringHistoryDetails(scoringModelReqRes);
+        } catch (Exception e) {
+            logger.error("error while getScoringHistoryDetails : ",e);
+            return new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+        }
+	
+	}
+	
 }
