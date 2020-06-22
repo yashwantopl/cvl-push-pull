@@ -1544,6 +1544,56 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	public Long getWCRenewalProductsCount(CommonRequest request) {
 		return productMasterRepository.getWCRenewalProductsCount(CommonUtils.LoanType.WORKING_CAPITAL.getValue(), request.getUserOrgId(), request.getBusinessTypeId(), request.getWcRenewalStatus());
 	}
+	
+	@Override
+	public Boolean scoringCheckIsActive(Long fpProductId) {
+	
+		ProductMaster checkParameterIsactive = productMasterRepository.checkParameterIsactive(fpProductId);
+		if(!CommonUtils.isObjectNullOrEmpty(checkParameterIsactive)) {
+			List<Long> idList=new ArrayList<>();
+			idList.add(checkParameterIsactive.getScoreModelId());
+			idList.add(checkParameterIsactive.getScoreModelIdCoAppId());
+			idList.add(checkParameterIsactive.getScoreModelIdCoAppIdOthThnSal());
+			idList.add(checkParameterIsactive.getScoreModelIdOthThnSal());
+			for(Long i:idList)
+			{
+				if(CommonUtils.isObjectListNull(i)){
+					continue;
+				}
+	
+		String checkParameterInScoringIsActive = productMasterRepository.checkParameterInScoringIsActive(i);
+		if(!CommonUtils.isObjectNullOrEmpty(checkParameterInScoringIsActive)) {
+			return true;
+		}
+		}
+		}
+		return false;
+	}
+
+	@Override
+	public Boolean scoringCheckIsActiveforPanding(Long fpProductId) {
+	
+		ProductMasterTemp checkParameterIsactive = productMasterRepository.checkParameterIsactiveForPanding(fpProductId);
+		if(!CommonUtils.isObjectNullOrEmpty(checkParameterIsactive)) {
+		List<Long> idList=new ArrayList<>();
+		idList.add(checkParameterIsactive.getScoreModelId());
+		idList.add(checkParameterIsactive.getScoreModelIdCoAppId());
+		idList.add(checkParameterIsactive.getScoreModelIdCoAppIdOthThnSal());
+		idList.add(checkParameterIsactive.getScoreModelIdOthThnSal());
+		
+		for(Long i:idList)
+		{
+			if(CommonUtils.isObjectListNull(i)){
+				continue;
+			}
+		String checkParameterInScoringIsActive = productMasterRepository.checkcoringIsActiveForPanding(i);
+		if(!CommonUtils.isObjectNullOrEmpty(checkParameterInScoringIsActive)) {
+			return true;
+		}
+		}
+		}
+		return false;
+	}
 
 }
 

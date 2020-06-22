@@ -125,4 +125,12 @@ public interface ProductMasterTempRepository extends JpaRepository<ProductMaster
 	
 	@Query(value =  "SELECT pm.fp_product_id,pm.product_id,pm.user_id,pm.fp_name,pm.name,pm.is_parameter_filled,pm.is_active,pm.product_code,pm.user_org_id,pm.score_model_id,pm.business_type_id,pm.is_approved,pm.is_deleted,pm.is_copied,pm.is_edit,pm.status_id,pm.job_id,pm.fin_type_id,pm.campaign_type,pm.gst_type,pm.wc_renewal_status,pm.created_date FROM `loan_application`.fp_product_master_temp pm WHERE pm.user_org_id =:userOrgId AND is_copied = FALSE AND product_id IN (1,2) AND pm.business_type_id=:businessTypeId ORDER BY pm.fp_product_id DESC",nativeQuery = true)
 	public List<Object[]> getProductListByBusinessTypeId(@Param("userOrgId") Long userOrgId,@Param("businessTypeId") Long businessTypeId);
+	
+
+	@Query("from ProductMasterTemp pm where pm.id =:fpProductId and pm.isActive = false")
+	public ProductMasterTemp checkParameterIsactiveForPanding(@Param("fpProductId")Long fpProductId);
+
+	@Query(value="select * from scoring_sidbi.scoring_model_temp pm where pm.id=:scoreModelId and pm.is_active = false", nativeQuery=true)
+	public String checkcoringIsActiveForPanding(@Param("scoreModelId")Long scoreModelId);
+	
 }

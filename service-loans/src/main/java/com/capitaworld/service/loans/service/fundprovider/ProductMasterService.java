@@ -83,4 +83,8 @@ public interface ProductMasterService {
 	
 	public Long getWCRenewalProductsCount(CommonRequest request);
 	
+	public Boolean scoringCheckIsActive(Long fpProductId);
+
+	public Boolean scoringCheckIsActiveforPanding(Long fpProductId);
+	
 }

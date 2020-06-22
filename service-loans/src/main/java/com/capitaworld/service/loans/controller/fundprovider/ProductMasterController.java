@@ -826,6 +826,27 @@ public class ProductMasterController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			
+			if(workflowData.getStage() == 1) {
+				Boolean scoringCheckIsActive = productMasterService.scoringCheckIsActiveforPanding(workflowData.getFpProductId());
+				if(scoringCheckIsActive == true) {
+					logger.warn("scoring data is inactive" );
+					CommonDocumentUtils.endHook(logger, CHANGE_STATUS_WITH_WORKFLOW);
+					return new ResponseEntity<>(
+					new LoansResponse(CommonUtils.FALSE_LITERAL, HttpStatus.UNAUTHORIZED.value()), HttpStatus.OK);
+				}
+			}
+			
+			
+			if(workflowData.getStage() == 2) {
+			Boolean scoringCheckIsActive = productMasterService.scoringCheckIsActive(workflowData.getFpProductId());
+			if(scoringCheckIsActive == true) {
+				logger.warn("scoring data is inactive" );
+				CommonDocumentUtils.endHook(logger, CHANGE_STATUS_WITH_WORKFLOW);
+				return new ResponseEntity<>(
+				new LoansResponse(CommonUtils.FALSE_LITERAL, HttpStatus.UNAUTHORIZED.value()), HttpStatus.OK);
+			}
+			}
+			
 			jobId = productMasterService.createJobId(userId);
 			workflowData.setUserId(userId);
 			workflowData.setJobId(jobId);

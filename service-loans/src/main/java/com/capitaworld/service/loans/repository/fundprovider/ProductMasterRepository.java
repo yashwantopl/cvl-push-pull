@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
+import com.capitaworld.service.loans.domain.fundprovider.ProductMasterTemp;
 import com.capitaworld.service.loans.model.ProductDetailsForSp;
 
 @Repository
@@ -185,4 +186,18 @@ public interface ProductMasterRepository extends JpaRepository<ProductMaster, Lo
 	
 	@Query(value = "SELECT COUNT(fp_product_id) FROM loan_application.fp_product_master WHERE is_active = TRUE AND is_parameter_filled = TRUE AND (product_id=:productId) AND business_type_id =:businessTypeId AND user_org_id =:userOrgId  AND wc_renewal_status =:wcRenewalStatus AND (campaign_type=2 OR campaign_type=3)",nativeQuery = true)
 	public Long getWCRenewalProductsCount(@Param("productId")Integer productId, @Param("userOrgId") Long userOrgId, @Param("businessTypeId") Long businessTypeId, @Param("wcRenewalStatus") Integer wcRenewalStatus);
+	
+
+	@Query("from ProductMaster pm where pm.id =:fpProductId and pm.isActive = false")
+	public ProductMaster checkParameterIsactive(@Param("fpProductId")Long fpProductId);
+
+	@Query(value="select * from scoring_sidbi.scoring_model pm where pm.id=:scoreModelId and pm.is_active = false", nativeQuery=true)
+	public String checkParameterInScoringIsActive(@Param("scoreModelId")Long scoreModelId);
+
+	@Query("from ProductMasterTemp pm where pm.id =:fpProductId and pm.isActive = false")
+	public ProductMasterTemp checkParameterIsactiveForPanding(@Param("fpProductId")Long fpProductId);
+	
+
+	@Query(value="select * from scoring_sidbi.scoring_model_temp pm where pm.id=:scoreModelId and pm.is_active = false", nativeQuery=true)
+	public String checkcoringIsActiveForPanding(@Param("scoreModelId")Long scoreModelId);
 }
