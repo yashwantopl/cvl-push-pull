@@ -3125,16 +3125,22 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 		
 		// MUDRA LOAN DETAILS
-		PrimaryCorporateDetailMudraLoan mlDetail = 	mudraLoanRepo.findFirstByApplicationIdAndApplicationProposalMappingProposalIdOrderByIdDesc(applicationId, proposalId); 
-		if (!CommonUtils.isObjectNullOrEmpty(mlDetail)) {			
-			PrimaryCorporateDetailMudraLoanReqRes mlDetailsRes = new PrimaryCorporateDetailMudraLoanReqRes();
-			BeanUtils.copyProperties(mlDetail, mlDetailsRes);
-			if (!CommonUtils.isObjectNullOrEmpty(mlDetail.getMrktArragementFinishedGoods())) {					
-				mlDetailsRes.setMrktArragementFinishedGoodsValue(MrktArrFinishedGoodsList.fromId(mlDetail.getMrktArragementFinishedGoods()).getValue());
+		try {
+			PrimaryCorporateDetailMudraLoan mlDetail = 	mudraLoanRepo.findFirstByApplicationIdAndApplicationProposalMappingProposalIdOrderByIdDesc(applicationId, proposalId); 
+			if (!CommonUtils.isObjectNullOrEmpty(mlDetail)) {			
+				PrimaryCorporateDetailMudraLoanReqRes mlDetailsRes = new PrimaryCorporateDetailMudraLoanReqRes();
+				BeanUtils.copyProperties(mlDetail, mlDetailsRes);
+				if (!CommonUtils.isObjectNullOrEmpty(mlDetail.getMrktArragementFinishedGoods())) {					
+					mlDetailsRes.setMrktArragementFinishedGoodsValue(MrktArrFinishedGoodsList.fromId(mlDetail.getMrktArragementFinishedGoods()).getValue());
+				}
+				//corporatePrimaryViewResponse.setMlDetail(mlDetailsRes);
+				map.put("mlDetail", !CommonUtils.isObjectNullOrEmpty(mlDetailsRes) ? CommonUtils.printFields(mlDetailsRes , null) : Collections.EMPTY_LIST);
 			}
-			//corporatePrimaryViewResponse.setMlDetail(mlDetailsRes);
-			map.put("mlDetail", !CommonUtils.isObjectNullOrEmpty(mlDetailsRes) ? mlDetailsRes : Collections.EMPTY_LIST);
 		}
+		catch (Exception e) {
+			logger.error("Error/Exception while fetching mlDetails Error==>{}",e);
+		}
+		
 		// GET MACHINE DETAILS
 		List<MachineDetailMudraLoan> machineDetails = machineDetailsRepo.findByApplicationIdAndIsActive(applicationId, true);
 		PrimaryCorporateDetailMudraLoanReqRes mlDetailsRes = new PrimaryCorporateDetailMudraLoanReqRes();
