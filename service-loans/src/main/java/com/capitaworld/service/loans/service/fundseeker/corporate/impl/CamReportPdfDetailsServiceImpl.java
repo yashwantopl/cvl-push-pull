@@ -3166,9 +3166,11 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		try {
 			PrimaryCorporateDetailMudraLoanReqRes primaryCorporateDetailMudraLoanReqRes = new PrimaryCorporateDetailMudraLoanReqRes(); 
 			PrimaryCorporateDetailMudraLoan primaryCorporateDetailMudraLoan = primaryCorporateDetailsMudra.findFirstByApplicationIdAndApplicationProposalMappingProposalIdOrderByIdDesc(applicationId, proposalId);
-			BeanUtils.copyProperties(primaryCorporateDetailMudraLoan, primaryCorporateDetailMudraLoanReqRes);
-			if (primaryCorporateDetailMudraLoanReqRes != null) {
-				map.put("statutoryObligation", CommonUtils.printFields(primaryCorporateDetailMudraLoanReqRes,null));
+			if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetailMudraLoan)) {
+				BeanUtils.copyProperties(primaryCorporateDetailMudraLoan, primaryCorporateDetailMudraLoanReqRes);
+				if (primaryCorporateDetailMudraLoanReqRes != null) {
+					map.put("statutoryObligation", CommonUtils.printFields(primaryCorporateDetailMudraLoanReqRes,null));
+				}
 			}
 		}catch (Exception e) {
 			logger.error("Error/Exception statutoryObligation{}",e);
