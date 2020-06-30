@@ -532,6 +532,10 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				for (MachineDetailMudraLoan machineDetailMudraLoan : machineDetails) {
 					MachineDetailMudraLoanRequestResponse machineDetail = new MachineDetailMudraLoanRequestResponse(); 
 					BeanUtils.copyProperties(machineDetailMudraLoan, machineDetail);
+					if(machineDetail != null && machineDetail.getCostOfMachinery() != null) {
+						BigDecimal convertedVal = BigDecimal.valueOf(machineDetail.getCostOfMachinery()).setScale(2);
+						machineDetail.setCostOfMachineryString(convertedVal.toString());
+					}
 					machineDetail.setNameOfSupplier(StringEscapeUtils.escapeXml(machineDetailMudraLoan.getNameOfSupplier()));
 					machineDetailsRes.add(machineDetail);
 				}				
@@ -3149,6 +3153,10 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			for (MachineDetailMudraLoan machineDetailMudraLoan : machineDetails) {
 				MachineDetailMudraLoanRequestResponse machineDetail = new MachineDetailMudraLoanRequestResponse(); 
 				BeanUtils.copyProperties(machineDetailMudraLoan, machineDetail);
+				if(machineDetailMudraLoan != null && machineDetailMudraLoan.getCostOfMachinery() != null) {
+					BigDecimal convertedVal = BigDecimal.valueOf(machineDetailMudraLoan.getCostOfMachinery()).setScale(2);
+					machineDetail.setCostOfMachineryString(convertedVal.toString());
+				}
 				machineDetailsRes.add(machineDetail);
 			}				
 			mlDetailsRes.setMachineDetails(machineDetailsRes);
