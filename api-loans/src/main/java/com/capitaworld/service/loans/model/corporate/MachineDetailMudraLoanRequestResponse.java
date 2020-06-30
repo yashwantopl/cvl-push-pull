@@ -12,8 +12,17 @@ public class MachineDetailMudraLoanRequestResponse {
 	
 	private Double costOfMachinery;
 	
-	private Long applicationId;
+	private String costOfMachineryString;
 	
+	private Long applicationId;
+
+	public String getCostOfMachineryString() {
+		return costOfMachineryString;
+	}
+
+	public void setCostOfMachineryString(String costOfMachineryString) {
+		this.costOfMachineryString = costOfMachineryString;
+	}
 
 	public Long getId() {
 		return id;
