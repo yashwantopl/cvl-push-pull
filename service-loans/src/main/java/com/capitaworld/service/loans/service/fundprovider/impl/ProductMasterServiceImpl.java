@@ -160,15 +160,15 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	@Autowired
 	private WorkflowClient workflowClient;
 	
+	private FPAsyncComponent fpAsyncComponent;
+	
 	@Lazy
-	ProductMasterServiceImpl(FPAsyncComponent fpAsyncComponent)
-    {
-        logger.info("init @Lazy FPAsyncComponent");
+	ProductMasterServiceImpl(FPAsyncComponent fpAsyncComponent){
         this.fpAsyncComponent=fpAsyncComponent;
     }
 	
-	@Autowired
-	private FPAsyncComponent fpAsyncComponent;
+//	@Autowired
+//	private FPAsyncComponent fpAsyncComponent;
 	
 	@Autowired
 	private IndustrySectorTempRepository industrySectorTempRepository;
