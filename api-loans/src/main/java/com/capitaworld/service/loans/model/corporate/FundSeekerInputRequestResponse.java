@@ -39,6 +39,8 @@ public class FundSeekerInputRequestResponse {
     private String gstIn;
 
     private String pan;
+    
+    private String panNumber;
 
     private String aadhar;
 
@@ -211,6 +213,8 @@ public class FundSeekerInputRequestResponse {
 	private List<Long> deletedMachine;
 	
 	private Boolean isAssociateConcern;
+	
+	private Integer employmentGeneration;
 	
 	
 	public Boolean getIsIsoCertified() {
@@ -981,6 +985,22 @@ public class FundSeekerInputRequestResponse {
 
 	public void setIsAssociateConcern(Boolean isAssociateConcern) {
 		this.isAssociateConcern = isAssociateConcern;
+	}
+
+	public String getPanNumber() {
+		return panNumber;
+	}
+
+	public void setPanNumber(String panNumber) {
+		this.panNumber = panNumber;
+	}
+	
+	public Integer getEmploymentGeneration() {
+		return employmentGeneration;
+	}
+
+	public void setEmploymentGeneration(Integer employmentGeneration) {
+		this.employmentGeneration = employmentGeneration;
 	}
 
 	@Override

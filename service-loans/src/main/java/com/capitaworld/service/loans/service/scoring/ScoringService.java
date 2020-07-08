@@ -19,9 +19,7 @@ public interface ScoringService {
 
     public ResponseEntity<LoansResponse> calculateScoring(ScoringRequestLoans scoringRequestLoans);
 
-    public ResponseEntity<LoansResponse> calculateExistingBusinessScoring(ScoringRequestLoans scoringRequestLoans);
-
-    public ResponseEntity<LoansResponse> calculateExistingBusinessScoringList(List<ScoringRequestLoans> scoringRequestLoansList);
+    public ResponseEntity<LoansResponse> calculateMudraScoringList(List<ScoringRequestLoans> scoringRequestLoansList);
 
     public ResponseEntity<LoansResponse> calculateScoringTest(ScoringRequestLoans scoringRequestLoans);
     
@@ -49,4 +47,9 @@ public interface ScoringService {
 			Long userId) throws ScoringException;
 
 	public List<GenericCheckerReqRes> sendToChecker(List<GenericCheckerReqRes> genericCheckerReqResList, Long userId) throws ScoringException;
+	
+    public ScoringModelReqRes inactivateScoringDetails(ScoringModelReqRes scoringModelReqRes);
+
+	public ScoringModelReqRes getScoringHistoryDetails(ScoringModelReqRes scoringModelReqRes);
+
 }

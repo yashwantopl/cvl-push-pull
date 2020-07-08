@@ -54,6 +54,10 @@ import com.capitaworld.service.users.model.UsersRequest;
 @RestController
 @RequestMapping("/loan_application")
 public class LoanApplicationController {
+	
+	private static final int RENEWALLOANTYPE = 2;
+
+	private static final int NEWLOANTYPE = 1;
 
 	private static final Logger logger = LoggerFactory.getLogger(LoanApplicationController.class);
 
@@ -2775,7 +2779,7 @@ public class LoanApplicationController {
 					Long orgId = loanDisbursementRequest.getOrgId();
 					if (!CommonUtils.isObjectNullOrEmpty(orgId)) {
 						loanDisbursementRequest = loanDisbursementService.disbursementRequestValidation(null , loanDisbursementRequest, orgId , CommonUtility.ApiType.DISBURSEMENT);
-						if (SUCCESS_LITERAL.equalsIgnoreCase(loanDisbursementRequest.getReason()) || "First Disbursement".equalsIgnoreCase(loanDisbursementRequest.getReason())) {
+						if (SUCCESS_LITERAL.equalsIgnoreCase(loanDisbursementRequest.getReason()) || "First Disbursement".equalsIgnoreCase(loanDisbursementRequest.getReason())||"Remaining".equalsIgnoreCase(loanDisbursementRequest.getReason()) || "lastAmount".equalsIgnoreCase(loanDisbursementRequest.getReason())) {
 							logger.info("Success msg while saveLoanDisbursementDetail()");
 							loansResponse = new LoansResponse(INFORMATION_SUCCESSFULLY_STORED_MSG,HttpStatus.OK.value());
 							loansResponse.setData(loanDisbursementService.saveLoanDisbursementDetail(loanDisbursementRequest));
@@ -3174,6 +3178,66 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully get data", HttpStatus.OK.value(),loanApplicationService.getCampaignCodeAndIsBankSpecific(applicationId)), HttpStatus.OK);
 	    } catch (Exception e) {
 	    	logger.error("Error while getCampaignCodeAndIsBankSpecific ==>", e);
+	    	return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.INTERNAL_SERVER_ERROR);
+	    }
+	}
+	
+	@RequestMapping(value = "/validateLoanType/{userorgId}/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> validateLoanType(@PathVariable("userorgId") Long userorgId, @PathVariable("applicationId") Long applicationId) {
+		try {
+			if(!CommonUtils.isObjectNullOrEmpty(userorgId) && !CommonUtils.isObjectNullOrEmpty(applicationId)) {
+				String orgName = loanApplicationService.getOrganisationNameByOrgId(userorgId);
+				if(!CommonUtils.isObjectNullOrEmpty(orgName)) {
+					Integer loanTypeByApplicationId = loanApplicationService.checkLoanTypeByApplicationId(applicationId);
+					String message=null;
+					if(!CommonUtils.isObjectNullOrEmpty(loanTypeByApplicationId)) {
+						Boolean appliedLoanStatus = loanApplicationService.checkAppliedForExisitingLoan(applicationId);
+						if(loanTypeByApplicationId.equals(NEWLOANTYPE)){
+							if(!CommonUtils.isObjectNullOrEmpty(appliedLoanStatus) && appliedLoanStatus.equals(Boolean.TRUE)) {
+								message = "It Seems you have an existing working capital loan with "+orgName+", Do you want to change the Application type from 'New' to 'Renewal'";
+							}
+						}else if(loanTypeByApplicationId.equals(RENEWALLOANTYPE)) {
+							if(!CommonUtils.isObjectNullOrEmpty(appliedLoanStatus) && appliedLoanStatus.equals(Boolean.FALSE)) {
+								message = "It Seems you do not have any Loan with "+orgName+", Do you want to change the Loan type from 'Renewal' to 'New'";
+							}
+						}
+					}
+					return new ResponseEntity<LoansResponse>(new LoansResponse(message, HttpStatus.OK.value(),message),HttpStatus.OK);
+				}
+			}
+			return new ResponseEntity<>(
+	   					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+	   					HttpStatus.INTERNAL_SERVER_ERROR);
+	    } catch (Exception e) {
+	    	logger.error("LoanApplicationController.validateLoanType ==>", e);
+	    	return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.INTERNAL_SERVER_ERROR);
+	    }
+	}
+	
+	
+	@RequestMapping(value = "/setWcRenewalStatus/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> validateLoanType(@PathVariable("applicationId") Long applicationId) {
+		try {
+			if(!CommonUtils.isObjectNullOrEmpty(applicationId)) {
+					Integer loanTypeByApplicationId = loanApplicationService.checkLoanTypeByApplicationId(applicationId);
+					if(!CommonUtils.isObjectNullOrEmpty(loanTypeByApplicationId)) {
+						Boolean isStatusUpdated=Boolean.FALSE;
+						if(loanTypeByApplicationId.equals(NEWLOANTYPE)){
+							isStatusUpdated = loanApplicationService.updateWcRenewalStatusByApplicationId(RENEWALLOANTYPE,applicationId);
+						}else if(loanTypeByApplicationId.equals(RENEWALLOANTYPE)) {
+							isStatusUpdated = loanApplicationService.updateWcRenewalStatusByApplicationId(NEWLOANTYPE,applicationId);
+						}
+						
+						if(Boolean.TRUE.equals(isStatusUpdated)) {
+							return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully set wsRenewalStatus", HttpStatus.OK.value()),HttpStatus.OK);
+						}
+					}
+			}
+			return new ResponseEntity<>(
+	   					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+	   					HttpStatus.INTERNAL_SERVER_ERROR);
+	    } catch (Exception e) {
+	    	logger.error("LoanApplicationController.validateLoanType ==>", e);
 	    	return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.INTERNAL_SERVER_ERROR);
 	    }
 	}

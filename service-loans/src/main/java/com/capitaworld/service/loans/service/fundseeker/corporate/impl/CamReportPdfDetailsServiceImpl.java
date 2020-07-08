@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DateFormat;
+import java.text.DateFormatSymbols;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -413,7 +414,6 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
     
     @Autowired
     private PennydropClient pennyDropClient;
-    
 
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -508,31 +508,43 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 		
      // MUDRA LOAN DETAILS
-     			PrimaryCorporateDetailMudraLoan mlDetail = 	mudraLoanRepo.findFirstByApplicationIdAndApplicationProposalMappingProposalIdOrderByIdDesc(applicationId, proposalId); 
-     			if (!CommonUtils.isObjectNullOrEmpty(mlDetail)) {			
-     				PrimaryCorporateDetailMudraLoanReqRes mlDetailsRes = new PrimaryCorporateDetailMudraLoanReqRes();
-     				BeanUtils.copyProperties(mlDetail, mlDetailsRes);
-     				if (!CommonUtils.isObjectNullOrEmpty(mlDetail.getMrktArragementFinishedGoods())) {					
-     					mlDetailsRes.setMrktArragementFinishedGoodsValue(MrktArrFinishedGoodsList.fromId(mlDetail.getMrktArragementFinishedGoods()).getValue());
-     				}
-     				//corporatePrimaryViewResponse.setMlDetail(mlDetailsRes);
-     				map.put("mlDetail", !CommonUtils.isObjectNullOrEmpty(mlDetailsRes) ? mlDetailsRes : Collections.EMPTY_LIST);
-     			}
-	// GET MACHINE DETAILS
-		List<MachineDetailMudraLoan> machineDetails = machineDetailsRepo.findByApplicationIdAndIsActive(toApplicationId, true);
-		PrimaryCorporateDetailMudraLoanReqRes mlDetailsRes = new PrimaryCorporateDetailMudraLoanReqRes();
-		if (!CommonUtils.isListNullOrEmpty(machineDetails)) {
-			List<MachineDetailMudraLoanRequestResponse> machineDetailsRes =  new ArrayList<>(machineDetails.size());
-			for (MachineDetailMudraLoan machineDetailMudraLoan : machineDetails) {
-				MachineDetailMudraLoanRequestResponse machineDetail = new MachineDetailMudraLoanRequestResponse(); 
-				BeanUtils.copyProperties(machineDetailMudraLoan, machineDetail);
-				machineDetail.setNameOfSupplier(StringEscapeUtils.escapeXml(machineDetailMudraLoan.getNameOfSupplier()));
-				machineDetailsRes.add(machineDetail);
-			}				
-			mlDetailsRes.setMachineDetails(machineDetailsRes);
+        try {
+			PrimaryCorporateDetailMudraLoan mlDetail = 	mudraLoanRepo.findFirstByApplicationIdAndApplicationProposalMappingProposalIdOrderByIdDesc(applicationId, proposalId); 
+			if (!CommonUtils.isObjectNullOrEmpty(mlDetail)) {			
+				PrimaryCorporateDetailMudraLoanReqRes mlDetailsRes = new PrimaryCorporateDetailMudraLoanReqRes();
+				BeanUtils.copyProperties(mlDetail, mlDetailsRes);
+				if (!CommonUtils.isObjectNullOrEmpty(mlDetail.getMrktArragementFinishedGoods())) {					
+					mlDetailsRes.setMrktArragementFinishedGoodsValue(MrktArrFinishedGoodsList.fromId(mlDetail.getMrktArragementFinishedGoods()).getValue());
+				}
+				//corporatePrimaryViewResponse.setMlDetail(mlDetailsRes);
+				map.put("mlDetail", !CommonUtils.isObjectNullOrEmpty(mlDetailsRes) ? CommonUtils.printFields(mlDetailsRes , null) : Collections.EMPTY_LIST);
+			}
+        }catch (Exception e) {
+			logger.error("Error/Exception mlDetail==>{}",e);
 		}
-		map.put("machineDetailsMudra", mlDetailsRes);			
         
+        // GET MACHINE DETAILS
+        try {
+			List<MachineDetailMudraLoan> machineDetails = machineDetailsRepo.findByApplicationIdAndIsActive(toApplicationId, true);
+			PrimaryCorporateDetailMudraLoanReqRes mlDetailsRes = new PrimaryCorporateDetailMudraLoanReqRes();
+			if (!CommonUtils.isListNullOrEmpty(machineDetails)) {
+				List<MachineDetailMudraLoanRequestResponse> machineDetailsRes =  new ArrayList<>(machineDetails.size());
+				for (MachineDetailMudraLoan machineDetailMudraLoan : machineDetails) {
+					MachineDetailMudraLoanRequestResponse machineDetail = new MachineDetailMudraLoanRequestResponse(); 
+					BeanUtils.copyProperties(machineDetailMudraLoan, machineDetail);
+					if(machineDetail != null && machineDetail.getCostOfMachinery() != null) {
+						BigDecimal convertedVal = BigDecimal.valueOf(machineDetail.getCostOfMachinery()).setScale(2);
+						machineDetail.setCostOfMachineryString(convertedVal.toString());
+					}
+					machineDetail.setNameOfSupplier(StringEscapeUtils.escapeXml(machineDetailMudraLoan.getNameOfSupplier()));
+					machineDetailsRes.add(machineDetail);
+				}				
+				mlDetailsRes.setMachineDetails(machineDetailsRes);
+			}
+			map.put("machineDetailsMudra", CommonUtils.printFields(mlDetailsRes , null));
+        }catch (Exception e) {
+			logger.error("Error/Exception machineDetailsMudra==>{}",e);
+		}
 		
 		//get NO BS+ DATA
 		CommonResponse verificationrequestResponse = null;
@@ -560,15 +572,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		// Product Name
 		if(productId != null) {
 			String productName = productMasterRepository.getFpProductName(productId);
-			if(productName != null) {
-				try {
-					map.put("fpProductName",CommonUtils.printFields(productName, null));
-				} catch (Exception e) {
-					logger.info("error"+e);
-				}
-			}else {
-				logger.info("product name is null..of productId==>{}", productId);
-			}
+			map.put("fpProductName",productName != null ? StringEscapeUtils.escapeXml(productName) : " ");
 		}else {
 			logger.info("fpProductMapping id is null..");
 		}
@@ -586,7 +590,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			workflowRequest.setUserId(userId);
 			WorkflowResponse auditTrail = workflowClient.getAuditTrail(workflowRequest);
 			if(!CommonUtils.isObjectNullOrEmpty(auditTrail)) {
-				map.put("trailDates", auditTrail.getData());
+				map.put("trailDates", CommonUtils.printFields(auditTrail.getData() , null));
 			}
 		} catch (Exception e2) {
 			logger.error(CommonUtils.EXCEPTION,e2);
@@ -629,15 +633,16 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		map.putAll(getMatchesAndEligiblityDetails(applicationId,productId,proposalId));
 		
-		
-		PrimaryCorporateDetailMudraLoanReqRes primaryCorporateDetailMudraLoanReqRes = new PrimaryCorporateDetailMudraLoanReqRes(); 
-		PrimaryCorporateDetailMudraLoan primaryCorporateDetailMudraLoan = primaryCorporateDetailsMudra.findFirstByApplicationIdAndApplicationProposalMappingProposalIdOrderByIdDesc(toApplicationId, proposalId);
-		BeanUtils.copyProperties(primaryCorporateDetailMudraLoan, primaryCorporateDetailMudraLoanReqRes);
-		if (primaryCorporateDetailMudraLoanReqRes != null) {
-			map.put("statutoryObligation", primaryCorporateDetailMudraLoanReqRes);
+		try {
+			PrimaryCorporateDetailMudraLoanReqRes primaryCorporateDetailMudraLoanReqRes = new PrimaryCorporateDetailMudraLoanReqRes(); 
+			PrimaryCorporateDetailMudraLoan primaryCorporateDetailMudraLoan = primaryCorporateDetailsMudra.findFirstByApplicationIdAndApplicationProposalMappingProposalIdOrderByIdDesc(toApplicationId, proposalId);
+			BeanUtils.copyProperties(primaryCorporateDetailMudraLoan, primaryCorporateDetailMudraLoanReqRes);
+			if (primaryCorporateDetailMudraLoanReqRes != null) {
+				map.put("statutoryObligation", CommonUtils.printFields(primaryCorporateDetailMudraLoanReqRes , null));
+			}
+		}catch (Exception e) {
+			logger.error("Error/Exception statutoryObligation==>{}",e);
 		}
-		
-		
 		//FINANCIALS AND NOTES TO ACCOUNTS
 		try {
 			//PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(toApplicationId, userId);
@@ -688,16 +693,25 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 
 		//PROPOSAL RESPONSE
 		try {
-				ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
-				proposalMappingRequest.setApplicationId(toApplicationId);
-				proposalMappingRequest.setFpProductId(productId);
-				ProposalMappingResponse proposalMappingResponse= proposalDetailsClient.getActiveProposalDetails(proposalMappingRequest);
-				proposalMappingRequestString = new ProposalMappingRequestString();
-				logger.info("============proposalMappingRequestId==>{}",proposalMappingRequestString.getId());
-				BeanUtils.copyProperties(proposalMappingResponse.getData(), proposalMappingRequestString);
-				map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? proposalMappingResponse.getData() : " ");
-				
-		}
+			ObjectMapper mapper = new ObjectMapper();
+			ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
+			proposalMappingRequest.setApplicationId(toApplicationId);
+			proposalMappingRequest.setFpProductId(productId);
+			ProposalMappingResponse proposalMappingResponse= proposalDetailsClient.getActiveProposalDetails(proposalMappingRequest);
+			proposalMappingRequestString = mapper.convertValue(proposalMappingResponse.getData(), ProposalMappingRequestString.class);
+			logger.info("============proposalMappingRequestId==>{}",proposalMappingRequestString.getId());
+			map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? CommonUtils.printFields(proposalMappingResponse.getData() ,null): " ");
+			
+			//For ROI Calculation
+			Map<String , Object> roiData = new LinkedHashMap<String, Object>();
+			if(!CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString)) {
+				roiData.put("scoringBasedOn" , proposalMappingRequestString.getScoringModelBasedOn() != null && proposalMappingRequestString.getScoringModelBasedOn() == 2 ? "MCLR" : "EBLR");
+				roiData.put("mclr", !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getMclrRoi()) ? proposalMappingRequestString.getMclrRoi() : "-");
+				roiData.put("spread", !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getSpreadRoi()) ? proposalMappingRequestString.getSpreadRoi() : "-");
+				roiData.put("effectiveRoi", !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getElRoi()) ? proposalMappingRequestString.getElRoi() : "-");
+			}
+			map.put("roiData", !CommonUtils.isObjectNullOrEmpty(roiData) ? roiData : null);
+		}		
 		catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
@@ -774,7 +788,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 
 				} catch (Exception e) {
 						// TODO: handle exception
-					e.printStackTrace();
+					logger.error("Error while Getting No ITR Detail = >{}",e);
 					}
 				
 		
@@ -794,7 +808,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			try {
 				map.put("associateConcern", CommonUtils.printFields(associatedConcernResList, null));
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("Error while Getting Associate Concern Details = >{}",e);
 			}
 			
 				
@@ -981,11 +995,30 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			if(!CommonUtils.isListNullOrEmpty(collect)) {
 				mudraScoringMap.put("ACCESS_TO_INPUTS_ML", CommonUtils.printFields(collect.get(0),null));
 			}
-			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("ACCESS_TO_INPUTS_ML")).collect(Collectors.toList());
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("CREDIT_SUMMATION_ML")).collect(Collectors.toList());
 			if(!CommonUtils.isListNullOrEmpty(collect)) {
-				mudraScoringMap.put("ACCESS_TO_INPUTS_ML", CommonUtils.printFields(collect.get(0),null));
+				mudraScoringMap.put("CREDIT_SUMMATION_ML", CommonUtils.printFields(collect.get(0),null));
 			}
-			
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("DISTANCE_BETWEEN_WORKPLACE_AND_RESIDENCE_ML")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("DISTANCE_BETWEEN_WORKPLACE_AND_RESIDENCE_ML", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("EMPLOYMENT_GENERATION_ML")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("EMPLOYMENT_GENERATION_ML", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("PROMOTERS_CONTRIBUTION_ML")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("PROMOTERS_CONTRIBUTION_ML", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("REGISTRATION_WITH_GOVERNMENT_AUTHORITIES_COMBINED_ML")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("REGISTRATION_WITH_GOVERNMENT_AUTHORITIES_COMBINED_ML", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("RELATIONSHIP_WITH_BANK_COMBINED_ML")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("RELATIONSHIP_WITH_BANK_COMBINED_ML", CommonUtils.printFields(collect.get(0),null));
+			}
 			
 			scoreResponse.add(mudraScoringMap);
 			map.put("mudraScoringResp", scoreResponse);
@@ -1128,7 +1161,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		//gstRelatedParty Data Fetch
 		try {
 			Map<String , Object> gstRelatedPartyRequests = loanApplicationService.getGstRelatedPartyDetails(applicationId);
-			map.put("gstPartyRelatedData", gstRelatedPartyRequests != null && !gstRelatedPartyRequests.isEmpty() ? gstRelatedPartyRequests : null);
+			map.put("gstPartyRelatedData", gstRelatedPartyRequests != null && !gstRelatedPartyRequests.isEmpty() ? CommonUtils.printFields(gstRelatedPartyRequests , null) : null);
 		}catch (Exception e) {
 			logger.error("Error/Exception while fetching list of gst Related Party List Data of APplicationId==>{}  ... Error==>{}",applicationId ,e);
 		}
@@ -2163,6 +2196,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		return map;
 	}
 	
+	public String getMonth(int month) {
+	    return new DateFormatSymbols().getMonths()[month-1];
+	}
 	
 	//GST COMMON METHOD
 			@Override
@@ -2190,8 +2226,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			                        List<MomSales> responseMom= new ArrayList<>();
 			                        
 			                        for (MomSales sales1 : momSalesResp1) {
-			                        	StringBuilder str = new StringBuilder(sales1.getMonth());
-			                        	sales1.setMonth(str.insert(2, '-').toString());
+			                        	String str = sales1.getMonth();
+			                        	sales1.setMonth(getMonth(Integer.valueOf(str.substring(0, 2)).intValue()) + " " +str.substring(2));
+			                        	//sales1.setMonth(str.insert(2, '-').toString());
 			                        	sales1.setValue((String)CommonUtils.convertValueIndianCurrency(Double.valueOf(sales1.getValue())));
 			                        	sales1.setIsManualEntry(sales1.getIsManualEntry());
 			                            responseMom.add(sales1);
@@ -2208,6 +2245,12 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			                        	last12totalSales += Double.valueOf(CommonUtils.convertStringCurrencyToDouble(sales.getValue()));
 									}
 			                        resp1.setLast12totalSales(last12totalSales);
+			                        if(!CommonUtils.isObjectNullOrEmpty(last12totalSales)) {
+										Double last12totalSalesToConvert = (Double) last12totalSales;
+										BigDecimal convertedLst12TotalSales = BigDecimal.valueOf(last12totalSalesToConvert).setScale(2);
+										resp1.setLast12totalSalesInString(convertedLst12TotalSales.toString());
+									}
+			                        
 			                    }
 								Double totalSales =0.0d;
 								if(resp1.getMomSales() != null) {
@@ -2225,8 +2268,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 									}							
 								}
 								Map<String, Object> convertExpVal = convertExpVal(resp1);
-								Map<String, Object> sortedMap = new TreeMap<String, Object>(convertExpVal);
-								resp1.getGstNotApplicable().setMomSalesBigDecimal(sortedMap);
+								resp1.getGstNotApplicable().setMomSalesBigDecimal(convertExpVal);
 								resp.add(resp1);
 							}		
 							
@@ -2246,25 +2288,24 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			}
 			
 			private Map<String,Object> convertExpVal(CAMGSTData dataMapList) {
-				Map<String,Object> momSalesmodified = new HashMap<String, Object>();
-				/* for (CAMGSTData dataMap : dataMapList) { */
-					/*Map gstNotApplicatbleMap = (Map) dataMap.get("gstNotApplicable");
-					Map<String, Map<String,Object>> momSalesMap = (Map<String, Map<String,Object>>) gstNotApplicatbleMap.get("momSales");*/
+				LinkedHashMap<String, Object> momSalesmodified = new LinkedHashMap<>();
+				
 					Map<Integer, Map<String, Double>> momSales = dataMapList.getGstNotApplicable().getMomSales();
 					for (Map<String,Double> momSalesMapValuesMap : momSales.values()) {
 						for (Entry<String,Double> entry : momSalesMapValuesMap.entrySet()) {
 							Double value = (Double) entry.getValue();
 							BigDecimal convertedVal = BigDecimal.valueOf(value).setScale(2);
-							momSalesmodified.put(entry.getKey(), convertedVal.toString());
+							String strKey = entry.getKey().toString();
+							momSalesmodified.put(getMonth(Integer.valueOf(strKey.substring(0, 2)).intValue()) + " " +strKey.substring(2), convertedVal.toString());
 						}
 					}
-				/* } */
 				return momSalesmodified;
 			}		
 	
 	//ONE_FORM COMMON
 	public Map<String ,Object> getOneFormData(Long applicationId, Long proposalId,Long userId){
 		
+		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
 		
 		ApplicationProposalMapping applicationProposalMapping = null;
         if(proposalId != null) {
@@ -2286,7 +2327,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		String categoryType = "";
 		PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateRepository.getByApplicationAndUserId(applicationId, userId);
 		if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)) {
-			map.put("loanAmtApplied", primaryCorporateDetail.getLoanAmount()!= null ? CommonUtils.convertValueIndianCurrency(primaryCorporateDetail.getLoanAmount()) : 0);
+			map.put("loanAmtApplied", loanApplicationMaster != null && WcRenewalType.RENEWAL.getId().equals(loanApplicationMaster.getWcRenewalStatus()) ? (primaryCorporateDetail.getLoanAmount() != null ? CommonUtils.convertValueIndianCurrency(primaryCorporateDetail.getLoanAmount()) : 0)
+					: (primaryCorporateDetail.getAdditionalLoanAmount() != null ? CommonUtils.convertValueIndianCurrency(primaryCorporateDetail.getAdditionalLoanAmount()) : 0));
 			if (primaryCorporateDetail.getLoanAmount() != null) {
 				if (primaryCorporateDetail.getLoanAmount() <= 50000) {
 					categoryType = "Shishu"; 
@@ -2466,6 +2508,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 						DirectorBackgroundDetailResponseString directorBackgroundDetailResponse = new DirectorBackgroundDetailResponseString();
 						//directorBackgroundDetailResponse.setAchivements(directorBackgroundDetailRequest.getAchivements());
 						directorBackgroundDetailResponse.setAddress(directorBackgroundDetailRequest.getAddress());
+						directorBackgroundDetailResponse.setPremiseNumber(directorBackgroundDetailRequest.getPremiseNumber());
+						directorBackgroundDetailResponse.setStreetName(directorBackgroundDetailRequest.getStreetName());
+						directorBackgroundDetailResponse.setLandmark(directorBackgroundDetailRequest.getLandmark());
 						//directorBackgroundDetailResponse.setAge(directorBackgroundDetailRequest.getAge());
 						directorBackgroundDetailResponse.setDirectorsName((directorBackgroundDetailRequest.getSalutationId() != null ? Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue() : null )+ " " + directorBackgroundDetailRequest.getDirectorsName());
 						if(directorBackgroundDetailRequest.getPanNo() != null) {
@@ -2544,6 +2589,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 						directorBackgroundDetailResponse.setVisuallyImpaired(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getVisuallyImpaired()) ? StringEscapeUtils.escapeXml(VisuallyImpairedMst.getById(directorBackgroundDetailRequest.getVisuallyImpaired()).getValue().toString()) : "-");
 						directorBackgroundDetailResponse.setResidentStatus(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getResidentStatus()) ? StringEscapeUtils.escapeXml(ResidentStatusMst.getById(directorBackgroundDetailRequest.getResidentStatus()).getValue().toString()) : "-");
 						directorBackgroundDetailResponse.setDirectorPersonalInfo(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest()) ? directorBackgroundDetailRequest.getDirectorPersonalDetailRequest() : " " );
+						directorBackgroundDetailResponse.setIsWorkPlaceResidenceSamePlace(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest()) && !CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getIsWorkAndResidenceSamePlace()) ? (directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getIsWorkAndResidenceSamePlace() != 0 ? "Yes" : "No") : "No" );
 						directorBackgroundDetailResponse.setIsPhysicallyhandicapped(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getPhysicallyHandicapped()) ? VisuallyImpairedMst.getById(directorBackgroundDetailRequest.getPhysicallyHandicapped()).toString() : "-");
 					
 						//NATIONALITY
@@ -2580,8 +2626,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 									directorPersonalDetailResponse.setNoOfChildren(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getNoOfChildren()) ? directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getNoOfChildren() : 0 );
 									directorPersonalDetailResponse.setHaveLiPolicy(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveLiPolicy()) ? StringEscapeUtils.escapeXml(HaveLIMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveLiPolicy()).getValue().toString()) : "-");
 
-									Boolean isSameIdProof = directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getIsSameAddIdProof(); 									
-									directorPersonalDetailResponse.setIsSameAddIdProof(!CommonUtils.isObjectNullOrEmpty(isSameIdProof) ? (isSameIdProof ? "Yes" : "No") : "No");
+									Boolean isSameAddIdProof = directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getIsSameAddIdProof(); 									
+									directorPersonalDetailResponse.setIsSameAddIdProof((!CommonUtils.isObjectNullOrEmpty(isSameAddIdProof) ? (isSameAddIdProof ? "Yes" : "No") : "No")  + (isSameAddIdProof != null && isSameAddIdProof ? (!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getAddressYears()) ? " (" + directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getAddressYears() + " Years)" : "") : ""));
 									
 									directorPersonalDetailResponse.setCertificationCourse(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getCertificationCourse()) ? CertificationCourseMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getCertificationCourse()).getValue() : "-" );
 									directorPersonalDetailResponse.setOtherIncomeSource(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOtherIncomeSource()) ? directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOtherIncomeSource() : 0 );
@@ -2606,6 +2652,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 						}
 						directorBackgroundDetailResponseList.add(directorBackgroundDetailResponse);
 					}
+					map.put("dirBackgroundTitle", corporateApplicantRequest.getPanNo() != null ? (String.valueOf(corporateApplicantRequest.getPanNo().charAt(3)).toUpperCase().equals("P") ? "Proprietor" : String.valueOf(corporateApplicantRequest.getPanNo().charAt(3)).toUpperCase().equals("F") ? "Partners" : "Directors Background") : "Directors Background");
 					map.put("dirBackground", !CommonUtils.isListNullOrEmpty(directorBackgroundDetailResponseList) ? CommonUtils.printFields(directorBackgroundDetailResponseList,null) : " ");
 				}
 				catch (Exception e) {
@@ -2687,7 +2734,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 						map.put("purpose", "");
 					}
 
-					if(primaryCorporateRequest.getHaveCollateralSecurity()) {
+					if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getHaveCollateralSecurity()) && primaryCorporateRequest.getHaveCollateralSecurity()) {
 						map.put("collateralSecurityList", collateralSecurityDetailService.getData(applicationId));
 						map.put("amtOfSecurity",!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getCollateralSecurityAmount()) ? CommonUtils.convertValueIndianCurrency(primaryCorporateRequest.getCollateralSecurityAmount()) : " ");
 					}
@@ -2756,7 +2803,6 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					}
 				}
 				
-				LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
 				map.put("applicationType", (loanApplicationMaster.getWcRenewalStatus() != null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue() : "New" ));
 				//MCA DATA
 				try {
@@ -2791,6 +2837,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 						if(corporateApplicantDetail != null) {
 							map.put("castCategory", corporateApplicantDetail.getCastCategory());
 							map.put("minorityCastCategory", corporateApplicantDetail.getMinorCastCategory());
+							map.put("noOfWorker", corporateApplicantDetail.getEmploymentGeneration() != null ? corporateApplicantDetail.getEmploymentGeneration() : "-");
+							map.put("nameAsperGST", corporateApplicantDetail.getOrganisationName() != null ? StringEscapeUtils.escapeXml(corporateApplicantDetail.getOrganisationName()) : "-");
 						}
 					}catch (Exception e) {
 						logger.error(CommonUtils.EXCEPTION,e);
@@ -2987,20 +3035,22 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		try {
 			map.put("associateConcern", CommonUtils.printFields(associatedConcernResList, null));
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while Getting Associate Concern Details = >{}",e);
 		}
 		
 		//PROPOSAL RESPONSE
-		try {	
-			ProposalMappingRequestString proposalMappingRequestString = null;
-				ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
-				proposalMappingRequest.setApplicationId(applicationId);
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			ProposalMappingRequestString proposalMappingRequestString = new ProposalMappingRequestString();
+			ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
+			proposalMappingRequest.setApplicationId(applicationId);
+			if(productId != null) {
 				proposalMappingRequest.setFpProductId(productId);
-				ProposalMappingResponse proposalMappingResponse= proposalDetailsClient.getActiveProposalDetails(proposalMappingRequest);
-				proposalMappingRequestString = new ProposalMappingRequestString();
-				logger.info("============proposalMappingRequestId==>{}",proposalMappingRequestString.getId());
-				BeanUtils.copyProperties(proposalMappingResponse.getData(), proposalMappingRequestString);
-				map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? proposalMappingResponse.getData() : " ");
+			}
+			ProposalMappingResponse proposalMappingResponse= proposalDetailsClient.getActiveProposalDetails(proposalMappingRequest);
+			proposalMappingRequestString = mapper.convertValue(proposalMappingResponse.getData(), ProposalMappingRequestString.class);
+			logger.info("============proposalMappingRequestId==>{}",proposalMappingRequestString.getId());
+			map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString) ? CommonUtils.printFields(proposalMappingResponse.getData() ,null) : " ");
 				
 		}
 		catch (Exception e) {
@@ -3024,7 +3074,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			map.put("establishmentYr",!CommonUtils.isObjectNullOrEmpty(establishMentYear)? CommonUtils.printFields(establishMentYear, null): " ");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Error while Getting Year Details from oneform = >{}",e);
 		}
 		
 		//get NO BS+ DATA
@@ -3032,16 +3082,18 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		try {
 			if(!CommonUtils.isObjectNullOrEmpty(applicationId)) {
 				verificationrequestResponse =  pennyDropClient.getAccountDetails(applicationId);
-				LinkedHashMap<String, Object> noBs = (LinkedHashMap<String, Object>) verificationrequestResponse.getData();	
-				String year = (String) noBs.get("sinceYear");
-				String months = (String) noBs.get("sinceMonth");
-				if (!CommonUtils.isObjectNullOrEmpty(year) || !CommonUtils.isObjectNullOrEmpty(months)) {
-					LocalDate today = LocalDate.now();
-					LocalDate since = LocalDate.of(Integer.parseInt(year), Integer.parseInt(months),1);
-					Period age = Period.between(since, today);
-					map.put("noBsSinceYear", age.getYears());
-					map.put("noBsSinceMonths", age.getMonths());
-					map.put("noBsSinceWhen", (!CommonUtils.isObjectNullOrEmpty(age.getYears()) ? age.getYears() +" year " : "") + " " +(!CommonUtils.isObjectNullOrEmpty(age.getMonths()) ? age.getMonths()+" months" :  "" ));
+				if(!CommonUtils.isObjectNullOrEmpty(verificationrequestResponse) && !CommonUtils.isObjectNullOrEmpty(verificationrequestResponse.getData())) {
+					LinkedHashMap<String, Object> noBs = (LinkedHashMap<String, Object>) verificationrequestResponse.getData();	
+					String year = (String) noBs.get("sinceYear");
+					String months = (String) noBs.get("sinceMonth");
+					if (!CommonUtils.isObjectNullOrEmpty(year) || !CommonUtils.isObjectNullOrEmpty(months)) {
+						LocalDate today = LocalDate.now();
+						LocalDate since = LocalDate.of(Integer.parseInt(year), Integer.parseInt(months),1);
+						Period age = Period.between(since, today);
+						map.put("noBsSinceYear", age.getYears());
+						map.put("noBsSinceMonths", age.getMonths());
+						map.put("noBsSinceWhen", (!CommonUtils.isObjectNullOrEmpty(age.getYears()) ? age.getYears() +" year " : "") + " " +(!CommonUtils.isObjectNullOrEmpty(age.getMonths()) ? age.getMonths()+" months" :  "" ));
+					}
 				}
 				map.put("noBsData", verificationrequestResponse);
 			}
@@ -3077,16 +3129,22 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 		
 		// MUDRA LOAN DETAILS
-		PrimaryCorporateDetailMudraLoan mlDetail = 	mudraLoanRepo.findFirstByApplicationIdAndApplicationProposalMappingProposalIdOrderByIdDesc(applicationId, proposalId); 
-		if (!CommonUtils.isObjectNullOrEmpty(mlDetail)) {			
-			PrimaryCorporateDetailMudraLoanReqRes mlDetailsRes = new PrimaryCorporateDetailMudraLoanReqRes();
-			BeanUtils.copyProperties(mlDetail, mlDetailsRes);
-			if (!CommonUtils.isObjectNullOrEmpty(mlDetail.getMrktArragementFinishedGoods())) {					
-				mlDetailsRes.setMrktArragementFinishedGoodsValue(MrktArrFinishedGoodsList.fromId(mlDetail.getMrktArragementFinishedGoods()).getValue());
+		try {
+			PrimaryCorporateDetailMudraLoan mlDetail = 	mudraLoanRepo.findFirstByApplicationIdAndApplicationProposalMappingProposalIdOrderByIdDesc(applicationId, proposalId); 
+			if (!CommonUtils.isObjectNullOrEmpty(mlDetail)) {			
+				PrimaryCorporateDetailMudraLoanReqRes mlDetailsRes = new PrimaryCorporateDetailMudraLoanReqRes();
+				BeanUtils.copyProperties(mlDetail, mlDetailsRes);
+				if (!CommonUtils.isObjectNullOrEmpty(mlDetail.getMrktArragementFinishedGoods())) {					
+					mlDetailsRes.setMrktArragementFinishedGoodsValue(MrktArrFinishedGoodsList.fromId(mlDetail.getMrktArragementFinishedGoods()).getValue());
+				}
+				//corporatePrimaryViewResponse.setMlDetail(mlDetailsRes);
+				map.put("mlDetail", !CommonUtils.isObjectNullOrEmpty(mlDetailsRes) ? CommonUtils.printFields(mlDetailsRes , null) : Collections.EMPTY_LIST);
 			}
-			//corporatePrimaryViewResponse.setMlDetail(mlDetailsRes);
-			map.put("mlDetail", !CommonUtils.isObjectNullOrEmpty(mlDetailsRes) ? mlDetailsRes : Collections.EMPTY_LIST);
 		}
+		catch (Exception e) {
+			logger.error("Error/Exception while fetching mlDetails Error==>{}",e);
+		}
+		
 		// GET MACHINE DETAILS
 		List<MachineDetailMudraLoan> machineDetails = machineDetailsRepo.findByApplicationIdAndIsActive(applicationId, true);
 		PrimaryCorporateDetailMudraLoanReqRes mlDetailsRes = new PrimaryCorporateDetailMudraLoanReqRes();
@@ -3095,6 +3153,10 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			for (MachineDetailMudraLoan machineDetailMudraLoan : machineDetails) {
 				MachineDetailMudraLoanRequestResponse machineDetail = new MachineDetailMudraLoanRequestResponse(); 
 				BeanUtils.copyProperties(machineDetailMudraLoan, machineDetail);
+				if(machineDetailMudraLoan != null && machineDetailMudraLoan.getCostOfMachinery() != null) {
+					BigDecimal convertedVal = BigDecimal.valueOf(machineDetailMudraLoan.getCostOfMachinery()).setScale(2);
+					machineDetail.setCostOfMachineryString(convertedVal.toString());
+				}
 				machineDetailsRes.add(machineDetail);
 			}				
 			mlDetailsRes.setMachineDetails(machineDetailsRes);
@@ -3103,23 +3165,25 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		
 		//Get BankStatement
-				try {
-					map.putAll(getBankStatementDetails(applicationId, userId));
-				}catch (Exception e) {
-					logger.error("Error in getting Bank Statemnt from Perfios in MSME Cam Report with applicationId==>{}",applicationId);
-				}
+		try {
+			map.putAll(getBankStatementDetails(applicationId, userId));
+		}catch (Exception e) {
+			logger.error("Error in getting Bank Statemnt from Perfios in MSME Cam Report with applicationId==>{}",applicationId);
+		}
 		
-		PrimaryCorporateDetailMudraLoanReqRes primaryCorporateDetailMudraLoanReqRes = new PrimaryCorporateDetailMudraLoanReqRes(); 
-		PrimaryCorporateDetailMudraLoan primaryCorporateDetailMudraLoan = primaryCorporateDetailsMudra.findFirstByApplicationIdAndApplicationProposalMappingProposalIdOrderByIdDesc(applicationId, proposalId);
-		BeanUtils.copyProperties(primaryCorporateDetailMudraLoan, primaryCorporateDetailMudraLoanReqRes);
-		if (primaryCorporateDetailMudraLoanReqRes != null) {
-			map.put("statutoryObligation", primaryCorporateDetailMudraLoanReqRes);
+		try {
+			PrimaryCorporateDetailMudraLoanReqRes primaryCorporateDetailMudraLoanReqRes = new PrimaryCorporateDetailMudraLoanReqRes(); 
+			PrimaryCorporateDetailMudraLoan primaryCorporateDetailMudraLoan = primaryCorporateDetailsMudra.findFirstByApplicationIdAndApplicationProposalMappingProposalIdOrderByIdDesc(applicationId, proposalId);
+			if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetailMudraLoan)) {
+				BeanUtils.copyProperties(primaryCorporateDetailMudraLoan, primaryCorporateDetailMudraLoanReqRes);
+				if (primaryCorporateDetailMudraLoanReqRes != null) {
+					map.put("statutoryObligation", CommonUtils.printFields(primaryCorporateDetailMudraLoanReqRes,null));
+				}
+			}
+		}catch (Exception e) {
+			logger.error("Error/Exception statutoryObligation{}",e);
 		}
 	    return map;
 	}
-	
-	
-	
-	
 	
 }

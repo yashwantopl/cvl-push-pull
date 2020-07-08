@@ -110,7 +110,11 @@ public interface LoanRepository{
     
     public Boolean isNoBankStatement(Long applicationId);
     
+    public Integer getMinRelationshipInMonthByApplicationId(Long applicationId,String bankName);
+    
     public Integer getMinRelationshipInMonthByApplicationId(Long applicationId);
+    
+    public Integer getMinRelationshipInMonthByApplicationIdAndNotGivenBank(Long applicationId,String bankName);
     
     public String getIFSCByApplicationId(Long applicationId);
     

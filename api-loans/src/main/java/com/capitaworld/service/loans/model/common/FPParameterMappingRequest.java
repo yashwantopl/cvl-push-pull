@@ -1,46 +1,28 @@
-package com.capitaworld.service.loans.domain.fundprovider;
+package com.capitaworld.service.loans.model.common;
 
 import java.io.Serializable;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
 
 /**
  * The persistent class for the fp_home_loan_details database table.
  * 
  */
-@Entity
-@Table(name = "fp_parameter_mapping")
-public class FPParameterMapping implements Serializable {
+public class FPParameterMappingRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	@Id
-	@Column(name = "id")
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@Column(name = "fp_product_mapping_id")
 	private Long fpProductMappingId;
 	
-	@Column(name = "is_active")
 	private Boolean isActive;
 	
 	private Integer type;
 	
-	@Column(name = "parameter_id")
 	private Integer parameterId;
 	
-	@Column(name = "amount")
 	private Double amount;
 	
-	@Column(name = "value1")
 	private String value1;
 	
-	@Column(name = "value2")
 	private String value2;
 
 	public Long getId() {

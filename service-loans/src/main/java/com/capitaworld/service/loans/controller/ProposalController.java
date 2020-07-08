@@ -554,7 +554,7 @@ public class ProposalController {
 			}
 			String dayDiff = proposalService.getDayDiffrenceForInprinciple(loanType);
 			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
-			if(dayDiff != null && dayDiff != "") {
+			if(!CommonUtils.isObjectNullOrEmpty(dayDiff)) {
 				loansResponse.setData(dayDiff);
 				loansResponse.setStatus(HttpStatus.OK.value());
 			}else{

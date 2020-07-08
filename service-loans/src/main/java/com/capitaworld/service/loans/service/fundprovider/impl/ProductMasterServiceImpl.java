@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,6 +61,7 @@ import com.capitaworld.service.loans.model.corporate.TermLoanParameterRequest;
 import com.capitaworld.service.loans.model.corporate.UnsecuredLoanParameterRequest;
 import com.capitaworld.service.loans.model.corporate.WcTlParameterRequest;
 import com.capitaworld.service.loans.model.corporate.WorkingCapitalParameterRequest;
+import com.capitaworld.service.loans.model.teaser.primaryview.CommonRequest;
 import com.capitaworld.service.loans.repository.common.CommonRepository;
 import com.capitaworld.service.loans.repository.common.LoanRepository;
 import com.capitaworld.service.loans.repository.fundprovider.FpConstitutionMappingTempRepository;
@@ -158,8 +160,15 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	@Autowired
 	private WorkflowClient workflowClient;
 	
-	@Autowired
 	private FPAsyncComponent fpAsyncComponent;
+	
+	@Lazy
+	ProductMasterServiceImpl(FPAsyncComponent fpAsyncComponent){
+        this.fpAsyncComponent=fpAsyncComponent;
+    }
+	
+//	@Autowired
+//	private FPAsyncComponent fpAsyncComponent;
 	
 	@Autowired
 	private IndustrySectorTempRepository industrySectorTempRepository;
@@ -1534,6 +1543,64 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	public FpProductRoiResponse getMinMaxRoiFromFpProductId(Long fpProductId) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	/**
+	 * Get working capital product count
+	 */
+	@Override
+	public Long getWCRenewalProductsCount(CommonRequest request) {
+		return productMasterRepository.getWCRenewalProductsCount(CommonUtils.LoanType.WORKING_CAPITAL.getValue(), request.getUserOrgId(), request.getBusinessTypeId(), request.getWcRenewalStatus());
+	}
+	
+	@Override
+	public Boolean scoringCheckIsActive(Long fpProductId) {
+	
+		ProductMaster checkParameterIsactive = productMasterRepository.checkParameterIsactive(fpProductId);
+		if(!CommonUtils.isObjectNullOrEmpty(checkParameterIsactive)) {
+			List<Long> idList=new ArrayList<>();
+			idList.add(checkParameterIsactive.getScoreModelId());
+			idList.add(checkParameterIsactive.getScoreModelIdCoAppId());
+			idList.add(checkParameterIsactive.getScoreModelIdCoAppIdOthThnSal());
+			idList.add(checkParameterIsactive.getScoreModelIdOthThnSal());
+			for(Long i:idList)
+			{
+				if(CommonUtils.isObjectListNull(i)){
+					continue;
+				}
+	
+		String checkParameterInScoringIsActive = productMasterRepository.checkParameterInScoringIsActive(i);
+		if(!CommonUtils.isObjectNullOrEmpty(checkParameterInScoringIsActive)) {
+			return true;
+		}
+		}
+		}
+		return false;
+	}
+
+	@Override
+	public Boolean scoringCheckIsActiveforPanding(Long fpProductId) {
+	
+		ProductMasterTemp checkParameterIsactive = productMasterRepository.checkParameterIsactiveForPanding(fpProductId);
+		if(!CommonUtils.isObjectNullOrEmpty(checkParameterIsactive)) {
+		List<Long> idList=new ArrayList<>();
+		idList.add(checkParameterIsactive.getScoreModelId());
+		idList.add(checkParameterIsactive.getScoreModelIdCoAppId());
+		idList.add(checkParameterIsactive.getScoreModelIdCoAppIdOthThnSal());
+		idList.add(checkParameterIsactive.getScoreModelIdOthThnSal());
+		
+		for(Long i:idList)
+		{
+			if(CommonUtils.isObjectListNull(i)){
+				continue;
+			}
+		String checkParameterInScoringIsActive = productMasterRepository.checkcoringIsActiveForPanding(i);
+		if(!CommonUtils.isObjectNullOrEmpty(checkParameterInScoringIsActive)) {
+			return true;
+		}
+		}
+		}
+		return false;
 	}
 
 }

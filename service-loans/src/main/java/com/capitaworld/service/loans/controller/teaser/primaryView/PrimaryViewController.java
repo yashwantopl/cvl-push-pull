@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.controller.teaser.primaryView;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 
 import javax.servlet.http.HttpServletRequest;
@@ -421,7 +422,7 @@ public class PrimaryViewController {
 			try {
 				Object[] userDetails = commonRepository.getUserDetailsByApplicationId(applicationId);
 				CommonRequest req = notificationService.extractArrayToCommonRequest(userDetails);
-				logger.info(""+userDetails.toString());
+				logger.info(""+Arrays.toString(userDetails));
 				Long loanType = null;
 				if(req.getLoanTypeId() != null) {
 					loanType = Long.valueOf(req.getLoanTypeId());

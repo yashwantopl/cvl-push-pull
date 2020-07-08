@@ -3329,25 +3329,10 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			if (com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(disbursementRequestModel) || com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(multipartFiles)) {
 				return new ProposalMappingResponse("Error while uploading documents", HttpStatus.BAD_REQUEST.value());
 			}
-
-			boolean allUploaded = true;
-			/*int count = 0;
-			for (MultipartFile uploadingFile : multipartFiles) {
-				String imageForMfi = uploadImageForMfi(uploadingFile, disbursementRequestModel.getApplicationId(), 605 + count);
-				if (com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(imageForMfi)) {
-					allUploaded = false;
-				}
-				count++;
-			}*/
-			if (allUploaded) {
-				try {
-					return proposalDetailsClient.saveRequestDisbursementDetails(disbursementRequestModel);
-				} catch (Exception e) {
-					logger.error(CommonUtils.EXCEPTION, e);
-				}
-			} else {
-				logger.error("Error while uploading documents");
-				return new ProposalMappingResponse("Error while uploading documents", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			try {
+				return proposalDetailsClient.saveRequestDisbursementDetails(disbursementRequestModel);
+			} catch (Exception e) {
+				logger.error(CommonUtils.EXCEPTION, e);
 			}
 		}catch (Exception e){
 			logger.error("Error while saving disbursement request");
@@ -3371,8 +3356,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				try {
 					response = com.capitaworld.service.scoring.utils.MultipleJSONObjectHelper.getObjectFromMap(list, StorageDetailsResponse.class);
 				} catch (IOException e) {
-					e.printStackTrace();
-					logger.error("IO exception while upload file on DMS");
+					logger.error("IO exception while upload file on DMS",e);
 				}
 			}
 
@@ -3389,8 +3373,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				return null;
 			}
 		} catch (DocumentException e) {
-			e.printStackTrace();
-			logger.error("Document exception while upload file on DMS");
+			logger.error("Document exception while upload file on DMS",e);
 			return null;
 		}
 	}

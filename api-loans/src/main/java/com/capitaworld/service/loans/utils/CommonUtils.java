@@ -90,7 +90,7 @@ public class CommonUtils {
 
 	public static final String SCORING_EXCEL = "score_result.xlsx";
 
-	public static final DateFormat formatter = new SimpleDateFormat("dd-mm-yyyy");
+	public static final DateFormat FORMATTER = new SimpleDateFormat("dd-mm-yyyy");
 
 	public static final String IN_PROGRESS = "In Progress";
 	public static final String COMPLETED = "Completed";
@@ -596,7 +596,7 @@ public class CommonUtils {
 			return FP_PRODUCT_TEMP;
 		}
 
-		public static final String[] CORPORATE_PROFILE = { "id", "userId", "clientId", "applicationId", "panNo",
+		private static final String[] CORPORATE_PROFILE = { "id", "userId", "clientId", "applicationId", "panNo",
 				"constitutionId", "establishmentMonth", "establishmentYear", "keyVericalFunding", "latitude",
 				"longitude", "organisationName", "firstAddress", "websiteAddress", "landlineNo", "keyVerticalSector",
 				"keyVerticalSubsector", "gstIn", "email" };
@@ -613,7 +613,7 @@ public class CommonUtils {
 			return CORPORATE_FINAL;
 		}
 
-		public static final String[] RETAIL_PROFILE = { "titleId", "firstName", "middleName", "lastName", "pan",
+		private static final String[] RETAIL_PROFILE = { "titleId", "firstName", "middleName", "lastName", "pan",
 				"aadharNumber", "monthlyIncome", "firstAddress", "secondAddress", "addressSameAs", "contactNo",
 				"companyName", "employedWithId", "employedWithOther", "entityName", "industryTypeId",
 				"industryTypeOther", "selfEmployedOccupationId", "selfEmployedOccupationOther", "landSize",
@@ -639,7 +639,7 @@ public class CommonUtils {
 			return NTB_FINAL_EXCLUSION;
 		}
 
-		public static final String[] RETAIL_FINAL = { "castId", "castOther", "religion", "religionOther", "birthPlace",
+		private static final String[] RETAIL_FINAL = { "castId", "castOther", "religion", "religionOther", "birthPlace",
 				"fatherName", "motherName", "noChildren", "noDependent", "highestQualificationOther", "residenceType",
 				"annualRent", "noPartners", "birthDate", "currentDepartment", "currentDesignation", "currentIndustry",
 				"employmentStatus", "interestRate", "nameOfEntity", "officeType", "ownershipType", "partnersName",
@@ -846,6 +846,7 @@ public class CommonUtils {
 		public static final Integer BUREAU_SCORE = 12;
 		public static final Integer BUREAU_SCORE_MAIN_DIR = 13;
 		public static final Integer BANK_STATEMENT_OPTIONS = 14;
+		public static final Integer RISK_BASE_LOAN_AMOUNT = 15;
 	}
 
 	public static final class InEligibleProposalStatus {
@@ -1068,7 +1069,7 @@ public class CommonUtils {
 		return getBowlCount(profileCount, null) + getBowlCount(primaryCount, null) + getBowlCount(finalCount, null);
 	}
 
-	public static final List<String> URLS_BRFORE_LOGIN = new ArrayList<String>(8);
+	private static final List<String> URLS_BRFORE_LOGIN = new ArrayList<String>(8);
 
 	public static List<String> getUrlsBrforeLogin() {
 		return URLS_BRFORE_LOGIN;

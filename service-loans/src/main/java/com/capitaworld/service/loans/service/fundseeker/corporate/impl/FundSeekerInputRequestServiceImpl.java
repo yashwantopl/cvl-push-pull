@@ -417,6 +417,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
 			copyAddressFromRequestToDomain(fundSeekerInputRequest, corporateApplicantDetail);
 
+			//inActive if any entry found at first time
+			//directorBackgroundDetailsRepository.inActive(fundSeekerInputRequest.getUserId(), fundSeekerInputRequest.getApplicationId());
+			
 			// ==== Director details
 			List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList = fundSeekerInputRequest.getDirectorBackgroundDetailRequestsList();
 			VerifyAPIRequest verifyApiReq =new VerifyAPIRequest();
@@ -430,21 +433,17 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			try {
 				for (DirectorBackgroundDetailRequest reqObj : directorBackgroundDetailRequestList) {
 					
-					DirectorBackgroundDetail saveDirObj = null;
-					if (!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
-						saveDirObj = directorBackgroundDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
+					DirectorBackgroundDetail saveDirObj = directorBackgroundDetailsRepository.findByApplicationIdIdAndIsActiveIsTrueAndPanNo(fundSeekerInputRequest.getApplicationId(),reqObj.getPanNo());
+					if (!CommonUtils.isObjectNullOrEmpty(saveDirObj)) {
 						BeanUtils.copyProperties(reqObj, saveDirObj, "id", "createdBy", "createdDate", "modifiedBy", "modifiedDate");
 						saveDirObj.setModifiedBy(fundSeekerInputRequest.getUserId());
 						saveDirObj.setModifiedDate(new Date());
-						
-						
 					} else {
 						logger.info("New Object Created for Director");
 						saveDirObj = new DirectorBackgroundDetail();
 						BeanUtils.copyProperties(reqObj, saveDirObj, "id", "createdBy", "createdDate", "modifiedBy",
 								"modifiedDate", CommonUtils.IS_ACTIVE);
-						saveDirObj
-								.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
+						saveDirObj.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
 						saveDirObj.setCreatedBy(fundSeekerInputRequest.getUserId());
 						saveDirObj.setCreatedDate(new Date());
 						saveDirObj.setIsActive(true);
@@ -489,15 +488,16 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
 			try {
 				LocalDate start = null;
-				if(corporateApplicantDetail.getConstitutionId() == 7) {
+				if(Constitution.SOLE_PROPRIETORSHIP.getId().equals(corporateApplicantDetail.getConstitutionId())) {
 					if (dobOfProprietor != null) {
 						start = dobOfProprietor.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 					}
 				}else {
 					start = LocalDate.of(corporateApplicantDetail.getEstablishmentYear(), corporateApplicantDetail.getEstablishmentMonth(), 01);
 				}
-				LocalDate now = LocalDate.now();
+
 				if(start != null) {
+					LocalDate now = LocalDate.now();
 					Period diff = Period.between(start, now);
 					Integer diffYear = diff.getYears();
 					if(fundSeekerInputRequest.getSinceYear() > diffYear) {
@@ -665,8 +665,8 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			GSTR1Request gstr1Request = new GSTR1Request();
 	        gstr1Request.setApplicationId(fsInputReq.getApplicationId());
 	        gstr1Request.setGstin(fsInputReq.getGstIn());
-			
 			GstResponse calculationForScoring = gstClient.getCalculations(gstr1Request);
+			
             if(!CommonUtils.isObjectNullOrEmpty(calculationForScoring) && !CommonUtils.isObjectNullOrEmpty(calculationForScoring.getData())){
                 GstCalculation gstCalculation = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)calculationForScoring.getData(),GstCalculation.class);
                 if(!CommonUtils.isObjectNullOrEmpty(gstCalculation)){
@@ -723,7 +723,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			fundSeekerInputResponse.setSinceMonth(corporateApplicantDetail.getBusinessSinceMonth());
 			fundSeekerInputResponse.setSinceYear(corporateApplicantDetail.getBusinessSinceYear());
 			copyAddressFromDomainToRequest(corporateApplicantDetail, fundSeekerInputResponse);
-			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getConstitutionId()) && corporateApplicantDetail.getConstitutionId()==7){
+			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getConstitutionId()) && (Constitution.SOLE_PROPRIETORSHIP.getId().equals(corporateApplicantDetail.getConstitutionId()))){
 				ReportRequest reportRequest = new ReportRequest();
 				reportRequest.setApplicationId(fundSeekerInputRequest.getApplicationId());
 				try {
@@ -776,14 +776,18 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			Boolean isItrManualFilled = loanRepository.getIsItrManualFilled(fundSeekerInputRequest.getApplicationId());
 			fundSeekerInputResponse.setIsItrManualFilled(isItrManualFilled);
 			
+			//Set pan number 
+			fundSeekerInputResponse.setPanNumber(corporateApplicantDetail.getPanNo());
 			try {
 				LocalDate start = null;
-				if(corporateApplicantDetail.getConstitutionId() == 7) {
+				if((Constitution.SOLE_PROPRIETORSHIP.getId().equals(corporateApplicantDetail.getConstitutionId()))) {
 					if (dobOfProprietor != null) {
 						start = dobOfProprietor.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 					}
 				}else {
-					start = LocalDate.of(corporateApplicantDetail.getEstablishmentYear(), corporateApplicantDetail.getEstablishmentMonth(), 01);
+					if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getEstablishmentYear()) && !CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getEstablishmentMonth())){
+						start = LocalDate.of(corporateApplicantDetail.getEstablishmentYear(), corporateApplicantDetail.getEstablishmentMonth(), 01);						
+					}
 				}
 				LocalDate now = LocalDate.now();
 				if(start != null) {
@@ -1499,7 +1503,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				logger.error("Exception in panVerification :{} ",e);
 				resp.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 				resp.setMessage("Some thing went wrong");
-				e.printStackTrace();
+				logger.error("Error while Validating Pan For Director = >{}",e);
 			}
 		}
 		resp.setData(response);

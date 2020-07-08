@@ -102,8 +102,13 @@ import com.capitaworld.service.loans.service.teaser.primaryview.CorporatePrimary
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.MatchEngineClient;
+import com.capitaworld.service.matchengine.ProposalDetailsClient;
+import com.capitaworld.service.matchengine.exception.MatchException;
 import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
 import com.capitaworld.service.matchengine.model.MatchRequest;
+import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
+import com.capitaworld.service.matchengine.model.ProposalMappingRequestString;
+import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.mca.client.McaClient;
 import com.capitaworld.service.mca.model.McaResponse;
 import com.capitaworld.service.mca.model.verifyApi.VerifyAPIRequest;
@@ -131,6 +136,7 @@ import com.capitaworld.service.oneform.enums.LoanType;
 import com.capitaworld.service.oneform.enums.MaritalStatusMst;
 import com.capitaworld.service.oneform.enums.MrktArrFinishedGoodsList;
 import com.capitaworld.service.oneform.enums.MudraOwningHouseMst;
+import com.capitaworld.service.oneform.enums.NoOfEmployees;
 import com.capitaworld.service.oneform.enums.OngoingMudraLoan;
 import com.capitaworld.service.oneform.enums.PurposeOfLoan;
 import com.capitaworld.service.oneform.enums.RegistrationWithGovernmentAuthoritiesList;
@@ -153,6 +159,7 @@ import com.capitaworld.service.thirdpaty.client.ThirdPartyClient;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 @Transactional
@@ -285,6 +292,9 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 	
 	@Autowired
 	private CamReportPdfDetailsService camReportPdfDetailsService;
+	
+	@Autowired
+	private ProposalDetailsClient proposalDetailsClient;
 	
 	DecimalFormat decim = new DecimalFormat("#,###.00");
 
@@ -534,9 +544,12 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 					primaryCorporateDetail.getAmount() != null ? String.valueOf(primaryCorporateDetail.getAmount())
 							: null);*/ //PREVIOUS
 
-			corporatePrimaryViewResponse.setLoanAmount(
-					applicationProposalMapping.getLoanAmount() != null ? String.valueOf(applicationProposalMapping.getLoanAmount())
-							: null); // NEW PROPOSAL MAPPING ID BASED
+			
+			// corporatePrimaryViewResponse.setLoanAmount(applicationProposalMapping.getLoanAmount() != null ? String.valueOf(applicationProposalMapping.getLoanAmount()) : null); // NEW PROPOSAL MAPPING ID BASED
+			
+			// Set loan amount based on application (New or Renewal) 
+			Double loanAmount = WcRenewalType.RENEWAL.getId().equals(loanApplicationMaster.getWcRenewalStatus()) ? primaryCorporateDetail.getLoanAmount() : primaryCorporateDetail.getAdditionalLoanAmount();  
+			corporatePrimaryViewResponse.setLoanAmount(String.valueOf(loanAmount));
 
 			corporatePrimaryViewResponse.setGstIn(
 					corporateApplicantDetail.getGstIn() != null ? String.valueOf(corporateApplicantDetail.getGstIn())
@@ -613,6 +626,11 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				}
 				corporatePrimaryViewResponse.setMlDetail(mlDetailsRes);
 			}
+			
+			//No of Employees/Workers
+			corporatePrimaryViewResponse.setEmployeeGeneration(corporateApplicantDetail.getEmploymentGeneration() != null ?  (NoOfEmployees.getById(corporateApplicantDetail.getEmploymentGeneration()) != null ?  NoOfEmployees.getById(corporateApplicantDetail.getEmploymentGeneration()).getValue(): "-") : "-"  );
+			
+			
 			// REGISTER WITH GOV AUTHORITIES
 			List<Integer> govAuthorities = fsParameterMappingRepository.getParametersByApplicationIdAndType(applicationId, FSParameterMst.GOV_AUTHORITIES.getId());
 			if (!CommonUtils.isListNullOrEmpty(govAuthorities)) {
@@ -666,6 +684,9 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				DirectorBackgroundDetailResponse directorBackgroundDetailResponse = new DirectorBackgroundDetailResponse();
 				// directorBackgroundDetailResponse.setAchivements(directorBackgroundDetailRequest.getAchivements());
 				directorBackgroundDetailResponse.setAddress(directorBackgroundDetailRequest.getAddress());
+				directorBackgroundDetailResponse.setPremiseNumber(directorBackgroundDetailRequest.getPremiseNumber());
+				directorBackgroundDetailResponse.setStreetName(directorBackgroundDetailRequest.getStreetName());
+				directorBackgroundDetailResponse.setLandmark(directorBackgroundDetailRequest.getLandmark());
 				// directorBackgroundDetailResponse.setAge(directorBackgroundDetailRequest.getAge());
 				// directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo());
 				directorBackgroundDetailResponse
@@ -776,9 +797,10 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 							directorPersonalDetail.setAddressYears(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getAddressYears());
 							directorPersonalDetail.setOtherIncomeSource(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOtherIncomeSource());
 							directorPersonalDetail.setCertificationCourse(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getCertificationCourse() != null ? CertificationCourseMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getCertificationCourse()).getValue() : "-"  );
-							directorPersonalDetail.setOngoingMudraLoan(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOngoingMudraLoan() != null ? OngoingMudraLoan.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOngoingMudraLoan()).getValue() : "-"  );
-							corporatePrimaryViewResponse.setOngoingMudraLoan(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOngoingMudraLoan() != null ? OngoingMudraLoan.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOngoingMudraLoan()).getValue() : "-"  );
-							
+							directorPersonalDetail.setWorkAndResidenceSamePlace(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getIsWorkAndResidenceSamePlace() != null ?(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getIsWorkAndResidenceSamePlace().equals(1) ? "Yes" : "No")  : "-"  );
+							String ongoingMudraLoan = directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOngoingMudraLoan() != null ? OngoingMudraLoan.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOngoingMudraLoan()).getValue() : "-"  ; 
+							directorPersonalDetail.setOngoingMudraLoan(ongoingMudraLoan);
+							corporatePrimaryViewResponse.setOngoingMudraLoan(ongoingMudraLoan);
 							// COVERED IN GOV_SCHEMES
 							List<Integer> govSchemes = fsParameterMappingRepository.getParametersByApplicationIdAndType(applicationId, FSParameterMst.GOV_SCHEMES.getId());
 							if (!CommonUtils.isListNullOrEmpty(govSchemes)) {
@@ -1292,9 +1314,44 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			} catch (Exception e) {
 				logger.error("Error while calling CGTMSE data : ",e);
 			}
+			
+		
 
 		} catch (Exception e) {
 			logger.error("FpProductId is null : ",e);
+		}
+		
+		
+
+		ObjectMapper mapper = new ObjectMapper();
+		ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
+		proposalMappingRequest.setApplicationId(toApplicationId);
+		proposalMappingRequest.setFpProductId(fpProductMappingId);
+		ProposalMappingResponse proposalMappingResponse = null;
+		try {
+			proposalMappingResponse = proposalDetailsClient.getActiveProposalDetails(proposalMappingRequest);
+			ProposalMappingRequestString proposalMappingRequestString = mapper.convertValue(proposalMappingResponse.getData(), ProposalMappingRequestString.class);
+			if(proposalMappingRequestString != null) {
+				corporatePrimaryViewResponse.setScoringBasedOn(proposalMappingRequestString.getScoringModelBasedOn() != null && proposalMappingRequestString.getScoringModelBasedOn() == 2 ? "MCLR" : "EBLR");
+				corporatePrimaryViewResponse.setMclrRoi(proposalMappingRequestString.getMclrRoi() != null ? proposalMappingRequestString.getMclrRoi().toString() : "-");
+				corporatePrimaryViewResponse.setSpreadRoi(proposalMappingRequestString.getSpreadRoi() != null ? proposalMappingRequestString.getSpreadRoi().toString() : "-");
+			    
+			    if (!CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getMclrRoi()) && !CommonUtils.isObjectNullOrEmpty(proposalMappingRequestString.getSpreadRoi())) {
+			    	corporatePrimaryViewResponse.setEffectiveRoi(String.valueOf(Double.valueOf(proposalMappingRequestString.getMclrRoi()) + Double.valueOf(proposalMappingRequestString.getSpreadRoi())));		    	
+				} else {
+					corporatePrimaryViewResponse.setEffectiveRoi(proposalMappingRequestString.getMclrRoi() == null && proposalMappingRequestString.getSpreadRoi() == null ? "-" : proposalMappingRequestString.getMclrRoi() != null ? proposalMappingRequestString.getMclrRoi().toString() : proposalMappingRequestString.getSpreadRoi().toString());				
+				}
+			    corporatePrimaryViewResponse.setConcessionRoi(proposalMappingRequestString.getConsessionRoi() != null && proposalMappingRequestString.getConsessionRoi() != 0.0 && proposalMappingRequestString.getConsessionRoi() != 0 ? proposalMappingRequestString.getConsessionRoi().toString() : "-");
+			    corporatePrimaryViewResponse.setConcessionRoiBased(proposalMappingRequestString.getConcessionBasedOnType() != null ? "- " + proposalMappingRequestString.getConcessionBasedOnType() : "No Concession");
+			    if (corporatePrimaryViewResponse.getEffectiveRoi() != null) {
+			    	corporatePrimaryViewResponse.setFinalRoi(proposalMappingRequestString.getConsessionRoi() != null ? String.valueOf(Double.valueOf(corporatePrimaryViewResponse.getEffectiveRoi()) - Double.valueOf(proposalMappingRequestString.getConsessionRoi())) : "-" );
+				} else {
+					corporatePrimaryViewResponse.setFinalRoi("-");
+				}
+			}
+		    
+		} catch (MatchException matchException) {
+			logger.error("Calculation for Actual ROI Exception : ",matchException);
 		}
 
 
@@ -1769,8 +1826,8 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 									
 									LinkedHashMap<String,Object>gstPurchaseVsBankStatementMonthly = new LinkedHashMap<>();
 									gstPurchaseVsBankStatementMonthly.put("year", yearWisePurchase.getKey() != null ?yearWisePurchase.getKey().toString() : " - ");
-									gstPurchaseVsBankStatementMonthly.put("gstPurchase", yearWisePurchase.getValue()!= null && yearWisePurchase.getValue().toString() != "0" ?CommonUtils.convertStringFormate(yearWisePurchase.getValue()).toString() : " - ");
-									totalOfGstPurchase += Double.valueOf(yearWisePurchase.getValue().toString());
+									gstPurchaseVsBankStatementMonthly.put("gstPurchase", yearWisePurchase.getValue() != null && yearWisePurchase.getValue().toString() != "0" ?CommonUtils.convertStringFormate(yearWisePurchase.getValue()).toString() : " - ");
+									totalOfGstPurchase += Double.valueOf(yearWisePurchase.getValue() != null ?  yearWisePurchase.getValue().toString() : "0");
 									
 									gstPurchaseVsBankStatementMonthly.put("itrPurchase", fi.get("rowMaterialIndigenous") != null && Double.valueOf(fi.get("rowMaterialIndigenous").toString()) != 0?CommonUtils.convertStringFormate(fi.get("rowMaterialIndigenous").toString()):" - ");
 									

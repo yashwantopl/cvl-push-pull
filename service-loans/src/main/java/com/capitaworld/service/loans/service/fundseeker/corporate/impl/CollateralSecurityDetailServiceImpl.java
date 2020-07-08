@@ -12,14 +12,10 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CollateralSecurityDetail;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.FinancialArrangementsDetail;
-import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.corporate.CollateralSecurityDetailRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CollateralSecurityDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CollateralSecurityDetailService;
-import com.capitaworld.service.loans.service.teaser.primaryview.impl.CorporatePrimaryViewServiceImpl;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
 @Service

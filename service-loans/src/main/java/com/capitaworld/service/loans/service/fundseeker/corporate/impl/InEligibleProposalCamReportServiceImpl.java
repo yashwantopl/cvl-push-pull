@@ -6,7 +6,6 @@ package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
@@ -39,7 +38,6 @@ import com.capitaworld.cibil.api.model.CibilScoreLogRequest;
 import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.workflow.WorkflowClient;
 import com.capitaworld.connect.api.ConnectStage;
-import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.itr.api.model.ITRConnectionResponse;
 import com.capitaworld.itr.client.ITRClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
@@ -135,7 +133,6 @@ import com.capitaworld.service.oneform.enums.MaritalStatusMst;
 import com.capitaworld.service.oneform.enums.MrktArrFinishedGoodsList;
 import com.capitaworld.service.oneform.enums.MudraOwningHouseMst;
 import com.capitaworld.service.oneform.enums.OngoingMudraLoan;
-import com.capitaworld.service.oneform.enums.OwningHouseMst;
 import com.capitaworld.service.oneform.enums.PurposeOfLoan;
 import com.capitaworld.service.oneform.enums.RegistrationWithGovernmentAuthoritiesList;
 import com.capitaworld.service.oneform.enums.ResidentStatusMst;
@@ -156,6 +153,7 @@ import com.opl.api.pennydrop.model.CommonResponse;
  * @author nilay.darji
  *
  */
+@SuppressWarnings("unchecked")
 @Service
 @Transactional
 public class InEligibleProposalCamReportServiceImpl implements InEligibleProposalCamReportService {
@@ -213,9 +211,6 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 
 	@Autowired
 	private WorkflowClient workflowClient;
-
-	@Autowired
-	private ConnectClient connectClient;
 
 	@Autowired
 	private ITRClient itrClient;
@@ -380,11 +375,17 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		 //Bank Details for MSME added.
         map.put("bankDetails", getBranchDetails(applicationId, userId, null));
         
-        PrimaryCorporateDetailMudraLoanReqRes primaryCorporateDetailMudraLoanReqRes = new PrimaryCorporateDetailMudraLoanReqRes(); 
-		PrimaryCorporateDetailMudraLoan primaryCorporateDetailMudraLoan = primaryCorporateDetailsMudra.findFirstByApplicationIdAndApplicationProposalMappingProposalIdOrderByIdDesc(applicationId, null);
-		BeanUtils.copyProperties(primaryCorporateDetailMudraLoan, primaryCorporateDetailMudraLoanReqRes);
-		if (primaryCorporateDetailMudraLoanReqRes != null) {
-			map.put("statutoryObligation", primaryCorporateDetailMudraLoanReqRes);
+        try {
+	        PrimaryCorporateDetailMudraLoanReqRes primaryCorporateDetailMudraLoanReqRes = new PrimaryCorporateDetailMudraLoanReqRes(); 
+			PrimaryCorporateDetailMudraLoan primaryCorporateDetailMudraLoan = primaryCorporateDetailsMudra.findFirstByApplicationIdAndApplicationProposalMappingProposalIdOrderByIdDesc(applicationId, null);
+			if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetailMudraLoan)) {
+				BeanUtils.copyProperties(primaryCorporateDetailMudraLoan, primaryCorporateDetailMudraLoanReqRes);
+				if (primaryCorporateDetailMudraLoanReqRes != null) {
+					map.put("statutoryObligation",  CommonUtils.printFields(primaryCorporateDetailMudraLoanReqRes , null));
+				}
+			}
+        }catch (Exception e) {
+			logger.error("Error/Exception statutoryObligation==>{}",e);
 		}
 		
 		//ITR (CHECK IF UPLOADED USING XML OR ONLINE)
@@ -402,7 +403,6 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 		corpApp.getIncomeDetails().get("creditors");
 		DateFormat dfYear = new SimpleDateFormat("yyyy");
-		DateFormat dfMonth = new SimpleDateFormat("MM");
 		loansResponse.setData(corpApp.getIncomeDetails());
 		Date dateNoItr = new Date();
 		dateNoItr = corpApp.getDob();
@@ -467,9 +467,8 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 			map.put("noItrIncomeMudra", incomeDetails);
 
 	} catch (Exception e) {
-			// TODO: handle exception
-		e.printStackTrace();
-		}
+		logger.error("Error while Getting ITR Income Details= >{}",e);
+	}
 		
 		// GET ASSOCIATE CONCERN DETAILS
 		List<AssociatedConcernDetailRequest> associatedConcernResList = new ArrayList<>(); 
@@ -487,7 +486,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		try {
 			map.put("associateConcern", CommonUtils.printFields(associatedConcernResList, null));
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while Associate convern Details= >{}",e);
 		}
 		
 		//GST Comparision by Maaz
@@ -538,7 +537,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 //						map.put("categoryType", "Kishor");
 					}
 					if(primaryCorporateDetail.getLoanAmount() >= 500001 && primaryCorporateDetail.getLoanAmount() <= 1000000){
-						categoryType = "Kishor"; 
+						categoryType = "Tarun"; 
 //						map.put("categoryType", "Tarun");
 					}
 				}			
@@ -616,6 +615,9 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 				DirectorBackgroundDetailResponseString directorBackgroundDetailResponse = new DirectorBackgroundDetailResponseString();
 				//directorBackgroundDetailResponse.setAchivements(directorBackgroundDetailRequest.getAchivements());
 				directorBackgroundDetailResponse.setAddress(directorBackgroundDetailRequest.getAddress());
+				directorBackgroundDetailResponse.setPremiseNumber(directorBackgroundDetailRequest.getPremiseNumber());
+				directorBackgroundDetailResponse.setStreetName(directorBackgroundDetailRequest.getStreetName());
+				directorBackgroundDetailResponse.setLandmark(directorBackgroundDetailRequest.getLandmark());
 				//directorBackgroundDetailResponse.setAge(directorBackgroundDetailRequest.getAge());
 				directorBackgroundDetailResponse.setDirectorsName((directorBackgroundDetailRequest.getSalutationId() != null ? Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue() : null )+ " " + directorBackgroundDetailRequest.getDirectorsName());
 				if(directorBackgroundDetailRequest.getPanNo() != null) {
@@ -694,6 +696,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 				directorBackgroundDetailResponse.setVisuallyImpaired(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getVisuallyImpaired()) ? StringEscapeUtils.escapeXml(VisuallyImpairedMst.getById(directorBackgroundDetailRequest.getVisuallyImpaired()).getValue().toString()) : "-");
 				directorBackgroundDetailResponse.setResidentStatus(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getResidentStatus()) ? StringEscapeUtils.escapeXml(ResidentStatusMst.getById(directorBackgroundDetailRequest.getResidentStatus()).getValue().toString()) : "-");
 				directorBackgroundDetailResponse.setDirectorPersonalInfo(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest()) ? directorBackgroundDetailRequest.getDirectorPersonalDetailRequest() : " " );
+				directorBackgroundDetailResponse.setIsWorkPlaceResidenceSamePlace(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest()) && !CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getIsWorkAndResidenceSamePlace()) ? (directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getIsWorkAndResidenceSamePlace() != 0 ? "Yes" : "No") : "No" );
 				directorBackgroundDetailResponse.setIsPhysicallyhandicapped(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getPhysicallyHandicapped()) ? VisuallyImpairedMst.getById(directorBackgroundDetailRequest.getPhysicallyHandicapped()).toString() : "-");
 			
 				//NATIONALITY
@@ -776,20 +779,28 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
 		if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getCastCategory())) {
 			map.put("castCategory", corporateApplicantDetail.getCastCategory());
+			map.put("noOfWorker", corporateApplicantDetail.getEmploymentGeneration() != null ? corporateApplicantDetail.getEmploymentGeneration() : "-");
+			map.put("nameAsperGST", corporateApplicantDetail.getOrganisationName() != null ? StringEscapeUtils.escapeXml(corporateApplicantDetail.getOrganisationName()) : "-");
 		}
 		
 		
 		// MUDRA LOAN DETAILS
-		PrimaryCorporateDetailMudraLoan mlDetail = mudraLoanRepo.findFirstByApplicationIdAndApplicationProposalMappingProposalIdIsNullOrderByIdDesc(applicationId);
-		if (!CommonUtils.isObjectNullOrEmpty(mlDetail)) {
-			PrimaryCorporateDetailMudraLoanReqRes mlDetailsRes = new PrimaryCorporateDetailMudraLoanReqRes();
-			BeanUtils.copyProperties(mlDetail, mlDetailsRes);
-			if (!CommonUtils.isObjectNullOrEmpty(mlDetail.getMrktArragementFinishedGoods())) {
-				mlDetailsRes.setMrktArragementFinishedGoodsValue(MrktArrFinishedGoodsList.fromId(mlDetail.getMrktArragementFinishedGoods()).getValue());
+		try {
+			PrimaryCorporateDetailMudraLoan mlDetail = mudraLoanRepo.findFirstByApplicationIdAndApplicationProposalMappingProposalIdIsNullOrderByIdDesc(applicationId);
+			if (!CommonUtils.isObjectNullOrEmpty(mlDetail)) {
+				PrimaryCorporateDetailMudraLoanReqRes mlDetailsRes = new PrimaryCorporateDetailMudraLoanReqRes();
+				BeanUtils.copyProperties(mlDetail, mlDetailsRes);
+				if (!CommonUtils.isObjectNullOrEmpty(mlDetail.getMrktArragementFinishedGoods())) {
+					mlDetailsRes.setMrktArragementFinishedGoodsValue(MrktArrFinishedGoodsList.fromId(mlDetail.getMrktArragementFinishedGoods()).getValue());
+				}
+				// corporatePrimaryViewResponse.setMlDetail(mlDetailsRes);
+				map.put("mlDetail", !CommonUtils.isObjectNullOrEmpty(mlDetailsRes) ? CommonUtils.printFields(mlDetailsRes , null) : Collections.EMPTY_LIST);
 			}
-			// corporatePrimaryViewResponse.setMlDetail(mlDetailsRes);
-			map.put("mlDetail", !CommonUtils.isObjectNullOrEmpty(mlDetailsRes) ? mlDetailsRes : Collections.EMPTY_LIST);
 		}
+		catch (Exception e) {
+			logger.error("Error/Exception while fetching mlDetails Error==>{}",e);
+		}
+		
 		// GET MACHINE DETAILS
 		List<MachineDetailMudraLoan> machineDetails = machineDetailsRepo.findByApplicationIdAndIsActive(applicationId,true);
 		PrimaryCorporateDetailMudraLoanReqRes mlDetailsRes = new PrimaryCorporateDetailMudraLoanReqRes();
@@ -875,22 +886,22 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		try {
 			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
 			
-			
-			
-			
-			map.put("loanAmtApplied", primaryCorporateDetail.getLoanAmount()!= null ? CommonUtils.convertValueIndianCurrency(primaryCorporateDetail.getLoanAmount()) : 0);
-			map.put("loanType",!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getPurposeOfLoanId())? PurposeOfLoan.getById(primaryCorporateDetail.getPurposeOfLoanId()).getValue().toString(): " ");
-			map.put("promotorsContribution",CommonUtils.convertValueIndianCurrency(primaryCorporateRequest.getPromoterContribution()));
-			map.put("productDesc", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getProductServiceDescription()) ? StringEscapeUtils.escapeXml(primaryCorporateDetail.getProductServiceDescription()) : null);
-			map.put("totalAmtPer",!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getTotalAmtPercentage())? " (" + CommonUtils.convertValue(primaryCorporateRequest.getTotalAmtPercentage()) + "%)": null);
-			if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getPurposeOfLoanId())) {
-				map.put("purpose", StringEscapeUtils.escapeXml(primaryCorporateDetail.getPurposeOfLoanId() != null && primaryCorporateDetail.getPurposeOfLoanId()==1 ? AssessmentOptionForFS.getById(primaryCorporateDetail.getAssessmentId()).getValue().toString() : PurposeOfLoan.getById(primaryCorporateDetail.getPurposeOfLoanId()).getValue().toString()));
-			} else {
-				map.put("purpose", "");
-			}
-
-			if (primaryCorporateRequest.getHaveCollateralSecurity()) {
-				map.put("amtOfSecurity",!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getCollateralSecurityAmount())? CommonUtils.convertValue(primaryCorporateRequest.getCollateralSecurityAmount()): " ");
+			if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest)) {
+				//map.put("loanAmtApplied", primaryCorporateDetail.getLoanAmount()!= null ? CommonUtils.convertValueIndianCurrency(primaryCorporateDetail.getLoanAmount()) : 0);
+				map.put("loanAmtApplied", loanApplicationMaster != null && loanApplicationMaster.getWcRenewalStatus() != null && loanApplicationMaster.getWcRenewalStatus() == 2 ? (primaryCorporateDetail.getLoanAmount()!= null ? CommonUtils.convertValueIndianCurrency(primaryCorporateDetail.getLoanAmount()) : 0) : (primaryCorporateDetail.getAdditionalLoanAmount() != null ? CommonUtils.convertValueIndianCurrency(primaryCorporateDetail.getAdditionalLoanAmount()) : 0));
+				map.put("loanType",!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getPurposeOfLoanId())? PurposeOfLoan.getById(primaryCorporateDetail.getPurposeOfLoanId()).getValue().toString(): " ");
+				map.put("promotorsContribution",CommonUtils.convertValueIndianCurrency(primaryCorporateRequest.getPromoterContribution()));
+				map.put("productDesc", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getProductServiceDescription()) ? StringEscapeUtils.escapeXml(primaryCorporateDetail.getProductServiceDescription()) : null);
+				map.put("totalAmtPer",!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getTotalAmtPercentage())? " (" + CommonUtils.convertValue(primaryCorporateRequest.getTotalAmtPercentage()) + "%)": null);
+				if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getPurposeOfLoanId())) {
+					map.put("purpose", StringEscapeUtils.escapeXml(primaryCorporateDetail.getPurposeOfLoanId() != null && primaryCorporateDetail.getPurposeOfLoanId()==1 ? AssessmentOptionForFS.getById(primaryCorporateDetail.getAssessmentId()).getValue().toString() : PurposeOfLoan.getById(primaryCorporateDetail.getPurposeOfLoanId()).getValue().toString()));
+				} else {
+					map.put("purpose", "");
+				}
+	
+				if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getHaveCollateralSecurity()) && primaryCorporateRequest.getHaveCollateralSecurity()) {
+					map.put("amtOfSecurity",!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getCollateralSecurityAmount())? CommonUtils.convertValue(primaryCorporateRequest.getCollateralSecurityAmount()): " ");
+				}
 			}
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION, e);
@@ -913,7 +924,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 				map.put("financials", financials);
 				if (loanApplicationMaster.getTenure() != null) {
 					Map<Integer, Object[]> projectedFin = new HashMap<Integer, Object[]>(loanApplicationMaster.getTenure().intValue());
-					if (primaryCorporateRequest.getProductId() == 1) {
+					if (primaryCorporateRequest != null && primaryCorporateRequest.getProductId() == 1) {
 						projectedFin.put(currentYear,calculateFinancials(userId, applicationId, null, denominationValue, currentYear));
 						map.put("tenure", 1);
 					} else {
@@ -1008,7 +1019,6 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 
 	}
 
-	@SuppressWarnings("unchecked")
 	private String getCityName(Long cityId) {
 		try {
 			if (CommonUtils.isObjectNullOrEmpty(cityId)) {
@@ -1028,7 +1038,6 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
 	private String getStateName(Integer stateId) {
 		try {
 			if (CommonUtils.isObjectNullOrEmpty(stateId)) {
@@ -1048,7 +1057,6 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
 	private String getCountryName(Integer country) {
 		try {
 			if (CommonUtils.isObjectNullOrEmpty(country)) {

@@ -158,6 +158,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.PromotorBac
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ProposedProductDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SecurityCorporateDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.TotalCostOfProjectRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.BankingRelationlRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.CoApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.GuarantorDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryHomeLoanDetailRepository;
@@ -411,6 +412,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private CorporateFinalInfoService corporateFinalInfoService;
+	
+    @Autowired
+    private BankingRelationlRepository bankingRelationlRepository;
 	
 	public static final DecimalFormat decim = new DecimalFormat("#,###.00");
 	
@@ -8621,5 +8625,42 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
         	bankRelationshipRequests.add(bankRelationshipRequest);
         }
     	return bankRelationshipRequests;
+    }
+	
+	@Override
+	public Boolean checkAppliedForExisitingLoan(Long applicationId) {
+		Integer existingLoanStatus = loanApplicationRepository.checkAppliedForExisitingLoan(applicationId);
+		if(!CommonUtils.isObjectNullOrEmpty(existingLoanStatus) && existingLoanStatus >0) {
+			return Boolean.TRUE;
+		}
+		return Boolean.FALSE;
+	}
+
+	@Override
+	public Integer checkLoanTypeByApplicationId(Long applicationId) {
+		return loanApplicationRepository.checkLoanTypeByApplicationId(applicationId);
+	}
+
+	@Override
+	public String getOrganisationNameByOrgId(Long userOrganisationId) {
+		return loanApplicationRepository.getOrganisationNameByOrgId(userOrganisationId);
+	}
+
+	@Override
+	public Boolean updateWcRenewalStatusByApplicationId(Integer wsRenwalStatus, Long applicationId) {
+		return loanApplicationRepository.updateWcRenewalStatusByApplicationId(wsRenwalStatus, applicationId) > 0 && 
+				   loanApplicationRepository.updateWcRenewalStatusOfLoanApplicationByApplicationId(wsRenwalStatus, applicationId) > 0;
+	}
+	
+	@Override
+    public Boolean inactivateBankRelation(Long id, Long userId) {
+    	BankingRelation bankingRelations = bankingRelationlRepository.findOne(id);
+    	if (!CommonUtils.isObjectNullOrEmpty(bankingRelations)) {
+	    	bankingRelations.setIsActive(Boolean.FALSE);
+	    	bankingRelations.setModifiedBy(userId);
+	    	bankingRelations.setModifiedDate(new Date());
+	    	bankingRelationlRepository.save(bankingRelations);
+    	}
+    	return Boolean.TRUE;
     }
 }

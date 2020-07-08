@@ -246,9 +246,10 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		//save nbfc ratio mapping
 //		nbfcRatioMappingRepository.inActiveByFpProductId(termLoanParameterRequest.getId());
 		
-		fPParameterMappingService.inactiveAndSave(termLoanParameterRequest.getId(),CommonUtils.ParameterTypes.BUREAU_SCORE, termLoanParameterRequest.getBureauScoreIds());
-		fPParameterMappingService.inactiveAndSave(termLoanParameterRequest.getId(),CommonUtils.ParameterTypes.BUREAU_SCORE_MAIN_DIR, termLoanParameterRequest.getMainDirBureauScoreIds());
-		fPParameterMappingService.inactiveAndSave(termLoanParameterRequest.getId(),CommonUtils.ParameterTypes.BANK_STATEMENT_OPTIONS, termLoanParameterRequest.getBankStatementOptions());
+		fPParameterMappingService.inactiveAndSave(termLoanParameter2.getId(),CommonUtils.ParameterTypes.BUREAU_SCORE, termLoanParameterRequest.getBureauScoreIds());
+		fPParameterMappingService.inactiveAndSave(termLoanParameter2.getId(),CommonUtils.ParameterTypes.BUREAU_SCORE_MAIN_DIR, termLoanParameterRequest.getMainDirBureauScoreIds());
+		fPParameterMappingService.inactiveAndSave(termLoanParameter2.getId(),CommonUtils.ParameterTypes.BANK_STATEMENT_OPTIONS, termLoanParameterRequest.getBankStatementOptions());
+		fPParameterMappingService.inactiveAndSaveWithObject(termLoanParameter2.getId(), CommonUtils.ParameterTypes.RISK_BASE_LOAN_AMOUNT, termLoanParameterRequest.getRiskLoanAmountList());
 		//add duplicate productmaster entries based on nbfc ids
 //		if(termLoanParameterRequest.getProductType()!=null && termLoanParameterRequest.getProductType()==2){
 //			addduplicateEntriesForNbfc(termLoanParameterRequest,mappingId);
@@ -523,6 +524,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		termLoanParameterRequest.setBureauScoreIds(fPParameterMappingService.getParameters(termLoanParameterRequest.getId(), CommonUtils.ParameterTypes.BUREAU_SCORE));
 		termLoanParameterRequest.setMainDirBureauScoreIds(fPParameterMappingService.getParameters(termLoanParameterRequest.getId(), CommonUtils.ParameterTypes.BUREAU_SCORE_MAIN_DIR));
 		termLoanParameterRequest.setBankStatementOptions(fPParameterMappingService.getParameters(termLoanParameterRequest.getId(), CommonUtils.ParameterTypes.BANK_STATEMENT_OPTIONS));
+		termLoanParameterRequest.setRiskLoanAmountList(fPParameterMappingService.getParametersWithObject(termLoanParameterRequest.getId(), CommonUtils.ParameterTypes.RISK_BASE_LOAN_AMOUNT));
 		CommonDocumentUtils.endHook(logger, GET_TERM_LOAN_PARAMETER_REQUEST);
 		return termLoanParameterRequest;
 	}
@@ -849,6 +851,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		termLoanParameterRequest.setBureauScoreIds(fPParameterMappingService.getParametersTemp(termLoanParameterRequest.getId(), CommonUtils.ParameterTypes.BUREAU_SCORE));
 		termLoanParameterRequest.setMainDirBureauScoreIds(fPParameterMappingService.getParametersTemp(termLoanParameterRequest.getId(), CommonUtils.ParameterTypes.BUREAU_SCORE_MAIN_DIR));
 		termLoanParameterRequest.setBankStatementOptions(fPParameterMappingService.getParametersTemp(termLoanParameterRequest.getId(), CommonUtils.ParameterTypes.BANK_STATEMENT_OPTIONS));
+		termLoanParameterRequest.setRiskLoanAmountList(fPParameterMappingService.getParametersTempWithObject(termLoanParameterRequest.getId(), CommonUtils.ParameterTypes.RISK_BASE_LOAN_AMOUNT));
 		logger.info("end getTermLoanParameterRequestTemp");
 		return termLoanParameterRequest;
 	}
@@ -944,6 +947,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		//save nbfc ratio mapping
 		fPParameterMappingService.inactiveAndSaveTemp(termLoanParameterRequest.getId(),CommonUtils.ParameterTypes.BUREAU_SCORE, termLoanParameterRequest.getBureauScoreIds());
 		fPParameterMappingService.inactiveAndSaveTemp(termLoanParameterRequest.getId(),CommonUtils.ParameterTypes.BUREAU_SCORE_MAIN_DIR, termLoanParameterRequest.getMainDirBureauScoreIds());
+		fPParameterMappingService.inactiveAndSaveTempWithObject(termLoanParameterRequest.getId(), CommonUtils.ParameterTypes.RISK_BASE_LOAN_AMOUNT, termLoanParameterRequest.getRiskLoanAmountList());
 
 		boolean isUpdate = msmeValueMappingService.updateMsmeValueMappingTemp(
 				termLoanParameterRequest.getMsmeFundingIds(), termLoanParameterRequest.getId(),

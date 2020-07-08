@@ -40,15 +40,14 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplica
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.repository.sanction.LoanSanctionRepository;
 import com.capitaworld.service.loans.service.common.IneligibleProposalDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.CamReportPdfDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.InEligibleProposalCamReportService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
-import com.capitaworld.service.loans.service.sidbi.SidbiSpecificService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.InEligibleProposalStatus;
-import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.notification.client.NotificationClient;
 import com.capitaworld.service.notification.exceptions.NotificationException;
@@ -58,6 +57,7 @@ import com.capitaworld.service.notification.model.NotificationRequest;
 import com.capitaworld.service.notification.utils.ContentType;
 import com.capitaworld.service.notification.utils.EmailSubjectAlias;
 import com.capitaworld.service.notification.utils.NotificationAlias;
+import com.capitaworld.service.notification.utils.NotificationMasterAlias;
 import com.capitaworld.service.notification.utils.NotificationType;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.PurposeOfLoan;
@@ -136,8 +136,6 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
     @Autowired
 	private LoanApplicationRepository loanApplicationRepository;
     
-    @Autowired
-    private SidbiSpecificService sidbiService;
     
     @Autowired
     private LoanSanctionRepository sanctionRepository;
@@ -156,7 +154,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 		try {
 			String gstin = loanRepository.getGSTINByAppId(inlPropReq.getApplicationId());
 
-			IneligibleProposalDetails inlProposalDetails = ineligibleProposalDetailsRepository.findByApplicationIdAndIsActive(inlPropReq.getApplicationId(), true);
+			IneligibleProposalDetails inlProposalDetails = ineligibleProposalDetailsRepository.findFirstByApplicationIdAndIsActiveOrderByIdDesc(inlPropReq.getApplicationId(), true);
 			boolean isCreateNew = false;
 			if(!CommonUtils.isObjectNullOrEmpty(inlProposalDetails)) {
 				if(!CommonUtils.isObjectNullOrEmpty(inlProposalDetails.getIsSanctioned()) && inlProposalDetails.getIsSanctioned()) {//HANDLE MESSAGE
@@ -192,7 +190,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 					List<IneligibleProposalDetails> inlProposalList = ineligibleProposalDetailsRepository.findByGstinPan(gstin.substring(2, 12));
 					for(IneligibleProposalDetails inlProposal : inlProposalList) {
 						Integer loanTypeId = primaryCorporateDetailRepository.getPurposeLoanId(inlProposal.getApplicationId());
-						if(loanTypeId == currentAppLoanTypeId) {//CHECK IF SAME LOAN ID THEN WE NEED TO CHECK BELOW CONDITION
+						if(!CommonUtils.isObjectNullOrEmpty(currentAppLoanTypeId) && currentAppLoanTypeId.equals(loanTypeId)) {//CHECK IF SAME LOAN ID THEN WE NEED TO CHECK BELOW CONDITION
 							//CHECK IF SAME BANK PROPOSAL AVAILABLE FOR THIS GSTIN primaryCorporateDetailRepository
 							if(inlProposal.getUserOrgId() == inlPropReq.getUserOrgId()) {
 								// NEED TO CHECK IF ALREADY SANCTIONED OR NOT
@@ -336,10 +334,12 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 				} catch (Exception e1) {
 					logger.error("Exception in getting : {}" , e1);
 				}
-				notificationParams.put("app_code", applicationRequest.getApplicationCode());
-				notificationParams.put("productId", applicationRequest.getProductId());
+				
 				// For getting Fund Seeker's Name
 				if (applicationRequest != null) {
+					notificationParams.put("app_code", applicationRequest.getApplicationCode());
+					notificationParams.put("productId", applicationRequest.getProductId());
+					notificationParams.put("businessTypeId", applicationRequest.getBusinessTypeId());
 					notificationParams.putAll(getFsNameAndDetailsForAllProduct(applicationId, applicationRequest));
 					notificationParams.putAll(getBankAndBranchDetails(userOrgId, branchId, notificationParams));
 
@@ -381,15 +381,14 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 
 					// ===FS=============================================================================
 					notificationParams.put("bank_name", organisationName);
- 
-
+					
 //					 String subject = "MSME Offline Application";
 					Object subjectId=EmailSubjectAlias.EMAIL_FS_WHEN_IN_ELIGIBLE.getSubjectId();
 	                    if (organisationName != null && applicationId!=null) {
 	                        notificationParams.put(CommonUtils.PARAMETERS_IS_DYNAMIC, false);
 
 						createNotificationForEmail(signUpUser.getEmail(), applicationRequest.getUserId().toString(),
-								notificationParams, NotificationAlias.EMAIL_FS_WHEN_IN_ELIGIBLE, subjectId,applicationId,true,null,null,null);
+								notificationParams, NotificationAlias.ML_EMAIL_FS_WHEN_IN_ELIGIBLE, subjectId,applicationId,true,null,null,null,null,null, NotificationMasterAlias.ML_EMAIL_FS_WHEN_IN_ELIGIBLE.getMasterId());
 					}
 					// ===========================================================================================
 					// 2nd email Step2 Get Details of Bank branch --- Sending mail to Branch
@@ -397,6 +396,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 					// ============================================================================================
 					Map<String, Object> mailParameters = new HashMap<String, Object>();
 					mailParameters.put("app_id", applicationId !=null ?applicationId : "NA");
+					mailParameters.put("businessTypeId", applicationRequest.getBusinessTypeId());
 					mailParameters.put(CommonUtils.PARAMETERS_FS_NAME,
 							notificationParams.get(CommonUtils.PARAMETERS_FS_NAME) != null ? notificationParams.get(CommonUtils.PARAMETERS_FS_NAME) : "NA");
 					mailParameters.put("mobile_no", signUpUser.getMobile() != null ? signUpUser.getMobile() : "NA");
@@ -405,45 +405,30 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 					
 					subjectId=EmailSubjectAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE_MSME.getSubjectId();
 					
-					if (applicationRequest.getBusinessTypeId() == CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId()) {
-//						subject = "Personal Loan Offline Application";
-						subjectId=EmailSubjectAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE_FOR_PERSONAL_LOAN.getSubjectId();
-						mailParameters.put(CommonUtils.PARAMETERS_LOAN_TYPE, "Personal Loan");
-						mailParameters.put(CommonUtils.PARAMETERS_LOAN_AMOUNT, notificationParams.get(CommonUtils.PARAMETERS_LOAN_AMOUNT));
-					}else if (applicationRequest.getBusinessTypeId() == CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId()) {
-//						subject = "Home Loan Offline Application";
-						subjectId=EmailSubjectAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE_FOR_HOME_LOAN.getSubjectId();
-						mailParameters.put(CommonUtils.PARAMETERS_LOAN_TYPE, "Home Loan");
-						mailParameters.put(CommonUtils.PARAMETERS_LOAN_AMOUNT, notificationParams.get(CommonUtils.PARAMETERS_LOAN_AMOUNT));
-					}else if (applicationRequest.getBusinessTypeId() == CommonUtils.BusinessType.RETAIL_AUTO_LOAN.getId()) {
-//						subject = "Auto Loan Offline Application";
-						subjectId=EmailSubjectAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE_FOR_AUTO_LOAN.getSubjectId();
-						mailParameters.put(CommonUtils.PARAMETERS_LOAN_TYPE, "Auto Loan");
-						mailParameters.put(CommonUtils.PARAMETERS_LOAN_AMOUNT, notificationParams.get(CommonUtils.PARAMETERS_LOAN_AMOUNT));
-					} else {
-						// Type ==For getting Loan=====For Existing and NTB====================
-						PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateDetailRepository
-								.findOneByApplicationIdId(applicationId);
-						if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)) {
-							if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getPurposeOfLoanId())) {
-								String loanType = PurposeOfLoan.getById(primaryCorporateDetail.getPurposeOfLoanId())
-										.getValue();
-								if ("Asset Acquisition".equals(loanType)) {
-									mailParameters.put(CommonUtils.PARAMETERS_LOAN_TYPE, "Term Loan");
-								} else {
-									mailParameters.put(CommonUtils.PARAMETERS_LOAN_TYPE, loanType != null ? loanType : "NA");
-								}
+
+					// Type ==For getting Loan=====For Existing and NTB====================
+					PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateDetailRepository
+							.findOneByApplicationIdId(applicationId);
+					if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)) {
+						if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getPurposeOfLoanId())) {
+							String loanType = PurposeOfLoan.getById(primaryCorporateDetail.getPurposeOfLoanId())
+									.getValue();
+							if ("Asset Acquisition".equals(loanType)) {
+								mailParameters.put(CommonUtils.PARAMETERS_LOAN_TYPE, "MUDRA - Term Loan");
 							} else {
-								mailParameters.put(CommonUtils.PARAMETERS_LOAN_TYPE, "NA");
+								mailParameters.put(CommonUtils.PARAMETERS_LOAN_TYPE, loanType != null ? loanType : "NA");
 							}
-							mailParameters.put(CommonUtils.PARAMETERS_LOAN_AMOUNT,
-									primaryCorporateDetail.getLoanAmount() != null
-											? String.format("%.0f", primaryCorporateDetail.getLoanAmount()): "NA");
 						} else {
-							mailParameters.put(CommonUtils.PARAMETERS_LOAN_TYPE, "NA");
-							mailParameters.put(CommonUtils.PARAMETERS_LOAN_AMOUNT, "NA");
+							mailParameters.put(CommonUtils.PARAMETERS_LOAN_TYPE, "MUDRA Loan");
 						}
+						mailParameters.put(CommonUtils.PARAMETERS_LOAN_AMOUNT,
+								primaryCorporateDetail.getLoanAmount() != null
+										? String.format("%.0f", primaryCorporateDetail.getLoanAmount()): "NA");
+					} else {
+						mailParameters.put(CommonUtils.PARAMETERS_LOAN_TYPE, "MUDRA Loan");
+						mailParameters.put(CommonUtils.PARAMETERS_LOAN_AMOUNT, "NA");
 					}
+					
 					
 					// ======send email to maker bo checker===========================
 					List<Long> roleTypeList = new ArrayList<Long>();
@@ -470,8 +455,9 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 						
 						String[] cc = ccList != null && !ccList.isEmpty() ? ccList.toArray(new String[ccList.size()]) : null;
 						
+
 						createNotificationForEmail(to, applicationRequest.getUserId().toString(),
-								mailParameters, NotificationAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE, subjectId,applicationId,false,bcc,cc,null);
+								mailParameters, NotificationAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE, subjectId,applicationId,false,bcc,cc,null,100,null,NotificationMasterAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE.getMasterId());
 					}
 					isSent = true;
 				}
@@ -650,6 +636,91 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 			return notificationParams;
 		}
 	}
+	
+	private void createNotificationForEmail(String toNo, String userId, Map<String, Object> mailParameters,
+			Long templateId, Object emailSubject,Long applicationId,Boolean isFundSeeker,String[] bcc,String[] cc,List<ContentAttachment> content,Integer loanTypeId , Long orgId , Long masterId) throws NotificationException {
+		logger.info("Inside send notification===>{}" , toNo);
+		NotificationRequest notificationRequest = new NotificationRequest();
+		notificationRequest.setClientRefId(userId);
+		
+		try{
+			notificationRequest.setIsDynamic(((Boolean) mailParameters.get(CommonUtils.PARAMETERS_IS_DYNAMIC)).booleanValue());
+		}catch (Exception e) {
+			notificationRequest.setIsDynamic(false);
+		}
+		
+		String[] to = { toNo };
+		Notification notification = new Notification();
+		notification.setContentType(ContentType.TEMPLATE);
+		notification.setTemplateId(templateId);
+		notification.setSubject(emailSubject);
+		notification.setTo(to);
+		notification.setType(NotificationType.EMAIL);
+		notification.setFrom(EMAIL_ADDRESS_FROM);
+		notification.setParameters(mailParameters);
+		notification.setIsDynamic(notificationRequest.getIsDynamic());
+		notification.setCc(cc);
+		notification.setUserOrgId(orgId);
+		notification.setLoanTypeId(loanTypeId);
+		notification.setMasterId(masterId);
+		
+		if(!CommonUtils.isObjectNullOrEmpty(bcc))
+		{
+			notification.setBcc(bcc);
+		}
+
+		// start attach CAM to Mail
+		try {
+			if(!isFundSeeker)
+			{
+				if(content == null) {
+					content = new ArrayList<ContentAttachment>();
+				}
+				
+				logger.info("fetch Cam Report For==>{} with applicationId==>{}",toNo , applicationId);
+				byte[] camArr = getCamForNotification(applicationId);
+				
+//				notification.setFileName("CAM.pdf");
+//				notification.setContentInBytes(camArr);
+				if(camArr != null && camArr.length > 0) {
+					ContentAttachment contentAttach = new ContentAttachment();
+					contentAttach.setContentInByte(camArr);
+					contentAttach.setFileName("CAM.pdf");
+					content.add(contentAttach);
+				}
+			}
+		}catch (Exception e) {
+			logger.error("Exception in getting cam for ineligible");
+		}
+		
+		try {
+			if(!isFundSeeker)
+			{
+				if(content == null) {
+					content = new ArrayList<ContentAttachment>();
+				}
+				
+				logger.info("fetch Application Form Report For==>{} with ApplicationId==>{}",toNo ,applicationId);
+				byte[] camArr = getApplicationFormForNotification(applicationId);
+				
+				if(camArr != null && camArr.length > 0) {
+					ContentAttachment contentAttach = new ContentAttachment();
+					contentAttach.setContentInByte(camArr);
+					contentAttach.setFileName("ApplicationForm.pdf");
+					content.add(contentAttach);
+				}
+			}
+		}catch (Exception e) {
+			logger.error("Exception in getting application form for ineligible");
+		}
+		// end attach CAM to Mail
+		if(content != null && !content.isEmpty()) {
+			notification.setContentAttachments(content);
+		}
+		notificationRequest.addNotification(notification);
+		sendEmail(notificationRequest);
+		logger.info("Outside send notification===>{}" , toNo);
+	}
 
 	private void createNotificationForEmail(String toNo, String userId, Map<String, Object> mailParameters,
 			Long templateId, Object emailSubject,Long applicationId,Boolean isFundSeeker,String[] bcc,String[] cc,List<ContentAttachment> content) throws NotificationException {
@@ -674,8 +745,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 		notification.setParameters(mailParameters);
 		notification.setIsDynamic(notificationRequest.getIsDynamic());
 		notification.setCc(cc);
-		if(!CommonUtils.isObjectNullOrEmpty(bcc))
-		{
+		if(!CommonUtils.isObjectNullOrEmpty(bcc)){
 			notification.setBcc(bcc);
 		}
 
@@ -683,8 +753,12 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 		try {
 			if(!isFundSeeker)
 			{
+				if(content == null) {
+					content = new ArrayList<ContentAttachment>();
+				}
+				
 				Integer productId = Integer.valueOf(mailParameters.get("productId").toString());
-				byte[] camArr = getCamForNotification(applicationId, productId);
+				byte[] camArr = getCamForNotification(applicationId);
 				
 				notification.setFileName("CAM.pdf");
 				notification.setContentInBytes(camArr);
@@ -704,27 +778,44 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 		logger.info("Outside send notification===>{}" , toNo);
 	}
 
-	private byte[] getCamForNotification(Long applicationId, Integer productId) {
+	private byte[] getCamForNotification(Long applicationId) {
 		ReportRequest reportRequest = new ReportRequest();
 		Map<String,Object> response = new HashMap<>();
 		
-		if(productId == LoanType.WORKING_CAPITAL.getValue() || productId == LoanType.WCTL_LOAN.getValue() || productId == LoanType.TERM_LOAN.getValue()) {
-			response = inEligibleProposalCamReportService.getInEligibleCamReport(applicationId);
-			reportRequest.setParams(response);
-			reportRequest.setTemplate("INELIGIBLECAMREPORT");
-			reportRequest.setType("INELIGIBLECAMREPORT");
-			try
-			{
-				return reportsClient.generatePDFFile(reportRequest);
-			}
-			catch (Exception e)
-			{
-				logger.error("error while attaching cam report : {}",e);
-				return null;
-			}
-		}else {
+		response = inEligibleProposalCamReportService.getInEligibleCamReport(applicationId);
+		reportRequest.setParams(response);
+		reportRequest.setTemplate("MUDRALOANINELIGIBLECAM");
+		reportRequest.setType("MUDRALOANINELIGIBLECAM");
+		try{
+			return reportsClient.generatePDFFile(reportRequest);
+		}
+		catch(Exception e){
+			logger.error("error while attaching cam report : {}",e);
+		}
+		return null;
+	}
+	
+	@Autowired
+	private CamReportPdfDetailsService camReportPdfDetailsService;
+	
+	private byte[] getApplicationFormForNotification(Long applicationId) {
+		ReportRequest reportRequest = new ReportRequest();
+		Map<String,Object> response = new HashMap<>();
+		
+		response = camReportPdfDetailsService.getDetailsForApplicationForm(applicationId ,null,null);
+		reportRequest.setParams(response);
+		reportRequest.setTemplate("MUDRALOANAPPLICATIONFORM");
+		reportRequest.setType("MUDRALOANAPPLICATIONFORM");
+		try
+		{
+			return reportsClient.generatePDFFile(reportRequest);
+		}
+		catch (Exception e)
+		{
+			logger.error("error while attaching application form report : {}",e);
 			return null;
 		}
+		
 	}
 
 	private void sendEmail(NotificationRequest notificationRequest) throws NotificationException {
@@ -773,7 +864,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 	
 	@Override
 	public Boolean checkIsExistOfflineProposalByApplicationId(Long applicationId) {
-		return !CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetailsRepository.findByApplicationIdAndIsActive(applicationId, Boolean.TRUE));
+		return !CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetailsRepository.findFirstByApplicationIdAndIsActiveOrderByIdDesc(applicationId, Boolean.TRUE));
 	}
 
 	@Override
@@ -917,8 +1008,8 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 							if(user[0].equals("sbi") || (user[0].equals("sidbi") && isSIDBIFlowForIneligible && Integer.valueOf(user[1].toString()).equals(1))) {
 								try {
 									DecimalFormat decim = new DecimalFormat("####");
-									Double loanAmount = sidbiService.getLoanAmountByApplicationId(applicationId);
-									param.put("loanAmount", decim.format(loanAmount));
+//									Double loanAmount = sidbiService.getLoanAmountByApplicationId(applicationId);
+									param.put("loanAmount", 0.0d); // No Need For SIDBI 
 									ReportRequest request=new ReportRequest();
 									List<Map<String, Object>> dataList=new ArrayList<Map<String,Object>>();
 									dataList.add(param);
@@ -1001,7 +1092,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 
 	@Override
 	public InEligibleProposalDetailsRequest get(Long applicationId) {
-		IneligibleProposalDetails ineliApp = ineligibleProposalDetailsRepository.findByApplicationIdAndIsActive(applicationId, true);
+		IneligibleProposalDetails ineliApp = ineligibleProposalDetailsRepository.findFirstByApplicationIdAndIsActiveOrderByIdDesc(applicationId, true);
 		if(ineliApp == null) {
 			return null;
 		}

@@ -64,7 +64,7 @@ public class ScoringController {
     @RequestMapping(value = "/calculate_score/corporate_existing_list", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> calculateScoreExisting(@RequestBody List<ScoringRequestLoans> scoringRequestLoansList) {
 
-        return scoringService.calculateExistingBusinessScoringList(scoringRequestLoansList);
+        return scoringService.calculateMudraScoringList(scoringRequestLoansList);
     }
 
     @RequestMapping(value = "/calculate_score/corporate/test", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -265,5 +265,44 @@ public class ScoringController {
             return new ResponseEntity<List<GenericCheckerReqRes> >(res,HttpStatus.OK);
         }
     }
+
+    @RequestMapping(value = "/inactive_scoring_details", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ScoringModelReqRes> inactivateScoringDetails(@RequestBody ScoringModelReqRes scoringModelReqRes, HttpServletRequest httpRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
+
+        try {
+            Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);
+            scoringModelReqRes.setUserId(userId);
+
+            logger.info("userId ============> "+userId);
+            ScoringModelReqRes scoringModelReqResNew=scoringService.inactivateScoringDetails(scoringModelReqRes);
+            return new ResponseEntity<ScoringModelReqRes>(scoringModelReqResNew,HttpStatus.OK);
+        }
+        catch (Exception e)
+        {
+            ScoringModelReqRes res=new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
+            logger.error("Error while inactivateScoringDetails : ",e);
+            return new ResponseEntity<ScoringModelReqRes>(res,HttpStatus.OK);
+        }
+    }
+    
+    @RequestMapping(value = "/get_history_scoring_details", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ScoringModelReqRes> getScoringHistoryDetails(@RequestBody ScoringModelReqRes scoringModelReqRes, HttpServletRequest httpRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
+
+        try {
+            Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);
+            scoringModelReqRes.setUserId(userId);
+
+            logger.info("userId ============> "+userId);
+            ScoringModelReqRes scoringModelReqResNew=scoringService.getScoringHistoryDetails(scoringModelReqRes);
+            return new ResponseEntity<ScoringModelReqRes>(scoringModelReqResNew,HttpStatus.OK);
+        }
+        catch (Exception e)
+        {
+            ScoringModelReqRes res=new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
+            logger.error("Error while inactivateScoringDetails : ",e);
+            return new ResponseEntity<ScoringModelReqRes>(res,HttpStatus.OK);
+        }
+    }
+    
 }
 

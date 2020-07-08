@@ -21,6 +21,7 @@ public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepos
 	private static final String ORG_ID = "orgId";
 	private static final String FROM_DATE = "fromDate";
 	private static final String TO_DATE = "toDate";
+	private static final String CONNECT_FLOW_TYPE_ID = "connectFlowTypeId";
 
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -32,9 +33,11 @@ public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepos
 		storedProcedureQuery.registerStoredProcedureParameter(CommonUtils.USER_ID,Long.class, ParameterMode.IN);
 		storedProcedureQuery.registerStoredProcedureParameter(FROM_DATE,Date.class, ParameterMode.IN);
 		storedProcedureQuery.registerStoredProcedureParameter(TO_DATE,Date.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(CONNECT_FLOW_TYPE_ID,Integer.class,ParameterMode.IN);
 		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
 		storedProcedureQuery.setParameter(FROM_DATE,fromDate);
 		storedProcedureQuery.setParameter(TO_DATE,toDate);
+		storedProcedureQuery.setParameter(CONNECT_FLOW_TYPE_ID,-1);
 		return (String) storedProcedureQuery.getSingleResult();
 	}
 	
@@ -81,9 +84,11 @@ public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepos
 		storedProcedureQuery.registerStoredProcedureParameter(CommonUtils.USER_ID,Long.class, ParameterMode.IN);
 		storedProcedureQuery.registerStoredProcedureParameter(FROM_DATE,Date.class, ParameterMode.IN);
 		storedProcedureQuery.registerStoredProcedureParameter(TO_DATE,Date.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(CONNECT_FLOW_TYPE_ID,Integer.class,ParameterMode.IN);
 		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
 		storedProcedureQuery.setParameter(FROM_DATE,fromDate);
 		storedProcedureQuery.setParameter(TO_DATE,toDate);
+		storedProcedureQuery.setParameter(CONNECT_FLOW_TYPE_ID,-1);
 		return (String) storedProcedureQuery.getSingleResult();
 	}
 
@@ -94,9 +99,11 @@ public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepos
 		storedProcedureQuery.registerStoredProcedureParameter(CommonUtils.USER_ID,Long.class, ParameterMode.IN);
 		storedProcedureQuery.registerStoredProcedureParameter(FROM_DATE,Date.class, ParameterMode.IN);
 		storedProcedureQuery.registerStoredProcedureParameter(TO_DATE,Date.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(CONNECT_FLOW_TYPE_ID,Integer.class,ParameterMode.IN);
 		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
 		storedProcedureQuery.setParameter(FROM_DATE,fromDate);
 		storedProcedureQuery.setParameter(TO_DATE,toDate);
+		storedProcedureQuery.setParameter(CONNECT_FLOW_TYPE_ID,-1);
 		return (String) storedProcedureQuery.getSingleResult();
 	}
 
@@ -107,9 +114,11 @@ public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepos
 		storedProcedureQuery.registerStoredProcedureParameter(CommonUtils.USER_ID,Long.class, ParameterMode.IN);
 		storedProcedureQuery.registerStoredProcedureParameter(FROM_DATE,Date.class, ParameterMode.IN);
 		storedProcedureQuery.registerStoredProcedureParameter(TO_DATE,Date.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(CONNECT_FLOW_TYPE_ID,Integer.class,ParameterMode.IN);
 		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
 		storedProcedureQuery.setParameter(FROM_DATE,fromDate);
 		storedProcedureQuery.setParameter(TO_DATE,toDate);
+		storedProcedureQuery.setParameter(CONNECT_FLOW_TYPE_ID,-1);
 		return (String) storedProcedureQuery.getSingleResult();
 	}
 	
