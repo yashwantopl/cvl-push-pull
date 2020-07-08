@@ -593,7 +593,43 @@ public class WorkingCapitalParameterTemp extends ProductMasterTemp implements Se
 	private Boolean isConstitutionMandatory = false;
 	
 
+	@Column(name = "cgtmse_coverage_perc")
+	private BigDecimal cgtmseCoveragePerc;
+	
+	
+	@Column(name = "is_cgtmse_coverage_perc_display")
+	private Boolean isCgtmseCoveragePercDisplay = false;
+	
+	@Column(name = "is_cgtmse_coverage_perc_mandatory")
+	private Boolean isCgtmseCoveragePercMandatory =false;
+	
+	
+
 	/* ends here */
+
+	public BigDecimal getCgtmseCoveragePerc() {
+		return cgtmseCoveragePerc;
+	}
+
+	public void setCgtmseCoveragePerc(BigDecimal cgtmseCoveragePerc) {
+		this.cgtmseCoveragePerc = cgtmseCoveragePerc;
+	}
+
+	public Boolean getIsCgtmseCoveragePercDisplay() {
+		return isCgtmseCoveragePercDisplay;
+	}
+
+	public void setIsCgtmseCoveragePercDisplay(Boolean isCgtmseCoveragePercDisplay) {
+		this.isCgtmseCoveragePercDisplay = isCgtmseCoveragePercDisplay;
+	}
+
+	public Boolean getIsCgtmseCoveragePercMandatory() {
+		return isCgtmseCoveragePercMandatory;
+	}
+
+	public void setIsCgtmseCoveragePercMandatory(Boolean isCgtmseCoveragePercMandatory) {
+		this.isCgtmseCoveragePercMandatory = isCgtmseCoveragePercMandatory;
+	}
 
 	public Integer getIndividualCibil() {
 		return individualCibil;

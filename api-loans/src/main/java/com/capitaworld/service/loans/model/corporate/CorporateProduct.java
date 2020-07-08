@@ -498,6 +498,39 @@ public class CorporateProduct extends ProductMasterRequest implements Serializab
 
 	private Boolean isConstitutionMandatory = false;
 	
+	
+	private BigDecimal cgtmseCoveragePerc;
+	
+	private Boolean isCgtmseCoveragePercDisplay = false;
+	
+	private Boolean isCgtmseCoveragePercMandatory =false;
+	
+	
+	
+	public BigDecimal getCgtmseCoveragePerc() {
+		return cgtmseCoveragePerc;
+	}
+
+	public void setCgtmseCoveragePerc(BigDecimal cgtmseCoveragePerc) {
+		this.cgtmseCoveragePerc = cgtmseCoveragePerc;
+	}
+
+	public Boolean getIsCgtmseCoveragePercDisplay() {
+		return isCgtmseCoveragePercDisplay;
+	}
+
+	public void setIsCgtmseCoveragePercDisplay(Boolean isCgtmseCoveragePercDisplay) {
+		this.isCgtmseCoveragePercDisplay = isCgtmseCoveragePercDisplay;
+	}
+
+	public Boolean getIsCgtmseCoveragePercMandatory() {
+		return isCgtmseCoveragePercMandatory;
+	}
+
+	public void setIsCgtmseCoveragePercMandatory(Boolean isCgtmseCoveragePercMandatory) {
+		this.isCgtmseCoveragePercMandatory = isCgtmseCoveragePercMandatory;
+	}
+
 	private List<Integer> bureauScoreIds = Collections.emptyList();
 	
 	private List<Integer> mainDirBureauScoreIds = Collections.emptyList();
