@@ -502,6 +502,7 @@ public class CorporateProduct extends ProductMasterRequest implements Serializab
 
 	private Boolean isConstitutionMandatory = false;
 	
+	private BigDecimal minCgtmseCoveragePerc;
 	
 	private BigDecimal cgtmseCoveragePerc;
 	
@@ -511,6 +512,14 @@ public class CorporateProduct extends ProductMasterRequest implements Serializab
 	
 	
 	
+	public BigDecimal getMinCgtmseCoveragePerc() {
+		return minCgtmseCoveragePerc;
+	}
+
+	public void setMinCgtmseCoveragePerc(BigDecimal minCgtmseCoveragePerc) {
+		this.minCgtmseCoveragePerc = minCgtmseCoveragePerc;
+	}
+
 	public BigDecimal getCgtmseCoveragePerc() {
 		return cgtmseCoveragePerc;
 	}

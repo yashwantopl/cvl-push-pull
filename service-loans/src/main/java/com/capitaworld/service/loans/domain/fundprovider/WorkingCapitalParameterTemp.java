@@ -598,7 +598,9 @@ public class WorkingCapitalParameterTemp extends ProductMasterTemp implements Se
 	@Column(name = "is_constitution_mandatory")
 	private Boolean isConstitutionMandatory = false;
 	
-
+	@Column(name = "min_cgtmse_coverage_perc")
+	private BigDecimal minCgtmseCoveragePerc;
+	
 	@Column(name = "cgtmse_coverage_perc")
 	private BigDecimal cgtmseCoveragePerc;
 	
@@ -612,6 +614,14 @@ public class WorkingCapitalParameterTemp extends ProductMasterTemp implements Se
 	
 
 	/* ends here */
+
+	public BigDecimal getMinCgtmseCoveragePerc() {
+		return minCgtmseCoveragePerc;
+	}
+
+	public void setMinCgtmseCoveragePerc(BigDecimal minCgtmseCoveragePerc) {
+		this.minCgtmseCoveragePerc = minCgtmseCoveragePerc;
+	}
 
 	public BigDecimal getCgtmseCoveragePerc() {
 		return cgtmseCoveragePerc;

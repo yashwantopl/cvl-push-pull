@@ -603,7 +603,8 @@ public class WorkingCapitalParameter extends ProductMaster implements Serializab
 	private Boolean isConstitutionMandatory = false;
 	
 	
-	
+	@Column(name = "min_cgtmse_coverage_perc")
+	private BigDecimal minCgtmseCoveragePerc;
 
 	@Column(name = "cgtmse_coverage_perc")
 	private BigDecimal cgtmseCoveragePerc;
@@ -621,6 +622,14 @@ public class WorkingCapitalParameter extends ProductMaster implements Serializab
 	
 	
 	
+
+	public BigDecimal getMinCgtmseCoveragePerc() {
+		return minCgtmseCoveragePerc;
+	}
+
+	public void setMinCgtmseCoveragePerc(BigDecimal minCgtmseCoveragePerc) {
+		this.minCgtmseCoveragePerc = minCgtmseCoveragePerc;
+	}
 
 	public BigDecimal getCgtmseCoveragePerc() {
 		return cgtmseCoveragePerc;

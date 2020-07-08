@@ -452,6 +452,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 
 		private Boolean isConstitutionMandatory = false;
 		
+		private BigDecimal minCgtmseCoveragePerc;
 		
 		private BigDecimal cgtmseCoveragePerc;
 		
@@ -462,6 +463,14 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 		
 		
 		
+		public BigDecimal getMinCgtmseCoveragePerc() {
+			return minCgtmseCoveragePerc;
+		}
+
+		public void setMinCgtmseCoveragePerc(BigDecimal minCgtmseCoveragePerc) {
+			this.minCgtmseCoveragePerc = minCgtmseCoveragePerc;
+		}
+
 		public BigDecimal getCgtmseCoveragePerc() {
 			return cgtmseCoveragePerc;
 		}

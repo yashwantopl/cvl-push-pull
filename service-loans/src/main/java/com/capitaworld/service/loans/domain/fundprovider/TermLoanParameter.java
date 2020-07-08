@@ -599,7 +599,8 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 	@Column(name = "min_no_debit_transaction")
 	private BigDecimal minNoDebitTransaction ;
 	
-	
+	@Column(name = "min_cgtmse_coverage_perc")
+	private BigDecimal minCgtmseCoveragePerc;
 
 	@Column(name = "cgtmse_coverage_perc")
 	private BigDecimal cgtmseCoveragePerc;
@@ -613,6 +614,14 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 	
 	
 	
+
+	public BigDecimal getMinCgtmseCoveragePerc() {
+		return minCgtmseCoveragePerc;
+	}
+
+	public void setMinCgtmseCoveragePerc(BigDecimal minCgtmseCoveragePerc) {
+		this.minCgtmseCoveragePerc = minCgtmseCoveragePerc;
+	}
 
 	public BigDecimal getCgtmseCoveragePerc() {
 		return cgtmseCoveragePerc;

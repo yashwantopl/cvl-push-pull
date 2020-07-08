@@ -607,8 +607,9 @@ public class TermLoanParameterTemp extends ProductMasterTemp implements Serializ
 	@Column(name = "is_constitution_mandatory")
 	private Boolean isConstitutionMandatory = false;
 	
+	@Column(name = "min_cgtmse_coverage_perc")
+	private BigDecimal minCgtmseCoveragePerc;
 	
-
 	@Column(name = "cgtmse_coverage_perc")
 	private BigDecimal cgtmseCoveragePerc;
 	
@@ -623,6 +624,14 @@ public class TermLoanParameterTemp extends ProductMasterTemp implements Serializ
 	
 	
 	
+
+	public BigDecimal getMinCgtmseCoveragePerc() {
+		return minCgtmseCoveragePerc;
+	}
+
+	public void setMinCgtmseCoveragePerc(BigDecimal minCgtmseCoveragePerc) {
+		this.minCgtmseCoveragePerc = minCgtmseCoveragePerc;
+	}
 
 	public BigDecimal getCgtmseCoveragePerc() {
 		return cgtmseCoveragePerc;
