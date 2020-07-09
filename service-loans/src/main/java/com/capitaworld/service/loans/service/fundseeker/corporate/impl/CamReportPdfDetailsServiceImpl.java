@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.velocity.tools.generic.NumberTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -463,6 +464,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
             map.put("isMcqSkipped", applicationProposalMapping.getIsMcqSkipped() != null ? applicationProposalMapping.getIsMcqSkipped() : false);
         }
         
+        map.put("numberTool", new NumberTool());
    
         //Bank Details for MSME added.
         map.put("bankDetails", getBranchDetails(applicationId, userId, proposalId));
