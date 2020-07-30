@@ -77,6 +77,7 @@ import com.capitaworld.service.loans.model.corporate.PrimaryCorporateDetailMudra
 import com.capitaworld.service.loans.model.corporate.PrimaryCorporateRequest;
 import com.capitaworld.service.loans.model.retail.BankRelationshipRequest;
 import com.capitaworld.service.loans.repository.common.CommonRepository;
+import com.capitaworld.service.loans.repository.common.impl.LoanRepositoryImpl;
 import com.capitaworld.service.loans.repository.fundprovider.FSParameterMappingRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.IneligibleProposalDetailsRepository;
@@ -265,6 +266,9 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
     
     @Autowired
     private PrimaryCorporateDetailMudraLoanRepository primaryCorporateDetailsMudra;
+    
+    @Autowired
+    private LoanRepositoryImpl loanRepoImpl;
     
     @Autowired
     private PennydropClient pennyDropClient;
@@ -1959,12 +1963,16 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
             bankData.put("bankingRelationShip", bankRelationshipRequests);
 			
 			try {
-	            UserResponse campaignUser = usersClient.isExists(userId ,null);
-	            if(campaignUser != null && campaignUser.getData() != null && campaignUser.getData().equals(true)) {
-	                bankData.put("typeOfUser", "Bank Specific");
-	            }else {
-	            	bankData.put("typeOfUser", "Market Place");
-	            }
+				Object[] campaignDetails = loanRepoImpl.getApplicationCampaignDetails(applicationId);
+				if(campaignDetails != null && campaignDetails.length > 0) {
+					if(campaignDetails.length > 2 && campaignDetails[2] != null) { // loanCampCode
+						bankData.put("typeOfUser", "Bank Specific");
+					}else if (campaignDetails[3] != null && CommonUtils.convertString(campaignDetails[3]).equalsIgnoreCase("cii")) {
+						bankData.put("typeOfUser", "Market Place");
+					}else {
+						bankData.put("typeOfUser", "Market Place");
+					}
+				}
 	        } catch (Exception e2) {
 	            logger.info("error while campaign user check ==>" , e2);
 	        }

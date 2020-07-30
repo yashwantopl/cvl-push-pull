@@ -2135,12 +2135,16 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
             bankData.put("bankingRelationShip", bankRelationshipRequests);
 			
 			try {
-	            UserResponse campaignUser = usersClient.isExists(userId ,null);
-	            if(campaignUser != null && campaignUser.getData() != null && campaignUser.getData().equals(true)) {
-	                bankData.put("typeOfUser", "Bank Specific");
-	            }else {
-	            	bankData.put("typeOfUser", "Market Place");
-	            }
+				Object[] campaignDetails = loanRepoImpl.getApplicationCampaignDetails(applicationId);
+				if(campaignDetails != null && campaignDetails.length > 0) {
+					if(campaignDetails.length > 2 && campaignDetails[2] != null) { // loanCampCode
+						bankData.put("typeOfUser", "Bank Specific");
+					}else if (campaignDetails[3] != null && CommonUtils.convertString(campaignDetails[3]).equalsIgnoreCase("cii")) {
+						bankData.put("typeOfUser", "Market Place");
+					}else {
+						bankData.put("typeOfUser", "Market Place");
+					}
+				}
 	        } catch (Exception e2) {
 	            logger.info("error while campaign user check ==>" , e2);
 	        }
