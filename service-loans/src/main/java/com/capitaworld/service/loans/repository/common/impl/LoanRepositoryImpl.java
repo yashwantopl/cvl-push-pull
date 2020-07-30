@@ -513,7 +513,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	public Object[] getApplicationCampaignDetails(Long applicationId) {
 		try {
 			return (Object[]) entityManager
-					.createNativeQuery("SELECT org.user_org_id,org.organisation_name,fs.`loan_campaign_code` \r\n" + 
+					.createNativeQuery("SELECT org.user_org_id,org.organisation_name,fs.`loan_campaign_code`,fs.campaign_code " + 
 							"FROM `loan_application`.`fs_loan_application_master` fs \r\n" + 
 							"LEFT JOIN `users`.`user_organisation_master` org ON org.organisation_code = fs.loan_campaign_code\r\n" + 
 							"WHERE fs.`application_id` =:applicationId")
