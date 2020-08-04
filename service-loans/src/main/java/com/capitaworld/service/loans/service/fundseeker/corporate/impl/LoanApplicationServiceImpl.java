@@ -6245,7 +6245,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		LoanApplicationMaster corporateLoan = new PrimaryCorporateDetail();
 		corporateLoan.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.OPEN));
 		corporateLoan.setDdrStatusId(CommonUtils.DdrStatus.OPEN);
-		corporateLoan.setLoanCampaignCode(loanRepository.getCampaignUser(userId, com.capitaworld.service.matchengine.utils.CommonUtils.CampaignLoanType.Msme.getId()));
+		String campaignUser = loanRepository.getCampaignUser(userId, com.capitaworld.service.matchengine.utils.CommonUtils.CampaignLoanType.Msme.getId());
+		// WE HAVE TO SET MARKET PLACE JOURNEY IN CII CAMPAIGN CASE
+		if(campaignUser != null && campaignUser.equalsIgnoreCase("cii")) {
+			corporateLoan.setCampaignCode(campaignUser);
+		}else {
+			corporateLoan.setLoanCampaignCode(campaignUser);
+		}
+		// corporateLoan.setLoanCampaignCode(loanRepository.getCampaignUser(userId, com.capitaworld.service.matchengine.utils.CommonUtils.CampaignLoanType.Msme.getId()));
 		corporateLoan.setCreatedBy(userId);
 		corporateLoan.setCreatedDate(new Date());
 		corporateLoan.setUserId(userId);
@@ -6286,7 +6293,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		LoanApplicationMaster retailLoanObj = new LoanApplicationMaster();
 		retailLoanObj.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.OPEN));
 		retailLoanObj.setDdrStatusId(CommonUtils.DdrStatus.OPEN);
-		retailLoanObj.setLoanCampaignCode(loanRepository.getCampaignUser(userId, com.capitaworld.service.matchengine.utils.CommonUtils.CampaignLoanType.Retail.getId()));
+		String campaignUser = loanRepository.getCampaignUser(userId, com.capitaworld.service.matchengine.utils.CommonUtils.CampaignLoanType.Retail.getId());
+		if(campaignUser != null && campaignUser.equalsIgnoreCase("cii")) {
+			// corporateLoan.setCampaignCode(campaignUser);
+		}else {
+			retailLoanObj.setLoanCampaignCode(campaignUser);
+		}
+		// retailLoanObj.setLoanCampaignCode(loanRepository.getCampaignUser(userId, com.capitaworld.service.matchengine.utils.CommonUtils.CampaignLoanType.Retail.getId()));
 		retailLoanObj.setCreatedBy(userId);
 		retailLoanObj.setCreatedDate(new Date());
 		retailLoanObj.setUserId(userId);
@@ -8584,6 +8597,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		json.put("userOrgId", CommonUtils.convertLong(obj[0]));
 		json.put("organisationName", CommonUtils.convertString(obj[1]));
 		json.put("campaignCode", CommonUtils.convertString(obj[2]));
+		json.put("otherBankCampCode", CommonUtils.convertString(obj[3]));
 		json.put("isBankSpecificOn", loanRepository.isBankSpecificOn(applicationId));
 		return json;
 	}
