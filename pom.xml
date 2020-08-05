@@ -4,7 +4,7 @@
 
   <groupId>com.opl.mudra.api</groupId>
   <artifactId>api-mudra</artifactId>
-  <version>0.0.1</version>
+  <version>16.0.0</version>
   <packaging>jar</packaging>
 
   <name>api-mudra</name>
