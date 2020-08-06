@@ -6,7 +6,6 @@ import java.util.Map;
 import com.opl.mudra.api.loans.model.AssociatedConcernDetailRequest;
 import com.opl.mudra.api.loans.model.DirectorBackgroundDetailResponse;
 import com.opl.mudra.api.loans.model.FinancialArrangementsDetailResponse;
-import com.opl.mudra.api.loans.model.GstRelatedPartyRequest;
 import com.opl.mudra.api.loans.model.corporate.CollateralSecurityDetailRequest;
 import com.opl.mudra.api.loans.model.corporate.PrimaryCorporateDetailMudraLoanReqRes;
 import com.opl.mudra.api.loans.model.retail.BankRelationshipRequest;

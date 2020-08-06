@@ -1,11 +1,11 @@
 package com.opl.mudra.api.loans.model.corporate;
 
+import java.io.Serializable;
+import java.util.Date;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.opl.mudra.api.loans.model.Address;
-
-import java.io.Serializable;
-import java.util.Date;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CorporateFinalInfoRequest implements Serializable {

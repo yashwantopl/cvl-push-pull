@@ -1,7 +1,8 @@
 package com.opl.mudra.api.loans.model.micro_finance;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * @author harsukh.ghumaliya

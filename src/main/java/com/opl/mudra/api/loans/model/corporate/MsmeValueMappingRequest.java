@@ -1,8 +1,8 @@
 package com.opl.mudra.api.loans.model.corporate;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import java.io.Serializable;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MsmeValueMappingRequest implements Serializable {

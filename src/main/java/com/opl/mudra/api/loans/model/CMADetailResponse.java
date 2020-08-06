@@ -1,7 +1,6 @@
 package com.opl.mudra.api.loans.model;
 
 import java.io.Serializable;
-import java.util.List;
 
 
 public class CMADetailResponse implements Serializable{

@@ -2,8 +2,6 @@ package com.opl.mudra.api.loans.model.retail;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
