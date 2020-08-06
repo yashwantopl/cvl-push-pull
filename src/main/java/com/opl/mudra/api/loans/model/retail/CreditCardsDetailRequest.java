@@ -1,6 +1,7 @@
 package com.opl.mudra.api.loans.model.retail;
 
 import java.io.Serializable;
+import java.util.Date;
 
 
 /**
@@ -39,6 +40,14 @@ public class CreditCardsDetailRequest implements Serializable {
 	private Long cardLimit;
 	
 	private String cardTypeString;
+	
+	private Double amountPastDue;
+	
+	private String writtenOffAndSettledStatus;
+	
+	private Date reportedDate;
+	
+	private String suitFiledStatus;
 	
 	private Boolean isManuallyAdded;
 	
@@ -165,4 +174,35 @@ public class CreditCardsDetailRequest implements Serializable {
 		this.dpdDetails = dpdDetails;
 	}
 
+	public Double getAmountPastDue() {
+		return amountPastDue;
+	}
+
+	public void setAmountPastDue(Double amountPastDue) {
+		this.amountPastDue = amountPastDue;
+	}
+
+	public String getWrittenOffAndSettledStatus() {
+		return writtenOffAndSettledStatus;
+	}
+
+	public void setWrittenOffAndSettledStatus(String writtenOffAndSettledStatus) {
+		this.writtenOffAndSettledStatus = writtenOffAndSettledStatus;
+	}
+
+	public String getSuitFiledStatus() {
+		return suitFiledStatus;
+	}
+
+	public void setSuitFiledStatus(String suitFiledStatus) {
+		this.suitFiledStatus = suitFiledStatus;
+	}
+
+	public Date getReportedDate() {
+		return reportedDate;
+	}
+
+	public void setReportedDate(Date reportedDate) {
+		this.reportedDate = reportedDate;
+	}
 }
