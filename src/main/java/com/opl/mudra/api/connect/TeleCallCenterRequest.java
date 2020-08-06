@@ -1,8 +1,8 @@
 package com.opl.mudra.api.connect;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TeleCallCenterRequest {

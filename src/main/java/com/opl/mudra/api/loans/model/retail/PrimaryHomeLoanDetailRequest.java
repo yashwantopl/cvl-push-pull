@@ -5,8 +5,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.Column;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.opl.mudra.api.loans.model.LoanApplicationRequest;

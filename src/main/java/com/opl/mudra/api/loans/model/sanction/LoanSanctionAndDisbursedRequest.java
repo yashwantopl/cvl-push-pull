@@ -1,7 +1,6 @@
 package com.opl.mudra.api.loans.model.sanction;
 
 import java.io.Serializable;
-
 import java.util.List;
 
 import com.opl.mudra.api.loans.model.LoanDisbursementRequest;

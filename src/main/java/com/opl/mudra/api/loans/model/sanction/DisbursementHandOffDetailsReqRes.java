@@ -2,6 +2,7 @@ package com.opl.mudra.api.loans.model.sanction;
 
 import java.io.Serializable;
 import java.util.Date;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**

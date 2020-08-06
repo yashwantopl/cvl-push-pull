@@ -3,7 +3,6 @@ package com.opl.mudra.api.loans.model;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author nilay.darji

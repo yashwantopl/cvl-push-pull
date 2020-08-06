@@ -1,10 +1,8 @@
 package com.opl.mudra.api.loans.model.corporate;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CorporateMcqRequest implements Serializable {

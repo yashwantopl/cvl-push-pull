@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.opl.mudra.api.loans.model.common.AuditActivityRequest;
 
 /**
  * The persistent class for the corporate_profile database table.

@@ -2,8 +2,6 @@ package com.opl.mudra.api.loans.model;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-
 public class AutoLoanModelRequest extends RetailModelRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
 
