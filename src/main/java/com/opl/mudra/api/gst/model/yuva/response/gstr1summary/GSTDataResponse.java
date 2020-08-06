@@ -3,6 +3,7 @@
  */
 package com.opl.mudra.api.gst.model.yuva.response.gstr1summary;
 
+import com.opl.mudra.api.gst.model.yuva.response.authentication.Error;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
