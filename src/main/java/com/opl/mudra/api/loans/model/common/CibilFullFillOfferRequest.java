@@ -27,6 +27,7 @@ public class CibilFullFillOfferRequest implements Serializable {
 	private String areaCode;
 	private String extension;
 	private String email;
+	private String fatherName;
 
 	public CibilFullFillOfferRequest() {
 		// Do nothing because of X and Y.
@@ -158,6 +159,14 @@ public class CibilFullFillOfferRequest implements Serializable {
 
 	public void setAdhaar(String adhaar) {
 		this.adhaar = adhaar;
+	}
+	
+	public String getFatherName() {
+		return fatherName;
+	}
+
+	public void setFatherName(String fatherName) {
+		this.fatherName = fatherName;
 	}
 
 	@Override
