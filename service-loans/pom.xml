@@ -8,9 +8,9 @@
 		<relativePath /> <!-- lookup parent from repository -->
 		<artifactId>spring-boot-starter-parent</artifactId>
 	</parent>
-	<groupId>com.capitaworld.loans.service.parent</groupId>
+	<groupId>com.opl.loans.service.parent</groupId>
 	<artifactId>service-loans-mudra</artifactId>
-	<version>3.0.0</version>
+	<version>16.0.0</version>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -19,6 +19,11 @@
 	</properties>
 
 	<dependencies>
+		<dependency>
+            <groupId>com.opl.mudra.client</groupId>
+            <artifactId>client-mudra</artifactId>
+            <version>16.0.0</version>
+        </dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -91,11 +96,7 @@
 			<artifactId>client-auth</artifactId>
 			<version>1.0.0</version>
 		</dependency>
-		<dependency>
-			<groupId>com.capitaworld.client.matchengine</groupId>
-			<artifactId>client-matchengine-mudra</artifactId>
-			<version>3.0.0</version>
-		</dependency>
+		
 
 		<dependency>
 			<groupId>com.capitaworld.client.users</groupId>
@@ -109,73 +110,13 @@
 			<version>1.0.0</version>
 		</dependency>
 
-		<dependency>
-			<groupId>com.capitaworld.service.dms</groupId>
-			<artifactId>client-dms</artifactId>
-			<version>0.0.1</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.capitaworld.notification</groupId>
-			<artifactId>client-notification</artifactId>
-			<version>0.0.1</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.capitaworld.client.scoring</groupId>
-			<artifactId>client-scoring-mudra</artifactId>
-			<version>3.0.0</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.capitaworld.service.gst</groupId>
-			<artifactId>client-gst</artifactId>
-			<version>0.0.1</version>
-		</dependency>
-
-
-		<!-- api of one form -->
-		<dependency>
-			<groupId>com.capitaworld.oneform.service.parent</groupId>
-			<artifactId>client-oneform</artifactId>
-			<version>0.0.1</version>
-		</dependency>
-		<dependency>
-			<groupId>com.capitaworld.api.loans</groupId>
-			<artifactId>api-loans-mudra</artifactId>
-			<version>3.0.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.capitaworld.cibil.client</groupId>
-			<artifactId>client-cibil</artifactId>
-			<version>1.0.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.capitaworld.rating</groupId>
-			<artifactId>client-rating</artifactId>
-			<version>0.0.1</version>
-		</dependency>
-		<dependency>
-			<groupId>com.capitaworld.service.payment.gateway</groupId>
-			<artifactId>client-payment-gateway</artifactId>
-			<version>0.0.1</version>
-		</dependency>
 
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.3</version>
 		</dependency>
-		<dependency>
-			<groupId>com.capitaworld.service.reports</groupId>
-			<artifactId>client-reports-mudra</artifactId>
-			<version>3.0.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.capitaworld.client.analyzer</groupId>
-			<artifactId>client-analyzer</artifactId>
-			<version>0.0.1</version>
-		</dependency>
+
 		<dependency>
 			<groupId>com.capitaworld.fitchengine</groupId>
 			<artifactId>client-fitchengine</artifactId>
@@ -188,58 +129,13 @@
 				spring-boot-starter-data-elasticsearch
 			</artifactId>
 		</dependency>
+		
 		<dependency>
-			<groupId>com.capitaworld.connect.client</groupId>
-			<artifactId>client-connect-mudra</artifactId>
-			<version>3.0.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.capitaworld.client.thirdparty</groupId>
-			<artifactId>client-thirdparty</artifactId>
-			<version>1.0.0</version>
-		</dependency>
-		<!-- <dependency> <groupId>com.capitaworld.connect</groupId> <artifactId>api-connect</artifactId> 
-			<version>1.0.1</version> </dependency> -->
-	<!-- 	<dependency>
-			<groupId>com.capitaworld.service.loans</groupId>
-			<artifactId>client-loans-mudra</artifactId>
-			<version>3.0.0</version>
-		</dependency> -->
-		<dependency>
-
-			<groupId>com.capitaworld.mca</groupId>
-			<version>0.0.1</version>
-			<artifactId>client-mca</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.capitaworld.client.workflow</groupId>
-			<artifactId>client-workflow</artifactId>
-			<version>0.0.1</version>
-		</dependency>
-		<dependency>
-			<groupId>com.capitaworld.client.eligibilty</groupId>
-			<artifactId>client-eligibility-mudra</artifactId>
-			<version>3.0.0</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.capitaworld.fraudanalytics.service.parent</groupId>
-			<version>1.0.0</version>
-			<artifactId>client-fraudanalytics</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>com.capitaworld.itr.client</groupId>
-			<artifactId>client-itr</artifactId>
-			<version>1.0.0</version>
-		</dependency>
-		<!--<dependency> <groupId>net.java.dev.jna</groupId> <artifactId>jna</artifactId> 
-			<version>4.2.2</version> </dependency> -->
-		<dependency>
-			<groupId>com.capitaworld.commons.lib</groupId>
+			<groupId>com.opl.commons.lib</groupId>
 			<artifactId>commons-lib</artifactId>
-			<version>1.0.0</version>
+			<version>16.0.0</version>
 		</dependency>
+		
 		<dependency>
  			<groupId>com.capitaworld.client.ekyc</groupId>
 			<artifactId>client-ekyc</artifactId>
@@ -250,16 +146,13 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
+		
 		<dependency>
 			<groupId>com.capitaworld.source.provider</groupId>
 			<artifactId>source-provider</artifactId>
 			<version>1.0-SNAPSHOT</version>
 		</dependency>
-		<dependency>
-			<groupId>com.capitaworld.service.bodmas</groupId>
-			<artifactId>client-bodmas</artifactId>
-			<version>1.0.0</version>
-		</dependency>
+		
 	</dependencies>
 	<build>
 		<plugins>
