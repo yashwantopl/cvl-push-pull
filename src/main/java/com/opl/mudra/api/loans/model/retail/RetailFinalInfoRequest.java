@@ -1,9 +1,9 @@
 package com.opl.mudra.api.loans.model.retail;
 
+import java.util.Date;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.opl.mudra.api.loans.model.Address;
-
-import java.util.Date;
 
 /**
  * Created by ravina.panchal on 03-10-2018.

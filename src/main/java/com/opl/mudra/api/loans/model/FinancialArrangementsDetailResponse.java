@@ -1,12 +1,12 @@
 package com.opl.mudra.api.loans.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.opl.mudra.api.loans.exception.LoansException;
-
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.opl.mudra.api.loans.exception.LoansException;
 
 /**
  * Created by dhaval on 21-May-17.

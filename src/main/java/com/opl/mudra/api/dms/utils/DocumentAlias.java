@@ -1,0 +1,543 @@
+package com.opl.mudra.api.dms.utils;
+
+/**
+ * Created by dhaval on 13-May-17.
+ */
+public class DocumentAlias {
+
+	private DocumentAlias(){
+		// Do nothing because of X and Y.
+	}
+	public static final String UERT_TYPE_APPLICANT = "applicant";
+	public static final String UERT_TYPE_CO_APPLICANT = "coApplicant";
+	public static final String UERT_TYPE_GUARANTOR = "guarantor";
+	public static final String UERT_TYPE_USER = "user";
+	public static final String UERT_TYPE_DIRECTOR = "director";
+	public static final String USER_TYPE_APPLICANT_PROFILE = "profile_applicant";
+	
+	public static final int UPLOAD_FROM_FINAL = 1;
+	public static final int UPLOAD_FROM_DDR = 2;
+
+	public static final Long FUND_PROVIDER_PROFIEL_PICTURE = 1l;
+	public static final Long SERVICE_PROVIDER_PROFIEL_PICTURE = 2l;
+	public static final Long FUND_SEEKER_PROFIEL_PICTURE = 5l;
+	public static final Long NETWORK_PARTNER_PROFIEL_PICTURE = 6l;
+
+	public static final Long WORKING_CAPITAL_PROFIEL_PICTURE = 226l;
+	public static final Long TERM_LOAN_PROFIEL_PICTURE = 227l;
+	public static final Long WCTL_LOAN_PROFIEL_PICTURE = 394l;
+	public static final Long HOME_LOAN_PROFIEL_PICTURE = 228l;
+	public static final Long CAR_LOAN_PROFIEL_PICTURE = 231l;
+	public static final Long PERSONAL_LOAN_PROFIEL_PICTURE = 234l;
+	public static final Long LAP_LOAN_PROFIEL_PICTURE = 237l;
+	public static final Long LAS_LOAN_PROFIEL_PICTURE = 240l;
+	public static final Long UNSECURED_LOAN_PROFIEL_PICTURE = 274l;
+
+	public static final int WC_DPR_OUR_FORMAT = 4;
+	public static final int WC_DPR_YOUR_FORMAT = 5;
+	public static final int WC_CMA = 7;
+	public static final int WC_COMPANY_ACT = 8;
+	public static final Long WC_FINANCIAL_MODEL = 6l;
+
+	public static final int TL_DPR_OUR_FORMAT = 31;
+	public static final int TL_DPR_YOUR_FORMAT = 32;
+	public static final int TL_CMA = 34;
+	public static final int TL_COMPANY_ACT = 35;
+	public static final Long TL_FINANCIAL_MODEL = 33l;
+
+	// wctl cma com act
+	public static final int WCTL_CMA = 373;
+	public static final int WCTL_COMPANY_ACT = 374;
+
+	// wctl cma com act
+	public static final Long WCTL_CMA_DOC = 373L;
+	public static final Long WCTL_COMPANY_ACT_DOC = 374L;
+	// primary document list of working capital
+	public static final Long WORKING_CAPITAL_BROCHURE_OF_PROPOSED_ACTIVITIES = 1l;
+	public static final Long WORKING_CAPITAL_CERTIFICATE_OF_INCORPORATION = 2l;
+	public static final Long WORKING_CAPITAL_COPY_OF_PAN_CARD = 3l;
+
+	// primary document list of term loan
+	public static final Long TERM_LOAN_BROCHURE_OF_PROPOSED_ACTIVITIES = 28l;
+	public static final Long TERM_LOAN_CERTIFICATE_OF_INCORPORATION = 29l;
+	public static final Long TERM_LOAN_COPY_OF_PAN_CARD = 30l;
+
+	// primary document list of wctl loan
+	public static final Long WCTL_LOAN_BROCHURE_OF_PROPOSED_ACTIVITIES = 367l;
+	public static final Long WCTL_LOAN_CERTIFICATE_OF_INCORPORATION = 368l;
+	public static final Long WCTL_LOAN_COPY_OF_PAN_CARD = 369l;
+
+	// primary document list of unsecured loan
+	public static final Long UNSECURED_LOAN_BROCHURE_OF_PROPOSED_ACTIVITIES = 281l;
+	public static final Long UNSECURED_LOAN_CERTIFICATE_OF_INCORPORATION = 282l;
+	public static final Long UNSECURED_LOAN_COPY_OF_PAN_CARD = 283l;
+	public static final int USL_CMA = 327;
+	public static final int USL_COMPANY_ACT = 328;
+
+	// primary document list of personal loan
+	public static final Long PERSONAL_LOAN_APPLICANT_SCANNED_COPY_OF_PAN_CARD = 136l;
+	public static final Long PERSONAL_LOAN_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD = 137l;
+	public static final Long PERSONAL_LOAN_CO_APPLICANT_SCANNED_COPY_OF_PAN_CARD = 138l;
+	public static final Long PERSONAL_LOAN_CO_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD = 139l;
+	public static final Long PERSONAL_LOAN_GUARANTOR_SCANNED_COPY_OF_PAN_CARD = 140l;
+	public static final Long PERSONAL_LOAN_GUARANTOR_SCANNED_COPY_OF_AADHAR_CARD = 141l;
+
+	// home Loan
+	public static final Long HOME_LOAN_APPLICANT_SCANNED_COPY_OF_PAN_CARD = 55l;
+	public static final Long HOME_LOAN_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD = 56l;
+	public static final Long HOME_LOAN_CO_APPLICANT_SCANNED_COPY_OF_PAN_CARD = 57l;
+	public static final Long HOME_LOAN_CO_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD = 58l;
+	public static final Long HOME_LOAN_GUARANTOR_SCANNED_COPY_OF_PAN_CARD = 59l;
+	public static final Long HOME_LOAN_GUARANTOR_SCANNED_COPY_OF_AADHAR_CARD = 60l;
+
+	// car Loan
+	public static final Long CAR_LOAN_APPLICANT_SCANNED_COPY_OF_PAN_CARD = 99l;
+	public static final Long CAR_LOAN_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD = 100l;
+	public static final Long CAR_LOAN_CO_APPLICANT_SCANNED_COPY_OF_PAN_CARD = 101l;
+	public static final Long CAR_LOAN_CO_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD = 102l;
+	public static final Long CAR_LOAN_GUARANTOR_SCANNED_COPY_OF_PAN_CARD = 103l;
+	public static final Long CAR_LOAN_GUARANTOR_SCANNED_COPY_OF_AADHAR_CARD = 104l;
+
+	// LAP Loan
+	public static final Long LAP_LOAN_APPLICANT_SCANNED_COPY_OF_PAN_CARD = 166l;
+	public static final Long LAP_LOAN_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD = 167l;
+	public static final Long LAP_LOAN_CO_APPLICANT_SCANNED_COPY_OF_PAN_CARD = 168l;
+	public static final Long LAP_LOAN_CO_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD = 169l;
+	public static final Long LAP_LOAN_GUARANTOR_SCANNED_COPY_OF_PAN_CARD = 170l;
+	public static final Long LAP_LOAN_GUARANTOR_SCANNED_COPY_OF_AADHAR_CARD = 171l;
+
+	// LAS Loan
+	public static final Long LAS_LOAN_APPLICANT_SCANNED_COPY_OF_PAN_CARD = 196l;
+	public static final Long LAS_LOAN_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD = 197l;
+	public static final Long LAS_LOAN_CO_APPLICANT_SCANNED_COPY_OF_PAN_CARD = 198l;
+	public static final Long LAS_LOAN_CO_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD = 199l;
+	public static final Long LAS_LOAN_GUARANTOR_SCANNED_COPY_OF_PAN_CARD = 200l;
+	public static final Long LAS_LOAN_GUARANTOR_SCANNED_COPY_OF_AADHAR_CARD = 201l;
+
+	// final working capital uploads
+	public static final Long WORKING_CAPITAL_LAST_AUDITED_ANNUAL_REPORT = 9l;
+	public static final Long WORKING_CAPITAL_SANCTION_LETTER_COPY = 10l;
+	// new
+	public static final Long WORKING_CAPITAL_BANK_STATEMENT = 354l;
+
+	public static final Long WORKING_CAPITAL_LAST_IT_RETURN = 11l;
+	public static final Long WORKING_CAPITAL_NET_WORTH_STATEMENT_OF_DIRECTORS = 12l;
+	public static final Long WORKING_CAPITAL_PROVISIONAL_FINANCIALS = 13l;
+	// new final upload financial WCL
+	public static final Long WORKING_CAPITAL_IT_RETURN_DIRECTOR = 297l;
+	public static final Long WORKING_CAPITAL_FINANCIALS_OF_SUBSIDIARIES = 20l;
+	public static final Long WORKING_CAPITAL_ASSESSMENT_ORDERS = 22l;
+
+	public static final Long WORKING_CAPITAL_PAN_OF_DIRECTORS_CERTIFICATE_OF_INCORPORATION = 14l;
+	public static final Long WORKING_CAPITAL_DETAILED_LIST_OF_SHAREHOLDERS = 15l;
+	public static final Long WORKING_CAPITAL_PHOTO_OF_DIRECTORS = 16l;
+	// new final uploads KYC WCL
+	public static final Long WORKING_CAPITAL_DIRECTOR_ADDRESS = 302l;
+	public static final Long WORKING_CAPITAL_DIRECTOR_RESOLUTION = 305l;
+
+	// final term loan upload
+	public static final Long TERM_LOAN_LAST_AUDITED_ANNUAL_REPORT = 36l;
+	public static final Long TERM_LOAN_SANCTION_LETTER_COPY = 37l;
+	// NEW INAL UPLOADS TL
+	public static final Long TERM_LOAN_BANK_STATEMENT = 295l;
+
+	public static final Long TERM_LOAN_LAST_IT_RETURN = 38l;
+	public static final Long TERM_LOAN_NET_WORTH_STATEMENT_OF_DIRECTORS = 39l;
+	public static final Long TERM_LOAN_PROVISIONAL_FINANCIALS = 40l;
+	public static final Long TERM_LOAN_PAN_OF_DIRECTORS_CERTIFICATE_OF_INCORPORATION = 41l;
+	public static final Long TERM_LOAN_DETAILED_LIST_OF_SHAREHOLDERS = 42l;
+	public static final Long TERM_LOAN_PHOTO_OF_DIRECTORS = 43l;
+	//NTB_FINAL_UPLOAD
+	public static final Long TERM_LOAN_BROCHURE_OF_PROPOSED_ACTIVITY = 551l;
+	public static final Long TERM_LOAN_AADHAR_CARD = 552l;
+	// new final uploads TL
+	public static final Long TERM_LOAN_IT_RETURN_DIRECTOR = 298l;
+	public static final Long TERM_LOAN_FINANCIALS_OF_SUBSIDIARIES = 47l;
+	public static final Long TERM_LOAN_ASSESSMENT_ORDERS = 49l;
+	// new final upload kyc TL
+	public static final Long TERM_LOAN_DIRECTOR_ADDRESS = 303l;
+	public static final Long TERM_LOAN_DIRECTOR_RESOLUTION = 306l;
+
+	// final wctl loan upload
+	public static final Long WCTL_LOAN_LAST_AUDITED_ANNUAL_REPORT = 375l;
+	public static final Long WCTL_LOAN_SANCTION_LETTER_COPY = 376l;
+	// NEW INAL UPLOADS WCTL
+	public static final Long WCTL_LOAN_BANK_STATEMENT = 395l;
+
+	public static final Long WCTL_LOAN_LAST_IT_RETURN = 377l;
+	public static final Long WCTL_LOAN_NET_WORTH_STATEMENT_OF_DIRECTORS = 378l;
+	public static final Long WCTL_LOAN_PROVISIONAL_FINANCIALS = 379l;
+	public static final Long WCTL_LOAN_PAN_OF_DIRECTORS_CERTIFICATE_OF_INCORPORATION = 380l;
+	public static final Long WCTL_LOAN_DETAILED_LIST_OF_SHAREHOLDERS = 381l;
+	public static final Long WCTL_LOAN_PHOTO_OF_DIRECTORS = 382l;
+	// new final uploads WCTL
+	public static final Long WCTL_LOAN_IT_RETURN_DIRECTOR = 296l;
+	public static final Long WCTL_LOAN_FINANCIALS_OF_SUBSIDIARIES = 386l;
+	public static final Long WCTL_LOAN_ASSESSMENT_ORDERS = 388l;
+	// new final upload kyc WCTL
+	public static final Long WCTL_LOAN_DIRECTOR_ADDRESS = 397l;
+	public static final Long WCTL_LOAN_DIRECTOR_RESOLUTION = 398l;
+
+	// final unsecured loan upload
+	public static final Long UNSECURED_LOAN_LAST_AUDITED_ANNUAL_REPORT = 276l;
+	public static final Long UNSECURED_LOAN_SANCTION_LETTER_COPY = 277l;
+	// new fianl upload USL
+	public static final Long UNSECURED_LOAN_BANK_STATEMENT = 296l;
+
+	public static final Long UNSECURED_LOAN_LAST_IT_RETURN = 278l;
+	public static final Long UNSECURED_LOAN_NET_WORTH_STATEMENT_OF_DIRECTORS = 279l;
+	public static final Long UNSECURED_LOAN_PROVISIONAL_FINANCIALS = 280l;
+	public static final Long UNSECURED_LOAN_PAN_OF_DIRECTORS_CERTIFICATE_OF_INCORPORATION = 284l;
+	public static final Long UNSECURED_LOAN_DETAILED_LIST_OF_SHAREHOLDERS = 285l;
+	public static final Long UNSECURED_LOAN_PHOTO_OF_DIRECTORS = 286l;
+	// new final uploads USL
+	public static final Long UNSECURED_LOAN_IT_RETURN_DIRECTOR = 299l;
+	public static final Long UNSECURED_LOAN_FINANCIALS_OF_SUBSIDIARIES = 300l;
+	public static final Long UNSECURED_LOAN_ASSESSMENT_ORDERS = 301l;
+	// new final upload kyc USL
+	public static final Long UNSECURED_LOAN_DIRECTOR_ADDRESS = 304l;
+	public static final Long UNSECURED_LOAN_DIRECTOR_RESOLUTION = 307l;
+
+	// final unsecured loan co-applicant upload
+	public static final Long UNSECURED_LOAN_CO_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS = 287l;
+	public static final Long UNSECURED_LOAN_CO_APPLICANT_ITR = 288l;
+	public static final Long UNSECURED_LOAN_CO_APPLICANT_FORM_16 = 289l;
+	public static final Long UNSECURED_LOAN_CO_APPLICANT_AUDITEDUNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS = 290l;
+	public static final Long UNSECURED_LOAN_CO_APPLICANT_ADDRESS_PROOF_ELECTRICITY_BILL_ADHAR_CARD_VOTER_ID_CARD_ANY_1 = 291l;
+	public static final Long UNSECURED_LOAN_CO_APPLICANT_SCANNED_COPY_OF_PAN_CARD = 292l;
+	public static final Long UNSECURED_LOAN_CO_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD = 293l;
+
+	// final home loan uploads
+	public static final Long HOME_LOAN_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS = 61l;
+	public static final Long HOME_LOAN_APPLICANT_INCOME_PROOF_LATEST_SALARY_SLIP = 62l;
+	public static final Long HOME_LOAN_APPLICANT_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS = 63l;
+	public static final Long HOME_LOAN_APPLICANT_AUDITED_UNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS = 64l;
+	public static final Long HOME_LOAN_APPLICANT_ADDRESS_PROOF = 65l;
+	public static final Long HOME_LOAN_APPLICANT_INCOME_PROOF_OF_ENTITY_INCOME_TAX_RETURN_FOR_LAST_2_YEARS = 66l;
+	public static final Long HOME_LOAN_APPLICANT_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH = 67l;
+	public static final Long HOME_LOAN_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES = 68l;
+	public static final Long HOME_LOAN_CO_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS = 69l;
+	public static final Long HOME_LOAN_CO_APPLICANT_INCOME_PROOF_LATEST_SALARY_SLIP = 70l;
+	public static final Long HOME_LOAN_CO_APPLICANT_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS = 71l;
+	public static final Long HOME_LOAN_CO_APPLICANT_AUDITED_UNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS = 72l;
+	public static final Long HOME_LOAN_CO_APPLICANT_ADDRESS_PROOF = 73l;
+	public static final Long HOME_LOAN_CO_APPLICANT_INCOME_PROOF_OF_ENTITY_INCOME_TAX_RETURN_FOR_LAST_2_YEARS = 74l;
+	public static final Long HOME_LOAN_CO_APPLICANT_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH = 75l;
+	public static final Long HOME_LOAN_CO_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES = 76l;
+	public static final Long HOME_LOAN_GUARANTOR_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS = 77l;
+	public static final Long HOME_LOAN_GUARANTOR_INCOME_PROOF_LATEST_SALARY_SLIP = 78l;
+	public static final Long HOME_LOAN_GUARANTOR_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS = 79l;
+	public static final Long HOME_LOAN_GUARANTOR_AUDITED_UNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS = 80l;
+	public static final Long HOME_LOAN_GUARANTOR_ADDRESS_PROOF = 81l;
+	public static final Long HOME_LOAN_GUARANTOR_INCOME_PROOF_OF_ENTITY_INCOME_TAX_RETURN_FOR_LAST_2_YEARS = 82l;
+	public static final Long HOME_LOAN_GUARANTOR_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH = 83l;
+	public static final Long HOME_LOAN_GUARANTOR_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES = 84l;
+
+	// final car loan uploads
+	public static final Long CAR_LOAN_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS = 105l;
+	public static final Long CAR_LOAN_APPLICANT_INCOME_PROOF_LATEST_SALARY_SLIP = 106l;
+	public static final Long CAR_LOAN_APPLICANT_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS = 107l;
+	public static final Long CAR_LOAN_APPLICANT_AUDITED_UNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS = 108l;
+	public static final Long CAR_LOAN_APPLICANT_ADDRESS_PROOF = 109l;
+	public static final Long CAR_LOAN_APPLICANT_INCOME_PROOF_OF_ENTITY_INCOME_TAX_RETURN_FOR_LAST_2_YEARS = 110l;
+	public static final Long CAR_LOAN_APPLICANT_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH = 111l;
+	public static final Long CAR_LOAN_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES = 112l;
+	public static final Long CAR_LOAN_CO_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS = 113l;
+	public static final Long CAR_LOAN_CO_APPLICANT_INCOME_PROOF_LATEST_SALARY_SLIP = 114l;
+	public static final Long CAR_LOAN_CO_APPLICANT_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS = 115l;
+	public static final Long CAR_LOAN_CO_APPLICANT_AUDITED_UNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS = 116l;
+	public static final Long CAR_LOAN_CO_APPLICANT_ADDRESS_PROOF = 117l;
+	public static final Long CAR_LOAN_CO_APPLICANT_INCOME_PROOF_OF_ENTITY_INCOME_TAX_RETURN_FOR_LAST_2_YEARS = 118l;
+	public static final Long CAR_LOAN_CO_APPLICANT_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH = 119l;
+	public static final Long CAR_LOAN_CO_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES = 120l;
+	public static final Long CAR_LOAN_GUARANTOR_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS = 121l;
+	public static final Long CAR_LOAN_GUARANTOR_INCOME_PROOF_LATEST_SALARY_SLIP = 122l;
+	public static final Long CAR_LOAN_GUARANTOR_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS = 123l;
+	public static final Long CAR_LOAN_GUARANTOR_AUDITED_UNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS = 124l;
+	public static final Long CAR_LOAN_GUARANTOR_ADDRESS_PROOF = 125l;
+	public static final Long CAR_LOAN_GUARANTOR_INCOME_PROOF_OF_ENTITY_INCOME_TAX_RETURN_FOR_LAST_2_YEARS = 126l;
+	public static final Long CAR_LOAN_GUARANTOR_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH = 127l;
+	public static final Long CAR_LOAN_GUARANTOR_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES = 128l;
+
+	// personal Loan
+	public static final Long PERSONAL_LOAN_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS = 142l;
+	public static final Long PERSONAL_LOAN_APPLICANT_INCOME_PROOF_LATEST_SALARY_SLIP = 143l;
+	public static final Long PERSONAL_LOAN_APPLICANT_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS = 144l;
+	public static final Long PERSONAL_LOAN_APPLICANT_AUDITED_UNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS = 145l;
+	public static final Long PERSONAL_LOAN_APPLICANT_ADDRESS_PROOF_ELECTRICITY_BILL_ADHAR_CARD_VOTER_ID_CARD_ANY_1 = 146l;
+	public static final Long PERSONAL_LOAN_APPLICANT_INCOME_PROOF_OF_ENTITY_INCOME_TAX_RETURN_FOR_LAST_2_YEARS = 147l;
+	public static final Long PERSONAL_LOAN_APPLICANT_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH = 148l;
+	public static final Long PERSONAL_LOAN_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY_POULTRY_PLANTATION_HORTICULTURE = 149l;
+	public static final Long PERSONAL_LOAN_CO_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS = 150l;
+	public static final Long PERSONAL_LOAN_CO_APPLICANT_INCOME_PROOF_LATEST_SALARY_SLIP = 151l;
+	public static final Long PERSONAL_LOAN_CO_APPLICANT_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS = 152l;
+	public static final Long PERSONAL_LOAN_CO_APPLICANT_AUDITED_UNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS = 153l;
+	public static final Long PERSONAL_LOAN_CO_APPLICANT_ADDRESS_PROOF_ELECTRICITY_BILL_ADHAR_CARD_VOTER_ID_CARDANY_1 = 154l;
+	public static final Long PERSONAL_LOAN_CO_APPLICANT_INCOME_PROOF_OF_ENTITY_INCOME_TAX_RETURN_FOR_LAST_2_YEARS = 155l;
+	public static final Long PERSONAL_LOAN_CO_APPLICANT_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH = 156l;
+	public static final Long PERSONAL_LOAN_CO_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY_POULTRY_PLANTATION_HORTICULTURE = 157l;
+	public static final Long PERSONAL_LOAN_GUARANTOR_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS = 158l;
+	public static final Long PERSONAL_LOAN_GUARANTOR_INCOME_PROOF_LATEST_SALARY_SLIP = 159l;
+	public static final Long PERSONAL_LOAN_GUARANTOR_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS = 160l;
+	public static final Long PERSONAL_LOAN_GUARANTOR_AUDITED_UNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS = 161l;
+	public static final Long PERSONAL_LOAN_GUARANTOR_ADDRESS_PROOF_ELECTRICITY_BILL_ADHAR_CARD_VOTER_ID_CARD_ANY_1 = 162l;
+	public static final Long PERSONAL_LOAN_GUARANTOR_INCOME_PROOF_OF_ENTITY_INCOME_TAX_RETURN_FOR_LAST_2_YEARS = 163l;
+	public static final Long PERSONAL_LOAN_GUARANTOR_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH = 164l;
+	public static final Long PERSONAL_LOAN_GUARANTOR_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY_POULTRY_PLANTATION_HORTICULTURE = 165l;
+	
+	
+	// new personal loan upload additions
+	
+	public static final Long PERSONAL_LOAN_2_PASSPORT_SIZE_PHOTOS = 557l;
+	public static final Long PERSONAL_LOAN_IDENTITIY_PROOF = 558l;
+	public static final Long PERSONAL_LOAN_ADDRESS_PROOF = 565l;
+	public static final Long PERSONAL_LOAN_COPY_OF_IDENTITY_EMP = 566l;
+	public static final Long PERSONAL_LOAN_IRREVOCABLE_LETTER_OF_AUTHORITY_ADDRESSED_TO_DISBURSING_AUTHORITY = 567l;
+	public static final Long PERSONAL_LOAN_IRREVOCABLE_LETTER_OF_AUTHORITY_SALARY_AND_ALLOWANCES = 568l;
+
+	// LAP
+	public static final Long LAP_LOAN_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS = 172l;
+	public static final Long LAP_LOAN_APPLICANT_INCOME_PROOF_LATEST_SALARY_SLIP = 173l;
+	public static final Long LAP_LOAN_APPLICANT_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS = 174l;
+	public static final Long LAP_LOAN_APPLICANT_AUDITED_UNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS = 175l;
+	public static final Long LAP_LOAN_APPLICANT_ADDRESS_PROOF_ELECTRICITY_BILL_ADHAR_CARD_VOTER_ID_CARD_ANY_1 = 176l;
+	public static final Long LAP_LOAN_APPLICANT_INCOME_PROOF_OF_ENTITY_INCOME_TAX_RETURN_FOR_LAST_2_YEARS = 177l;
+	public static final Long LAP_LOAN_APPLICANT_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH = 178l;
+	public static final Long LAP_LOAN_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY_POULTRY_PLANTATION_HORTICULTURE = 179l;
+	public static final Long LAP_LOAN_CO_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS = 180l;
+	public static final Long LAP_LOAN_CO_APPLICANT_INCOME_PROOF_LATEST_SALARY_SLIP = 181l;
+	public static final Long LAP_LOAN_CO_APPLICANT_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS = 182l;
+	public static final Long LAP_LOAN_CO_APPLICANT_AUDITED_UNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS = 183l;
+	public static final Long LAP_LOAN_CO_APPLICANT_ADDRESS_PROOF_ELECTRICITY_BILL_ADHAR_CARD_VOTER_ID_CARD_ANY_1 = 184l;
+	public static final Long LAP_LOAN_CO_APPLICANT_INCOME_PROOF_OF_ENTITY_INCOME_TAX_RETURN_FOR_LAST_2_YEARS = 185l;
+	public static final Long LAP_LOAN_CO_APPLICANT_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH = 186l;
+	public static final Long LAP_LOAN_CO_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY_POULTRY_PLANTATION_HORTICULTURE = 187l;
+	public static final Long LAP_LOAN_GUARANTOR_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS = 188l;
+	public static final Long LAP_LOAN_GUARANTOR_INCOME_PROOF_LATEST_SALARY_SLIP = 189l;
+	public static final Long LAP_LOAN_GUARANTOR_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS = 190l;
+	public static final Long LAP_LOAN_GUARANTOR_AUDITED_UNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS = 191l;
+	public static final Long LAP_LOAN_GUARANTOR_ADDRESS_PROOF_ELECTRICITY_BILL_ADHAR_CARD_VOTER_ID_CARD_ANY_1 = 192l;
+	public static final Long LAP_LOAN_GUARANTOR_INCOME_PROOF_OF_ENTITY_INCOME_TAX_RETURN_FOR_LAST_2_YEARS = 193l;
+	public static final Long LAP_LOAN_GUARANTOR_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH = 194l;
+	public static final Long LAP_LOAN_GUARANTOR_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY_POULTRY_PLANTATION_HORTICULTURE = 195l;
+
+	// LAS
+	public static final Long LAS_LOAN_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS = 202l;
+	public static final Long LAS_LOAN_APPLICANT_INCOME_PROOF_LATEST_SALARY_SLIP = 203l;
+	public static final Long LAS_LOAN_APPLICANT_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS = 204l;
+	public static final Long LAS_LOAN_APPLICANT_AUDITEDUNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS = 205l;
+	public static final Long LAS_LOAN_APPLICANT_ADDRESS_PROOF_ELECTRICITY_BILL_ADHAR_CARD_VOTER_ID_CARD_ANY_1 = 206l;
+	public static final Long LAS_LOAN_APPLICANT_INCOME_PROOF_OF_ENTITY_INCOME_TAX_RETURN_FOR_LAST_2_YEARS = 207l;
+	public static final Long LAS_LOAN_APPLICANT_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH = 208l;
+	public static final Long LAS_LOAN_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY_POULTRY_PLANTATION_HORTICULTURE = 209l;
+	public static final Long LAS_LOAN_CO_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS = 210l;
+	public static final Long LAS_LOAN_CO_APPLICANT_INCOME_PROOF_LATEST_SALARY_SLIP = 211l;
+	public static final Long LAS_LOAN_CO_APPLICANT_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS = 212l;
+	public static final Long LAS_LOAN_CO_APPLICANT_AUDITEDUNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS = 213l;
+	public static final Long LAS_LOAN_CO_APPLICANT_ADDRESS_PROOF_ELECTRICITY_BILL_ADHAR_CARD_VOTER_ID_CARD_ANY_1 = 214l;
+	public static final Long LAS_LOAN_CO_APPLICANT_INCOME_PROOF_OF_ENTITY_INCOME_TAX_RETURN_FOR_LAST_2_YEARS = 215l;
+	public static final Long LAS_LOAN_CO_APPLICANT_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH = 216l;
+	public static final Long LAS_LOAN_CO_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY_POULTRY_PLANTATION_HORTICULTURE = 217l;
+	public static final Long LAS_LOAN_GUARANTOR_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS = 218l;
+	public static final Long LAS_LOAN_GUARANTOR_INCOME_PROOF_LATEST_SALARY_SLIP = 219l;
+	public static final Long LAS_LOAN_GUARANTOR_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS = 220l;
+	public static final Long LAS_LOAN_GUARANTOR_AUDITEDUNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS = 221l;
+	public static final Long LAS_LOAN_GUARANTOR_ADDRESS_PROOF_ELECTRICITY_BILL_ADHAR_CARD_VOTER_ID_CARD_ANY_1 = 222l;
+	public static final Long LAS_LOAN_GUARANTOR_INCOME_PROOF_OF_ENTITY_INCOME_TAX_RETURN_FOR_LAST_2_YEARS = 223l;
+	public static final Long LAS_LOAN_GUARANTOR_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH = 224l;
+	public static final Long LAS_LOAN_GUARANTOR_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY_POULTRY_PLANTATION_HORTICULTURE = 225l;
+
+	// IRR
+	public static final Long IRR_MANUFACTURING = 90l;
+	public static final Long IRR_SERVICES = 91l;
+	public static final Long IRR_TRADING = 92l;
+
+	// UAE CAR LOAN
+	public static final Long APPLICANT_ADDRESS_PROOF_ELECTRICITY_BILL_TELEPHONE_BILL_ANY_1 = 294l;
+	public static final Long APPLICANT_SCANNED_COPY_OF_PASSPORT = 295l;
+	public static final Long APPLICANT_SCANNED_COPY_OF_EMIRATES_ID = 296l;
+	public static final Long APPLICANT_SCANNED_COPY_OF_VISA = 297l;
+	public static final Long APPLICANT_VAT_RETURN = 298l;
+	public static final Long CO_APPLICANT_ADDRESS_PROOF_ELECTRICITY_BILL_TELEPHONE_BILL_ANY_1 = 299l;
+	public static final Long CO_APPLICANT_SCANNED_COPY_OF_PASSPORT = 300l;
+	public static final Long CO_APPLICANT_SCANNED_COPY_OF_EMIRATES_ID = 301l;
+	public static final Long CO_APPLICANT_SCANNED_COPY_OF_VISA = 302l;
+	public static final Long CO_APPLICANT_VAT_RETURN = 303l;
+	public static final Long GUARANTOR_ADDRESS_PROOF_ELECTRICITY_BILL_TELEPHONE_BILL_ANY_1 = 304l;
+	public static final Long GUARANTOR_SCANNED_COPY_OF_PASSPORT = 305l;
+	public static final Long GUARANTOR_SCANNED_COPY_OF_EMIRATES_ID = 306l;
+	public static final Long GUARANTOR_SCANNED_COPY_OF_VISA = 307l;
+	public static final Long GUARANTOR_VAT_RETURN = 308l;
+
+	// PERSONAL LOAN
+	public static final Long PL_APPLICANT_ADDRESS_PROOF_ELECTRICITY_BILL_TELEPHONE_BILL_ANY_1 = 309l;
+	public static final Long PL_APPLICANT_SCANNED_COPY_OF_PASSPORT = 310l;
+	public static final Long PL_APPLICANT_SCANNED_COPY_OF_EMIRATES_ID = 311l;
+	public static final Long PL_APPLICANT_SCANNED_COPY_OF_VISA = 312l;
+	public static final Long PL_APPLICANT_VAT_RETURN = 313l;
+	public static final Long PL_CO_APPLICANT_ADDRESS_PROOF_ELECTRICITY_BILL_TELEPHONE_BILL_ANY_1 = 314l;
+	public static final Long PL_CO_APPLICANT_SCANNED_COPY_OF_PASSPORT = 315l;
+	public static final Long PL_CO_APPLICANT_SCANNED_COPY_OF_EMIRATES_ID = 316l;
+	public static final Long PL_CO_APPLICANT_SCANNED_COPY_OF_VISA = 317l;
+	public static final Long PL_CO_APPLICANT_VAT_RETURN = 318l;
+	public static final Long PL_GUARANTOR_ADDRESS_PROOF_ELECTRICITY_BILL_TELEPHONE_BILL_ANY_1 = 319l;
+	public static final Long PL_GUARANTOR_SCANNED_COPY_OF_PASSPORT = 320l;
+	public static final Long PL_GUARANTOR_SCANNED_COPY_OF_EMIRATES_ID = 321l;
+	public static final Long PL_GUARANTOR_SCANNED_COPY_OF_VISA = 322l;
+	public static final Long PL_GUARANTOR_VAT_RETURN = 323l;
+
+	// HOME LOAN
+	public static final Long HL_APPLICANT_ADDRESS_PROOF_ELECTRICITY_BILL_TELEPHONE_BILL_ANY_1 = 324l;
+	public static final Long HL_APPLICANT_SCANNED_COPY_OF_PASSPORT = 325l;
+	public static final Long HL_APPLICANT_SCANNED_COPY_OF_EMIRATES_ID = 326l;
+	public static final Long HL_APPLICANT_SCANNED_COPY_OF_VISA = 327l;
+	public static final Long HL_APPLICANT_VAT_RETURN = 328l;
+	public static final Long HL_CO_APPLICANT_ADDRESS_PROOF_ELECTRICITY_BILL_TELEPHONE_BILL_ANY_1 = 329l;
+	public static final Long HL_CO_APPLICANT_SCANNED_COPY_OF_PASSPORT = 330l;
+	public static final Long HL_CO_APPLICANT_SCANNED_COPY_OF_EMIRATES_ID = 331l;
+	public static final Long HL_CO_APPLICANT_SCANNED_COPY_OF_VISA = 332l;
+	public static final Long HL_CO_APPLICANT_VAT_RETURN = 333l;
+	public static final Long HL_GUARANTOR_ADDRESS_PROOF_ELECTRICITY_BILL_TELEPHONE_BILL_ANY_1 = 334l;
+	public static final Long HL_GUARANTOR_SCANNED_COPY_OF_PASSPORT = 335l;
+	public static final Long HL_GUARANTOR_SCANNED_COPY_OF_EMIRATES_ID = 336l;
+	public static final Long HL_GUARANTOR_SCANNED_COPY_OF_VISA = 337l;
+	public static final Long HL_GUARANTOR_VAT_RETURN = 338l;
+
+	// WCL other
+	public static final Long WC_MOM_AOA = 18l;
+	public static final Long WC_DEBTORS_LIST = 308l;
+	public static final Long WC_GST_APPLIED = 312l;
+	public static final Long WC_LETTER_OF_INTENT = 315l;
+	public static final Long WC_RELEVANT_LICENSE = 21l;
+	public static final Long WC_SALES_TAX = 23l;
+	public static final Long WC_LATEST_TAX = 24l;
+	public static final Long WC_ENCUMBRANCE = 25l;
+	public static final Long WC_COPIES_TRUST_DEEDS = 26l;
+	public static final Long WC_MARKET_SURVEY_REPORT = 27l;
+	public static final Long WC_CONTINGENT_LIABILITIES = 323l;
+
+	// TL other
+	public static final Long TL_MOM_AOA = 45l;
+	public static final Long TL_DEBTORS_LIST = 309l;
+	public static final Long TL_GST_APPLIED = 313l;
+	public static final Long TL_LETTER_OF_INTENT = 316l;
+	public static final Long TL_RELEVANT_LICENSE = 48l;
+	public static final Long TL_SALES_TAX = 50l;
+	public static final Long TL_LATEST_TAX = 51l;
+	public static final Long TL_ENCUMBRANCE = 52l;
+	public static final Long TL_COPIES_TRUST_DEEDS = 53l;
+	public static final Long TL_MARKET_SURVEY_REPORT = 54l;
+	public static final Long TL_CONTINGENT_LIABILITIES = 324l;
+
+	// USL other
+	public static final Long USL_MOM_AOA = 311l;
+	public static final Long USL_DEBTORS_LIST = 310l;
+	public static final Long USL_GST_APPLIED = 314l;
+	public static final Long USL_LETTER_OF_INTENT = 317l;
+	public static final Long USL_RELEVANT_LICENSE = 318l;
+	public static final Long USL_SALES_TAX = 319l;
+	public static final Long USL_LATEST_TAX = 326l;
+	public static final Long USL_ENCUMBRANCE = 320l;
+	public static final Long USL_COPIES_TRUST_DEEDS = 321l;
+	public static final Long USL_MARKET_SURVEY_REPORT = 322l;
+	public static final Long USL_CONTINGENT_LIABILITIES = 325l;
+
+	// DDR
+	public static final Long WC_FIELD_AUDIT_REPORT = 501l;
+	public static final Long WC_BANK_STATEMENT_OF_LAST_12_MONTHS = 505l;
+	public static final Long WC_FINANCIAL_FIGURES_OVERALL = 509l;
+	public static final Long WC_CENTRAL_SALES_TAX_REGISTRATION_OF_THE_COMPANY = 513l;
+	public static final Long WC_CENTRAL_EXCISE_REGISTRATION_OF_THE_COMPANY = 517l;
+	public static final Long WC_VAT_REGISTRATION_OF_THE_COMPANY = 521l;
+	public static final Long WC_LIST_OF_DIRECTORS = 525l;
+	public static final Long WC_PROFILE_PIC_COMPANY = 535l;
+	public static final Long WC_SITE_OR_PROMOTERS_PHOTOS = 539l;
+
+	// DDR
+	public static final Long TL_FIELD_AUDIT_REPORT = 502l;
+	public static final Long TL_BANK_STATEMENT_OF_LAST_12_MONTHS = 506l;
+	public static final Long TL_FINANCIAL_FIGURES_OVERALL = 510l;
+	public static final Long TL_CENTRAL_SALES_TAX_REGISTRATION_OF_THE_COMPANY = 514l;
+	public static final Long TL_CENTRAL_EXCISE_REGISTRATION_OF_THE_COMPANY = 518l;
+	public static final Long TL_VAT_REGISTRATION_OF_THE_COMPANY = 522l;
+	public static final Long TL_LIST_OF_DIRECTORS = 526l;
+	public static final Long TL_PROFILE_PIC_COMPANY = 536l;
+	public static final Long TL_SITE_OR_PROMOTERS_PHOTOS = 540l;
+
+	// DDR
+	public static final Long USL_FIELD_AUDIT_REPORT = 503l;
+	public static final Long USL_BANK_STATEMENT_OF_LAST_12_MONTHS = 507l;
+	public static final Long USL_FINANCIAL_FIGURES_OVERALL = 511l;
+	public static final Long USL_CENTRAL_SALES_TAX_REGISTRATION_OF_THE_COMPANY = 515l;
+	public static final Long USL_CENTRAL_EXCISE_REGISTRATION_OF_THE_COMPANY = 519l;
+	public static final Long USL_VAT_REGISTRATION_OF_THE_COMPANY = 523l;
+	public static final Long USL_LIST_OF_DIRECTORS = 527l;
+	public static final Long USL_PROFILE_PIC_COMPANY = 537l;
+	public static final Long USL_SITE_OR_PROMOTERS_PHOTOS = 541l;
+
+	// DDR
+	public static final Long WCTL_FIELD_AUDIT_REPORT = 504l;
+	public static final Long WCTL_BANK_STATEMENT_OF_LAST_12_MONTHS = 508l;
+	public static final Long WCTL_FINANCIAL_FIGURES_OVERALL = 512l;
+	public static final Long WCTL_CENTRAL_SALES_TAX_REGISTRATION_OF_THE_COMPANY = 516l;
+	public static final Long WCTL_CENTRAL_EXCISE_REGISTRATION_OF_THE_COMPANY = 520l;
+	public static final Long WCTL_VAT_REGISTRATION_OF_THE_COMPANY = 524l;
+	public static final Long WCTL_LIST_OF_DIRECTORS = 528l;
+	public static final Long WCTL_PROFILE_PIC_COMPANY = 538l;
+	public static final Long WCTL_SITE_OR_PROMOTERS_PHOTOS = 542l;
+
+	// ITR (HARSHIT)
+	public static final Long CORPORATE_ITR_XML = 358l;
+	// ITR ANKIT/HARSHIT
+	public static final Long CORPORATE_ITR_PDF = 406l;
+	public static final Long RETAIL_ITR_PDF = 407l;
+	public static final Long RETAIL_ITR_XML = 408l;
+	public static final Long ITR_PERFIOS_ZIP = 586l;
+
+	// CIBIL (AKSHAY)
+	public static final Long CIBIL_REPORT_MSME_COMPANY = 365l;
+	public static final Long CIBIL_REPORT_MSME_CONSUMER = 575l;
+	public static final Long CIBIL_SOFTPING_CONSUMER = 592l;
+	public static final Long CIBIL_REPORT_HUF_COMMERCIAL = 530l;
+	public static final Long GST_RECEIPT = 571l;
+
+
+	// nilay
+	public static final Long ZIP_TEASER_VIEW = 529l;
+	
+	/*
+	 * Here for MCA PROBE ZIP File cin is saved insted of application id in table
+	 * */
+	public static final long MCA_CORP_ZIP = 580l;
+	
+	/**
+	 * APF excel file upload and project photos
+	 */
+	public static final Long APF_EXCEL_FILES = 601l;
+	public static final Long APF_PROJECT_PHOTOS = 602l;
+
+	/**
+	 * NBFC uploads*/
+	public static final Long NBFC_PAN_UPLOAD = 603l;
+	public static final Long NBFC_ADDRESS_PROOF = 604l;
+	public static final Long NBFC_TRIPARTITE_AGREEMENT = 605l;//nbfcTripartiteAgreement
+	public static final Long NBFC_SANCTION_LETTER = 606l; // nbfcSanctionLetterOfNBFC
+	public static final Long NBFC_lETTER_OF_INTENT = 607l; //nbfcLetterOfIntent
+	public static final Long NBFC_PROMISSONRY_NOTE = 608l; //nbfcDemandPromissonryNote
+	public static final Long NBFC_OTHER = 609l; //nbfcOther
+	public static final Long AGE_PROOF_DOCUMENT = 611l; // nbfcSanctionLetterOfNBFC
+	public static final Long ID_PROOF_DOCUMENT = 612l; //nbfcLetterOfIntent
+	public static final Long ADDRESS_PROOF_DOCUMENT = 613l; //nbfcDemandPromissonryNote
+	public static final Long APPLICATION_FORM = 614l; //nbfcOther
+	public static final Long DETAILED_ASSESSMENT_NOTE = 615l; //nbfcOther
+	public static final Long NBFC_PROJECTED_FINANCIALS = 610l; //nbfc projected financial upload
+	public static final Long CAMREPORT_UPLOAD = 618l;
+	
+	/*ITR Report Upload ids*/
+	public static final Long ITR_XML_UPLOAD_REPORTS = 623l;
+	public static final Long ITR_PDF_UPLOAD_REPORTS = 624l;
+	
+	public static final Long MCA_PDF_UPLOAD_REPORTS = 625l;
+	
+
+}

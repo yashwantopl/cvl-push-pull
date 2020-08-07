@@ -1,10 +1,19 @@
 package com.opl.mudra.api.loans.model.teaser.primaryview;
 
-import com.opl.mudra.api.loans.model.*;
+import java.util.List;
+
+import com.opl.mudra.api.loans.model.AchievementDetailRequest;
+import com.opl.mudra.api.loans.model.CreditRatingOrganizationDetailResponse;
+import com.opl.mudra.api.loans.model.DirectorBackgroundDetailResponse;
+import com.opl.mudra.api.loans.model.ExistingProductDetailRequest;
+import com.opl.mudra.api.loans.model.FinancialArrangementsDetailResponse;
+import com.opl.mudra.api.loans.model.FutureFinancialEstimatesDetailRequest;
+import com.opl.mudra.api.loans.model.OwnershipDetailResponse;
+import com.opl.mudra.api.loans.model.PromotorBackgroundDetailResponse;
+import com.opl.mudra.api.loans.model.ProposedProductDetailRequest;
+import com.opl.mudra.api.loans.model.SecurityCorporateDetailRequest;
 import com.opl.mudra.api.loans.model.retail.PastFinancialEstimatesDetailRequest;
 import com.opl.mudra.api.loans.model.retail.ReferenceRetailDetailsRequest;
-
-import java.util.List;
 
 /**
  * Created by dhaval on 19-May-17.

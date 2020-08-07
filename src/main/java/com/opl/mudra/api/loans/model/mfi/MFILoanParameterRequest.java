@@ -1,12 +1,12 @@
 package com.opl.mudra.api.loans.model.mfi;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.opl.mudra.api.loans.model.DataRequest;
-import com.opl.mudra.api.loans.model.ProductMasterRequest;
-
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.opl.mudra.api.loans.model.DataRequest;
+import com.opl.mudra.api.loans.model.ProductMasterRequest;
 
 /**
  * The persistent class for the fp_personal_loan_details database table.

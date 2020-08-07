@@ -1,7 +1,6 @@
 package com.opl.mudra.api.loans.model;
 
 import java.util.Date;
-import java.util.Map;
 
 
 /**

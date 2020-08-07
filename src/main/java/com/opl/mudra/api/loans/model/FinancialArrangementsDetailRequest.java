@@ -62,8 +62,13 @@ public class FinancialArrangementsDetailRequest implements Serializable {
 	private Double bureauOrCalculatedEmi;
 	private String entryNo;
 	private Boolean isBureauEmi;
+	private Double amountPastDue;
+	private String writtenOffAndSettledStatus;
+	private String suitFiledStatus;
 	
 	private String dpdDetails;
+	
+	private Integer loanOwnerShip;
 
 	public Long getId() {
 		return id;
@@ -265,7 +270,36 @@ public class FinancialArrangementsDetailRequest implements Serializable {
 		this.dpdDetails = dpdDetails;
 	}
 
+	public Integer getLoanOwnerShip() {
+		return loanOwnerShip;
+	}
 
-	
+	public void setLoanOwnerShip(Integer loanOwnerShip) {
+		this.loanOwnerShip = loanOwnerShip;
+	}
+
+	public Double getAmountPastDue() {
+		return amountPastDue;
+	}
+
+	public void setAmountPastDue(Double amountPastDue) {
+		this.amountPastDue = amountPastDue;
+	}
+
+	public String getWrittenOffAndSettledStatus() {
+		return writtenOffAndSettledStatus;
+	}
+
+	public void setWrittenOffAndSettledStatus(String writtenOffAndSettledStatus) {
+		this.writtenOffAndSettledStatus = writtenOffAndSettledStatus;
+	}
+
+	public String getSuitFiledStatus() {
+		return suitFiledStatus;
+	}
+
+	public void setSuitFiledStatus(String suitFiledStatus) {
+		this.suitFiledStatus = suitFiledStatus;
+	}
 	
 }

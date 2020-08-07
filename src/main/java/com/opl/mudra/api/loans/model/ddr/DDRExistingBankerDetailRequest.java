@@ -1,12 +1,12 @@
 package com.opl.mudra.api.loans.model.ddr;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.opl.mudra.api.loans.exception.LoansException;
-import com.opl.mudra.api.loans.model.FinancialArrangementDetailResponseString;
-
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.opl.mudra.api.loans.exception.LoansException;
+import com.opl.mudra.api.loans.model.FinancialArrangementDetailResponseString;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DDRExistingBankerDetailRequest implements Serializable {

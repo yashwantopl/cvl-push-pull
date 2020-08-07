@@ -5,8 +5,6 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 
-import javax.persistence.Column;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.opl.mudra.api.loans.model.DataRequest;
 import com.opl.mudra.api.loans.model.ProductMasterRequest;
