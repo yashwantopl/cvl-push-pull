@@ -53,6 +53,14 @@ public class ConnectResponse implements Serializable {
 		super();
 	}
 
+	public ConnectResponse(Boolean proceed, Integer status, List<?> dataList, String message) {
+		super();
+		this.proceed = proceed;
+		this.status = status;
+		this.message = message;
+		this.dataList = dataList;
+	}
+
 	public ConnectResponse(Boolean proceed, Integer stage, String message) {
 		super();
 		this.proceed = proceed;

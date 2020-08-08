@@ -11,7 +11,10 @@ public class ConnectRequest implements Serializable {
 
 	private static final long serialVersionUID = 3408967653526547573L;
 
+	private Long id;
 	private Long userId;
+	private Long profileId;
+	private Long profileVerMapId;
 	private String productType;
 	private Long applicationId;
 	private Integer stageId;
@@ -47,6 +50,14 @@ public class ConnectRequest implements Serializable {
 
 	public Date getInPrincipleDate() {
 		return inPrincipleDate;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public void setInPrincipleDate(Date inPrincipleDate) {
@@ -291,6 +302,24 @@ public class ConnectRequest implements Serializable {
 
 	public void setNewStageId(Integer newStageId) {
 		this.newStageId = newStageId;
+	}
+	
+	
+
+	public Long getProfileId() {
+		return profileId;
+	}
+
+	public void setProfileId(Long profileId) {
+		this.profileId = profileId;
+	}
+
+	public Long getProfileVerMapId() {
+		return profileVerMapId;
+	}
+
+	public void setProfileVerMapId(Long profileVerMapId) {
+		this.profileVerMapId = profileVerMapId;
 	}
 
 	@Override
