@@ -27,7 +27,7 @@ public interface EmployeesCategoryBreaksDetailRepository extends JpaRepository<E
 	@Query("update EmployeesCategoryBreaksDetail a set a.isActive = false where a.applicationId.id= :applicationId and a.isActive=true")
 	public void inActiveemployeesCategoryBreaksDetailsByAppId(@Param("applicationId") Long applicationId);
 
-	@Query("select new com.capitaworld.service.loans.model.teaser.finalview.EmployeesCategoryBreaksResponse(a.employment,a.employmentStatusFuture,a.employmentStatusPresent) from EmployeesCategoryBreaksDetail a where a.applicationId.id= :applicationId and isActive=true")
+	@Query("select new com.opl.mudra.api.loans.model.teaser.finalview.EmployeesCategoryBreaksResponse(a.employment,a.employmentStatusFuture,a.employmentStatusPresent) from EmployeesCategoryBreaksDetail a where a.applicationId.id= :applicationId and isActive=true")
 	public List<EmployeesCategoryBreaksResponse> listByApplicationId(@Param("applicationId")Long applicationId);
 	
 	public List<EmployeesCategoryBreaksDetail> findByApplicationIdIdAndIsActive(Long applicationId, Boolean isActive);

@@ -114,7 +114,7 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	@Query("select lm.createdDate from LoanApplicationMaster lm where lm.id =:id and lm.isActive = true")
 	public Date getCreatedDateById(@Param("id") Long id);
 
-	@Query("select new com.capitaworld.service.loans.model.LoanApplicationDetailsForSp(lm.id,lm.productId,lm.amount,lm.currencyId,lm.denominationId)  from LoanApplicationMaster lm where lm.userId=:userId and lm.isActive = true")
+	@Query("select new com.opl.mudra.api.loans.model.LoanApplicationDetailsForSp(lm.id,lm.productId,lm.amount,lm.currencyId,lm.denominationId)  from LoanApplicationMaster lm where lm.userId=:userId and lm.isActive = true")
 	public List<LoanApplicationDetailsForSp> getListByUserId(@Param("userId") Long userId);
 
 	@Query("select lm.productId from LoanApplicationMaster lm where lm.id =:id and lm.userId =:userId and lm.isActive = true")

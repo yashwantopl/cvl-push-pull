@@ -27,7 +27,7 @@ public interface DriverForFutureGrowthDetailRepository extends JpaRepository<Dri
 	@Query("update DriverForFutureGrowthDetail a set a.isActive = false where a.applicationId.id= :applicationId and a.isActive=true")
 	public void inActiveDriverForFutureGrowthDetailsByAppId(@Param("applicationId") Long applicationId);
 
-	@Query("select new com.capitaworld.service.loans.model.teaser.finalview.DriverForFutureGrowthResponse(a.firstString,a.secondString,a.thirdString,a.forthString) from DriverForFutureGrowthDetail a where a.applicationId.id= :applicationId and isActive=true")
+	@Query("select new com.opl.mudra.api.loans.model.teaser.finalview.DriverForFutureGrowthResponse(a.firstString,a.secondString,a.thirdString,a.forthString) from DriverForFutureGrowthDetail a where a.applicationId.id= :applicationId and isActive=true")
 	List<DriverForFutureGrowthResponse> listByApplicationId(@Param("applicationId") Long applicationId);
 	
 	public List<DriverForFutureGrowthDetail> findByApplicationIdIdAndIsActive(Long applicationId, Boolean isActive);

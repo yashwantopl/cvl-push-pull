@@ -11,10 +11,10 @@ import com.opl.service.loans.domain.fundprovider.FpProductParameters;
 
 public interface FpProductParametersRepository extends JpaRepository<FpProductParameters, Long> {
 
-    @Query("SELECT new com.capitaworld.service.loans.model.ProductParameterResponse(a.id,a.conditionId,a.bodmasFormulaId,a.compareValue,a.minValue,a.maxValue,a.logicalCondition,a.parameterOperator,a.parentId,a.isGroup,a.level,a.isActive) FROM FpProductParameters a where a.conditionId =:conditionId and a.parentId IS NULL")
+    @Query("SELECT new com.opl.mudra.api.loans.model.ProductParameterResponse(a.id,a.conditionId,a.bodmasFormulaId,a.compareValue,a.minValue,a.maxValue,a.logicalCondition,a.parameterOperator,a.parentId,a.isGroup,a.level,a.isActive) FROM FpProductParameters a where a.conditionId =:conditionId and a.parentId IS NULL")
     public List<ProductParameterResponse> findAllByConditionId(@Param("conditionId") Long conditionId);
 
-    @Query("SELECT new com.capitaworld.service.loans.model.ProductParameterResponse(a.id,a.conditionId,a.bodmasFormulaId,a.compareValue,a.minValue,a.maxValue,a.logicalCondition,a.parameterOperator,a.parentId,a.isGroup,a.level,a.isActive) FROM FpProductParameters a where a.conditionId =:conditionId and a.parentId=:id")
+    @Query("SELECT new com.opl.mudra.api.loans.model.ProductParameterResponse(a.id,a.conditionId,a.bodmasFormulaId,a.compareValue,a.minValue,a.maxValue,a.logicalCondition,a.parameterOperator,a.parentId,a.isGroup,a.level,a.isActive) FROM FpProductParameters a where a.conditionId =:conditionId and a.parentId=:id")
     public List<ProductParameterResponse> findAllByConditionIdWithParent(@Param("id") Long id,@Param("conditionId") Long conditionId);
 
     @Query(value = "select formula_name from `bodmas_sidbi`.`formula_master` where id =:formulaId", nativeQuery = true)

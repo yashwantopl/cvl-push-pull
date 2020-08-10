@@ -27,7 +27,7 @@ public interface TechnologyPositioningDetailRepository extends JpaRepository<Tec
 	@Query("update TechnologyPositioningDetail a set a.isActive = false where a.applicationId.id= :applicationId and a.isActive=true")
 	public void inActiveTechnologyPositioningDetailsByAppId(@Param("applicationId")Long applicationId);
 
-	@Query("select new com.capitaworld.service.loans.model.teaser.finalview.TechnologyPositioningResponse(a.details,a.type) from TechnologyPositioningDetail a where a.applicationId.id= :applicationId and isActive=true")
+	@Query("select new com.opl.mudra.api.loans.model.teaser.finalview.TechnologyPositioningResponse(a.details,a.type) from TechnologyPositioningDetail a where a.applicationId.id= :applicationId and isActive=true")
 	List<TechnologyPositioningResponse> listByApplicationId(@Param("applicationId") Long applicationId);
 	
 	public List<TechnologyPositioningDetail> findByApplicationIdIdAndIsActive(Long applicationId, Boolean isActive);

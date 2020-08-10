@@ -27,7 +27,7 @@ public interface StrategicAlliancesDetailRepository extends JpaRepository<Strate
 	@Query("update StrategicAlliancesDetail a set a.isActive = false where a.applicationId.id= :applicationId and a.isActive=true")
 	public void inActiveStrategicAlliancesDetailsByAppId(@Param("applicationId")Long applicationId);
 
-	@Query("select new com.capitaworld.service.loans.model.teaser.finalview.StrategicAlliancesResponse(a.keyAlliancePartners,a.name,a.relationshipDetails) from StrategicAlliancesDetail a where a.applicationId.id= :applicationId and isActive=true")
+	@Query("select new com.opl.mudra.api.loans.model.teaser.finalview.StrategicAlliancesResponse(a.keyAlliancePartners,a.name,a.relationshipDetails) from StrategicAlliancesDetail a where a.applicationId.id= :applicationId and isActive=true")
 	public List<StrategicAlliancesResponse> listByApplicationId(@Param("applicationId")Long applicationId);
 	
 	public List<StrategicAlliancesDetail> findByApplicationIdIdAndIsActive(Long applicationId, Boolean isActive);

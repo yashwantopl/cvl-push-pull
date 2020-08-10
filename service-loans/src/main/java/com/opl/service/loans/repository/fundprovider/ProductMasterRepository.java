@@ -70,7 +70,7 @@ public interface ProductMasterRepository extends JpaRepository<ProductMaster, Lo
 	@Query("from ProductMaster pm where pm.userOrgId =:userOrgId and pm.id=:productId ")
 	public ProductMaster getUserProductByOrgId(@Param("productId") Long productId,@Param("userOrgId") Long userOrgId);
 	
-	@Query("select new com.capitaworld.service.loans.model.ProductDetailsForSp(pm.id,pm.productId,pm.name)  from ProductMaster pm where pm.userId=:userId and pm.isActive = true")
+	@Query("select new com.opl.mudra.api.loans.model.ProductDetailsForSp(pm.id,pm.productId,pm.name)  from ProductMaster pm where pm.userId=:userId and pm.isActive = true")
 	public List<ProductDetailsForSp> getListByUserId(@Param("userId") Long userId);
 
 	@Query(value="select user_id, fp_name,name from fp_product_master pm where pm.fp_product_id=:productId", nativeQuery=true)
@@ -79,10 +79,10 @@ public interface ProductMasterRepository extends JpaRepository<ProductMaster, Lo
 	@Query("select count(id) from ProductMaster pm where pm.id=:productId and pm.isParameterFilled=1 and pm.isActive = true")
 	public Long checkParameterIsFilled(@Param("productId") Long productId);
 	
-	@Query("select new com.capitaworld.service.loans.model.ProductDetailsForSp(pm.id,pm.productId,pm.name)  from ProductMaster pm where pm.userId=:userId and pm.isActive = true and pm.isMatched=true")
+	@Query("select new com.opl.mudra.api.loans.model.ProductDetailsForSp(pm.id,pm.productId,pm.name)  from ProductMaster pm where pm.userId=:userId and pm.isActive = true and pm.isMatched=true")
 	public List<ProductDetailsForSp> getMatchedAndActiveProduct(@Param("userId") Long userId);
 
-	@Query("select new com.capitaworld.service.loans.model.ProductDetailsForSp(pm.id,pm.productId,pm.name)  from ProductMaster pm where pm.userId=:userId and pm.isMatched=true")
+	@Query("select new com.opl.mudra.api.loans.model.ProductDetailsForSp(pm.id,pm.productId,pm.name)  from ProductMaster pm where pm.userId=:userId and pm.isMatched=true")
 	public List<ProductDetailsForSp> getMatchedAndActiveInActiveProduct(@Param("userId") Long userId);
 	
 	public Long countByUserIdAndIsMatched(Long userId, Boolean isMatched);

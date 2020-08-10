@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -15,7 +16,6 @@ import com.capitaworld.client.ekyc.EPFClient;
 import com.capitaworld.service.auth.client.AuthClient;
 import com.capitaworld.service.pennydrop.client.PennydropClient;
 import com.capitaworld.service.users.client.UsersClient;
-import com.capitaworld.source.provider.util.CommonUtils;
 import com.opl.mudra.client.analyzer.AnalyzerClient;
 import com.opl.mudra.client.cibil.CIBILClient;
 import com.opl.mudra.client.connect.ConnectClient;
@@ -35,6 +35,8 @@ import com.opl.mudra.client.reports.ReportsClient;
 import com.opl.mudra.client.scoring.ScoringClient;
 import com.opl.mudra.client.thirdparty.ThirdPartyClient;
 import com.opl.mudra.client.workflow.WorkflowClient;
+import com.opl.commons.lib.common.CommonUtils;
+
 
 /**
  * @author win7
@@ -174,14 +176,14 @@ public class LoansMain {
 
 	@Bean
 	public MatchEngineClient matchEngineClient() {
-		MatchEngineClient matchEngineClient = new MatchEngineClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.match_engine_mudra));
+		MatchEngineClient matchEngineClient = new MatchEngineClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.matchengine));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(matchEngineClient);
 		return matchEngineClient;
 	}
 
 	@Bean
 	public ProposalDetailsClient proposalDetailsClient() {
-		ProposalDetailsClient proposalDetailsClient = new ProposalDetailsClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.match_engine_mudra));
+		ProposalDetailsClient proposalDetailsClient = new ProposalDetailsClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.matchengine));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(proposalDetailsClient);
 		return proposalDetailsClient;
 	}
@@ -202,14 +204,14 @@ public class LoansMain {
 
 	@Bean
 	public ReportsClient reportsClient() {
-		ReportsClient reportsClient = new ReportsClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.reports_mudra));
+		ReportsClient reportsClient = new ReportsClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.reports));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(reportsClient);
 		return reportsClient;
 	}
 
 	@Bean
 	public ScoringClient scoringClient() {
-		ScoringClient scoringClient = new ScoringClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.scoring_mudra));
+		ScoringClient scoringClient = new ScoringClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.scoring));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(scoringClient);
 		return scoringClient;
 	}
@@ -230,7 +232,7 @@ public class LoansMain {
 
 	@Bean
 	public ConnectClient connectClient() {
-		ConnectClient connectClient = new ConnectClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.connect_mudra));
+		ConnectClient connectClient = new ConnectClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.connect));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(connectClient);
 		return connectClient;
 	}
@@ -258,7 +260,7 @@ public class LoansMain {
 
 	@Bean
 	public EligibilityClient eligibilityClient() {
-		EligibilityClient eligibilityClient = new EligibilityClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.eligibility_mudra));
+		EligibilityClient eligibilityClient = new EligibilityClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.eligibility));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(eligibilityClient);
 		return eligibilityClient;
 	}

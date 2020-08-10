@@ -28,7 +28,7 @@ public interface RevenueAndOrderBookDetailRepository extends JpaRepository<Reven
 	@Query("update RevenueAndOrderBookDetail a set a.isActive = false where a.applicationId.id= :applicationId and a.isActive=true")
 	public void inActiveRevenueAndOrderBookDetailsByAppId(@Param("applicationId")Long applicationId);
 
-	@Query("select new com.capitaworld.service.loans.model.teaser.finalview.RevenueAndOrderBookResponse(a.clientName,a.geography,a.ordersInHand,a.potentialOrders,a.revenues) from RevenueAndOrderBookDetail a where a.applicationId.id= :applicationId and isActive=true")
+	@Query("select new com.opl.mudra.api.loans.model.teaser.finalview.RevenueAndOrderBookResponse(a.clientName,a.geography,a.ordersInHand,a.potentialOrders,a.revenues) from RevenueAndOrderBookDetail a where a.applicationId.id= :applicationId and isActive=true")
 	public List<RevenueAndOrderBookResponse> listByApplicationId(@Param("applicationId") Long applicationId);
 	
 	public List<RevenueAndOrderBookDetail> findByApplicationIdIdAndIsActive(Long applicationId, Boolean isActive);

@@ -11,7 +11,7 @@ import com.opl.service.loans.domain.fundseeker.corporate.SubSectorMappingDetail;
 
 public interface SubSectorMappingRepository extends JpaRepository<SubSectorMappingDetail, Long>{
 	
-	@Query("select new com.capitaworld.service.loans.model.corporate.SubSectorMappingRequest(ss.id,ss.subSectorId)  from SubSectorMappingDetail ss where ss.sectorId=:sectorId")
+	@Query("select new com.opl.mudra.api.loans.model.corporate.SubSectorMappingRequest(ss.id,ss.subSectorId)  from SubSectorMappingDetail ss where ss.sectorId=:sectorId")
 	//@Query("select si.subSectorId from SubSectorMappingDetail si where si.sectorId=:sectorId")
 	public List<SubSectorMappingRequest> getSectorListByIndustryList(@Param("sectorId") Long sectorId);
 

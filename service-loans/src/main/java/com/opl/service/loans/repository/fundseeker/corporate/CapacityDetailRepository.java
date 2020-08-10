@@ -22,7 +22,7 @@ public interface CapacityDetailRepository extends JpaRepository<CapacityDetail, 
 	@Query("update CapacityDetail a set a.isActive = false where a.storageDetailsId= :sId")
 	public void inActiveCapacityDetails(@Param("sId")Long storageDetailsId);
 	
-	@Query("select new com.capitaworld.service.loans.model.teaser.finalview.CapacityDetailResponse(a.currentInstalledCapacity, a.currentOperatingLevel, a.futureCapacity, a.measurementForCurrentInstalledCapacity, a.measurementForFutureCapacity, a.productName) from CapacityDetail a where a.applicationId.id= :applicationId and isActive=true")
+	@Query("select new com.opl.mudra.api.loans.model.teaser.finalview.CapacityDetailResponse(a.currentInstalledCapacity, a.currentOperatingLevel, a.futureCapacity, a.measurementForCurrentInstalledCapacity, a.measurementForFutureCapacity, a.productName) from CapacityDetail a where a.applicationId.id= :applicationId and isActive=true")
 	 public List<CapacityDetailResponse> listByApplicationId(@Param("applicationId")Long applicationId);
 
 }

@@ -5,6 +5,7 @@ import java.util.Properties;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
@@ -21,8 +22,7 @@ import com.zaxxer.hikari.HikariDataSource;
 
 @Configuration
 @EnableTransactionManagement
-@EnableJpaRepositories(basePackages = {
-		"com.opl.service.loans.repository" }, entityManagerFactoryRef = "loansDataStoreEM", transactionManagerRef = "loansDataStoreTM")
+@EnableJpaRepositories(basePackages = { "com.opl.service.loans.repository" }, entityManagerFactoryRef = "loansDataStoreEM", transactionManagerRef = "loansDataStoreTM")
 public class PersistenceContext {
 
 	protected static final String PROPERTY_NAME_DATABASE_DRIVER = "capitaworld.loans.db.driver";
@@ -42,7 +42,7 @@ public class PersistenceContext {
 	private static final String PROPERTY_NAME_HIBERNATE_SHOW_SQL = "hibernate.show_sql";
 	private static final String PROPERTY_NAME_HIBERNATE_LAZY_LOAD = "hibernate.enable_lazy_load_no_trans";
 
-	private static final String PROPERTY_ENTITY_PACKAGES_TO_SCAN = "com.capitaworld.service.loans.domain";
+	private static final String PROPERTY_ENTITY_PACKAGES_TO_SCAN = "com.opl.service.loans.domain";
 
 	@Autowired
 	private Environment environment;

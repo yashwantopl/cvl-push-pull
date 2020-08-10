@@ -8,7 +8,7 @@
 		<relativePath /> <!-- lookup parent from repository -->
 		<artifactId>spring-boot-starter-parent</artifactId>
 	</parent>
-	<groupId>com.opl.loans.service.parent</groupId>
+	<groupId>com.opl.loans.service</groupId>
 	<artifactId>service-loans-mudra</artifactId>
 	<version>16.0.0</version>
 	<properties>
