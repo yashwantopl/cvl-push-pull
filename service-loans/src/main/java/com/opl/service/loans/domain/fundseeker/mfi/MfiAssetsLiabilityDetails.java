@@ -1,11 +1,13 @@
 package com.opl.service.loans.domain.fundseeker.mfi;
 
-import javax.persistence.*;
-
-import com.capitaworld.service.loans.model.retail.ExistingLoanDetailRequest;
-
 import java.io.Serializable;
-import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "fs_mfi_assets_liability_details")

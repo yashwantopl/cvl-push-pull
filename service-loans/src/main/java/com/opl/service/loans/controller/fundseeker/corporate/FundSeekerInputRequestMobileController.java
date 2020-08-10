@@ -17,7 +17,7 @@ import com.opl.mudra.api.loans.model.corporate.FundSeekerInputRequestResponse;
 import com.opl.mudra.api.loans.model.mobile.MobileApiResponse;
 import com.opl.mudra.api.loans.model.mobile.MobileLoanRequest;
 import com.opl.mudra.api.loans.utils.CommonUtils;
-import com.opl.mudra.api.notification.utils.MobileCustomizeResponse;
+import com.opl.mudra.api.loans.utils.MobileCustomizeResponse;
 import com.opl.service.loans.service.fundseeker.corporate.FundSeekerInputRequestService;
 
 

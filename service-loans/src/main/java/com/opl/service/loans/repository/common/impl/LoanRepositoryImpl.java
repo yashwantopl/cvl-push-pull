@@ -70,7 +70,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 									+ "WHERE cam.user_id =:userId  AND cam.is_active = TRUE ORDER BY cam.id DESC LIMIT 1")
 					.setParameter(CommonUtils.USER_ID, userId)
 					.setParameter("campaignType", campaignType)
-					.setParameter("campaignTypeBoth", com.capitaworld.service.matchengine.utils.CommonUtils.CampaignLoanType.Both.getId())
+					.setParameter("campaignTypeBoth", com.opl.mudra.api.matchengine.utils.CommonUtils.CampaignLoanType.Both.getId())
 					.getSingleResult();
 			return !CommonUtils.isObjectNullOrEmpty(code) ? code : null;
 		} catch (Exception e) {

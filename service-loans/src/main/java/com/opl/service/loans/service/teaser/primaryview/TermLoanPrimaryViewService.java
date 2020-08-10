@@ -1,6 +1,6 @@
 package com.opl.service.loans.service.teaser.primaryview;
 
-import com.capitaworld.service.loans.model.teaser.primaryview.TermLoanPrimaryViewResponse;
+import com.opl.mudra.api.loans.model.teaser.primaryview.TermLoanPrimaryViewResponse;
 
 
 public interface TermLoanPrimaryViewService {

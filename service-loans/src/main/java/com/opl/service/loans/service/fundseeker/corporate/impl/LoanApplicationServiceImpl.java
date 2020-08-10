@@ -36,10 +36,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.opl.mudra.api.analyzer.model.common.Data;
-import com.opl.mudra.api.analyzer.model.common.ReportRequest;
-import com.opl.mudra.api.loans.model.LoanApplicationRequest;
-import com.opl.mudra.api.loans.model.api_model.FinanceMeansDetailRequest;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.FpProfileBasicDetailRequest;
 import com.capitaworld.service.users.model.FundProviderDetailsRequest;
@@ -51,6 +47,11 @@ import com.capitaworld.service.users.model.mobile.MobileUserRequest;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opl.mudra.api.analyzer.model.common.AnalyzerResponse;
+import com.opl.mudra.api.analyzer.model.common.Data;
+import com.opl.mudra.api.analyzer.model.common.ReportRequest;
+import com.opl.mudra.api.common.CommonUtils;
+import com.opl.mudra.api.common.CommonUtils.BusinessType;
+import com.opl.mudra.api.common.CommonUtils.LoanType;
 import com.opl.mudra.api.connect.ConnectRequest;
 import com.opl.mudra.api.connect.ConnectResponse;
 import com.opl.mudra.api.dms.model.DocumentRequest;
@@ -68,8 +69,8 @@ import com.opl.mudra.api.loans.model.DirectorBackgroundDetailResponse;
 import com.opl.mudra.api.loans.model.ExistingProductDetailRequest;
 import com.opl.mudra.api.loans.model.FrameRequest;
 import com.opl.mudra.api.loans.model.GstRelatedPartyRequest;
-import com.opl.mudra.api.loans.model.GuarantorsCorporateDetailRequest;
 import com.opl.mudra.api.loans.model.LoanApplicationDetailsForSp;
+import com.opl.mudra.api.loans.model.LoanApplicationRequest;
 import com.opl.mudra.api.loans.model.LoanDisbursementRequest;
 import com.opl.mudra.api.loans.model.LoanEligibilityRequest;
 import com.opl.mudra.api.loans.model.LoanPanCheckRequest;
@@ -82,8 +83,11 @@ import com.opl.mudra.api.loans.model.SecurityCorporateDetailRequest;
 import com.opl.mudra.api.loans.model.TutorialUploadManageRes;
 import com.opl.mudra.api.loans.model.TutorialsViewAudits;
 import com.opl.mudra.api.loans.model.api_model.CorporateProfileRequest;
+import com.opl.mudra.api.loans.model.api_model.FinanceMeansDetailRequest;
+import com.opl.mudra.api.loans.model.api_model.GuarantorsCorporateDetailRequest;
 import com.opl.mudra.api.loans.model.api_model.LoantypeSelectionResponse;
 import com.opl.mudra.api.loans.model.api_model.ProfileReqRes;
+import com.opl.mudra.api.loans.model.api_model.TotalCostOfProjectRequest;
 import com.opl.mudra.api.loans.model.common.BasicDetailFS;
 import com.opl.mudra.api.loans.model.common.CGTMSECalcDataResponse;
 import com.opl.mudra.api.loans.model.common.ChatDetails;
@@ -96,12 +100,9 @@ import com.opl.mudra.api.loans.model.common.ProposalList;
 import com.opl.mudra.api.loans.model.common.SanctioningDetailResponse;
 import com.opl.mudra.api.loans.model.corporate.CorporateFinalInfoRequest;
 import com.opl.mudra.api.loans.model.corporate.CorporateProduct;
-import com.opl.mudra.api.loans.model.corporate.TotalCostOfProjectRequest;
 import com.opl.mudra.api.loans.model.mobile.MLoanDetailsResponse;
 import com.opl.mudra.api.loans.model.mobile.MobileLoanRequest;
 import com.opl.mudra.api.loans.model.retail.BankRelationshipRequest;
-import com.opl.mudra.api.loans.utils.CommonUtils;
-import com.opl.mudra.api.loans.utils.CommonUtils.LoanType;
 import com.opl.mudra.api.loans.utils.MultipleJSONObjectHelper;
 import com.opl.mudra.api.matchengine.exception.MatchException;
 import com.opl.mudra.api.matchengine.model.ProposalCountResponse;
@@ -225,7 +226,6 @@ import com.opl.service.loans.service.fundseeker.corporate.CorporateUploadService
 import com.opl.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.opl.service.loans.service.sanction.LoanDisbursementService;
 import com.opl.service.loans.utils.CommonDocumentUtils;
-import com.opl.mudra.api.loans.utils.CommonUtils.BusinessType;
 
 @Service
 @Transactional
@@ -3642,7 +3642,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				return response;
 			}
 
-			com.capitaworld.service.oneform.enums.LoanType loanType = com.capitaworld.service.oneform.enums.LoanType
+			com.opl.mudra.api.oneform.enums.LoanType loanType = com.opl.mudra.api.oneform.enums.LoanType
 					.getById(applicationProposalMapping.getProductId());
 			if (!CommonUtils.isObjectNullOrEmpty(loanType) && (applicationProposalMapping.getIsApplicantFinalFilled() == null || !applicationProposalMapping.getIsApplicantFinalFilled())) {
 					if (loanType.getId() == CommonUtils.LoanType.AUTO_LOAN.getValue()) {
@@ -6245,7 +6245,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		LoanApplicationMaster corporateLoan = new PrimaryCorporateDetail();
 		corporateLoan.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.OPEN));
 		corporateLoan.setDdrStatusId(CommonUtils.DdrStatus.OPEN);
-		String campaignUser = loanRepository.getCampaignUser(userId, com.capitaworld.service.matchengine.utils.CommonUtils.CampaignLoanType.Msme.getId());
+		String campaignUser = loanRepository.getCampaignUser(userId, com.opl.mudra.api.matchengine.utils.CommonUtils.CampaignLoanType.Msme.getId());
 		// WE HAVE TO SET MARKET PLACE JOURNEY IN CII CAMPAIGN CASE
 		if(campaignUser != null && campaignUser.equalsIgnoreCase("cii")) {
 			corporateLoan.setCampaignCode(campaignUser);
@@ -6293,7 +6293,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		LoanApplicationMaster retailLoanObj = new LoanApplicationMaster();
 		retailLoanObj.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.OPEN));
 		retailLoanObj.setDdrStatusId(CommonUtils.DdrStatus.OPEN);
-		String campaignUser = loanRepository.getCampaignUser(userId, com.capitaworld.service.matchengine.utils.CommonUtils.CampaignLoanType.Retail.getId());
+		String campaignUser = loanRepository.getCampaignUser(userId, com.opl.mudra.api.matchengine.utils.CommonUtils.CampaignLoanType.Retail.getId());
 		if(campaignUser != null && campaignUser.equalsIgnoreCase("cii")) {
 			// corporateLoan.setCampaignCode(campaignUser);
 		}else {
@@ -6541,11 +6541,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						}
 						String natureOfEntity = null;
 
-						if (com.capitaworld.service.rating.utils.CommonUtils.BusinessType.MANUFACTURING == businessTypeId) {
+						if (CommonUtils.BusinessTypeForItr.MANUFACTURING == businessTypeId) {
 							natureOfEntity = "Manufacturer";
-						} else if (com.capitaworld.service.rating.utils.CommonUtils.BusinessType.SERVICE == businessTypeId) {
+						} else if (CommonUtils.BusinessTypeForItr.MANUFACTURING == businessTypeId) {
 							natureOfEntity = "Service";
-						} else if (com.capitaworld.service.rating.utils.CommonUtils.BusinessType.TRADING == businessTypeId) {
+						} else if (CommonUtils.BusinessTypeForItr.MANUFACTURING == businessTypeId) {
 							natureOfEntity = "Trader";
 						}
 

@@ -17,6 +17,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.opl.mudra.api.loans.utils.EncryptionUtils;
 import com.opl.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.opl.service.loans.domain.fundseeker.AuditActivity;
 import com.opl.service.loans.domain.fundseeker.LoanApplicationMaster;

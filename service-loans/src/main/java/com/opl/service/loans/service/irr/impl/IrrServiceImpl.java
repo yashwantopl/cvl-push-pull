@@ -14,12 +14,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ibm.icu.util.Calendar;
+import com.opl.mudra.api.common.CommonUtils;
+import com.opl.mudra.api.common.CommonUtils.LoanType;
 import com.opl.mudra.api.dms.exception.DocumentException;
 import com.opl.mudra.api.dms.utils.DocumentAlias;
 import com.opl.mudra.api.loans.exception.LoansException;
 import com.opl.mudra.api.loans.model.corporate.CorporateFinalInfoRequest;
-import com.opl.mudra.api.loans.utils.CommonUtils;
-import com.opl.mudra.api.loans.utils.CommonUtils.LoanType;
 import com.opl.mudra.api.rating.model.FinancialInputRequest;
 import com.opl.mudra.api.rating.model.IndustryResponse;
 import com.opl.mudra.api.rating.model.IrrRequest;
@@ -245,15 +245,15 @@ public class IrrServiceImpl implements IrrService{
 						HttpStatus.OK);
 			} */
 
-			if (com.capitaworld.service.rating.utils.CommonUtils.BusinessType.MANUFACTURING == businessTypeId) {
+			if (CommonUtils.BusinessTypeForItr.MANUFACTURING == businessTypeId) {
 				// ---- Manufacturing
 				irrRequest.setQualitativeInputSheetManuRequest(qualitativeInputServiceManu(appId, usrId,
 						applicationProposalMapping.getProductId(), isCmaUploaded, isCoActUploaded, industryRiskScore, denom, proposalId));
-			} else if (com.capitaworld.service.rating.utils.CommonUtils.BusinessType.SERVICE == businessTypeId) {
+			} else if (CommonUtils.BusinessTypeForItr.SERVICE == businessTypeId) {
 				// ---- Service
 				irrRequest.setQualitativeInputSheetServRequest(qualitativeInputServiceService(appId, usrId,
 						applicationProposalMapping.getProductId(), isCmaUploaded, isCoActUploaded, denom, proposalId));
-			} else if (com.capitaworld.service.rating.utils.CommonUtils.BusinessType.TRADING == businessTypeId) {
+			} else if (CommonUtils.BusinessTypeForItr.TRADING == businessTypeId) {
 				// ---- Trading
 				irrRequest.setQualitativeInputSheetTradRequest(qualitativeInputServiceTrading(appId, usrId,
 						applicationProposalMapping.getProductId(), isCmaUploaded, isCoActUploaded, denom, proposalId));

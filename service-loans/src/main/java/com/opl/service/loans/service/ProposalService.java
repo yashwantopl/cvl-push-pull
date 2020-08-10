@@ -20,8 +20,8 @@ import com.opl.mudra.api.matchengine.model.ProposalCountResponse;
 import com.opl.mudra.api.matchengine.model.ProposalMappingRequest;
 import com.opl.mudra.api.matchengine.model.ProposalMappingResponse;
 import com.opl.mudra.api.notification.model.SchedulerDataMultipleBankRequest;
-import com.opl.mudra.api.reports.ReportRequest;
 import com.opl.service.loans.domain.fundprovider.ProposalDetails;
+import com.opl.mudra.api.loans.model.common.ReportRequest;
 
 public interface ProposalService {
 
@@ -86,4 +86,5 @@ public interface ProposalService {
 	public ProposalMappingResponse getDisbursementRequestDetails(DisbursementRequestModel request);
 
 	public ProposalMappingResponse saveDisbursementRequestDetails(MultipartFile[] multipartFiles, String request);
+
 }

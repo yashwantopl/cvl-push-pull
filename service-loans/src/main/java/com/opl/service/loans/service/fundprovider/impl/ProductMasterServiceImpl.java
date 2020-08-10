@@ -47,10 +47,10 @@ import com.opl.mudra.api.loans.model.corporate.WcTlParameterRequest;
 import com.opl.mudra.api.loans.model.corporate.WorkingCapitalParameterRequest;
 import com.opl.mudra.api.loans.model.teaser.primaryview.CommonRequest;
 import com.opl.mudra.api.loans.utils.CommonUtils;
-import com.opl.mudra.api.loans.utils.CommonUtils.LoanType;
 import com.opl.mudra.api.loans.utils.MultipleJSONObjectHelper;
 import com.opl.mudra.api.matchengine.exception.MatchException;
 import com.opl.mudra.api.matchengine.model.ProposalMappingRequest;
+import com.opl.mudra.api.oneform.enums.LoanType;
 import com.opl.mudra.api.oneform.model.MasterResponse;
 import com.opl.mudra.api.oneform.model.OneFormResponse;
 import com.opl.mudra.api.workflow.model.WorkflowRequest;
@@ -1226,7 +1226,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		logger.info("Product Ids =={}======>Provided By====>{}", productIds, orgId);
 		List<ProductMasterRequest> response = new ArrayList<>(productIds.size());
 		for (Integer productId : productIds) {
-			com.capitaworld.service.loans.utils.CommonUtils.LoanType type = CommonUtils.LoanType
+			com.opl.mudra.api.loans.utils.CommonUtils.LoanType type = CommonUtils.LoanType
 					.getType(productId.intValue());
 			if (CommonUtils.isObjectNullOrEmpty(type)) {
 				continue;

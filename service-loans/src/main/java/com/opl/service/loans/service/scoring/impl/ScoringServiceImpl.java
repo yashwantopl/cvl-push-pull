@@ -33,19 +33,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.opl.mudra.api.cibil.model.CibilResponse;
-import com.opl.mudra.api.analyzer.model.common.Data;
-import com.opl.mudra.api.analyzer.model.common.ReportRequest;
-import com.opl.mudra.api.analyzer.model.common.Xn;
-import com.opl.mudra.api.loans.model.score.ScoringRequestLoans;
-import com.opl.mudra.api.matchengine.model.BankBureauRequest;
-import com.opl.mudra.api.oneform.enums.BankList;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.opl.mudra.api.analyzer.model.common.AnalyzerResponse;
+import com.opl.mudra.api.analyzer.model.common.Data;
+import com.opl.mudra.api.analyzer.model.common.ReportRequest;
+import com.opl.mudra.api.analyzer.model.common.Xn;
 import com.opl.mudra.api.cibil.model.CibilRequest;
+import com.opl.mudra.api.cibil.model.CibilResponse;
 import com.opl.mudra.api.cibil.model.CibilScoreLogRequest;
 import com.opl.mudra.api.gst.exception.GstException;
 import com.opl.mudra.api.gst.model.GstCalculation;
@@ -57,8 +54,11 @@ import com.opl.mudra.api.loans.exception.LoansException;
 import com.opl.mudra.api.loans.model.LoansResponse;
 import com.opl.mudra.api.loans.model.score.ScoreParameterRequestLoans;
 import com.opl.mudra.api.loans.model.score.ScoringCibilRequest;
+import com.opl.mudra.api.loans.model.score.ScoringRequestLoans;
 import com.opl.mudra.api.loans.utils.CommonUtils;
 import com.opl.mudra.api.loans.utils.MultipleJSONObjectHelper;
+import com.opl.mudra.api.matchengine.model.BankBureauRequest;
+import com.opl.mudra.api.oneform.enums.BankList;
 import com.opl.mudra.api.oneform.enums.CertificationCourseMst;
 import com.opl.mudra.api.oneform.enums.FSParameterMst;
 import com.opl.mudra.api.oneform.enums.Gender;
@@ -376,7 +376,7 @@ public class ScoringServiceImpl implements ScoringService {
         		bankBureauRequest = new BankBureauRequest();
         		bankBureauRequest.setApplicationId(applicationId);
         		bankBureauRequest.setFpProductId(fpProductId);
-        		bankBureauRequest.setType(com.capitaworld.service.matchengine.utils.CommonUtils.BankBureauResponseType.SCORING.getId());
+        		bankBureauRequest.setType(com.opl.mudra.api.matchengine.utils.CommonUtils.BankBureauResponseType.SCORING.getId());
         		bankBureauRequest.setFieldMasterId(Long.valueOf(fieldSet.getKey()));
         		bankBureauRequest.setScoringModelId(Long.valueOf(scoringSet.getKey()));
         		if(!CommonUtils.isObjectNullOrEmpty(fieldSet.getValue())) {
@@ -1723,7 +1723,7 @@ public class ScoringServiceImpl implements ScoringService {
 
         // Fetch Data for Calculate Director Score
 
-        com.capitaworld.service.scoring.model.scoringmodel.ScoreParameterNTBRequest scoreParameterNTBRequest = new com.capitaworld.service.scoring.model.scoringmodel.ScoreParameterNTBRequest();
+    	com.opl.mudra.api.scoring.model.scoringmodel.ScoreParameterNTBRequest scoreParameterNTBRequest = new com.opl.mudra.api.scoring.model.scoringmodel.ScoreParameterNTBRequest();
 
         Long scoreModelId = scoringRequestLoans.getScoringModelId();
         Long applicationId = scoringRequestLoans.getApplicationId();
@@ -2162,11 +2162,11 @@ public class ScoringServiceImpl implements ScoringService {
                 scoringModelReqRes.setOrgId(Long.parseLong(userResponse.getData().toString()));
             } else {
                 logger.debug(ORG_ID_IS_NULL_OR_EMPTY + "In getScoringModelTempList");
-                return new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+                return new ScoringModelReqRes(com.opl.mudra.api.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
             }
         } catch (Exception e) {
             logger.error(ORG_ID_IS_NULL_OR_EMPTY,e);
-            return new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+            return new ScoringModelReqRes(com.opl.mudra.api.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
         }
 
         try {
@@ -2174,7 +2174,7 @@ public class ScoringServiceImpl implements ScoringService {
             return scoringClient.getScoringModelTempList(scoringModelReqRes);
         } catch (Exception e) {
             logger.error("error while geting score model list from scoring : ",e);
-            return new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+            return new ScoringModelReqRes(com.opl.mudra.api.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
         }
 
     }
@@ -2190,11 +2190,11 @@ public class ScoringServiceImpl implements ScoringService {
                 scoringModelReqRes.getScoringModelResponse().setOrgId(Long.parseLong(userResponse.getData().toString()));
             } else {
                 logger.error(ORG_ID_IS_NULL_OR_EMPTY + " In saveScoringModelTemp ");
-                return new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+                return new ScoringModelReqRes(com.opl.mudra.api.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
             }
         } catch (Exception e) {
             logger.error(ORG_ID_IS_NULL_OR_EMPTY,e);
-            return new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+            return new ScoringModelReqRes(com.opl.mudra.api.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
         }
 
         try {
@@ -2202,7 +2202,7 @@ public class ScoringServiceImpl implements ScoringService {
             return scoringClient.saveScoringModelTemp(scoringModelReqRes);
         } catch (Exception e) {
             logger.error("error while saving score model from scoring : ",e);
-            return new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+            return new ScoringModelReqRes(com.opl.mudra.api.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
         }
     }
 
@@ -2218,7 +2218,7 @@ public class ScoringServiceImpl implements ScoringService {
 
         } catch (Exception e) {
             logger.error("error while getting score model detail from scoring : ",e);
-            return new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+            return new ScoringModelReqRes(com.opl.mudra.api.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
         }
     }
 
@@ -2229,7 +2229,7 @@ public class ScoringServiceImpl implements ScoringService {
             return scoringClient.saveScoringModelTempDetail(scoringModelReqRes);
         } catch (Exception e) {
             logger.error("error while saving score model detail from scoring : ",e);
-            return new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+            return new ScoringModelReqRes(com.opl.mudra.api.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
         }
     }
 
@@ -2242,11 +2242,11 @@ public class ScoringServiceImpl implements ScoringService {
                 scoringModelReqRes.setOrgId(Long.parseLong(userResponse.getData().toString()));
             } else {
                 logger.error(ORG_ID_IS_NULL_OR_EMPTY + " In getScoringModelMasterList ");
-                return new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+                return new ScoringModelReqRes(com.opl.mudra.api.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
             }
         } catch (Exception e) {
             logger.error(ORG_ID_IS_NULL_OR_EMPTY,e);
-            return new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+            return new ScoringModelReqRes(com.opl.mudra.api.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
         }
 
         try {
@@ -2254,7 +2254,7 @@ public class ScoringServiceImpl implements ScoringService {
             return scoringClient.getScoringModelMasterList(scoringModelReqRes);
         } catch (Exception e) {
             logger.error("error while geting score model list from scoring : ",e);
-            return new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+            return new ScoringModelReqRes(com.opl.mudra.api.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
         }
 
     }
@@ -2271,7 +2271,7 @@ public class ScoringServiceImpl implements ScoringService {
 
         } catch (Exception e) {
             logger.error("error while getting score model detail from scoring : ",e);
-            return new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+            return new ScoringModelReqRes(com.opl.mudra.api.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
         }
     }
 
@@ -2319,11 +2319,11 @@ public class ScoringServiceImpl implements ScoringService {
                 scoringModelReqRes.setOrgId(Long.parseLong(userResponse.getData().toString()));
             } else {
                 logger.debug(ORG_ID_IS_NULL_OR_EMPTY + "In inactivateScoringDetails");
-                return new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+                return new ScoringModelReqRes(com.opl.mudra.api.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
             }
         } catch (Exception e) {
             logger.error(ORG_ID_IS_NULL_OR_EMPTY,e);
-            return new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+            return new ScoringModelReqRes(com.opl.mudra.api.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
         }
 
         try {
@@ -2331,7 +2331,7 @@ public class ScoringServiceImpl implements ScoringService {
             return scoringClient.inactivateScoringDetails(scoringModelReqRes);
         } catch (Exception e) {
             logger.error("error while inactivateScoringDetails : ",e);
-            return new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+            return new ScoringModelReqRes(com.opl.mudra.api.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
         }
 	}
 
@@ -2347,11 +2347,11 @@ public class ScoringServiceImpl implements ScoringService {
                 scoringModelReqRes.setOrgId(Long.parseLong(userResponse.getData().toString()));
             } else {
                 logger.debug(ORG_ID_IS_NULL_OR_EMPTY + "In getScoringHistoryDetails");
-                return new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+                return new ScoringModelReqRes(com.opl.mudra.api.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
             }
         } catch (Exception e) {
             logger.error(ORG_ID_IS_NULL_OR_EMPTY,e);
-            return new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+            return new ScoringModelReqRes(com.opl.mudra.api.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
         }
 
         try {
@@ -2359,7 +2359,7 @@ public class ScoringServiceImpl implements ScoringService {
             return scoringClient.getScoringHistoryDetails(scoringModelReqRes);
         } catch (Exception e) {
             logger.error("error while getScoringHistoryDetails : ",e);
-            return new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+            return new ScoringModelReqRes(com.opl.mudra.api.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
         }
 	
 	}

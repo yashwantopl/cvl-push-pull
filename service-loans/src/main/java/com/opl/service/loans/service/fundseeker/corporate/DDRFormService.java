@@ -41,7 +41,7 @@ public interface DDRFormService {
 	public Boolean isDDRApproved(Long userId, Long applicationId) throws LoansException; // PREVIOUS
 	public Boolean isDDRApprovedByProposaId(Long proposalId) throws Exception; // NEW BASED ON PROPOSAL ID
 	
-	public com.capitaworld.service.loans.model.api_model.DDRFormDetailsRequest getSIDBIDetails(Long appId,Long userId);
+	public com.opl.mudra.api.loans.model.api_model.DDRFormDetailsRequest getSIDBIDetails(Long appId,Long userId);
 	
 	public boolean deleteDocument(DDRUploadRequest ddrUploadRequest);
 

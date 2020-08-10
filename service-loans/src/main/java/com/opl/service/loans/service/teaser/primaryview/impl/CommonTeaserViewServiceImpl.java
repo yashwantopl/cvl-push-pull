@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.opl.mudra.api.loans.exception.LoansException;
 import com.opl.mudra.api.loans.model.LoansResponse;
 import com.opl.mudra.api.loans.utils.CommonUtils;
-import com.opl.mudra.api.loans.utils.CommonUtils.LoanType;
+import com.opl.mudra.api.oneform.enums.LoanType;
 import com.opl.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.opl.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.opl.service.loans.service.teaser.finalview.TermLoanFinalViewService;

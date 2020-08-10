@@ -22,19 +22,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.opl.mudra.api.analyzer.model.common.Data;
-import com.opl.mudra.api.analyzer.model.common.ReportRequest;
-import com.opl.mudra.api.dms.model.DocumentRequest;
-import com.opl.mudra.api.loans.model.DirectorBackgroundDetailRequest;
-import com.opl.mudra.api.loans.model.FinancialArrangementsDetailRequest;
-import com.opl.mudra.api.oneform.enums.Constitution;
-import com.opl.mudra.api.oneform.enums.Gender;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opl.mudra.api.analyzer.model.common.AnalyzerResponse;
+import com.opl.mudra.api.analyzer.model.common.Data;
+import com.opl.mudra.api.analyzer.model.common.ReportRequest;
 import com.opl.mudra.api.dms.exception.DocumentException;
+import com.opl.mudra.api.dms.model.DocumentRequest;
 import com.opl.mudra.api.dms.model.DocumentResponse;
 import com.opl.mudra.api.dms.utils.DocumentAlias;
 import com.opl.mudra.api.eligibility.model.EligibililityRequest;
@@ -48,8 +44,10 @@ import com.opl.mudra.api.gst.model.yuva.request.GSTR1Request;
 import com.opl.mudra.api.itr.model.ITRConnectionResponse;
 import com.opl.mudra.api.loans.exception.LoansException;
 import com.opl.mudra.api.loans.model.AssociatedConcernDetailRequest;
+import com.opl.mudra.api.loans.model.DirectorBackgroundDetailRequest;
 import com.opl.mudra.api.loans.model.DirectorBackgroundDetailResponse;
 import com.opl.mudra.api.loans.model.DirectorPersonalDetailResponse;
+import com.opl.mudra.api.loans.model.FinancialArrangementsDetailRequest;
 import com.opl.mudra.api.loans.model.FinancialArrangementsDetailResponse;
 import com.opl.mudra.api.loans.model.PincodeDataResponse;
 import com.opl.mudra.api.loans.model.corporate.CollateralSecurityDetailRequest;
@@ -59,7 +57,6 @@ import com.opl.mudra.api.loans.model.corporate.PrimaryCorporateDetailMudraLoanRe
 import com.opl.mudra.api.loans.model.retail.BankRelationshipRequest;
 import com.opl.mudra.api.loans.model.teaser.primaryview.CorporatePrimaryViewResponse;
 import com.opl.mudra.api.loans.utils.CommonUtils;
-import com.opl.mudra.api.loans.utils.CommonUtils.LoanType;
 import com.opl.mudra.api.loans.utils.MultipleJSONObjectHelper;
 import com.opl.mudra.api.matchengine.exception.MatchException;
 import com.opl.mudra.api.matchengine.model.MatchDisplayResponse;
@@ -73,6 +70,7 @@ import com.opl.mudra.api.oneform.enums.AssessedForITMst;
 import com.opl.mudra.api.oneform.enums.AssessmentOptionForFS;
 import com.opl.mudra.api.oneform.enums.CertificationCourseMst;
 import com.opl.mudra.api.oneform.enums.CompetitionMst_SBI;
+import com.opl.mudra.api.oneform.enums.Constitution;
 import com.opl.mudra.api.oneform.enums.Currency;
 import com.opl.mudra.api.oneform.enums.Denomination;
 import com.opl.mudra.api.oneform.enums.DirectorRelationshipType;
@@ -80,11 +78,13 @@ import com.opl.mudra.api.oneform.enums.EducationalStatusMudraMst;
 import com.opl.mudra.api.oneform.enums.EstablishmentMonths;
 import com.opl.mudra.api.oneform.enums.FSParameterMst;
 import com.opl.mudra.api.oneform.enums.FactoryPremiseMst;
+import com.opl.mudra.api.oneform.enums.Gender;
 import com.opl.mudra.api.oneform.enums.GovSchemesMst;
 import com.opl.mudra.api.oneform.enums.HaveLIMst;
 import com.opl.mudra.api.oneform.enums.IdProofMst;
 import com.opl.mudra.api.oneform.enums.KnowHowMst;
 import com.opl.mudra.api.oneform.enums.LCBG_Status_SBI;
+import com.opl.mudra.api.oneform.enums.LoanType;
 import com.opl.mudra.api.oneform.enums.MaritalStatusMst;
 import com.opl.mudra.api.oneform.enums.MrktArrFinishedGoodsList;
 import com.opl.mudra.api.oneform.enums.MudraOwningHouseMst;
@@ -1870,8 +1870,8 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public com.capitaworld.service.loans.model.LoansResponse getCubictreeReport(Long applicationId) throws LoansException {
-		com.capitaworld.service.loans.model.LoansResponse response=new com.capitaworld.service.loans.model.LoansResponse();
+	public com.opl.mudra.api.loans.model.LoansResponse getCubictreeReport(Long applicationId) throws LoansException {
+		com.opl.mudra.api.loans.model.LoansResponse response=new com.opl.mudra.api.loans.model.LoansResponse();
 		try {
 			Map<String,Object>reportResp=new HashMap<>();
 			

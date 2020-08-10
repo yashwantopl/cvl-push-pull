@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.opl.mudra.api.analyzer.model.common.AnalyzerResponse;
 import com.opl.mudra.api.analyzer.model.common.Data;
-import com.opl.mudra.api.loans.model.common.ReportRequest;
+import com.opl.mudra.api.analyzer.model.common.ReportRequest;
 import com.opl.mudra.api.loans.model.corporate.CorporateApplicantRequest;
 import com.opl.mudra.api.loans.utils.CommonUtils;
 import com.opl.mudra.api.loans.utils.MultipleJSONObjectHelper;

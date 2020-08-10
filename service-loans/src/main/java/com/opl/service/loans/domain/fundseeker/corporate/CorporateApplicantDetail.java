@@ -16,6 +16,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.opl.mudra.api.loans.utils.EncryptionUtils;
 import com.opl.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.opl.service.loans.domain.fundseeker.LoanApplicationMaster;
 
@@ -24,7 +25,7 @@ import com.opl.service.loans.domain.fundseeker.LoanApplicationMaster;
  * 
  */
 @Entity
-@Table(name = "fs_corporate_applicant_details")
+@Table(name = "fs_corporate_applicant_details")	
 public class CorporateApplicantDetail implements Serializable {
 	private static final long serialVersionUID = 1L;
 

@@ -51,7 +51,7 @@ import com.opl.mudra.client.workflow.WorkflowClient;
  * }
  */
 @SpringBootApplication
-@ComponentScan(basePackages = { "com.capitaworld" })
+@ComponentScan(basePackages = { "com.opl" })
 @EnableAsync
 @EnableScheduling
 public class LoansMain {
@@ -121,9 +121,6 @@ public class LoansMain {
 	
 	@Value("${capitaworld.service.eky.url}")
 	private String ekycUrl;
-	
-	@Value("${capitaworld.service.bodmas.url}")
-	private String bodmasBaseUrl;
 	
 	@Value("${capitaworld.service.pennydrop.url}")
 	private String pennydropBaseUrl;
@@ -282,7 +279,7 @@ public class LoansMain {
 	
 	@Bean
 	public AuthClient authClient() {
-		AuthClient authClient = new AuthClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.auth));
+		AuthClient authClient = new AuthClient(authUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(authClient);
 		return authClient;
 	}

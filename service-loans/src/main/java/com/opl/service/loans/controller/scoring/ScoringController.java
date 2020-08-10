@@ -131,7 +131,7 @@ public class ScoringController {
         }
         catch (Exception e)
         {
-            ScoringModelReqRes res=new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
+            ScoringModelReqRes res=new ScoringModelReqRes(com.opl.mudra.api.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
             logger.error("Error while getting scoring model list :  ",e);
             return new ResponseEntity<ScoringModelReqRes>(res,HttpStatus.OK);
         }
@@ -149,7 +149,7 @@ public class ScoringController {
         }
         catch (Exception e)
         {
-            ScoringModelReqRes res=new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
+            ScoringModelReqRes res=new ScoringModelReqRes(com.opl.mudra.api.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
             logger.error("Error while saving scoring model : ",e);
             return new ResponseEntity<ScoringModelReqRes>(res,HttpStatus.OK);
         }
@@ -166,7 +166,7 @@ public class ScoringController {
         }
         catch (Exception e)
         {
-            ScoringModelReqRes res=new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
+            ScoringModelReqRes res=new ScoringModelReqRes(com.opl.mudra.api.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
             logger.error("Error while getting scoring model detail :  ",e);
             return new ResponseEntity<ScoringModelReqRes>(res,HttpStatus.OK);
         }
@@ -184,7 +184,7 @@ public class ScoringController {
         }
         catch (Exception e)
         {
-            ScoringModelReqRes res=new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
+            ScoringModelReqRes res=new ScoringModelReqRes(com.opl.mudra.api.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
             logger.error("Error while saving scoring model detail : ",e);
             return new ResponseEntity<ScoringModelReqRes>(res,HttpStatus.OK);
         }
@@ -203,7 +203,7 @@ public class ScoringController {
         }
         catch (Exception e)
         {
-            ScoringModelReqRes res=new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
+            ScoringModelReqRes res=new ScoringModelReqRes(com.opl.mudra.api.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
             logger.error("Error while getting scoring model list : ",e);
             return new ResponseEntity<ScoringModelReqRes>(res,HttpStatus.OK);
         }
@@ -220,7 +220,7 @@ public class ScoringController {
         }
         catch (Exception e)
         {
-            ScoringModelReqRes res=new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
+            ScoringModelReqRes res=new ScoringModelReqRes(com.opl.mudra.api.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
             logger.error("Error while getting scoring model detail : ",e);
             return new ResponseEntity<ScoringModelReqRes>(res,HttpStatus.OK);
         }
@@ -279,7 +279,7 @@ public class ScoringController {
         }
         catch (Exception e)
         {
-            ScoringModelReqRes res=new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
+            ScoringModelReqRes res=new ScoringModelReqRes(com.opl.mudra.api.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
             logger.error("Error while inactivateScoringDetails : ",e);
             return new ResponseEntity<ScoringModelReqRes>(res,HttpStatus.OK);
         }
@@ -298,7 +298,7 @@ public class ScoringController {
         }
         catch (Exception e)
         {
-            ScoringModelReqRes res=new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
+            ScoringModelReqRes res=new ScoringModelReqRes(com.opl.mudra.api.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
             logger.error("Error while inactivateScoringDetails : ",e);
             return new ResponseEntity<ScoringModelReqRes>(res,HttpStatus.OK);
         }

@@ -3326,7 +3326,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			}
 
 			DisbursementRequestModel disbursementRequestModel = MultipleJSONObjectHelper.getObjectFromString(userRequestString, DisbursementRequestModel.class);
-			if (com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(disbursementRequestModel) || com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(multipartFiles)) {
+			if (com.opl.mudra.api.loans.utils.CommonUtils.isObjectNullOrEmpty(disbursementRequestModel) || com.opl.mudra.api.matchengine.utils.CommonUtils.isObjectNullOrEmpty(multipartFiles)) {
 				return new ProposalMappingResponse("Error while uploading documents", HttpStatus.BAD_REQUEST.value());
 			}
 			try {
@@ -3352,9 +3352,9 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			logger.info("response {}", documentResponse.getStatus());
 			StorageDetailsResponse response = null;
 			Map<String, Object> list = (Map<String, Object>) documentResponse.getData();
-			if (!com.opl.service.loans.utils.CommonUtils.isObjectListNull(list)) {
+			if (!com.opl.mudra.api.loans.utils.CommonUtils.isObjectListNull(list)) {
 				try {
-					response = com.capitaworld.service.scoring.utils.MultipleJSONObjectHelper.getObjectFromMap(list, StorageDetailsResponse.class);
+					response = com.opl.mudra.api.scoring.utils.MultipleJSONObjectHelper.getObjectFromMap(list, StorageDetailsResponse.class);
 				} catch (IOException e) {
 					logger.error("IO exception while upload file on DMS",e);
 				}
@@ -3362,7 +3362,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 			if (response != null) {
 				logger.debug("upload pre disbursedment () :: response is not null");
-				if (!com.opl.service.loans.utils.CommonUtils.isObjectNullOrEmpty(response.getFilePath())) {
+				if (!com.opl.mudra.api.loans.utils.CommonUtils.isObjectNullOrEmpty(response.getFilePath())) {
 					return response.getId().toString();
 				} else {
 					logger.debug("uploadImageForMfi() :: error while upload Files response not 200");

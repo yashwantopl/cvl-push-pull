@@ -22,7 +22,7 @@ import com.zaxxer.hikari.HikariDataSource;
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages = {
-		"com.capitaworld.service.loans.repository" }, entityManagerFactoryRef = "loansDataStoreEM", transactionManagerRef = "loansDataStoreTM")
+		"com.opl.service.loans.repository" }, entityManagerFactoryRef = "loansDataStoreEM", transactionManagerRef = "loansDataStoreTM")
 public class PersistenceContext {
 
 	protected static final String PROPERTY_NAME_DATABASE_DRIVER = "capitaworld.loans.db.driver";
@@ -52,13 +52,16 @@ public class PersistenceContext {
 	public DataSource dataSource() {
 		HikariDataSource dataSource = new HikariDataSource();
 		dataSource.setDriverClassName(environment.getRequiredProperty(PROPERTY_NAME_DATABASE_DRIVER));
-		dataSource.setJdbcUrl(DataSourceProvider.getDatabaseName()+environment.getRequiredProperty(PROPERTY_NAME_DATABASE_URL));			
-		dataSource.setUsername(DataSourceProvider.getUserName());
-		dataSource.setPassword(DataSourceProvider.getPassword());
+		/*
+		 * dataSource.setJdbcUrl(DataSourceProvider.getDatabaseName()+environment.
+		 * getRequiredProperty(PROPERTY_NAME_DATABASE_URL));
+		 * dataSource.setUsername(DataSourceProvider.getUserName());
+		 * dataSource.setPassword(DataSourceProvider.getPassword());
+		 */
 		
-//		dataSource.setJdbcUrl(environment.getRequiredProperty(PROPERTY_NAME_DATABASE_URL));
-//		dataSource.setUsername(environment.getRequiredProperty(PROPERTY_NAME_DATABASE_USERNAME));
-//		dataSource.setPassword(environment.getRequiredProperty(PROPERTY_NAME_DATABASE_POSSWARD));
+		dataSource.setJdbcUrl(environment.getRequiredProperty(PROPERTY_NAME_DATABASE_URL));
+		dataSource.setUsername(environment.getRequiredProperty(PROPERTY_NAME_DATABASE_USERNAME));
+		dataSource.setPassword(environment.getRequiredProperty(PROPERTY_NAME_DATABASE_POSSWARD));
 		dataSource.setConnectionTestQuery("SELECT 1");
 		dataSource
 				.setMaximumPoolSize(Integer.parseInt(environment.getProperty(PROPERTY_NAME_DATABASE_MAX_CONNECTIONS)));

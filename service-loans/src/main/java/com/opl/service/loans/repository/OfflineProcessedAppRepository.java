@@ -3,7 +3,6 @@ package com.opl.service.loans.repository;
 import java.util.Date;
 import java.util.List;
 
-import com.capitaworld.service.loans.model.common.ReportRequest;
 import com.opl.service.loans.domain.fundseeker.IneligibleProposalDetails;
 
 
@@ -17,7 +16,7 @@ public interface OfflineProcessedAppRepository{
 
 	public Integer checkBeforeOfflineSanctioned(Long appId);
 	
-	public String getSanctionedApplicationList(Long userId,Date fromDate,Date toDate);
+	public String getSanctionedApplicationList(Long userId,Date fromDate,Date toDate);	
 	
 	public String getDisbursedApplicationList(Long userId,Date fromDate,Date toDate);
 	
