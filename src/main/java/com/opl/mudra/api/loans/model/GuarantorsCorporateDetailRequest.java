@@ -40,6 +40,9 @@ public class GuarantorsCorporateDetailRequest implements Serializable{
 	private String contactNumber;
 
 	private Integer subsectorlist;
+	
+	private String value;
+	
 	public Long getId() {
 		return id;
 	}
@@ -151,4 +154,13 @@ public class GuarantorsCorporateDetailRequest implements Serializable{
 	public void setSubsectorlist(Integer subsectorlist) {
 		this.subsectorlist = subsectorlist;
 	}
+
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
+	}
+	
 }

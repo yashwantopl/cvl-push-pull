@@ -32,6 +32,8 @@ public class TotalCostOfProjectRequest implements Serializable {
 	
 	private Boolean isEditable;
 	
+	
+	
 
 	public TotalCostOfProjectRequest() {
 		// Do nothing because of X and Y.
