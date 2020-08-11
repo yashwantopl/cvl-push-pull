@@ -13,6 +13,7 @@ public class ConnectResponse implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private Long id;
 	private Boolean proceed = false;
 	private Boolean stageProceed = false;
 	private Integer stage;
@@ -49,6 +50,7 @@ public class ConnectResponse implements Serializable {
 	private Boolean isProcessing;
 	private Boolean isCoappPage;
 	private Integer applicationStatus;
+	private Long proposalId;
 	public ConnectResponse() {
 		super();
 	}
@@ -456,6 +458,30 @@ public class ConnectResponse implements Serializable {
 
 	public void setStageProceed(Boolean stageProceed) {
 		this.stageProceed = stageProceed;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public Boolean getOtpVarified() {
+		return otpVarified;
+	}
+
+	public Boolean getEmailVarified() {
+		return emailVarified;
+	}
+
+	public Long getProposalId() {
+		return proposalId;
+	}
+
+	public void setProposalId(Long proposalId) {
+		this.proposalId = proposalId;
 	}
 
 	@Override
