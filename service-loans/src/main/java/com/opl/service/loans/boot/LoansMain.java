@@ -35,6 +35,7 @@ import com.opl.mudra.client.reports.ReportsClient;
 import com.opl.mudra.client.scoring.ScoringClient;
 import com.opl.mudra.client.thirdparty.ThirdPartyClient;
 import com.opl.mudra.client.workflow.WorkflowClient;
+import com.opl.profile.client.ProfileClient;
 import com.opl.commons.lib.common.CommonUtils;
 
 
@@ -126,6 +127,9 @@ public class LoansMain {
 	
 	@Value("${capitaworld.service.pennydrop.url}")
 	private String pennydropBaseUrl;
+	
+	@Value("${capitaworld.service.profile.url}")
+	private String profileUrl;
 
 
 	public static void main(String[] args) throws Exception {
@@ -218,7 +222,7 @@ public class LoansMain {
 
 	@Bean
 	public GstClient gstClient() {
-		GstClient gstClient = new GstClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.gst));
+		GstClient gstClient = new GstClient(gstBaseUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(gstClient);
 		return gstClient;
 	}
@@ -292,5 +296,13 @@ public class LoansMain {
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(pennyDropClient);
 		return pennyDropClient;		
 	}
+
+	@Bean
+	public ProfileClient profileClient() {
+		ProfileClient profileClient = new ProfileClient(profileUrl);
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(profileClient);
+		return profileClient;
+	}
+
 
 }
