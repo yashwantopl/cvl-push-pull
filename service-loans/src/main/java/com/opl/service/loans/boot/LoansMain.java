@@ -166,7 +166,7 @@ public class LoansMain {
 
 	@Bean
 	public UsersClient userMasterClient() {
-		UsersClient usersClient = new UsersClient(userURL);
+		UsersClient usersClient = new UsersClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.users));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(usersClient);
 		return usersClient;
 	}
@@ -222,7 +222,7 @@ public class LoansMain {
 
 	@Bean
 	public GstClient gstClient() {
-		GstClient gstClient = new GstClient(gstBaseUrl);
+		GstClient gstClient = new GstClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.gst));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(gstClient);
 		return gstClient;
 	}
@@ -285,21 +285,21 @@ public class LoansMain {
 	
 	@Bean
 	public AuthClient authClient() {
-		AuthClient authClient = new AuthClient(authUrl);
+		AuthClient authClient = new AuthClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.auth));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(authClient);
 		return authClient;
 	}
 	
 	@Bean
 	public PennydropClient pennyDropClient() {
-		PennydropClient pennyDropClient = new PennydropClient(pennydropBaseUrl);
+		PennydropClient pennyDropClient = new PennydropClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.pennydrop));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(pennyDropClient);
 		return pennyDropClient;		
 	}
 
 	@Bean
 	public ProfileClient profileClient() {
-		ProfileClient profileClient = new ProfileClient(profileUrl);
+		ProfileClient profileClient = new ProfileClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.profile));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(profileClient);
 		return profileClient;
 	}
