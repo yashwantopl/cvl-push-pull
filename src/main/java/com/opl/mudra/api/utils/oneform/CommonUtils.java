@@ -31,11 +31,6 @@ public class CommonUtils {
 	public static final String BANK = "Bank";
 	public static final String INSURANCE_COMPANY = "Insurance Company";
 
-	private static final String ALGORITHM = "AES";
-	private static final String CHAR_ENCODING = "UTF-8";
-	private static final String SECRET = "26f1ac75f77c22ebc66e2359c13ea9955ebd5e2bd7fbe50e5b3ac2977a772302";
-
-
 	private static final List<EnumsClassName> MASTER_DATA =  new ArrayList<EnumsClassName>();
 
 	public static List<EnumsClassName> getMasterData(){

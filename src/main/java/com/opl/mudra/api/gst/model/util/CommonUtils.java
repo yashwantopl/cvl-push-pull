@@ -45,7 +45,6 @@ import com.opl.mudra.api.gst.model.karza.CptySumGstr2a;
 import com.opl.mudra.api.gst.model.karza.Details;
 import com.opl.mudra.api.gst.model.karza.DetailsGstr2a;
 import com.opl.mudra.api.gst.model.karza.Gstr3Details;
-import com.opl.mudra.api.gst.model.karza.InvGstr2A;
 import com.opl.mudra.api.gst.model.karza.KarzaGstResponse;
 import com.opl.mudra.api.gst.model.karza.SecSum;
 import com.opl.mudra.api.gst.model.karza.SecSumGstr2a;
@@ -82,6 +81,7 @@ import com.opl.mudra.api.gst.model.yuva.response.gstr3bsummary.TxPy;
 /**
  * @author sanket
  */
+@SuppressWarnings("unchecked")
 public class CommonUtils {
 
 	private static final Logger logger = LoggerFactory.getLogger(CommonUtils.class);
@@ -1054,10 +1054,10 @@ public class CommonUtils {
 				}
 			}
 
-			List<String> remainingMonths = returnPeriodList().stream()
-					.filter(x -> !(Arrays.asList(retPeriod.keySet().toArray()).stream()
-							.map(object -> Objects.toString(object, null)).collect(Collectors.toList())).contains(x))
-					.collect(Collectors.toList());
+//			List<String> remainingMonths = returnPeriodList().stream()
+//					.filter(x -> !(Arrays.asList(retPeriod.keySet().toArray()).stream()
+//							.map(object -> Objects.toString(object, null)).collect(Collectors.toList())).contains(x))
+//					.collect(Collectors.toList());
 
 			DataMapping dataMapping = new DataMapping();
 
@@ -1738,7 +1738,6 @@ public class CommonUtils {
 	 */
 	public static Map<String, Map<String, Double>> generateDetailsCalcForB2B(Gstr1SummaryResponse rsp) {
 		Map<String, Map<String, Double>> m = new HashMap<String, Map<String, Double>>();
-		Map<String, Double> m_ttl = null;
 		if (rsp != null && rsp.getSecSum() != null) {
 			for (com.opl.mudra.api.gst.model.yuva.response.gstr1summary.SecSum secSum : rsp.getSecSum()) {
 				if (PropertyMapping.B2B.equals(secSum.getSecNm()) && secSum.getCptySum() != null) {
@@ -2048,7 +2047,6 @@ public class CommonUtils {
 	public static Map<String, Map<String, Map<String, Object>>> generateDetailsCalcForCDNRPurchaseKarza(
 			KarzaGstResponse d) {
 
-		Map<String, Map<String, Map<String, Map<String, Object>>>> m_ttl2;
 		Map<String, Map<String, Map<String, Object>>> m_ttl3 = new HashMap<>();
 		if (isValidPurchaseKarzaGstPreviousResponse(d)) {
 			for (DetailsGstr2a rsp : d.getResult().getPrevious().getGstr2a().getDetailsGstr2a()) {
@@ -2264,103 +2262,6 @@ public class CommonUtils {
 		return m_ttl2;
 	}
 
-	private static void addCDNRNewValue(Map<String, Map<String, Map<String, Map<String, Object>>>> stringObjectMap2,
-			CptySumGstr2a cptySum, String retPeriod) {
-
-		Map<String, Map<String, Map<String, Object>>> stringObjectMap = new HashMap<>();
-		Map<String, Map<String, Object>> stringObjectMap1 = new HashMap<>();
-		com.opl.mudra.api.gst.model.karza.Nt[] nts = cptySum.getNt();
-		for (com.opl.mudra.api.gst.model.karza.Nt nt : nts) {
-			if (stringObjectMap1.containsKey(nt.getNtty())) {
-				Map<String, Object> countValueMap = stringObjectMap1.get(nt.getNtty());
-				countValueMap.put(PropertyMapping.CGST,
-						Double.valueOf(String.valueOf(countValueMap.get(PropertyMapping.CGST))) + nt.getCamt());
-				countValueMap.put(PropertyMapping.IGST,
-						Double.valueOf(String.valueOf(countValueMap.get(PropertyMapping.IGST))) + nt.getIamt());
-				countValueMap.put(PropertyMapping.SGST,
-						Double.valueOf(String.valueOf(countValueMap.get(PropertyMapping.SGST))) + nt.getSamt());
-				countValueMap.put(PropertyMapping.CESS,
-						Double.valueOf(String.valueOf(countValueMap.get(PropertyMapping.CESS))) + nt.getCsamt());
-				countValueMap.put(PropertyMapping.TAX,
-						Double.valueOf(String.valueOf(countValueMap.get(PropertyMapping.TAX))) + nt.getTxval());
-				countValueMap.put(PropertyMapping.VAL,
-						Double.valueOf(String.valueOf(countValueMap.get(PropertyMapping.VAL))) + nt.getVal());
-				stringObjectMap1.put(nt.getNtty(), countValueMap);
-			} else {
-				Map<String, Object> countValueMap = new HashMap<>();
-				countValueMap.put(PropertyMapping.CGST, nt.getCamt());
-				countValueMap.put(PropertyMapping.IGST, nt.getIamt());
-				countValueMap.put(PropertyMapping.SGST, nt.getSamt());
-				countValueMap.put(PropertyMapping.CESS, nt.getCsamt());
-				countValueMap.put(PropertyMapping.TAX, nt.getTxval());
-				countValueMap.put(PropertyMapping.VAL, nt.getVal());
-				stringObjectMap1.put(nt.getNtty(), countValueMap);
-			}
-		}
-		stringObjectMap.put(retPeriod, stringObjectMap1);
-		stringObjectMap2.put(cptySum.getCtin(), stringObjectMap);
-	}
-
-	private static void addNewValue(Map<String, Map<String, Map<String, Object>>> stringMapMap, CptySumGstr2a cptySum) {
-
-		Map<String, Map<String, Object>> stringObjectMap1 = new HashMap<>();
-		Map<String, Object> stringObjectMap = new HashMap<>();
-		InvGstr2A[] invGstr2A = cptySum.getInv();
-		for (InvGstr2A invGstr2A1 : invGstr2A) {
-			if (stringObjectMap.containsKey(invGstr2A1.getInvTyp())) {
-				stringObjectMap.put(PropertyMapping.VAL,
-						(((Double) stringObjectMap.get(PropertyMapping.VAL)) + invGstr2A1.getVal()));
-				stringObjectMap.put(PropertyMapping.IAMT,
-						(((Double) stringObjectMap.get(PropertyMapping.IAMT)) + invGstr2A1.getIamt()));
-				stringObjectMap.put(PropertyMapping.CAMT,
-						(((Double) stringObjectMap.get(PropertyMapping.CAMT)) + invGstr2A1.getCamt()));
-				stringObjectMap.put(PropertyMapping.SAMT,
-						(((Double) stringObjectMap.get(PropertyMapping.SAMT)) + invGstr2A1.getSamt()));
-				stringObjectMap.put(PropertyMapping.CSAMT,
-						(((Double) stringObjectMap.get(PropertyMapping.CSAMT)) + invGstr2A1.getCsamt()));
-				stringObjectMap.put(PropertyMapping.TXT_VAL,
-						(((Double) stringObjectMap.get(PropertyMapping.TXT_VAL)) + invGstr2A1.getTxval()));
-				stringObjectMap.put(PropertyMapping.POS, invGstr2A1.getPos());
-				/*
-				 * Double ttlAmtOfInvoice =
-				 * (((Double)stringObjectMap.get(PropertyMapping.VAL))+invGstr2A1.getVal());
-				 * Double ttlRaised =
-				 * (((Double)stringObjectMap.get(PropertyMapping.CSAMT))+invGstr2A1.getCsamt());
-				 * stringObjectMap.put("perOfPurchase",(ttlAmtOfInvoice/ttlRaised)*100);
-				 */
-			} else {
-				stringObjectMap.put(PropertyMapping.POS, invGstr2A1.getPos());
-				stringObjectMap.put(PropertyMapping.INV_TYPE, invGstr2A1.getInvTyp());
-				stringObjectMap.put(PropertyMapping.VAL, invGstr2A1.getVal());
-				stringObjectMap.put(PropertyMapping.IAMT, invGstr2A1.getIamt());
-				stringObjectMap.put(PropertyMapping.SAMT, invGstr2A1.getSamt());
-				stringObjectMap.put(PropertyMapping.CSAMT, invGstr2A1.getCsamt());
-				stringObjectMap.put(PropertyMapping.CAMT, invGstr2A1.getCamt());
-				stringObjectMap.put(PropertyMapping.TXT_VAL, invGstr2A1.getTxval());
-				/*
-				 * Double ttlAmtOfInvoice = invGstr2A1.getVal(); Double ttlRaised =
-				 * invGstr2A1.getCsamt();
-				 * stringObjectMap.put("perOfPurchase",(ttlAmtOfInvoice/ttlRaised)*100);
-				 */
-			}
-			stringObjectMap.put(PropertyMapping.TTL_SGST, cptySum.getTtlSgst());
-			stringObjectMap.put(PropertyMapping.TTL_CGST, cptySum.getTtlCgst());
-			stringObjectMap.put(PropertyMapping.TTL_IGST, cptySum.getTtlIgst());
-			stringObjectMap.put(PropertyMapping.TTL_CESS, cptySum.getTtlCess());
-			stringObjectMap.put(PropertyMapping.TTL_REC, cptySum.getTtlRec());
-			stringObjectMap.put(PropertyMapping.TTL_TAX, cptySum.getTtlTax());
-			stringObjectMap.put(PropertyMapping.TTL_VAL, cptySum.getTtlVal());
-			Double percOfTtlSales = 0.0;
-			if (Double.isFinite(cptySum.getTtlVal()) && Double.isFinite(cptySum.getTtlRec())) {
-				percOfTtlSales = ((cptySum.getTtlVal() / cptySum.getTtlRec()) * 100);
-			}
-			stringObjectMap.put(PropertyMapping.PER_OF_PURCHASE,
-					Double.isFinite(percOfTtlSales) ? percOfTtlSales : 0.0);
-			stringObjectMap1.put(invGstr2A1.getInvTyp(), stringObjectMap);
-		}
-		stringMapMap.put(cptySum.getCtin(), stringObjectMap1);
-	}
-
 	private static void addNewValue(Map<String, Map<String, Map<String, Object>>> stringMapMap, CptySumGstr2a cptySum,
 			String retPeriod) {
 
@@ -2385,78 +2286,6 @@ public class CommonUtils {
 		stringObjectMap.put(PropertyMapping.CNAME, cptySum.getcName());
 		stringObjectMap1.put(retPeriod, stringObjectMap);
 		stringMapMap.put(cptySum.getCtin(), stringObjectMap1);
-	}
-
-	private static void updateCDNRValue(Map<String, Map<String, Map<String, Object>>> retPrirodNTTypeMap,
-			CptySumGstr2a cptySum, String retPeriod) {
-
-		if (retPrirodNTTypeMap.containsKey(retPeriod)) {
-			// Do Nothing. code is WIP
-		}
-		Map<String, Map<String, Object>> stringObjectMap1 = new HashMap<>();
-		for (Map.Entry<String, Map<String, Map<String, Object>>> ctinRetPrirodMapEntry : retPrirodNTTypeMap
-				.entrySet()) {
-			for (Map.Entry<String, Map<String, Object>> mapEntry : ctinRetPrirodMapEntry.getValue().entrySet()) {
-				com.opl.mudra.api.gst.model.karza.Nt[] nts = cptySum.getNt();
-				for (com.opl.mudra.api.gst.model.karza.Nt nt : nts) {
-					if (mapEntry.getKey().equals(nt.getNtty())) {
-						Map<String, Object> countValueMap = mapEntry.getValue();
-						countValueMap.put(PropertyMapping.CGST,
-								Double.valueOf(String.valueOf(countValueMap.get(PropertyMapping.CGST))) + nt.getCamt());
-						countValueMap.put(PropertyMapping.IGST,
-								Double.valueOf(String.valueOf(countValueMap.get(PropertyMapping.IGST))) + nt.getIamt());
-						countValueMap.put(PropertyMapping.SGST,
-								Double.valueOf(String.valueOf(countValueMap.get(PropertyMapping.SGST))) + nt.getSamt());
-						countValueMap.put(PropertyMapping.CESS,
-								Double.valueOf(String.valueOf(countValueMap.get(PropertyMapping.CESS)))
-										+ nt.getCsamt());
-						countValueMap.put(PropertyMapping.TAX,
-								Double.valueOf(String.valueOf(countValueMap.get(PropertyMapping.TAX))) + nt.getTxval());
-						countValueMap.put(PropertyMapping.VAL,
-								Double.valueOf(String.valueOf(countValueMap.get(PropertyMapping.VAL))) + nt.getVal());
-						stringObjectMap1.put(nt.getNtty(), countValueMap);
-					} else {
-						Map<String, Object> countValueMap = new HashMap<>();
-						countValueMap.put(PropertyMapping.CGST, nt.getCamt());
-						countValueMap.put(PropertyMapping.IGST, nt.getIamt());
-						countValueMap.put(PropertyMapping.SGST, nt.getSamt());
-						countValueMap.put(PropertyMapping.CESS, nt.getCsamt());
-						countValueMap.put(PropertyMapping.TAX, nt.getTxval());
-						countValueMap.put(PropertyMapping.VAL, nt.getVal());
-						stringObjectMap1.put(nt.getNtty(), countValueMap);
-					}
-				}
-				retPrirodNTTypeMap.put(ctinRetPrirodMapEntry.getKey(), stringObjectMap1);
-			}
-		}
-	}
-
-	private static void updateCDNRValue(List<Map<String, Object>> stringObjectListMap,
-			com.opl.mudra.api.gst.model.yuva.response.gstr1summary.CptySum cptySum) {
-		for (Map<String, Object> stringObjectMap : stringObjectListMap) {
-			stringObjectMap.put(PropertyMapping.TTL_SGST,
-					cptySum.getTtlSgst() + ((Double) stringObjectMap.get(PropertyMapping.TTL_SGST)));
-			stringObjectMap.put(PropertyMapping.TTL_CGST,
-					cptySum.getTtlCgst() + ((Double) stringObjectMap.get(PropertyMapping.TTL_CGST)));
-			stringObjectMap.put(PropertyMapping.TTL_IGST,
-					cptySum.getTtlIgst() + ((Double) stringObjectMap.get(PropertyMapping.TTL_IGST)));
-			stringObjectMap.put(PropertyMapping.TTL_CESS,
-					cptySum.getTtlCess() + ((Double) stringObjectMap.get(PropertyMapping.TTL_CESS)));
-			stringObjectMap.put(PropertyMapping.TTL_REC,
-					cptySum.getTtlRec() + ((Double) stringObjectMap.get(PropertyMapping.TTL_REC)));
-			stringObjectMap.put(PropertyMapping.TTL_TAX,
-					cptySum.getTtlTax() + ((Double) stringObjectMap.get(PropertyMapping.TTL_TAX)));
-			stringObjectMap.put(PropertyMapping.TTL_VAL,
-					cptySum.getTtlVal() + ((Double) stringObjectMap.get(PropertyMapping.TTL_VAL)));
-			Double ttlVal = ((Double) stringObjectMap.get(PropertyMapping.TTL_VAL));
-			Double ttlRec = ((Double) stringObjectMap.get(PropertyMapping.TTL_REC));
-			Double percOfTtlSales = 0.0;
-			if (Double.isFinite(ttlVal) && Double.isFinite(ttlRec)) {
-				percOfTtlSales = ((ttlVal / ttlRec) * 100);
-			}
-			stringObjectMap.put(PropertyMapping.PER_OF_PURCHASE,
-					Double.isFinite(percOfTtlSales) ? percOfTtlSales : 0.0);
-		}
 	}
 
 	private static void updateValue(Map<String, Map<String, Object>> m_ttl2, CptySumGstr2a cptySum, String retPeriod) {
@@ -2507,61 +2336,6 @@ public class CommonUtils {
 			}
 			m_ttl21.put(PropertyMapping.PER_OF_PURCHASE, Double.isFinite(percOfTtlSales) ? percOfTtlSales : 0.0);
 			m_ttl2.put(retPeriod, m_ttl21);
-		}
-	}
-
-	private static void updateValue(Map<String, Map<String, Map<String, Object>>> retPrirodNTTypeMap, Cdn cdn) {
-
-		Map<String, Map<String, Object>> stringObjectMap1 = new HashMap<>();
-		for (Map.Entry<String, Map<String, Map<String, Object>>> ctinRetPrirodMapEntry : retPrirodNTTypeMap
-				.entrySet()) {
-			for (Map.Entry<String, Map<String, Object>> mapEntry : ctinRetPrirodMapEntry.getValue().entrySet()) {
-				Nt[] nts = cdn.getNt();
-				for (Nt nt : nts) {
-					Double val = 0.0;
-					Double txtVal = 0.0;
-					Double igst = 0.0;
-					Double sgst = 0.0;
-					Double cgst = 0.0;
-					Double cess = 0.0;
-					com.opl.mudra.api.gst.model.yuva.response.gstr2acdn.Itms[] items = nt.getItms();
-					for (com.opl.mudra.api.gst.model.yuva.response.gstr2acdn.Itms itm : items) {
-						igst += itm.getItm_det().getIamt();
-						sgst += itm.getItm_det().getSamt();
-						cgst += itm.getItm_det().getCamt();
-						cess += itm.getItm_det().getCsamt();
-						txtVal += itm.getItm_det().getTxval();
-					}
-					val += nt.getVal();
-					if (mapEntry.getKey().equals(nt.getNtty())) {
-						Map<String, Object> countValueMap = mapEntry.getValue();
-
-						countValueMap.put(PropertyMapping.CGST,
-								Double.valueOf(String.valueOf(countValueMap.get(PropertyMapping.CGST))) + cgst);
-						countValueMap.put(PropertyMapping.IGST,
-								Double.valueOf(String.valueOf(countValueMap.get(PropertyMapping.IGST))) + igst);
-						countValueMap.put(PropertyMapping.SGST,
-								Double.valueOf(String.valueOf(countValueMap.get(PropertyMapping.SGST))) + sgst);
-						countValueMap.put(PropertyMapping.CESS,
-								Double.valueOf(String.valueOf(countValueMap.get(PropertyMapping.CESS))) + cess);
-						countValueMap.put(PropertyMapping.TAX,
-								Double.valueOf(String.valueOf(countValueMap.get(PropertyMapping.TAX))) + txtVal);
-						countValueMap.put(PropertyMapping.VAL,
-								Double.valueOf(String.valueOf(countValueMap.get(PropertyMapping.VAL))) + val);
-						stringObjectMap1.put(nt.getNtty(), countValueMap);
-					} else {
-						Map<String, Object> countValueMap = new HashMap<>();
-						countValueMap.put(PropertyMapping.CGST, cgst);
-						countValueMap.put(PropertyMapping.IGST, igst);
-						countValueMap.put(PropertyMapping.SGST, sgst);
-						countValueMap.put(PropertyMapping.CESS, cess);
-						countValueMap.put(PropertyMapping.TAX, txtVal);
-						countValueMap.put(PropertyMapping.VAL, val);
-						stringObjectMap1.put(nt.getNtty(), countValueMap);
-					}
-				}
-				retPrirodNTTypeMap.put(ctinRetPrirodMapEntry.getKey(), stringObjectMap1);
-			}
 		}
 	}
 
@@ -3610,7 +3384,6 @@ public class CommonUtils {
 //        String curDate = "01/05/2020";
 		SimpleDateFormat format = new SimpleDateFormat(DD_MM_YYYY);
 		Date date = null;
-		Date curdate = null;
 		try {
 			date = format.parse(gstDate);
 //            curdate = format.parse(curDate);
@@ -3802,7 +3575,6 @@ public class CommonUtils {
 		List<String> retPeriod = new ArrayList<String>();
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.MONTH, -1);
-		Boolean flag = true;
 
 		while (previousNoOfMonth > 0) {
 			String retPer = (String.format("%02d", cal.get(Calendar.MONTH) + 1)) + "" + cal.get(Calendar.YEAR);
@@ -4155,10 +3927,10 @@ public class CommonUtils {
 			}
 		}
 
-		List<String> remainingMonths = returnPeriodList().stream()
-				.filter(x -> !(Arrays.asList(retPeriod.keySet().toArray()).stream()
-						.map(object -> Objects.toString(object, null)).collect(Collectors.toList())).contains(x))
-				.collect(Collectors.toList());
+//		List<String> remainingMonths = returnPeriodList().stream()
+//				.filter(x -> !(Arrays.asList(retPeriod.keySet().toArray()).stream()
+//						.map(object -> Objects.toString(object, null)).collect(Collectors.toList())).contains(x))
+//				.collect(Collectors.toList());
 
 		DataMapping dataMapping = new DataMapping();
 

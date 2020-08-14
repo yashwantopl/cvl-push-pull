@@ -288,6 +288,8 @@ public class ScoreParameter {
 		public static final Integer IN_PROGRESS = 2;
 		public static final Integer REVERTED = 3;
 		public static final Integer APPROVED = 4;
+		public static final Integer REJECTED = 5;
+		public static final Integer EXPIRED = 6;
 		
 	}
     
