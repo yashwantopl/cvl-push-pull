@@ -8,6 +8,11 @@ public class CommonUtils {
 	private CommonUtils(){}
 	
 	public static final String SOMETHING_WENT_WRONG = "Something went wrong";
+	public static final String MANDATORY_FIELDS_MUST_NOT_BE_NULL = "Mandatory fields are missing";
+	public static final String SUCCESS = "SUCCESS";
+	public static final String INVALID = "INVALID";
+	public static final String ENTRY_IN = "Entry in";
+	public static final String EXIT_FROM = "Exit From";
 	public static final String EXCEPTION = "Exception :: ";
 	public static final String USER_TYPE = "userType";
 	public static final String USER_ORG_ID = "userOrgId";

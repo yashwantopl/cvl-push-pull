@@ -8,6 +8,7 @@ import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@SuppressWarnings("rawtypes")
 public class DateComparator2 implements Comparator {
 
     private final Logger logger = LoggerFactory.getLogger(DateComparator2.class);

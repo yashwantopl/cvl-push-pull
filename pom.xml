@@ -4,7 +4,7 @@
 
   <groupId>com.opl.mudra.api</groupId>
   <artifactId>api-mudra</artifactId>
-  <version>16.0.0</version>
+  <version>4.0.0</version>
   <packaging>jar</packaging>
 
   <name>api-mudra</name>
@@ -92,6 +92,11 @@
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
 			<version>20171018</version>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.12</version>
 		</dependency>
 	</dependencies>
 
