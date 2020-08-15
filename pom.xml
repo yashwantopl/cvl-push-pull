@@ -8,9 +8,9 @@
 		<relativePath /> <!-- lookup parent from repository -->
 		<artifactId>spring-boot-starter-parent</artifactId>
 	</parent>
-	<groupId>com.opl.loans.service</groupId>
+	<groupId>com.opl.mudra.v4.loans</groupId>
 	<artifactId>service-loans-mudra</artifactId>
-	<version>16.0.0</version>
+	<version>4.0.0</version>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -20,9 +20,9 @@
 
 	<dependencies>
 		<dependency>
-            <groupId>com.opl.mudra.client</groupId>
+            <groupId>com.opl.mudra.v4.client</groupId>
             <artifactId>client-mudra</artifactId>
-            <version>16.0.0</version>
+            <version>4.0.0</version>
         </dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -133,12 +133,6 @@
 			<artifactId>
 				spring-boot-starter-data-elasticsearch
 			</artifactId>
-		</dependency>
-		
-		<dependency>
-			<groupId>com.opl.commons.lib</groupId>
-			<artifactId>commons-lib-mudra</artifactId>
-			<version>16.0.0</version>
 		</dependency>
 		
 		<dependency>

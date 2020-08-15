@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
-import com.ibm.icu.text.SimpleDateFormat;
+import java.text.SimpleDateFormat;
 import com.opl.mudra.api.loans.exception.LoansException;
 import com.opl.mudra.api.loans.model.InEligibleProposalDetailsRequest;
 import com.opl.mudra.api.loans.model.LoanApplicationRequest;

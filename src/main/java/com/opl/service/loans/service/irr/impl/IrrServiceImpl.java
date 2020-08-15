@@ -1,6 +1,7 @@
 package com.opl.service.loans.service.irr.impl;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ibm.icu.util.Calendar;
 import com.opl.mudra.api.common.CommonUtils;
 import com.opl.mudra.api.common.CommonUtils.LoanType;
 import com.opl.mudra.api.dms.exception.DocumentException;
