@@ -5,7 +5,6 @@ import java.util.Properties;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
@@ -17,7 +16,6 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.opl.commons.lib.encryption.DataSourceProvider;
 import com.zaxxer.hikari.HikariDataSource;
 
 @Configuration
@@ -53,19 +51,10 @@ public class PersistenceContext {
 		HikariDataSource dataSource = new HikariDataSource();
 		dataSource.setDriverClassName(environment.getRequiredProperty(PROPERTY_NAME_DATABASE_DRIVER));
 		
-		dataSource.setJdbcUrl(DataSourceProvider.getDatabaseName()+environment.getRequiredProperty(PROPERTY_NAME_DATABASE_URL));
-		dataSource.setUsername(DataSourceProvider.getUserName());
-		dataSource.setPassword(DataSourceProvider.getPassword());
+		dataSource.setJdbcUrl(environment.getRequiredProperty(PROPERTY_NAME_DATABASE_URL));
+		dataSource.setUsername(environment.getRequiredProperty(PROPERTY_NAME_DATABASE_USERNAME));
+		dataSource.setPassword(environment.getRequiredProperty(PROPERTY_NAME_DATABASE_POSSWARD));
 		
-		
-		/*
-		 * dataSource.setJdbcUrl(environment.getRequiredProperty(
-		 * PROPERTY_NAME_DATABASE_URL));
-		 * dataSource.setUsername(environment.getRequiredProperty(
-		 * PROPERTY_NAME_DATABASE_USERNAME));
-		 * dataSource.setPassword(environment.getRequiredProperty(
-		 * PROPERTY_NAME_DATABASE_POSSWARD));
-		 */
 		dataSource.setConnectionTestQuery("SELECT 1");
 		dataSource
 				.setMaximumPoolSize(Integer.parseInt(environment.getProperty(PROPERTY_NAME_DATABASE_MAX_CONNECTIONS)));
