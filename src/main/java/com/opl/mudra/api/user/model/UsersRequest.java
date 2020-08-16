@@ -122,6 +122,12 @@ public class UsersRequest implements Serializable {
 	private String lastName;
 	
 	private Long userId;
+	
+	private Long fpUserId;
+	
+	private Long fsUserId;
+	
+	private Boolean isGstDataRetrieved;
 
 	public UsersRequest(Long userId) {
 		this.id = userId;
