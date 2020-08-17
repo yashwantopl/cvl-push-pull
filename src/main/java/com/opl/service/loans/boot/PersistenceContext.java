@@ -16,6 +16,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import com.opl.commons.lib.encryption.DataSourceProvider;
 import com.zaxxer.hikari.HikariDataSource;
 
 @Configuration
@@ -51,9 +52,9 @@ public class PersistenceContext {
 		HikariDataSource dataSource = new HikariDataSource();
 		dataSource.setDriverClassName(environment.getRequiredProperty(PROPERTY_NAME_DATABASE_DRIVER));
 		
-		dataSource.setJdbcUrl(environment.getRequiredProperty(PROPERTY_NAME_DATABASE_URL));
-		dataSource.setUsername(environment.getRequiredProperty(PROPERTY_NAME_DATABASE_USERNAME));
-		dataSource.setPassword(environment.getRequiredProperty(PROPERTY_NAME_DATABASE_POSSWARD));
+		dataSource.setJdbcUrl(DataSourceProvider.getDatabaseName() + environment.getRequiredProperty(PROPERTY_NAME_DATABASE_URL));
+		dataSource.setUsername(DataSourceProvider.getUserName());
+		dataSource.setPassword(DataSourceProvider.getPassword());
 		
 		dataSource.setConnectionTestQuery("SELECT 1");
 		dataSource
