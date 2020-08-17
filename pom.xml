@@ -102,7 +102,17 @@
 			<version>1.0.0</version>
 		</dependency>
 		
-
+		<dependency>
+			<groupId>com.capitaworld.fitchengine</groupId>
+		    <artifactId>client-fitchengine</artifactId>
+		    <version>0.0.1</version>
+		</dependency>
+		
+		<dependency>
+			 <groupId>com.opl.client.pennydrop</groupId>
+			 <artifactId>client-pennydrop</artifactId>
+			 <version>1.0.0</version>
+		</dependency>
 		<dependency>
 			<groupId>com.capitaworld.client.users</groupId>
 			<artifactId>client-users</artifactId>
@@ -120,12 +130,6 @@
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.3</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.capitaworld.fitchengine</groupId>
-			<artifactId>client-fitchengine</artifactId>
-			<version>0.0.1</version>
 		</dependency>
 
 		<dependency>
