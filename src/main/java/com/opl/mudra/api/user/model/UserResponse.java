@@ -15,11 +15,38 @@ public class UserResponse implements Serializable{
 	private String message;
 	private Integer status;
 	private Object data;
+	private Boolean flag;
 	private List<Long> branchList;
 	private List<?> listData = Collections.emptyList();
-
+	private Long lastAccessBusinessTypeId;
+	private byte[] file;
+	
 	public static long getSerialVersionUID() {
 		return serialVersionUID;
+	}
+
+	public Boolean getFlag() {
+		return flag;
+	}
+
+	public void setFlag(Boolean flag) {
+		this.flag = flag;
+	}
+
+	public Long getLastAccessBusinessTypeId() {
+		return lastAccessBusinessTypeId;
+	}
+
+	public void setLastAccessBusinessTypeId(Long lastAccessBusinessTypeId) {
+		this.lastAccessBusinessTypeId = lastAccessBusinessTypeId;
+	}
+
+	public byte[] getFile() {
+		return file;
+	}
+
+	public void setFile(byte[] file) {
+		this.file = file;
 	}
 
 	public List<Long> getBranchList() {
