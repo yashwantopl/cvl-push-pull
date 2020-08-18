@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.capitaworld.service.users.model.UsersRequest;
 import com.opl.mudra.api.connect.ConnectRequest;
 import com.opl.mudra.api.loans.model.FundProviderProposalDetails;
 import com.opl.mudra.api.loans.model.LoansResponse;
@@ -35,6 +34,7 @@ import com.opl.mudra.api.matchengine.model.ProposalCountResponse;
 import com.opl.mudra.api.matchengine.model.ProposalMappingRequest;
 import com.opl.mudra.api.matchengine.model.ProposalMappingResponse;
 import com.opl.mudra.api.notification.model.SchedulerDataMultipleBankRequest;
+import com.opl.mudra.api.user.model.UsersRequest;
 import com.opl.service.loans.config.AsyncComponent;
 import com.opl.service.loans.service.ProposalService;
 import com.opl.service.loans.utils.CommonDocumentUtils;

@@ -17,19 +17,11 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.opl.mudra.api.reports.ReportRequest;
 import com.opl.mudra.api.loans.model.DirectorBackgroundDetailRequest;
-import com.opl.mudra.api.loans.model.corporate.CorporateApplicantRequest;
-import com.capitaworld.service.users.client.UsersClient;
-import com.capitaworld.service.users.model.BranchBasicDetailsRequest;
-import com.capitaworld.service.users.model.BranchUserResponse;
-import com.capitaworld.service.users.model.UserOrganisationRequest;
-import com.capitaworld.service.users.model.UserResponse;
-import com.capitaworld.service.users.model.UsersRequest;
-import com.opl.mudra.api.payment.exception.GatewayException;
 import com.opl.mudra.api.loans.model.InEligibleProposalDetailsRequest;
 import com.opl.mudra.api.loans.model.LoanApplicationRequest;
 import com.opl.mudra.api.loans.model.ProposalDetailsAdminRequest;
+import com.opl.mudra.api.loans.model.corporate.CorporateApplicantRequest;
 import com.opl.mudra.api.loans.utils.CommonUtils;
 import com.opl.mudra.api.loans.utils.CommonUtils.InEligibleProposalStatus;
 import com.opl.mudra.api.loans.utils.MultipleJSONObjectHelper;
@@ -43,11 +35,19 @@ import com.opl.mudra.api.notification.utils.NotificationAlias;
 import com.opl.mudra.api.notification.utils.NotificationMasterAlias;
 import com.opl.mudra.api.notification.utils.NotificationType;
 import com.opl.mudra.api.oneform.enums.PurposeOfLoan;
+import com.opl.mudra.api.payment.exception.GatewayException;
+import com.opl.mudra.api.reports.ReportRequest;
 import com.opl.mudra.api.reports.utils.JasperReportEnum;
+import com.opl.mudra.api.user.model.BranchBasicDetailsRequest;
+import com.opl.mudra.api.user.model.BranchUserResponse;
+import com.opl.mudra.api.user.model.UserOrganisationRequest;
+import com.opl.mudra.api.user.model.UserResponse;
+import com.opl.mudra.api.user.model.UsersRequest;
 import com.opl.mudra.client.notification.NotificationClient;
 import com.opl.mudra.client.oneform.OneFormClient;
 import com.opl.mudra.client.payment.GatewayClient;
 import com.opl.mudra.client.reports.ReportsClient;
+import com.opl.mudra.client.users.UsersClient;
 import com.opl.service.loans.config.AsyncComponent;
 import com.opl.service.loans.domain.fundseeker.IneligibleProposalDetails;
 import com.opl.service.loans.domain.fundseeker.IneligibleProposalTransferHistory;
@@ -432,9 +432,9 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 					
 					// ======send email to maker bo checker===========================
 					List<Long> roleTypeList = new ArrayList<Long>();
-					roleTypeList.add(com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_MAKER);
-					roleTypeList.add(com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_CHECKER);
-					roleTypeList.add(com.capitaworld.service.users.utils.CommonUtils.UserRoles.BRANCH_OFFICER);
+					roleTypeList.add(com.opl.mudra.api.user.utils.CommonUtils.UserRoles.FP_MAKER);
+					roleTypeList.add(com.opl.mudra.api.user.utils.CommonUtils.UserRoles.FP_CHECKER);
+					roleTypeList.add(com.opl.mudra.api.user.utils.CommonUtils.UserRoles.BRANCH_OFFICER);
 					
 					List<String> ccList = new ArrayList<String>();
 					String[] bcc = new String[]{environment.getRequiredProperty("bccforcam")};

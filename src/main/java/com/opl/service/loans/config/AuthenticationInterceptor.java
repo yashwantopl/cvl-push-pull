@@ -11,11 +11,11 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.capitaworld.service.auth.client.AuthClient;
-import com.capitaworld.service.auth.model.AuthClientResponse;
-import com.capitaworld.service.auth.model.AuthRequest;
-import com.capitaworld.service.auth.utils.AuthCredentialUtils;
+import com.opl.mudra.api.auth.model.AuthClientResponse;
+import com.opl.mudra.api.auth.model.AuthRequest;
+import com.opl.mudra.api.auth.utils.AuthCredentialUtils;
 import com.opl.mudra.api.loans.utils.CommonUtils;
+import com.opl.mudra.client.auth.AuthClient;
 
 public class AuthenticationInterceptor implements HandlerInterceptor {
 

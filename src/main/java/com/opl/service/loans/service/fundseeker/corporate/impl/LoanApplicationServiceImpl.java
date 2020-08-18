@@ -36,14 +36,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.capitaworld.service.users.client.UsersClient;
-import com.capitaworld.service.users.model.FpProfileBasicDetailRequest;
-import com.capitaworld.service.users.model.FundProviderDetailsRequest;
-import com.capitaworld.service.users.model.NetworkPartnerDetailsRequest;
-import com.capitaworld.service.users.model.RegisteredUserResponse;
-import com.capitaworld.service.users.model.UserResponse;
-import com.capitaworld.service.users.model.UsersRequest;
-import com.capitaworld.service.users.model.mobile.MobileUserRequest;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opl.mudra.api.analyzer.model.common.AnalyzerResponse;
@@ -135,6 +127,13 @@ import com.opl.mudra.api.rating.exception.RatingException;
 import com.opl.mudra.api.rating.model.IndustryResponse;
 import com.opl.mudra.api.rating.model.IrrRequest;
 import com.opl.mudra.api.scoring.model.scoringmodel.ScoringModelReqRes;
+import com.opl.mudra.api.user.model.FpProfileBasicDetailRequest;
+import com.opl.mudra.api.user.model.FundProviderDetailsRequest;
+import com.opl.mudra.api.user.model.NetworkPartnerDetailsRequest;
+import com.opl.mudra.api.user.model.RegisteredUserResponse;
+import com.opl.mudra.api.user.model.UserResponse;
+import com.opl.mudra.api.user.model.UsersRequest;
+import com.opl.mudra.api.user.model.mobile.MobileUserRequest;
 import com.opl.mudra.client.analyzer.AnalyzerClient;
 import com.opl.mudra.client.connect.ConnectClient;
 import com.opl.mudra.client.dms.DMSClient;
@@ -144,6 +143,7 @@ import com.opl.mudra.client.notification.NotificationClient;
 import com.opl.mudra.client.oneform.OneFormClient;
 import com.opl.mudra.client.rating.RatingClient;
 import com.opl.mudra.client.scoring.ScoringClient;
+import com.opl.mudra.client.users.UsersClient;
 import com.opl.service.loans.config.FPAsyncComponent;
 import com.opl.service.loans.domain.GstRelatedParty;
 import com.opl.service.loans.domain.common.MaxInvestmentBankwise;
@@ -550,7 +550,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@Override
 	public LoanApplicationRequest saveFromCampaign(Long userId, Long clientId, String campaignCode) throws LoansException {
 		try {
-			String loanCode = com.capitaworld.service.users.utils.CommonUtils.getLoanCodeFromCode(campaignCode);
+			String loanCode = com.opl.mudra.api.user.utils.CommonUtils.getLoanCodeFromCode(campaignCode);
 			LoanType type = CommonUtils.getProductByLoanCode(loanCode);
 			LoanApplicationMaster applicationMaster = null;
 			// LoanType type = CommonUtils.LoanType.getType(productId);
@@ -8616,7 +8616,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				usersRequest.setLastAccessBusinessTypeId(Long.valueOf(userDetails[0].toString()));
 			}
 			if(!CommonUtils.isObjectNullOrEmpty(userDetails[1])){
-				usersRequest.setIsNbfcUser(Boolean.valueOf(userDetails[1].toString()));
+				usersRequest.setNbfcUser(Boolean.valueOf(userDetails[1].toString()));
 			}
 			return usersRequest;
 		}

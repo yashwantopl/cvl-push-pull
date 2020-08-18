@@ -96,11 +96,6 @@
 			<groupId>com.zaxxer</groupId>
 			<artifactId>HikariCP</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>com.capitaworld.service.auth</groupId>
-			<artifactId>client-auth</artifactId>
-			<version>1.0.0</version>
-		</dependency>
 		
 		<dependency>
 			<groupId>com.capitaworld.fitchengine</groupId>
@@ -113,18 +108,6 @@
 			 <artifactId>client-pennydrop</artifactId>
 			 <version>1.0.0</version>
 		</dependency>
-		<dependency>
-			<groupId>com.capitaworld.client.users</groupId>
-			<artifactId>client-users</artifactId>
-			<version>1.0.0</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>com.opl.client.pennydrop</groupId>
-			<artifactId>client-pennydrop</artifactId>
-			<version>1.0.0</version>
-		</dependency>
-
 
 		<dependency>
 			<groupId>commons-io</groupId>

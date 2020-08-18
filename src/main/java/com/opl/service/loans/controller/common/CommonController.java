@@ -22,11 +22,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.capitaworld.service.users.client.UsersClient;
-import com.capitaworld.service.users.model.UserLongitudeLatitudeRequest;
-import com.capitaworld.service.users.model.UserResponse;
-import com.capitaworld.service.users.model.UserTypeRequest;
-import com.capitaworld.service.users.model.UsersRequest;
 import com.opl.mudra.api.loans.model.LoansResponse;
 import com.opl.mudra.api.loans.model.TutorialUploadManageRes;
 import com.opl.mudra.api.loans.model.TutorialsViewAudits;
@@ -38,6 +33,11 @@ import com.opl.mudra.api.loans.model.common.MinMaxProductDetailRequest;
 import com.opl.mudra.api.loans.model.retail.BankRelationshipRequest;
 import com.opl.mudra.api.loans.utils.CommonUtils;
 import com.opl.mudra.api.loans.utils.MultipleJSONObjectHelper;
+import com.opl.mudra.api.user.model.UserLongitudeLatitudeRequest;
+import com.opl.mudra.api.user.model.UserResponse;
+import com.opl.mudra.api.user.model.UserTypeRequest;
+import com.opl.mudra.api.user.model.UsersRequest;
+import com.opl.mudra.client.users.UsersClient;
 import com.opl.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.opl.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.opl.service.loans.utils.CommonDocumentUtils;
@@ -302,8 +302,8 @@ public class CommonController {
 			if(!CommonUtils.isObjectNullOrEmpty(usersRequestObj.getLastAccessBusinessTypeId())){
 				obj.put("lastAccessBusinessType",usersRequestObj.getLastAccessBusinessTypeId());
 			}
-			if(!CommonUtils.isObjectNullOrEmpty(usersRequestObj.getIsNbfcUser()) && usersRequestObj.getIsNbfcUser()){
-				obj.put("coOriginationUser",usersRequestObj.getIsNbfcUser());
+			if(!CommonUtils.isObjectNullOrEmpty(usersRequestObj.getNbfcUser()) && usersRequestObj.getNbfcUser()){
+				obj.put("coOriginationUser",usersRequestObj.getNbfcUser());
 			}
 		}
 

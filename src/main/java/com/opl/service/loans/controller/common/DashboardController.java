@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.capitaworld.service.users.model.UserResponse;
 import com.opl.mudra.api.loans.model.DashboardProfileResponse;
 import com.opl.mudra.api.loans.model.DataRequest;
 import com.opl.mudra.api.loans.model.LoansResponse;
 import com.opl.mudra.api.loans.utils.CommonUtils;
+import com.opl.mudra.api.user.model.UserResponse;
 import com.opl.service.loans.service.common.DashboardService;
 import com.opl.service.loans.utils.CommonDocumentUtils;
 

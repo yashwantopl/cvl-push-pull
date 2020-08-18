@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.capitaworld.service.users.model.UsersRequest;
 import com.opl.mudra.api.connect.ConnectRequest;
 import com.opl.mudra.api.loans.exception.LoansException;
 import com.opl.mudra.api.loans.model.FundProviderProposalDetails;
@@ -14,14 +13,15 @@ import com.opl.mudra.api.loans.model.LoansResponse;
 import com.opl.mudra.api.loans.model.ProposalDetailsAdminRequest;
 import com.opl.mudra.api.loans.model.ProposalResponse;
 import com.opl.mudra.api.loans.model.common.ProposalSearchResponse;
+import com.opl.mudra.api.loans.model.common.ReportRequest;
 import com.opl.mudra.api.matchengine.model.DisbursementDetailsModel;
 import com.opl.mudra.api.matchengine.model.DisbursementRequestModel;
 import com.opl.mudra.api.matchengine.model.ProposalCountResponse;
 import com.opl.mudra.api.matchengine.model.ProposalMappingRequest;
 import com.opl.mudra.api.matchengine.model.ProposalMappingResponse;
 import com.opl.mudra.api.notification.model.SchedulerDataMultipleBankRequest;
+import com.opl.mudra.api.user.model.UsersRequest;
 import com.opl.service.loans.domain.fundprovider.ProposalDetails;
-import com.opl.mudra.api.loans.model.common.ReportRequest;
 
 public interface ProposalService {
 

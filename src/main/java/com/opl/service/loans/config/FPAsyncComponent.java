@@ -16,13 +16,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import com.capitaworld.service.users.client.UsersClient;
-import com.capitaworld.service.users.model.BranchUserResponse;
-import com.capitaworld.service.users.model.FundProviderDetailsRequest;
-import com.capitaworld.service.users.model.UserOrganisationRequest;
-import com.capitaworld.service.users.model.UserResponse;
-import com.capitaworld.service.users.model.UsersRequest;
-import com.capitaworld.service.users.utils.CommonUtils.UserRoles;
 import com.opl.mudra.api.loans.exception.LoansException;
 import com.opl.mudra.api.loans.model.DirectorBackgroundDetailRequest;
 import com.opl.mudra.api.loans.model.LoanApplicationRequest;
@@ -45,12 +38,19 @@ import com.opl.mudra.api.notification.utils.NotificationConstants.NotificationPr
 import com.opl.mudra.api.notification.utils.NotificationMasterAlias;
 import com.opl.mudra.api.notification.utils.NotificationType;
 import com.opl.mudra.api.payment.model.GatewayResponse;
+import com.opl.mudra.api.user.model.BranchUserResponse;
+import com.opl.mudra.api.user.model.FundProviderDetailsRequest;
+import com.opl.mudra.api.user.model.UserOrganisationRequest;
+import com.opl.mudra.api.user.model.UserResponse;
+import com.opl.mudra.api.user.model.UsersRequest;
+import com.opl.mudra.api.user.utils.CommonUtils.UserRoles;
 import com.opl.mudra.api.workflow.utils.WorkflowUtils;
 import com.opl.mudra.client.gst.GstClient;
 import com.opl.mudra.client.matchengine.ProposalDetailsClient;
 import com.opl.mudra.client.notification.NotificationClient;
 import com.opl.mudra.client.oneform.OneFormClient;
 import com.opl.mudra.client.payment.GatewayClient;
+import com.opl.mudra.client.users.UsersClient;
 import com.opl.service.loans.domain.fundprovider.ProductMasterTemp;
 import com.opl.service.loans.domain.fundprovider.ProposalDetails;
 import com.opl.service.loans.domain.fundprovider.RetailModel;
@@ -314,7 +314,7 @@ public class FPAsyncComponent {
 					branchId = Long.valueOf(proposalresp.get(BRANCH_ID).toString());
 				}
 
-				UserResponse userResponse = userClient.getUserDetailByOrgRoleBranchId(orgId,com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_MAKER, branchId);
+				UserResponse userResponse = userClient.getUserDetailByOrgRoleBranchId(orgId,com.opl.mudra.api.user.utils.CommonUtils.UserRoles.FP_MAKER, branchId);
 				List<Map<String, Object>> usersRespList = (List<Map<String, Object>>) userResponse.getListData();
 				
 				String to = null;
@@ -492,7 +492,7 @@ public class FPAsyncComponent {
 				}
 
 				UserResponse userResponse = userClient.getUserDetailByOrgRoleBranchId(orgId,
-						com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_CHECKER, branchId);
+						com.opl.mudra.api.user.utils.CommonUtils.UserRoles.FP_CHECKER, branchId);
 				List<Map<String, Object>> usersRespList = (List<Map<String, Object>>) userResponse.getListData();
 				String to = null;
 				if (!CommonUtils.isObjectNullOrEmpty(usersRespList)) {
@@ -665,7 +665,7 @@ public class FPAsyncComponent {
 					branchId = Long.valueOf(proposalresp.get(BRANCH_ID).toString());
 				}
 				UserResponse userResponse = userClient.getUserDetailByOrgRoleBranchId(orgId,
-						com.capitaworld.service.users.utils.CommonUtils.UserRoles.HEAD_OFFICER, branchId);
+						com.opl.mudra.api.user.utils.CommonUtils.UserRoles.HEAD_OFFICER, branchId);
 				List<Map<String, Object>> usersRespList = (List<Map<String, Object>>) userResponse.getListData();
 				String to = null;
 				if (!CommonUtils.isObjectNullOrEmpty(usersRespList)) {
@@ -825,7 +825,7 @@ public class FPAsyncComponent {
 					branchId = Long.valueOf(proposalresp.get(BRANCH_ID).toString());
 				}
 				UserResponse userResponse = userClient.getUserDetailByOrgRoleBranchId(orgId,
-						com.capitaworld.service.users.utils.CommonUtils.UserRoles.BRANCH_OFFICER, branchId);
+						com.opl.mudra.api.user.utils.CommonUtils.UserRoles.BRANCH_OFFICER, branchId);
 				List<Map<String, Object>> usersRespList = (List<Map<String, Object>>) userResponse.getListData();
 				String to = null;
 				if (!CommonUtils.isObjectNullOrEmpty(usersRespList)) {
@@ -1131,7 +1131,7 @@ public class FPAsyncComponent {
 			// ====================Sending Mail to HO when Maker Assigns DDR to Checker===========
 		/*	String subject = "Intimation: Assigned DDR";
 			UserResponse hoResponse = userClient.getUserDetailByOrgRoleBranchId(applicationRequest.getNpOrgId(),
-					com.capitaworld.service.users.utils.CommonUtils.UserRoles.HEAD_OFFICER, branchId);
+					com.opl.mudra.api.user.utils.CommonUtils.UserRoles.HEAD_OFFICER, branchId);
 			List<Map<String, Object>> hoRespList = (List<Map<String, Object>>) hoResponse.getListData();
 			if (!CommonUtils.isObjectNullOrEmpty(hoRespList)) {
 				for (int i = 0; i < hoRespList.size(); i++) {
@@ -1194,7 +1194,7 @@ public class FPAsyncComponent {
 			/*subject = "Intimation: Assigned DDR- #ApplicationId=" + request.getApplicationId();
 
 			UserResponse boResponse = userClient.getUserDetailByOrgRoleBranchId(applicationRequest.getNpOrgId(),
-					com.capitaworld.service.users.utils.CommonUtils.UserRoles.BRANCH_OFFICER, branchId);
+					com.opl.mudra.api.user.utils.CommonUtils.UserRoles.BRANCH_OFFICER, branchId);
 			List<Map<String, Object>> boRespList = (List<Map<String, Object>>) boResponse.getListData();
 			if (!CommonUtils.isObjectNullOrEmpty(boRespList)) {
 				for (int i = 0; i < boRespList.size(); i++) {
@@ -1447,7 +1447,7 @@ public class FPAsyncComponent {
 			// ====================Sending Mail to HO when Maker Assigns DDR to Checker====
 		/*	String subject = "Intimation: DDR Sent Back - #ApplicationId=" + request.getApplicationId();
 			UserResponse hoResponse = userClient.getUserDetailByOrgRoleBranchId(applicationRequest.getNpOrgId(),
-					com.capitaworld.service.users.utils.CommonUtils.UserRoles.HEAD_OFFICER, branchId);
+					com.opl.mudra.api.user.utils.CommonUtils.UserRoles.HEAD_OFFICER, branchId);
 			List<Map<String, Object>> hoRespList = (List<Map<String, Object>>) hoResponse.getListData();
 			if (!CommonUtils.isObjectNullOrEmpty(hoRespList)) {
 				for (int i = 0; i < hoRespList.size(); i++) {
@@ -1513,7 +1513,7 @@ public class FPAsyncComponent {
 
 		/*	subject = "Intimation: DDR Sent Back - #ApplicationId=" + request.getApplicationId();
 			UserResponse boResponse = userClient.getUserDetailByOrgRoleBranchId(applicationRequest.getNpOrgId(),
-					com.capitaworld.service.users.utils.CommonUtils.UserRoles.BRANCH_OFFICER, branchId);
+					com.opl.mudra.api.user.utils.CommonUtils.UserRoles.BRANCH_OFFICER, branchId);
 			List<Map<String, Object>> boRespList = (List<Map<String, Object>>) boResponse.getListData();
 			Integer businessTypeId = appProposalMappingRepo.getBusinessIdByUserId(request.getUserId());
 			if (!CommonUtils.isObjectNullOrEmpty(businessTypeId) && ! businessTypeId.equals(CommonUtils.BusinessType.ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS.getId())) {
@@ -1615,7 +1615,7 @@ public class FPAsyncComponent {
 			}
 			mailParameters.put(PARAMETERS_ADMIN_MAKER, adminMakerName);
 			UserResponse userResponse = userClient.getUserDetailByOrgRoleId(productMasterTemp.getUserOrgId(),
-					com.capitaworld.service.users.utils.CommonUtils.UserRoles.ADMIN_CHECKER);
+					com.opl.mudra.api.user.utils.CommonUtils.UserRoles.ADMIN_CHECKER);
 			List<Map<String, Object>> usersRespList = (List<Map<String, Object>>) userResponse.getListData();
 			UsersRequest firstAdminChecker = new UsersRequest();
 			List<String> ccEmails = new ArrayList<>();
@@ -1734,7 +1734,7 @@ public class FPAsyncComponent {
 			}
 			mailParameters.put(PARAMETERS_ADMIN_MAKER, adminMakerName != null ? adminMakerName : LITERAL_MAKER);
 			UserResponse userResponse = userClient.getUserDetailByOrgRoleId(productMasterTemp.getUserOrgId(),
-					com.capitaworld.service.users.utils.CommonUtils.UserRoles.ADMIN_CHECKER);
+					com.opl.mudra.api.user.utils.CommonUtils.UserRoles.ADMIN_CHECKER);
 			List<Map<String, Object>> usersRespList = (List<Map<String, Object>>) userResponse.getListData();
 			String to = "";
 			String[] cc= {};
@@ -1890,7 +1890,7 @@ public class FPAsyncComponent {
 			}
 			ArrayList<String>ccList=new ArrayList<>();
 			UserResponse userResponse = userClient.getUserDetailByOrgRoleId(productMasterTemp.getUserOrgId(),
-					com.capitaworld.service.users.utils.CommonUtils.UserRoles.ADMIN_MAKER);
+					com.opl.mudra.api.user.utils.CommonUtils.UserRoles.ADMIN_MAKER);
 //			List<Map<String, Object>> usersRespList = (List<Map<String, Object>>) userResponse.getListData();
 			for (Object obj: userResponse.getListData()) {
 				UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap((Map<?,?>) obj,UsersRequest.class);
@@ -1934,7 +1934,7 @@ public class FPAsyncComponent {
 
 
 			/*UserResponse userResponse = userClient.getUserDetailByOrgRoleId(productMasterTemp.getUserOrgId(),
-					com.capitaworld.service.users.utils.CommonUtils.UserRoles.ADMIN_MAKER);
+					com.opl.mudra.api.user.utils.CommonUtils.UserRoles.ADMIN_MAKER);
 			List<Map<String, Object>> usersRespList = (List<Map<String, Object>>) userResponse.getListData();
 
 			String to = null;
@@ -2109,7 +2109,7 @@ public class FPAsyncComponent {
 			}
 
 			/*UserResponse userResponse = userClient.getUserDetailByOrgRoleId(productMasterTemp.getUserOrgId(),
-					com.capitaworld.service.users.utils.CommonUtils.UserRoles.ADMIN_MAKER);
+					com.opl.mudra.api.user.utils.CommonUtils.UserRoles.ADMIN_MAKER);
 			List<Map<String, Object>> usersRespList = (List<Map<String, Object>>) userResponse.getListData();
 
 			String to = null;
