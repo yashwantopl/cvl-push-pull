@@ -6,10 +6,6 @@ import java.util.Map;
 
 import org.json.simple.JSONObject;
 
-import com.capitaworld.service.users.model.FpProfileBasicDetailRequest;
-import com.capitaworld.service.users.model.RegisteredUserResponse;
-import com.capitaworld.service.users.model.UserResponse;
-import com.capitaworld.service.users.model.UsersRequest;
 import com.opl.mudra.api.loans.exception.LoansException;
 import com.opl.mudra.api.loans.model.AdminPanelLoanDetailsResponse;
 import com.opl.mudra.api.loans.model.FrameRequest;
@@ -36,6 +32,10 @@ import com.opl.mudra.api.loans.model.mobile.MLoanDetailsResponse;
 import com.opl.mudra.api.loans.model.mobile.MobileLoanRequest;
 import com.opl.mudra.api.loans.model.retail.BankRelationshipRequest;
 import com.opl.mudra.api.scoring.model.scoringmodel.ScoringModelReqRes;
+import com.opl.mudra.api.user.model.FpProfileBasicDetailRequest;
+import com.opl.mudra.api.user.model.RegisteredUserResponse;
+import com.opl.mudra.api.user.model.UserResponse;
+import com.opl.mudra.api.user.model.UsersRequest;
 
 public interface LoanApplicationService {
 

@@ -1,6 +1,7 @@
 package com.opl.service.loans.config;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -15,10 +16,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import com.capitaworld.service.users.client.UsersClient;
-import com.capitaworld.service.users.model.UserResponse;
-import com.capitaworld.service.users.model.UsersRequest;
-import java.text.SimpleDateFormat;
 import com.opl.mudra.api.loans.exception.LoansException;
 import com.opl.mudra.api.loans.model.InEligibleProposalDetailsRequest;
 import com.opl.mudra.api.loans.model.LoanApplicationRequest;
@@ -46,11 +43,14 @@ import com.opl.mudra.api.notification.utils.NotificationMasterAlias;
 import com.opl.mudra.api.notification.utils.NotificationType;
 import com.opl.mudra.api.oneform.model.MasterResponse;
 import com.opl.mudra.api.oneform.model.OneFormResponse;
+import com.opl.mudra.api.user.model.UserResponse;
+import com.opl.mudra.api.user.model.UsersRequest;
 import com.opl.mudra.client.matchengine.MatchEngineClient;
 import com.opl.mudra.client.matchengine.ProposalDetailsClient;
 import com.opl.mudra.client.mca.McaClient;
 import com.opl.mudra.client.notification.NotificationClient;
 import com.opl.mudra.client.oneform.OneFormClient;
+import com.opl.mudra.client.users.UsersClient;
 import com.opl.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.opl.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.opl.service.loans.repository.common.CommonRepository;

@@ -6,12 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.capitaworld.service.users.client.UsersClient;
-import com.capitaworld.service.users.model.UserResponse;
 import com.opl.mudra.api.loans.exception.LoansException;
 import com.opl.mudra.api.loans.model.DashboardProfileResponse;
 import com.opl.mudra.api.loans.utils.CommonUtils;
+import com.opl.mudra.api.user.model.UserResponse;
 import com.opl.mudra.client.oneform.OneFormClient;
+import com.opl.mudra.client.users.UsersClient;
 import com.opl.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.opl.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.opl.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;

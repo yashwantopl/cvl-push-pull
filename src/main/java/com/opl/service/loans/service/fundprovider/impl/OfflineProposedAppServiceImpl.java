@@ -6,11 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.capitaworld.service.users.client.UsersClient;
-import com.capitaworld.service.users.model.UserResponse;
-import com.capitaworld.service.users.model.UsersRequest;
 import com.opl.mudra.api.loans.model.common.ReportRequest;
 import com.opl.mudra.api.loans.utils.CommonUtils;
+import com.opl.mudra.api.user.model.UserResponse;
+import com.opl.mudra.api.user.model.UsersRequest;
+import com.opl.mudra.client.users.UsersClient;
 import com.opl.service.loans.repository.OfflineProcessedAppRepository;
 import com.opl.service.loans.service.fundprovider.OfflineProcessedAppService;
 

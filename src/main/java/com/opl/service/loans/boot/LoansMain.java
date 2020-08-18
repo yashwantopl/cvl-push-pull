@@ -2,10 +2,8 @@
 package com.opl.service.loans.boot;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -13,10 +11,10 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import com.capitaworld.client.ekyc.EPFClient;
-import com.capitaworld.service.auth.client.AuthClient;
 import com.capitaworld.service.pennydrop.client.PennydropClient;
-import com.capitaworld.service.users.client.UsersClient;
+import com.opl.commons.lib.common.CommonUtils;
 import com.opl.mudra.client.analyzer.AnalyzerClient;
+import com.opl.mudra.client.auth.AuthClient;
 import com.opl.mudra.client.cibil.CIBILClient;
 import com.opl.mudra.client.connect.ConnectClient;
 import com.opl.mudra.client.dms.DMSClient;
@@ -34,9 +32,9 @@ import com.opl.mudra.client.rating.RatingClient;
 import com.opl.mudra.client.reports.ReportsClient;
 import com.opl.mudra.client.scoring.ScoringClient;
 import com.opl.mudra.client.thirdparty.ThirdPartyClient;
+import com.opl.mudra.client.users.UsersClient;
 import com.opl.mudra.client.workflow.WorkflowClient;
 import com.opl.profile.client.ProfileClient;
-import com.opl.commons.lib.common.CommonUtils;
 
 
 /**

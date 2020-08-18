@@ -16,10 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.capitaworld.service.users.client.UsersClient;
-import com.capitaworld.service.users.model.UserResponse;
-import com.capitaworld.service.users.model.UserTypeRequest;
-import com.capitaworld.service.users.model.UsersRequest;
 import com.opl.mudra.api.loans.model.LoansResponse;
 import com.opl.mudra.api.loans.model.teaser.finalview.CorporateFinalViewResponse;
 import com.opl.mudra.api.loans.model.teaser.finalview.TermLoanFinalViewResponse;
@@ -27,6 +23,10 @@ import com.opl.mudra.api.loans.model.teaser.finalview.UnsecuredLoanFinalViewResp
 import com.opl.mudra.api.loans.model.teaser.finalview.WorkingCapitalFinalViewResponse;
 import com.opl.mudra.api.loans.utils.CommonUtils;
 import com.opl.mudra.api.loans.utils.MultipleJSONObjectHelper;
+import com.opl.mudra.api.user.model.UserResponse;
+import com.opl.mudra.api.user.model.UserTypeRequest;
+import com.opl.mudra.api.user.model.UsersRequest;
+import com.opl.mudra.client.users.UsersClient;
 import com.opl.service.loans.service.teaser.finalview.CorporateFinalViewService;
 import com.opl.service.loans.service.teaser.finalview.TermLoanFinalViewService;
 import com.opl.service.loans.service.teaser.finalview.UnsecuredLoanFinalViewService;
