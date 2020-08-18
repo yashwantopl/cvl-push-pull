@@ -1,6 +1,7 @@
 package com.opl.mudra.api.user.model;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 
 /**
  * The persistent class for the user_organisation_master database table.
@@ -28,6 +29,19 @@ public class UserOrganisationRequest implements Serializable {
 	private Integer codeLanguage;
 
 	private String config;
+	
+	private String generalConfig;
+	
+	private String controlBlockMsme;
+	private String controlBlockNtb;
+	
+	private String generalFields;
+
+	private Long modifiedBy;
+
+	private Timestamp modifiedDate;
+
+	private Long campaignType;
 
 	public UserOrganisationRequest() {
 		// Do nothing because of X and Y.
@@ -113,12 +127,72 @@ public class UserOrganisationRequest implements Serializable {
 		this.config = config;
 	}
 
+	public String getGeneralConfig() {
+		return generalConfig;
+	}
+
+	public void setGeneralConfig(String generalConfig) {
+		this.generalConfig = generalConfig;
+	}
+
+	public String getControlBlockMsme() {
+		return controlBlockMsme;
+	}
+
+	public void setControlBlockMsme(String controlBlockMsme) {
+		this.controlBlockMsme = controlBlockMsme;
+	}
+
+	public String getControlBlockNtb() {
+		return controlBlockNtb;
+	}
+
+	public void setControlBlockNtb(String controlBlockNtb) {
+		this.controlBlockNtb = controlBlockNtb;
+	}
+
+	public String getGeneralFields() {
+		return generalFields;
+	}
+
+	public void setGeneralFields(String generalFields) {
+		this.generalFields = generalFields;
+	}
+
+	public Long getModifiedBy() {
+		return modifiedBy;
+	}
+
+	public void setModifiedBy(Long modifiedBy) {
+		this.modifiedBy = modifiedBy;
+	}
+
+	public Timestamp getModifiedDate() {
+		return modifiedDate;
+	}
+
+	public void setModifiedDate(Timestamp modifiedDate) {
+		this.modifiedDate = modifiedDate;
+	}
+
+	public Long getCampaignType() {
+		return campaignType;
+	}
+
+	public void setCampaignType(Long campaignType) {
+		this.campaignType = campaignType;
+	}
+
 	@Override
 	public String toString() {
 		return "UserOrganisationRequest [userOrgId=" + userOrgId + ", organisationName=" + organisationName
-				+ ", organisationCode=" + organisationCode + ", username=" + username
+				+ ", organisationCode=" + organisationCode + ", username=" + username + ", password=" + password
 				+ ", uatUrl=" + uatUrl + ", productionUrl=" + productionUrl + ", isReverseApiActivated="
-				+ isReverseApiActivated + ", codeLanguage=" + codeLanguage + ", config=" + config + "]";
+				+ isReverseApiActivated + ", codeLanguage=" + codeLanguage + ", config=" + config + ", generalConfig="
+				+ generalConfig + ", controlBlockMsme=" + controlBlockMsme + ", controlBlockNtb=" + controlBlockNtb
+				+ ", generalFields=" + generalFields + ", modifiedBy=" + modifiedBy + ", modifiedDate=" + modifiedDate
+				+ ", campaignType=" + campaignType + "]";
 	}
+
 
 }
