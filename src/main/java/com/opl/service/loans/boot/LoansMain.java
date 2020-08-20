@@ -2,6 +2,7 @@
 package com.opl.service.loans.boot;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
@@ -56,6 +57,25 @@ import com.opl.profile.client.ProfileClient;
 @EnableAsync
 @EnableScheduling
 public class LoansMain {
+	
+	
+	@Value("${capitaworld.service.auth.url}")
+	String authUrl;
+
+	@Value("${notificationURL}")
+	String notificationURL;
+
+	@Value("${matchesURL}")
+	private String matchEngineUrl;
+
+	@Value("${capitaworld.service.cibil.url}")
+	private String cibilUrl;
+	
+	@Value("${capitaworld.service.gst.url}")
+	private String gstBaseUrl;
+
+	@Value("${capitaworld.service.itr.url}")
+	private String itrUrl;
 
 	@Autowired
 	ApplicationContext applicationContext;
@@ -87,7 +107,7 @@ public class LoansMain {
 
 	@Bean
 	public NotificationClient notificationMasterClient() {
-		NotificationClient notificationClient = new NotificationClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.notification));
+		NotificationClient notificationClient = new NotificationClient(notificationURL);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(notificationClient);
 		return notificationClient;
 	}
@@ -108,14 +128,14 @@ public class LoansMain {
 
 	@Bean
 	public MatchEngineClient matchEngineClient() {
-		MatchEngineClient matchEngineClient = new MatchEngineClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.match_engine_mudra));
+		MatchEngineClient matchEngineClient = new MatchEngineClient(matchEngineUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(matchEngineClient);
 		return matchEngineClient;
 	}
 
 	@Bean
 	public ProposalDetailsClient proposalDetailsClient() {
-		ProposalDetailsClient proposalDetailsClient = new ProposalDetailsClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.match_engine_mudra));
+		ProposalDetailsClient proposalDetailsClient = new ProposalDetailsClient(matchEngineUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(proposalDetailsClient);
 		return proposalDetailsClient;
 	}
@@ -136,21 +156,21 @@ public class LoansMain {
 
 	@Bean
 	public ReportsClient reportsClient() {
-		ReportsClient reportsClient = new ReportsClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.reports_mudra));
+		ReportsClient reportsClient = new ReportsClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.reports));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(reportsClient);
 		return reportsClient;
 	}
 
 	@Bean
 	public ScoringClient scoringClient() {
-		ScoringClient scoringClient = new ScoringClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.scoring_mudra));
+		ScoringClient scoringClient = new ScoringClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.scoring));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(scoringClient);
 		return scoringClient;
 	}
 
 	@Bean
 	public GstClient gstClient() {
-		GstClient gstClient = new GstClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.gst));
+		GstClient gstClient = new GstClient(gstBaseUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(gstClient);
 		return gstClient;
 	}
@@ -164,7 +184,7 @@ public class LoansMain {
 
 	@Bean
 	public ConnectClient connectClient() {
-		ConnectClient connectClient = new ConnectClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.connect_mudra));
+		ConnectClient connectClient = new ConnectClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.connect));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(connectClient);
 		return connectClient;
 	}
@@ -192,7 +212,7 @@ public class LoansMain {
 
 	@Bean
 	public EligibilityClient eligibilityClient() {
-		EligibilityClient eligibilityClient = new EligibilityClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.eligibility_mudra));
+		EligibilityClient eligibilityClient = new EligibilityClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.eligibility));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(eligibilityClient);
 		return eligibilityClient;
 	}
@@ -206,14 +226,14 @@ public class LoansMain {
 
 	@Bean
 	public ITRClient itrClient() {
-		ITRClient itrClient = new ITRClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.itr));
+		ITRClient itrClient = new ITRClient(itrUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(itrClient);
 		return itrClient;
 	}
 	
 	@Bean
 	public AuthClient authClient() {
-		AuthClient authClient = new AuthClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.auth));
+		AuthClient authClient = new AuthClient(authUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(authClient);
 		return authClient;
 	}
