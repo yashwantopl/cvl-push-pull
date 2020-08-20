@@ -126,32 +126,7 @@ public class UserOrganisationRequest implements Serializable {
 	public void setConfig(String config) {
 		this.config = config;
 	}
-	
 
-	public String getGeneralFields() {
-		return generalFields;
-	}
-
-	public void setGeneralFields(String generalFields) {
-		this.generalFields = generalFields;
-	}
-
-	public Long getModifiedBy() {
-		return modifiedBy;
-	}
-
-	public void setModifiedBy(Long modifiedBy) {
-		this.modifiedBy = modifiedBy;
-	}
-
-	public Timestamp getModifiedDate() {
-		return modifiedDate;
-	}
-
-	public void setModifiedDate(Timestamp modifiedDate) {
-		this.modifiedDate = modifiedDate;
-	}
-	
 	public String getGeneralConfig() {
 		return generalConfig;
 	}
@@ -176,6 +151,30 @@ public class UserOrganisationRequest implements Serializable {
 		this.controlBlockNtb = controlBlockNtb;
 	}
 
+	public String getGeneralFields() {
+		return generalFields;
+	}
+
+	public void setGeneralFields(String generalFields) {
+		this.generalFields = generalFields;
+	}
+
+	public Long getModifiedBy() {
+		return modifiedBy;
+	}
+
+	public void setModifiedBy(Long modifiedBy) {
+		this.modifiedBy = modifiedBy;
+	}
+
+	public Timestamp getModifiedDate() {
+		return modifiedDate;
+	}
+
+	public void setModifiedDate(Timestamp modifiedDate) {
+		this.modifiedDate = modifiedDate;
+	}
+
 	public Long getCampaignType() {
 		return campaignType;
 	}
@@ -189,8 +188,11 @@ public class UserOrganisationRequest implements Serializable {
 		return "UserOrganisationRequest [userOrgId=" + userOrgId + ", organisationName=" + organisationName
 				+ ", organisationCode=" + organisationCode + ", username=" + username + ", password=" + password
 				+ ", uatUrl=" + uatUrl + ", productionUrl=" + productionUrl + ", isReverseApiActivated="
-				+ isReverseApiActivated + ", codeLanguage=" + codeLanguage + ", config=" + config + ", generalFields="
-				+ generalFields + ", modifiedBy=" + modifiedBy + ", modifiedDate=" + modifiedDate + "]";
+				+ isReverseApiActivated + ", codeLanguage=" + codeLanguage + ", config=" + config + ", generalConfig="
+				+ generalConfig + ", controlBlockMsme=" + controlBlockMsme + ", controlBlockNtb=" + controlBlockNtb
+				+ ", generalFields=" + generalFields + ", modifiedBy=" + modifiedBy + ", modifiedDate=" + modifiedDate
+				+ ", campaignType=" + campaignType + "]";
 	}
+
 
 }
