@@ -14,8 +14,8 @@ public class EmployeeResponse implements Serializable {
     private String email;
     private String remarks;
     private GenericLocation branch;
-    private double minSanctionLimit;
-    private double maxSanctionLimit;
+    private Double minSanctionLimit;
+    private Double maxSanctionLimit;
     private Object workflowData;
     private Boolean emailAlreadyExists;
     private String locationCode;
@@ -27,6 +27,7 @@ public class EmployeeResponse implements Serializable {
     private Boolean isEdit;
     private Long userRoleId;
     private Long departmentId;
+    private String branchName;
 
     //getter setter
     public String getEmployeeName() {
@@ -93,19 +94,19 @@ public class EmployeeResponse implements Serializable {
         this.branch = branch;
     }
 
-    public double getMinSanctionLimit() {
+    public Double getMinSanctionLimit() {
         return minSanctionLimit;
     }
 
-    public void setMinSanctionLimit(double minSanctionLimit) {
+    public void setMinSanctionLimit(Double minSanctionLimit) {
         this.minSanctionLimit = minSanctionLimit;
     }
 
-    public double getMaxSanctionLimit() {
+    public Double getMaxSanctionLimit() {
         return maxSanctionLimit;
     }
 
-    public void setMaxSanctionLimit(double maxSanctionLimit) {
+    public void setMaxSanctionLimit(Double maxSanctionLimit) {
         this.maxSanctionLimit = maxSanctionLimit;
     }
 
@@ -195,5 +196,13 @@ public class EmployeeResponse implements Serializable {
 
     public void setDepartmentId(Long departmentId) {
         this.departmentId = departmentId;
+    }
+
+    public String getBranchName() {
+        return branchName;
+    }
+
+    public void setBranchName(String branchName) {
+        this.branchName = branchName;
     }
 }

@@ -257,4 +257,12 @@ public class LocationMasterResponse implements Serializable {
 	public void setSubDistrict(GenericLocation subDistrict) {
 		this.subDistrict = subDistrict;
 	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public Integer getStatus() {
+		return status;
+	}
 }

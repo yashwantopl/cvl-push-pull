@@ -1,17 +1,30 @@
 package com.opl.mudra.api.user.utils;
 
+import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
+import java.security.DigestException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.sql.Timestamp;
+import java.text.DecimalFormat;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.StandardCharsets;
-import java.security.*;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Collection;
-import java.util.List;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.opl.mudra.api.user.model.GeneralConfigData;
 
 @SuppressWarnings("rawtypes")
 public class CommonUtils {
@@ -52,6 +65,15 @@ public class CommonUtils {
 	public static final String TOKEN_NOT_FOUND_FOR_THIS_TOKEN = "Token Not Found For This Token ";
 	public static final String INTERNAL_SERVER_ERROR = "Internal Server Error";
 	public static final String OTP_SUCCESSFULLY_SENT = "OTP Successfully sent.";
+	public static final String INVALID_LIMIT_EXCEL = "INVALID LIMIT";
+	public static final String GST__EXCEL = "MultipleGst.xlsx";
+	public static final int EMAIL = 1;
+	public static final int MOBILE = 2;
+	public static final String DATA_NOT_FOUND="Data not found.";
+	public static final String[] DEALEREXCEL_HEADERS = {"Sr. No.","Dealer Name*","Name of Dealer Firm/Company","Main Dealer Code*","Dealer Code/No.","Unique Dealer Mail ID*","Unique Dealer Mobile *","Select OEM*",
+			"Dealer Constitution","PAN of Dealer Firm / Company","Dealer Office Address*","Dealer Description","Dealer Registration Date","Pincode*","State*","City*","Please Write Following Options only","Code of Branch"};
+
+	private static DecimalFormat decimal = new DecimalFormat("#,##0.00");
 
 
 	
@@ -66,8 +88,37 @@ public class CommonUtils {
 		public static final Long ADMIN_MAKER = 10l;
 		public static final Long ADMIN_CHECKER = 11l;
 		public static final Long SMECC = 12l;
+		public static final Long RO = 13l;
+		public static final Long ZO = 14l;
+		public static final Long MFI_CHECKER = 18l;
+		public static final Integer NBFC_FP_MAKER = 308;
+		public static final Integer NBFC_FP_CHECKER = 309;
+		public static final Integer NBFC_ADMIN_CHECKER = 311;
+		public static final Integer NBFC_ADMIN_MAKER = 310;
+		public static final Integer NBFC_HO = 305;
+		public static final Integer NBFC_ASSISTED_USER = 300;
+
 
 	}
+	
+	public static final class UserType {
+		private UserType(){
+			// Do nothing because of X and Y.
+		}
+		public static final Long FUND_PROVIDER = 2l;
+		public static final Long FUND_SEEKER = 1l;
+	}
+
+	public static final class BranchType{
+		private BranchType(){
+
+		}
+		public static final Integer BO = 1;
+		public static final Integer RO = 2;
+		public static final Integer ZO = 3;
+		public static final Integer HO = 4;
+	}
+	
 	
 	public static boolean isListNullOrEmpty(Collection<?> data) {
 		return (data == null || data.isEmpty());
@@ -116,6 +167,125 @@ public class CommonUtils {
 	public static String decode(String encryptedString) {
 		return new String(Base64.getDecoder().decode(encryptedString));
 	}
+	
+	public enum BusinessType {
+		
+		NEW_TO_BUSINESS(2, "New to Business"),
+		EXISTING_BUSINESS(1, "Existing Business"),
+		RETAIL_PERSONAL_LOAN(3, "Retail Personal Loan"),
+		ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS(4, "One Pager Eligibility For Existing Business"),
+		RETAIL_HOME_LOAN(5, "Retail Home Loan"),
+		RETAIL_AUTO_LOAN(8, "Retail Auto Loan"),
+		CO_ORIGINATION(9, "Co Origination"),
+		MUDRA_LOAN(10, "Mudra Loan"),
+		ODOP_LOAN(22, "Odop Loan"),
+		DFS_LOAN(21,"Dealer Financing Scheme");
+	
+		private Integer id;
+		private String value;
+
+		private BusinessType(Integer id) {
+			this.id = id;
+		}
+
+		private BusinessType(Integer id, String value) {
+			this.id = id;
+			this.value = value;
+		}
+
+		public String getValue() {
+			return value;
+		}
+
+		public Integer getId() {
+			return id;
+		}
+		
+		public static BusinessType fromValue(String v) {
+			for (BusinessType c : BusinessType.values()) {
+				if (c.value.equals(v)) {
+					return c;
+				}
+			}
+			throw new IllegalArgumentException(v);
+		}
+
+		public static BusinessType fromId(Integer v) {
+			for (BusinessType c : BusinessType.values()) {
+				if (c.id.equals(v)) {
+					return c;
+				}
+			}
+			throw new IllegalArgumentException(v.toString());
+
+		}
+
+	}
+
+
+public enum LoanType {
+	WORKING_CAPITAL(1,"Working Capital","Working Capital"),
+	TERM_LOAN(2,"Term Loan","Term Loan"),
+	HOME_LOAN(3,"Home Loan","Home Loan"),
+	PERSONAL_LOAN(7,"Personal Loan","Personal Loan"),
+	AUTO_LOAN(12,"Auto Loan","Auto Loan"),
+	LOAN_AGAINST_PROPERTY(13,"Loan Against Property","Loan Against Property"),
+	LOAN_AGAINST_SHARES_AND_SECUIRITIES(14,"Loan Against Shares and Secuirities","Loan Against Shares and Secuirities"),
+	UNSECURED_LOAN(15,"Unsecured Loan","Unsecured Loan"),
+	WCTL_LOAN(16,"Working Capital Term Loan","Working Capital Term Loan"),
+	MFI_LOAN(17,"Micro Finance Institute Loan","Micro Finance Institute Loan"),
+	AGRI_LOAN(18,"Agriculture Loan","Agriculture Loan");
+	private final Integer id;
+	private final String value;
+	private final String description;
+	LoanType(Integer id, String value, String description) {
+	this.id = id;
+	this.value = value;
+	this.description = description;
+}
+
+public Integer getId() {
+	return id;
+}
+
+public String getValue() {
+	return value;
+}
+
+public String getDescription() {
+	return description;
+}
+	public static LoanType getById(Integer id) {
+	switch (id) {
+	case 1:
+		return WORKING_CAPITAL;
+	case 2:
+		return TERM_LOAN;
+	case 3:
+		return HOME_LOAN;
+	case 7:
+		return PERSONAL_LOAN;
+	case 12:
+		return AUTO_LOAN;
+	case 13:
+		return LOAN_AGAINST_PROPERTY;
+	case 14:
+		return LOAN_AGAINST_SHARES_AND_SECUIRITIES;
+	case 15:
+		return UNSECURED_LOAN;
+	case 16:
+		return WCTL_LOAN;
+	case 17:
+		return MFI_LOAN;
+	default:
+		return null;
+	}
+}
+	public static LoanType[] getAll() {
+		return LoanType.values();
+
+	}
+}
 
 	public static byte[][] GenerateKeyAndIV(int keyLength, int ivLength, int iterations, byte[] salt, byte[] password, MessageDigest md) throws DigestException {
 
@@ -174,4 +344,77 @@ public class CommonUtils {
 		decryptedText = new String(decryptedData, StandardCharsets.UTF_8);
 		return decryptedText;
 	}
+	
+	/**
+	 * @author nilay.darji
+	 * @return Current Time Stamp
+	 */
+	public static Timestamp getCurrentTimeStamp(){
+		return new Timestamp(new Date().getTime());
+	}
+	
+	/**
+	 * @author vijay.chauhan
+	 * @return Return true if input string is numeric otherwise return false. 
+	 */
+	public static boolean isNumeric(String strNum) {
+	    if (isObjectNullOrEmpty(strNum)) {
+	        return false;
+	    }
+	    try {
+	        Double.parseDouble(strNum);
+	    } catch (NumberFormatException nfe) {
+	        return false;
+	    }
+	    return true;
+	}
+	
+	public static GeneralConfigData convertJSONToGeneralConfigDataRespo(String response) {
+		 ObjectMapper mapper = new ObjectMapper();
+		 try {
+			 return mapper.readValue(response, GeneralConfigData.class);
+		 } catch (Exception e) {
+			 return null;
+		 }
+	}
+	
+	public static Object convertToDoubleForXml(Object obj, Map<String, Object> data) throws Exception {
+		try {
+			if (obj == null) {
+				return null;
+			}
+			DecimalFormat decim = new DecimalFormat("0.00");
+			if (obj instanceof Double) {
+				obj = Double.parseDouble(decim.format(obj));
+				return obj;
+			} else if (obj.getClass().getName().startsWith("com.capitaworld")) {
+				Field[] fields = obj.getClass().getDeclaredFields();
+				for (Field field : fields) {
+					field.setAccessible(true);
+					Object value = field.get(obj);
+					if (data != null) {
+						data.put(field.getName(), value);
+					}
+					if (!CommonUtils.isObjectNullOrEmpty(value) && value instanceof Double
+							&& !Double.isNaN((Double) value)) {
+						value = Double.parseDouble(decim.format(value));
+						if (data != null) {
+							value = decimal.format(value);
+							data.put(field.getName(), value);
+						} else {
+							field.set(obj, value);
+						}
+					}
+				}
+			}
+			if (data != null) {
+				return data;
+			}
+			return obj;
+		} catch (Exception e) {
+			throw new Exception(e);
+		}
+
+	}
+
 }

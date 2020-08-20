@@ -1,6 +1,8 @@
 package com.opl.mudra.api.user.model.mobile;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MAccountDetailsResponse implements Serializable{
 
@@ -14,6 +16,16 @@ public class MAccountDetailsResponse implements Serializable{
 	private String userType;
 	private Long userTypeId;
 	private String imagePath;
+	private String orgName;
+	private String address;
+	private String userRole;
+	private Map<String,Object> userProductRole;
+	
+	
+	public MAccountDetailsResponse() {
+		super();
+		this.userProductRole=new HashMap<String, Object>();
+	}
 	
 	public Long getId() {
 		return id;
@@ -63,8 +75,37 @@ public class MAccountDetailsResponse implements Serializable{
 	public void setImagePath(String imagePath) {
 		this.imagePath = imagePath;
 	}
-	
-	
-	
+
+	public String getOrgName() {
+		return orgName;
+	}
+
+	public void setOrgName(String orgName) {
+		this.orgName = orgName;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public String getUserRole() {
+		return userRole;
+	}
+
+	public void setUserRole(String userRole) {
+		this.userRole = userRole;
+	}
+
+	public Map<String, Object> getUserProductRole() {
+		return userProductRole;
+	}
+
+	public void setUserProductRole(Map<String, Object> userProductRole) {
+		this.userProductRole = userProductRole;
+	}
 	
 }

@@ -41,6 +41,8 @@ public class FundProviderDetailsRequest implements Serializable {
 	private String longitude;
 
 	private String organizationName;
+	
+	private String organisationName;
 
 	private String pan;
 
@@ -74,7 +76,10 @@ public class FundProviderDetailsRequest implements Serializable {
 	private String email;
 	private String mobile;
 	private boolean isProfileLocked;
-
+	
+	private String generalFieldsJson;
+	
+	
 	public FundProviderDetailsRequest() {
 		
 	}
@@ -370,4 +375,39 @@ public class FundProviderDetailsRequest implements Serializable {
 	public void setProfileLocked(boolean profileLocked) {
 		isProfileLocked = profileLocked;
 	}
+
+	public String getGeneralFieldsJson() {
+		return generalFieldsJson;
+	}
+
+	public void setGeneralFieldsJson(String generalFieldsJson) {
+		this.generalFieldsJson = generalFieldsJson;
+	}
+	
+	public String getOrganisationName() {
+		return organisationName;
+	}
+
+	public void setOrganisationName(String organisationName) {
+		this.organisationName = organisationName;
+	}
+
+	@Override
+	public String toString() {
+		return "FundProviderDetailsRequest [userId=" + userId + ", clientId=" + clientId + ", aboutUs=" + aboutUs
+				+ ", address=" + address + ", cityId=" + cityId + ", contactPersonDesignation="
+				+ contactPersonDesignation + ", contactPersonName=" + contactPersonName + ", countryId=" + countryId
+				+ ", estdMonth=" + estdMonth + ", estdYear=" + estdYear + ", landmark=" + landmark + ", latitude="
+				+ latitude + ", longitude=" + longitude + ", organisationName=" + organisationName + ", pan=" + pan
+				+ ", pincode=" + pincode + ", remarks=" + remarks + ", stateId=" + stateId + ", streetAddress="
+				+ streetAddress + ", website=" + website + ", businessTypeMaster=" + businessTypeMaster
+				+ ", businessTypeName=" + businessTypeName + ", imagePath=" + imagePath + ", cityName=" + cityName
+				+ ", stateName=" + stateName + ", countryName=" + countryName + ", profileFilled=" + profileFilled
+				+ ", titleId=" + titleId + ", firstName=" + firstName + ", middleName=" + middleName + ", lastName="
+				+ lastName + ", birthDate=" + birthDate + ", contactNumber=" + contactNumber + ", email=" + email
+				+ ", mobile=" + mobile + ", isProfileLocked=" + isProfileLocked + ", generalFieldsJson="
+				+ generalFieldsJson + "]";
+	}
+	
+	
 }

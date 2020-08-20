@@ -130,7 +130,7 @@ public class UsersRequest implements Serializable {
 	private Long userId;
 	
 	private Long userRoleId;
-
+	
 	private String userRoleIdString;
 	
 	private String loanTypeIdString;
@@ -148,6 +148,8 @@ public class UsersRequest implements Serializable {
 	private Long businessTypeId;
 	private String domain;
 	private Long domainId;
+	
+	private List<Long> roleId;
 
 	private String modelNo;
 
@@ -172,17 +174,15 @@ public class UsersRequest implements Serializable {
 	private String pan;
 	
 	private List<String> pincodeList;
+	
+	private List<GenericChecker> genericCheckers;
 
-	public List<Long> getOrgIdList() {
-		return orgIdList;
-	}
-	
+
 	private Long fpUserId;
-	
-	private Long fsUserId;
-	
-	private Boolean isGstDataRetrieved;
-	
+    private Long fsUserId;
+    private Long fileId;
+    private Long orgId;
+    private Boolean isGstDataRetrieved;
     private Boolean isBsDataRetrived;
     
     // FOR GRIEVANCE DETAILS RELATED 
@@ -273,9 +273,8 @@ public class UsersRequest implements Serializable {
 	
 	
 	private String industryReason;
-
-	public UsersRequest(Long userId) {
-		this.id = userId;
+	
+	public  UsersRequest(Long userId) {
 		this.userId = userId;
 	}
 }

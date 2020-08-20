@@ -8,7 +8,7 @@ import java.io.Serializable;
 public class BankFPResponse implements Serializable {
     private String email;
     private String mobile;
-    private Integer roleId;
+    private Integer roleId;    
     private String branchName;
     private String branchCode;
     private String ifscCode;
@@ -39,7 +39,7 @@ public class BankFPResponse implements Serializable {
         this.state = state;
         this.city = city;
         this.pincode = pincode;
-        this.status = status;
+        this.status = status;        
     }
 
     public String getEmail() {
@@ -169,4 +169,5 @@ public class BankFPResponse implements Serializable {
     public void setStatus(String status) {
         this.status = status;
     }
+	
 }
