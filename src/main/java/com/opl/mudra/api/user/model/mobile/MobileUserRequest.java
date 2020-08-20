@@ -13,6 +13,7 @@ private static final long serialVersionUID = 1L;
 	private Integer productId;
 	private Date fromDate;
 	private Date toDate;
+	private String email;
 	
 	
 	public MobileUserRequest() {
@@ -91,6 +92,14 @@ private static final long serialVersionUID = 1L;
 
 	public void setToDate(Date toDate) {
 		this.toDate = toDate;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 	
 	

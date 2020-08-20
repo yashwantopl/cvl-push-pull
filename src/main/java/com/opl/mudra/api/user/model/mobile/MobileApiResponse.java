@@ -8,9 +8,10 @@ private static final long serialVersionUID = 1L;
 	
 	private String success;
 	private Object data;
-	private Long response_code;
-	private String response_code_message;
-	private String message;
+	private Long responseCode;
+	private String responseCodeMessage;
+	private String message;	
+	private Integer status;
 	
 	
 	public String getSuccess() {
@@ -25,18 +26,18 @@ private static final long serialVersionUID = 1L;
 	public void setData(Object data) {
 		this.data = data;
 	}
-	public Long getResponse_code() {
-		return response_code;
+	public Long getResponseCode() {
+		return responseCode;
 	}
-	public void setResponse_code(Long response_code) {
-		this.response_code = response_code;
+	public void setResponseCode(Long responseCode) {
+		this.responseCode = responseCode;
 	}
 	
-	public String getResponse_code_message() {
-		return response_code_message;
+	public String getResponseCodeMessage() {
+		return responseCodeMessage;
 	}
-	public void setResponse_code_message(String response_code_message) {
-		this.response_code_message = response_code_message;
+	public void setResponseCodeMessage(String responseCodeMessage) {
+		this.responseCodeMessage = responseCodeMessage;
 	}
 	public String getMessage() {
 		return message;
@@ -44,19 +45,41 @@ private static final long serialVersionUID = 1L;
 	public void setMessage(String message) {
 		this.message = message;
 	}
-	public MobileApiResponse(String success, Object data, Long response_code, String response_code_message, String message) {
+	
+	public Integer getStatus() {
+		return status;
+	}
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
+	public MobileApiResponse(String success, Object data, Long responseCode, String responseCodeMessage, String message) {
 		super();
 		this.success = success;
 		this.data = data;
-		this.response_code = response_code;
+		this.responseCode = responseCode;
 		this.message = message;
-		this.response_code_message = response_code_message;
+		this.responseCodeMessage = responseCodeMessage;
 	}
-	public MobileApiResponse(String success, Long response_code, String response_code_message, String message) {
+	public MobileApiResponse(String success, Object data, Integer status, String responseCodeMessage, String message) {
 		super();
 		this.success = success;
-		this.response_code = response_code;
-		this.response_code_message = response_code_message;
+		this.data = data;
+		this.status = status;
+		this.message = message;
+		this.responseCodeMessage = responseCodeMessage;
+	}
+	public MobileApiResponse(String success, Long responseCode, String responseCodeMessage, String message) {
+		super();
+		this.success = success;
+		this.responseCode = responseCode;
+		this.responseCodeMessage = responseCodeMessage;
+		this.message = message;
+	}
+	public MobileApiResponse(String success, Integer status, String responseCodeMessage, String message) {
+		super();
+		this.success = success;
+		this.status = status;
+		this.responseCodeMessage = responseCodeMessage;
 		this.message = message;
 	}
 	

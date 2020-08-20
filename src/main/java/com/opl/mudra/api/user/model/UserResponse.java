@@ -15,9 +15,10 @@ public class UserResponse implements Serializable{
 	private String message;
 	private Integer status;
 	private Object data;
+	private Boolean flag;
 	private List<Long> branchList;
 	private List<?> listData = Collections.emptyList();
-
+	private Long lastAccessBusinessTypeId;
 	public static long getSerialVersionUID() {
 		return serialVersionUID;
 	}
@@ -52,6 +53,13 @@ public class UserResponse implements Serializable{
 		this.message = message;
 		this.status = status;
 	}
+	public UserResponse(Long id, String message, int status,Long lastAccessBusinessTypeId) {
+		
+		this.id = id;
+		this.message = message;
+		this.status = status;
+		this.lastAccessBusinessTypeId=lastAccessBusinessTypeId;
+	}
 	public UserResponse(Long userId, Object obj, String message, int status) {
 		
 		this.id = userId;
@@ -73,6 +81,14 @@ public class UserResponse implements Serializable{
 		this.data = obj;
 		this.branchList=listData;
 	}
+	
+	public UserResponse(Object obj,String message, int status,List<Object[]> listData) {
+		this.message = message;
+		this.status = status;
+		this.data = obj;
+		this.listData = listData;
+	}
+	
 	public Long getId() {
 		return id;
 	}
@@ -96,6 +112,35 @@ public class UserResponse implements Serializable{
 	}
 	public void setData(Object data) {
 		this.data = data;
+	}
+
+	/**
+	 * @return the lastAccessBusinessTypeId
+	 */
+	public Long getLastAccessBusinessTypeId() {
+		return lastAccessBusinessTypeId;
+	}
+
+	/**
+	 * @param lastAccessBusinessTypeId the lastAccessBusinessTypeId to set
+	 */
+	public void setLastAccessBusinessTypeId(Long lastAccessBusinessTypeId) {
+		this.lastAccessBusinessTypeId = lastAccessBusinessTypeId;
+	}
+	public Boolean getFlag() {
+		return flag;
+	}
+
+	public void setFlag(Boolean flag) {
+		this.flag = flag;
+	}
+
+	@Override
+	public String toString() {
+		return "UserResponse [id=" + id + ", message=" + message + ", status="
+				+ status + ", data=" + data + ", branchList=" + branchList
+				+ ", listData=" + listData + ", lastAccessBusinessTypeId="
+				+ lastAccessBusinessTypeId + "]";
 	}
 	
 	

@@ -575,6 +575,7 @@ public class NotificationAlias {
 	public static final Long SMS_ADMIN_CHECKER_PURPOSE_OF_LOAN_RE_APPROVAL_BY_MAKER = 417L;
 	public static final Long HL_COMMON_INPRINCIPLE_LETTER=418L;
 	public static final Long BANK_SPECIFIC_GST_LINK=419L;
+	public static final Long BANK_SPECIFIC_SMS_LINK = 467l;
 	
 	public static final Long EMAIL_HEADER=420L;
 	public static final Long EMAIL_FOOTER=421L;
@@ -970,6 +971,26 @@ public class NotificationAlias {
 		public static final Long ODOP_EMAIL_ALL_FP_WHEN_CHECKER_DISBURSED = 455L;
 		public static final Long ODOP_SMS_ALL_FP_WHEN_CHECKER_DISBURSED = 456L;
 		public static final Long ODOP_SYS_ALL_FP_WHEN_CHECKER_DISBURSED = 457L;
+		//ICICI MSME Mails
+		public static final Long ICICI_MSME_EMAIL_FS_CHECKER_HOLDS_PROPOSAL = 657L;
+		public static final Long ICICI_MSME_EMAIL_FS_CHECKER_REJECTS_PROPOSAL = 658L;
+		public static final Long ICICI_MSME_EMAIL_FS_CHECKER_SANCTIONED = 659L;
+		public static final Long ICICI_MSME_EMAIL_FS_CHECKER_DISBURSED_PROPOSAL = 660L ;
+		
+		//Mobile-API Mails
+		public static final Long MOBILE_API_EMAIL_AGEING_REPORT=3904L;
+		public static final Long MOBILE_API_EMAIL_AGEING_REPORT_REMINDER=3905L;
+		
+//				Standalone product bank specific
+		public static final Long STANDALONE_PRODUCT_BANK_SPECIFIC_GST_LINK=3906L;
+		public static final Long STANDALONE_PRODUCT_BANK_SPECIFIC_ITR_LINK=3907L;
+		public static final Long STANDALONE_PRODUCT_BANK_SPECIFIC_BS_LINK=3908L;
+			
+		//DFS
+		public static final Long DFS_COMMON_INPRINCIPLE_LETTER = 671L;
+		public static final Long DFS_EMAIL_FS_WHEN_PROPOSAL_HOLD = 672L;
+		public static final Long DFS_EMAIL_ALL_FP_WHEN_CHECKER_HOLD = 673L;
+		public static final Long DFS_EMAIL_FS_WHEN_FP_BRANCH_TRANSFER = 674L;
 		
 	public enum DurationType {
 		WEEK, MONTH, EARLIER

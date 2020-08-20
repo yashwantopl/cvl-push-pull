@@ -5,6 +5,15 @@ import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import lombok.NoArgsConstructor;
+
+import lombok.AllArgsConstructor;
+
+import lombok.Data;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CampaignRequest implements Serializable {
 
@@ -19,6 +28,9 @@ public class CampaignRequest implements Serializable {
 	private Date createdDate;
 	private Long applicationId;
 	private Long branchId;
+	private Date updatedDate;
+	private Boolean isActive;
+	private String pan;
 
 	
 	
@@ -53,89 +65,4 @@ public class CampaignRequest implements Serializable {
 		this.createdDate = createdDate;
 //		this.applicationId = appId;
 	}
-
-	public CampaignRequest() {
-
-	}
-
-	public Long getUserId() {
-		return userId;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getMobile() {
-		return mobile;
-	}
-
-	public void setMobile(String mobile) {
-		this.mobile = mobile;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public void setUserId(Long userId) {
-		this.userId = userId;
-	}
-
-	public String getCode() {
-		return code;
-	}
-
-	public void setCode(String code) {
-		this.code = code;
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-
-	public String getOrganisationName() {
-		return organisationName;
-	}
-
-	public void setOrganisationName(String organisationName) {
-		this.organisationName = organisationName;
-	}
-
-	public Date getCreatedDate() {
-		return createdDate;
-	}
-
-	public void setCreatedDate(Date createdDate) {
-		this.createdDate = createdDate;
-	}
-
-	public Long getApplicationId() {
-		return applicationId;
-	}
-
-	public void setApplicationId(Long applicationId) {
-		this.applicationId = applicationId;
-	}
-
-	public Long getBranchId() {
-		return branchId;
-	}
-
-	public void setBranchId(Long branchId) {
-		this.branchId = branchId;
-	}
-
 }
