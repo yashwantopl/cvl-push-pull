@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -3241,4 +3242,84 @@ public class LoanApplicationController {
 	    	return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.INTERNAL_SERVER_ERROR);
 	    }
 	}
+	
+	@RequestMapping(value = "/updateBranchByProposal", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> updateBranchId(@RequestBody LoanApplicationRequest loanRequest) {
+		try {
+			if (CommonUtils.isObjectListNull(loanRequest.getId(), loanRequest.getProposalId(), loanRequest.getNpOrgId())) {
+				logger.warn(ALL_PARAMETER_MUST_NOT_BE_NULL_MSG);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			Boolean success = loanApplicationService.updateBranchIdByProposal(loanRequest);
+			if(!success) {
+				return new ResponseEntity<LoansResponse>( new LoansResponse(CommonUtils.GENERIC_ERROR_MSG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+			}
+			CommonDocumentUtils.endHook(logger, "updateBranchId");
+			return new ResponseEntity<LoansResponse>( new LoansResponse(CommonUtils.SUCCESS, HttpStatus.OK.value(), success), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while updateBranchId==>", e);
+			return new ResponseEntity<LoansResponse>( new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+
+	@PostMapping(value = "/copyDataForOneForm", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> copyDataForOneForm(@RequestBody LoanApplicationRequest loanApplicationRequest, HttpServletRequest request) {
+		try {
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			if (loanApplicationRequest == null || userId == null) {
+				return new ResponseEntity<>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			Boolean success = loanApplicationService.copyDataForOneForm( loanApplicationRequest.getId(),loanApplicationRequest.getProfileId(),userId);
+			if(!success) {
+				return new ResponseEntity<LoansResponse>( new LoansResponse("Failed to copy data.", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+			}
+			return new ResponseEntity<>(new LoansResponse(CommonUtils.SUCCESS, HttpStatus.OK.value(),success), HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+			return new ResponseEntity<>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@PostMapping(value = "/copyDataForKeyPerson", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> copyDataForKeyPerson(@RequestBody LoanApplicationRequest loanApplicationRequest, HttpServletRequest request) {
+		try {
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			if (loanApplicationRequest == null || userId == null) {
+				return new ResponseEntity<>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			Boolean success = loanApplicationService.copyDataForKeyPerson( loanApplicationRequest.getId(),loanApplicationRequest.getProfileId(),userId);
+			if(!success) {
+				return new ResponseEntity<LoansResponse>( new LoansResponse("Failed to copy data.", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+			}
+			return new ResponseEntity<>(new LoansResponse(CommonUtils.SUCCESS, HttpStatus.OK.value(),success), HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+			return new ResponseEntity<>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@PostMapping(value = "/getProfileMappingId", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getProfileMappingId(@RequestBody Long applicationId, HttpServletRequest request) {
+		try {
+			if (applicationId == null) {
+				return new ResponseEntity<>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			Long profileMappingId = loanApplicationService.getProfileMappingId(applicationId);
+			if(profileMappingId != null){
+				return new ResponseEntity<>(new LoansResponse(CommonUtils.SUCCESS, HttpStatus.OK.value(),profileMappingId), HttpStatus.OK);
+			}
+			return new ResponseEntity<>(new LoansResponse(CommonUtils.SUCCESS, HttpStatus.INTERNAL_SERVER_ERROR.value(),null), HttpStatus.OK);
+		}catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+			return new ResponseEntity<>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	
+	
 }

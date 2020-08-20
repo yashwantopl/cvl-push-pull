@@ -359,6 +359,15 @@ public class CorporateServiceImpl implements CorporateService {
                 keyPerMap.put(TITLE, "Main Partner");
             }
             mapList.add(keyPerMap);
+            
+            // SET ASSOCIATE CONCERN DETAILS
+            Map<String, Object> acMap = new HashMap<String, Object>();
+            acMap.put(MODULE_TYPE, 6);
+            acMap.put(MODULE_NAME, "Associate Concern Details");
+            acMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/bankStatement-icon.svg");
+            acMap.put(COMPLETED, Boolean.FALSE);
+            acMap.put(ACTIVAE, ((boolean) itrMap.get(COMPLETED) && (boolean) gstMap.get(COMPLETED)&& (boolean) bsMap.get(COMPLETED) && (boolean) keyPerMap.get(COMPLETED)));
+            mapList.add(acMap);
 
             // SET ONEFORM DETAILS
             Map<String, Object> oneFormMap = new HashMap<String, Object>();

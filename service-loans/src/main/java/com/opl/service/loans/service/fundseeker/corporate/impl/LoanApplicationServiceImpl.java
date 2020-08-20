@@ -46,7 +46,9 @@ import com.capitaworld.service.users.model.UsersRequest;
 import com.capitaworld.service.users.model.mobile.MobileUserRequest;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.opl.mudra.api.analyzer.exception.AnalyzerException;
 import com.opl.mudra.api.analyzer.model.common.AnalyzerResponse;
+import com.opl.mudra.api.analyzer.model.common.BankStatementResponse;
 import com.opl.mudra.api.analyzer.model.common.Data;
 import com.opl.mudra.api.analyzer.model.common.ReportRequest;
 import com.opl.mudra.api.common.CommonUtils;
@@ -58,6 +60,10 @@ import com.opl.mudra.api.dms.model.DocumentRequest;
 import com.opl.mudra.api.dms.model.DocumentResponse;
 import com.opl.mudra.api.dms.model.StorageDetailsResponse;
 import com.opl.mudra.api.dms.utils.DocumentAlias;
+import com.opl.mudra.api.eligibility.model.EligibilityResponse;
+import com.opl.mudra.api.gst.model.GstResponse;
+import com.opl.mudra.api.gst.model.KeyPersonDetailsResponse;
+import com.opl.mudra.api.gst.model.yuva.request.GSTR1Request;
 import com.opl.mudra.api.itr.model.ITRConnectionResponse;
 import com.opl.mudra.api.loans.exception.LoansException;
 import com.opl.mudra.api.loans.model.AchievementDetailRequest;
@@ -98,6 +104,7 @@ import com.opl.mudra.api.loans.model.common.HunterRequestDataResponse;
 import com.opl.mudra.api.loans.model.common.MinMaxProductDetailRequest;
 import com.opl.mudra.api.loans.model.common.ProposalList;
 import com.opl.mudra.api.loans.model.common.SanctioningDetailResponse;
+import com.opl.mudra.api.loans.model.corporate.CMARequest;
 import com.opl.mudra.api.loans.model.corporate.CorporateFinalInfoRequest;
 import com.opl.mudra.api.loans.model.corporate.CorporateProduct;
 import com.opl.mudra.api.loans.model.mobile.MLoanDetailsResponse;
@@ -138,13 +145,18 @@ import com.opl.mudra.api.scoring.model.scoringmodel.ScoringModelReqRes;
 import com.opl.mudra.client.analyzer.AnalyzerClient;
 import com.opl.mudra.client.connect.ConnectClient;
 import com.opl.mudra.client.dms.DMSClient;
+import com.opl.mudra.client.eligibility.EligibilityClient;
+import com.opl.mudra.client.gst.GstClient;
 import com.opl.mudra.client.itr.ITRClient;
 import com.opl.mudra.client.matchengine.ProposalDetailsClient;
 import com.opl.mudra.client.notification.NotificationClient;
 import com.opl.mudra.client.oneform.OneFormClient;
 import com.opl.mudra.client.rating.RatingClient;
 import com.opl.mudra.client.scoring.ScoringClient;
+import com.opl.profile.api.model.ProfileVerMapRequest;
+import com.opl.profile.client.ProfileClient;
 import com.opl.service.loans.config.FPAsyncComponent;
+import com.opl.service.loans.domain.CommonAuditTable;
 import com.opl.service.loans.domain.GstRelatedParty;
 import com.opl.service.loans.domain.common.MaxInvestmentBankwise;
 import com.opl.service.loans.domain.common.MinMaxProductDetail;
@@ -153,6 +165,7 @@ import com.opl.service.loans.domain.fundprovider.ProductMaster;
 import com.opl.service.loans.domain.fundprovider.ProposalDetails;
 import com.opl.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.opl.service.loans.domain.fundseeker.ApplicationStatusMaster;
+import com.opl.service.loans.domain.fundseeker.BankingRelation;
 import com.opl.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.opl.service.loans.domain.fundseeker.corporate.AchievementDetail;
 import com.opl.service.loans.domain.fundseeker.corporate.AssociatedConcernDetail;
@@ -172,7 +185,6 @@ import com.opl.service.loans.domain.fundseeker.corporate.PromotorBackgroundDetai
 import com.opl.service.loans.domain.fundseeker.corporate.ProposedProductDetail;
 import com.opl.service.loans.domain.fundseeker.corporate.SecurityCorporateDetail;
 import com.opl.service.loans.domain.fundseeker.corporate.TotalCostOfProject;
-import com.opl.service.loans.domain.fundseeker.retail.BankingRelation;
 import com.opl.service.loans.domain.fundseeker.retail.CoApplicantDetail;
 import com.opl.service.loans.domain.fundseeker.retail.GuarantorDetails;
 import com.opl.service.loans.domain.fundseeker.retail.PrimaryAutoLoanDetail;
@@ -182,6 +194,7 @@ import com.opl.service.loans.domain.fundseeker.retail.PrimaryLasLoanDetail;
 import com.opl.service.loans.domain.fundseeker.retail.PrimaryPersonalLoanDetail;
 import com.opl.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.opl.service.loans.domain.sanction.LoanSanctionDomain;
+import com.opl.service.loans.repository.CommonAuditTableRepository;
 import com.opl.service.loans.repository.GstRelatedpartyRepository;
 import com.opl.service.loans.repository.common.LoanRepository;
 import com.opl.service.loans.repository.common.LogDetailsRepository;
@@ -194,6 +207,7 @@ import com.opl.service.loans.repository.fundseeker.corporate.AchievementDetailsR
 import com.opl.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.opl.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
 import com.opl.service.loans.repository.fundseeker.corporate.AssociatedConcernDetailRepository;
+import com.opl.service.loans.repository.fundseeker.corporate.BankingRelationRepository;
 import com.opl.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.opl.service.loans.repository.fundseeker.corporate.CorporateCoApplicantRepository;
 import com.opl.service.loans.repository.fundseeker.corporate.CreditRatingOrganizationDetailsRepository;
@@ -220,6 +234,7 @@ import com.opl.service.loans.service.common.DashboardService;
 import com.opl.service.loans.service.common.LogService;
 import com.opl.service.loans.service.fundprovider.OrganizationReportsService;
 import com.opl.service.loans.service.fundseeker.corporate.ApplicationProposalMappingService;
+import com.opl.service.loans.service.fundseeker.corporate.CMAService;
 import com.opl.service.loans.service.fundseeker.corporate.CorporateCoApplicantService;
 import com.opl.service.loans.service.fundseeker.corporate.CorporateFinalInfoService;
 import com.opl.service.loans.service.fundseeker.corporate.CorporateUploadService;
@@ -346,6 +361,19 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private FPAsyncComponent fpAsyncComp;
+	
+	@Autowired
+	private GstClient gstClient;
+
+	@Autowired
+	private ProfileClient profileClient;
+	
+	@Autowired
+	private CommonAuditTableRepository auditTableRepository;
+	
+	@Autowired
+	private EligibilityClient eligibilityClient;
+
 
 	@Autowired
 	private ProposalDetailsRepository proposalDetailsRepository;
@@ -367,6 +395,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private AnalyzerClient analyzerClient;
+	
+	@Autowired
+	private CMAService cmaService;
 
 	@Autowired
 	private PrimaryCorporateDetailRepository primaryCorporateRepository;
@@ -414,7 +445,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	private CorporateFinalInfoService corporateFinalInfoService;
 	
     @Autowired
-    private BankingRelationlRepository bankingRelationlRepository;
+    private BankingRelationRepository bankingRelationRepository;
 	
 	public static final DecimalFormat decim = new DecimalFormat("#,###.00");
 	
@@ -8668,13 +8699,290 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	
 	@Override
     public Boolean inactivateBankRelation(Long id, Long userId) {
-    	BankingRelation bankingRelations = bankingRelationlRepository.findOne(id);
-    	if (!CommonUtils.isObjectNullOrEmpty(bankingRelations)) {
-	    	bankingRelations.setIsActive(Boolean.FALSE);
-	    	bankingRelations.setModifiedBy(userId);
-	    	bankingRelations.setModifiedDate(new Date());
-	    	bankingRelationlRepository.save(bankingRelations);
-    	}
-    	return Boolean.TRUE;
+		/*
+		 * BankingRelation bankingRelations = bankingRelationlRepository.findOne(id); if
+		 * (!CommonUtils.isObjectNullOrEmpty(bankingRelations)) {
+		 * bankingRelations.setIsActive(Boolean.FALSE);
+		 * bankingRelations.setModifiedBy(userId); bankingRelations.setModifiedDate(new
+		 * Date()); bankingRelationlRepository.save(bankingRelations); }
+		 */
+    	return Boolean.FALSE;
     }
+	
+	
+	@Override
+	public Boolean updateBranchIdByProposal(LoanApplicationRequest app) {
+		ProposalDetails proposal = proposalDetailsRepository.findOne(app.getProposalId());
+		if(CommonUtils.isObjectNullOrEmpty(proposal)) {
+			return false;
+		}
+		proposal.setBranchId(app.getNpOrgId());
+		proposal.setModifiedBy(app.getUserId());
+		proposal.setModifiedDate(new Date());
+		return true;
+	}
+
+	@Override
+	public Boolean updateProfileId(LoanApplicationRequest loanApplicationRequest) {
+		logger.info("Started updateProfileId() ===>");
+		try {
+			Integer rowsUpdated = loanApplicationRepository.updateProfileMappingId(loanApplicationRequest.getProfileId(), loanApplicationRequest.getId(), true);
+			if (!CommonUtils.isObjectNullOrEmpty(rowsUpdated) && rowsUpdated > 0) {
+				logger.info("profile mapping id updated successfully");
+				return true;
+			}
+			logger.info("failed to update profile version id");
+			return false;
+		} catch (Exception e) {
+			logger.info("failed to update profile version id:", e);
+		}
+		logger.info("End updateProfileId() ===>");
+		return false;
+	}
+
+	
+	private Boolean copyGstDataForKeyPerson(Long applicationId, ProfileVerMapRequest profileVerMapRequest) {
+		logger.info("Started copyGstDataForKeyPerson() ===>");
+		try {
+			GSTR1Request gstr1Request = new GSTR1Request();
+			gstr1Request.setProfileId(profileVerMapRequest.getProfileId());
+			GstResponse gstResponse = gstClient.getKeyPersonDetails(gstr1Request);
+			if(gstResponse != null && gstResponse.getData() != null){
+				KeyPersonDetailsResponse keyPersonDetailsResponse = MultipleJSONObjectHelper.getObjectFromMap((Map)gstResponse.getData(),KeyPersonDetailsResponse.class);
+				if(keyPersonDetailsResponse == null){
+					logger.error("Failed to get data from GST.");
+					return false;
+				}
+				CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.findByApplicationIdIdAndIsActive(applicationId,true);
+				if(corporateApplicantDetail == null){
+					corporateApplicantDetail = new CorporateApplicantDetail();
+					corporateApplicantDetail.setCreatedBy(profileVerMapRequest.getUserId());
+					corporateApplicantDetail.setCreatedDate(new Date());
+					LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findByIdAndIsActive(applicationId,true);
+					if(loanApplicationMaster == null){
+					    logger.error("application not found");
+					    return false;
+	                }
+	                corporateApplicantDetail.setApplicationId(loanApplicationMaster);
+				}
+				corporateApplicantDetail.setGstIn(keyPersonDetailsResponse.getGstin());
+				corporateApplicantDetail.setConstitutionId(keyPersonDetailsResponse.getConstitutionId() == null ? null :keyPersonDetailsResponse.getConstitutionId().intValue());
+				corporateApplicantDetail.setPanNo(keyPersonDetailsResponse.getPan());
+				corporateApplicantDetail.setOrganisationName(keyPersonDetailsResponse.getEntityName());
+				corporateApplicantDetail.setModifiedBy(profileVerMapRequest.getUserId());
+				corporateApplicantDetail.setModifiedDate(new Date());
+				corporateApplicantDetail = corporateApplicantDetailRepository.save(corporateApplicantDetail);
+				return true;
+			}
+		} catch (Exception e) {
+			logger.error("Failed to copy gst data for key person: {} ", e);
+		}
+		logger.info("End copyGstDataForKeyPerson() ===>");
+		return false;
+	}
+
+
+	private Boolean copyItrDataForOneForm(Long applicationId, ProfileVerMapRequest profileVerMapRequest, Long userId) {
+		logger.info("Started copyItrDataForKeyPerson() ===>");
+		try {
+			ITRConnectionResponse itrConnectionResponse = itrClient.saveFinalITRDataInLoans(applicationId, profileVerMapRequest.getProfileId(), userId);
+			if (!CommonUtils.isObjectNullOrEmpty(itrConnectionResponse) && !CommonUtils.isObjectNullOrEmpty(itrConnectionResponse.getData())) {
+				CMARequest cmaRequest = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) itrConnectionResponse.getData(), CMARequest.class);
+				cmaService.saveCMA(cmaRequest);
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			logger.error("Failed to copy bank statement data: ", e);
+			auditTableRepository.save(new CommonAuditTable(applicationId, profileVerMapRequest.getProfileId(), LoanApplicationServiceImpl.class.getName(), "copyItrDataForOneForm", "Exception while Copy ITR Data : " + e.getMessage()));
+		}
+		return false;
+	}
+
+	private Boolean copyItrDataForKeyPerson(Long applicationId, ProfileVerMapRequest profileVerMapRequest, Long userId) {
+
+		Boolean success = false;
+		logger.info("Started copyItrDataForKeyPerson() ===>");
+		try {
+			ITRConnectionResponse itrConnectionResponse = itrClient.saveDataInLoans(applicationId, profileVerMapRequest.getProfileId(), userId);
+			if (itrConnectionResponse != null) {
+				success = true;
+			}
+		} catch (Exception e) {
+			logger.error("Failed to copy ITR data for key person: ", e);
+		}
+		if (!success)
+			logger.error("Failed to copy ITR data for key person");
+		logger.info("End copyItrDataForKeyPerson() ===>");
+		return success;
+	}
+
+	private Boolean copyBankStatementData(Long applicationId, ProfileVerMapRequest profileVerMapRequest) {
+
+		Boolean suceess = true;
+		logger.info("Started copyItrDataForKeyPerson() ===>");
+		try {
+			ReportRequest reportRequest = new ReportRequest();
+			reportRequest.setBsMasterId(profileVerMapRequest.getBsId());
+			AnalyzerResponse analyzerResponse = analyzerClient.getBankRelationData(reportRequest);
+			if (!CommonUtils.isObjectNullOrEmpty(analyzerResponse) && !CommonUtils.isObjectNullOrEmpty(analyzerResponse.getData())) {
+				List<?> list = ((List<?>) analyzerResponse.getData());
+				for (Object o : list) {
+					BankStatementResponse bankingRelationRes = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) o, BankStatementResponse.class);
+					BankingRelation bankingRelation = new BankingRelation();
+					bankingRelation.setAccountNo(bankingRelationRes.getBankAccountNo());
+					bankingRelation.setBank(bankingRelationRes.getBankName());
+					bankingRelation.setSinceMonth(bankingRelationRes.getSinceMonth());
+					bankingRelation.setSinceYear(bankingRelationRes.getSinceYear());
+					bankingRelation.setModifiedDate(bankingRelationRes.getModifiedDate());
+					bankingRelation.setApplicationId(applicationId);
+					bankingRelation.setIsActive(true);
+					bankingRelation = bankingRelationRepository.save(bankingRelation);
+					if (bankingRelation == null) {
+						logger.error("Failed to copy bank statement data for id: " + bankingRelationRes.getBsMasterId());
+						suceess = false;
+					}
+				}
+			}
+		} catch (AnalyzerException | IOException e) {
+			suceess = false;
+			logger.error("Failed to copy bank statement data: ", e);
+			auditTableRepository.save(new CommonAuditTable(applicationId, profileVerMapRequest.getProfileId(), LoanApplicationServiceImpl.class.getName(), "copyBankStatementData", "Exception while Copy bank Statement Data : " + e.getMessage()));
+		}
+		logger.info("End copyItrDataForKeyPerson() ===>");
+		return suceess;
+	}
+
+	public Boolean copyDataForOneForm(Long applicationId, Long profileId, Long userId) {
+
+		logger.info("Started copyDataForOneForm ===>");
+		ProfileVerMapRequest profileVerMapRequest = null;
+		try {
+			com.opl.profile.api.model.CommonResponse commonResponse = profileClient.getProfileVersionDetails(profileId);
+			if (!CommonUtils.isObjectNullOrEmpty(commonResponse) && !CommonUtils.isObjectNullOrEmpty(commonResponse.getData())) {
+				profileVerMapRequest = MultipleJSONObjectHelper.getObjectFromMap(((Map) commonResponse.getData()), ProfileVerMapRequest.class);
+			} else {
+				auditTableRepository.save(new CommonAuditTable(applicationId, profileId, LoanApplicationServiceImpl.class.getName(), "copyDataForOneForm", "Profile Version Mapping Data Not Fetched From ProfileId : " + profileId));
+				logger.error("Failed to get profile version detail of profileId:" + profileId + ",applicationId:" + applicationId);
+				return false;
+			}
+			logger.info("copyDataForOneForm() start profileId: " + profileVerMapRequest.getProfileId() + ",profileVersionId: " + profileVerMapRequest.getId() + ",applicationId:" + applicationId);
+			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findByIdAndIsActive(applicationId,true);
+			if(loanApplicationMaster.getProfileMappingId() != null && profileVerMapRequest.getId().longValue() == loanApplicationMaster.getProfileMappingId().longValue()){
+				logger.info("Already copied.");
+				return true;
+			}
+			boolean isBsDataCopied = copyBankStatementData(applicationId, profileVerMapRequest);
+			if (!isBsDataCopied) {
+				logger.error("Failed to copy Bank Statement data.");
+				return false;
+			} else {
+				logger.info("Bank Statement data copied successfully.");
+			}
+			
+			// COPY ELIGIBILITY DATA
+			try {
+				EligibilityResponse elgRes = eligibilityClient.saveGstCalculation(profileVerMapRequest.getGstId(), applicationId);
+				if(elgRes != null && elgRes.getData() != null && ((Boolean) elgRes.getData())) {
+					logger.info("Successfully Copy Eligiblity GST DATaa");
+				} else {
+					auditTableRepository.save(new CommonAuditTable(applicationId, profileVerMapRequest.getProfileId(), LoanApplicationServiceImpl.class.getName(), "copyDataForOneForm", "Response Null Or Empty While Copy GST Data In to Eligiblity Table"));
+					return false;
+				}
+			} catch (Exception e) {
+				logger.error("Exception while Copy GST Data To Eligiblity ==>" , e);
+				auditTableRepository.save(new CommonAuditTable(applicationId, profileVerMapRequest.getProfileId(), LoanApplicationServiceImpl.class.getName(), "copyDataForOneForm", "Exception while Copy GST data into Eligiblity :-" + e.getMessage()));
+				return false;
+			}
+			
+			boolean isItrDataCopied = copyItrDataForOneForm(applicationId, profileVerMapRequest, userId);
+			if (!isItrDataCopied) {
+				logger.error("Failed to copy ITR data.");
+				return false;
+			} else {
+				logger.info("ITR data copied successfully.");
+			}
+//			boolean isGstDataCopied = copyGstDataForOneForm(applicationId, profileVerMapRequest);
+//			if (!isGstDataCopied) {
+//				logger.error("Failed to copy GST data.");
+//				return false;
+//			} else {
+//				logger.info("GST data copied successfully.");
+//			}
+//			LoanApplicationRequest loanApplicationRequest = new LoanApplicationRequest();
+//			loanApplicationRequest.setId(applicationId);
+//			loanApplicationRequest.setProfileId(profileVerMapRequest.getId());
+//			updateProfileId(loanApplicationRequest);
+			logger.info("Data copied successfully...");
+		} catch (Exception e) {
+			logger.error("Failed to copy data profileId: " + profileVerMapRequest.getProfileId() + ",profileVersionId: " + profileVerMapRequest.getId() + ",applicationId:" + applicationId + " ", e);
+			auditTableRepository.save(new CommonAuditTable(applicationId, profileId, LoanApplicationServiceImpl.class.getName(), "copyDataForOneForm", "Exception while Copy Data After Submit Form : " + e.getMessage()));
+			return false;
+		}
+		logger.info("End copyDataForOneForm ===>");
+		return true;
+	}
+
+	public Boolean copyDataForKeyPerson(Long applicationId, Long profileId, Long userId) {
+
+		logger.info("Started copyDataForKeyPerson ====>  application Id: " + applicationId + " profileId: " + profileId + " userId: " + userId);
+		ProfileVerMapRequest profileVerMapRequest = null;
+		try {
+			com.opl.profile.api.model.CommonResponse commonResponse = profileClient.getProfileVersionDetails(profileId);
+			if (!CommonUtils.isObjectNullOrEmpty(commonResponse) && !CommonUtils.isObjectNullOrEmpty(commonResponse.getData())) {
+				profileVerMapRequest = MultipleJSONObjectHelper.getObjectFromMap(((Map) commonResponse.getData()), ProfileVerMapRequest.class);
+			} else {
+				logger.error("Failed to get profile version detail of profileId:" + profileId + ",applicationId:" + applicationId);
+				return false;
+			}
+			logger.info("profileId: " + profileVerMapRequest.getProfileId() + ",profileVersionId: " + profileVerMapRequest.getId() + ",applicationId:" + applicationId);
+			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findByIdAndIsActive(applicationId,true);
+			if(loanApplicationMaster.getProfileMappingId() != null && profileVerMapRequest.getId().longValue() == loanApplicationMaster.getProfileMappingId().longValue()){
+				logger.info("Already copied.");
+				return true;
+			}
+			boolean isItrDataCopied = copyItrDataForKeyPerson(applicationId, profileVerMapRequest, userId);
+			if (!isItrDataCopied) {
+				logger.error("Failed to copy ITR data.");
+				return false;
+			} else {
+				logger.info("ITR data copied successfully.");
+			}
+			boolean isGstDataCopied = copyGstDataForKeyPerson(applicationId, profileVerMapRequest);
+			if (!isGstDataCopied) {
+				logger.error("Failed to copy GST data.");
+				return false;
+			} else {
+				logger.info("GST data copied successfully.");
+			}
+
+			LoanApplicationRequest loanApplicationRequest = new LoanApplicationRequest();
+			loanApplicationRequest.setId(applicationId);
+			loanApplicationRequest.setProfileId(profileVerMapRequest.getId());
+			updateProfileId(loanApplicationRequest);
+			logger.info("Data copied successfully...");
+		} catch (Exception e) {
+			logger.error("Failed to copy data profileId: " + profileVerMapRequest.getProfileId() + ",profileVersionId: " + profileVerMapRequest.getId() + ",applicationId:" + applicationId + " ", e);
+			return false;
+		}
+		logger.info("End copyDataForKeyPerson ====>");
+		return true;
+	}
+
+	@Override
+	public Long getProfileMappingId(Long applicationId) {
+		try {
+			LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
+			LoanApplicationMaster applicationMaster = loanApplicationRepository.getById(applicationId);
+			if(applicationMaster == null){
+				return  null;
+			}
+			return applicationMaster.getProfileMappingId();
+		}catch (Exception e){
+			logger.error("Error while getting profile mapping id:",e);
+			return null;
+		}
+	}
+	
+	
 }

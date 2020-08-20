@@ -305,6 +305,21 @@ public interface LoanApplicationService {
 	public Boolean updateWcRenewalStatusByApplicationId(Integer wsRenwalStatusValue,Long applicationId);
 	
     public Boolean inactivateBankRelation(Long id, Long userId);
+    
+    /**
+	 * Update branch id for given proposal
+	 * @param app
+	 * @return
+	 */
+	public Boolean updateBranchIdByProposal(LoanApplicationRequest app);
+
+	public Boolean updateProfileId(LoanApplicationRequest loanApplicationRequest);
+
+	public Boolean copyDataForOneForm(Long applicationId, Long profileId, Long userId);
+
+	public Boolean copyDataForKeyPerson(Long applicationId, Long profileId, Long userId);
+
+	public Long getProfileMappingId(Long applicationId);
 	
 
 }

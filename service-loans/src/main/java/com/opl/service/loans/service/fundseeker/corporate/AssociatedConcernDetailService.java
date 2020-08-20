@@ -1,5 +1,6 @@
 package com.opl.service.loans.service.fundseeker.corporate;
 
+import java.io.IOException;
 import java.util.List;
 
 import com.opl.mudra.api.loans.exception.LoansException;
@@ -19,5 +20,9 @@ public interface AssociatedConcernDetailService {
 	public Boolean saveOrUpdate(List<AssociatedConcernDetailRequest> requests,Long applicationId,Long userId);
 
 	public List<AssociatedConcernDetailRequest> getAssociatedConcernsDetailListByProposalId(Long id,Long userId) throws Exception;
+
+	public Boolean saveOrUpdate(AssociatedConcernDetailRequest request) throws Exception;
+	
+	public Boolean inactive(AssociatedConcernDetailRequest request);
 
 }

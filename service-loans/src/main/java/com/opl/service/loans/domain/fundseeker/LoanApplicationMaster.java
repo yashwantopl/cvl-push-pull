@@ -222,6 +222,11 @@ public class LoanApplicationMaster implements Serializable {
 	@Column(name = "loan_campaign_code")
 	private String loanCampaignCode;
 	
+	@Column(name = "connect_flow_type_id")
+	private Integer connectFlowTypeId;
+
+	@Column(name = "profile_mapping_id")
+	private Long profileMappingId;
 
 	public Long getFpMakerId() {
 		return fpMakerId;
@@ -744,5 +749,22 @@ public class LoanApplicationMaster implements Serializable {
 	public void setLoanCampaignCode(String loanCampaignCode) {
 		this.loanCampaignCode = loanCampaignCode;
 	}
+
+	public Integer getConnectFlowTypeId() {
+		return connectFlowTypeId;
+	}
+
+	public void setConnectFlowTypeId(Integer connectFlowTypeId) {
+		this.connectFlowTypeId = connectFlowTypeId;
+	}
+
+	public Long getProfileMappingId() {
+		return profileMappingId;
+	}
+
+	public void setProfileMappingId(Long profileMappingId) {
+		this.profileMappingId = profileMappingId;
+	}
+	
 
 }
