@@ -38,47 +38,33 @@ import com.opl.mudra.client.workflow.WorkflowClient;
 import com.opl.profile.client.ProfileClient;
 
 
-/**
- * @author win7
- *
- */
-/*
- * @SpringBootApplication
- * 
- * @ComponentScan(basePackages = {"com.capitaworld"}) public class LoansMain {
- * 
- * public static void main(String[] args) throws Exception {
- * SpringApplication.run(LoansMain.class, args); }
- * 
- * }
- */
 @SpringBootApplication
 @ComponentScan(basePackages = { "com.opl" })
 @EnableAsync
 @EnableScheduling
 public class LoansMain {
-	
-	
-	@Value("${capitaworld.service.auth.url}")
-	String authUrl;
-
-	@Value("${notificationURL}")
-	String notificationURL;
-
-	@Value("${matchesURL}")
-	private String matchEngineUrl;
-
-	@Value("${capitaworld.service.cibil.url}")
-	private String cibilUrl;
-	
-	@Value("${capitaworld.service.gst.url}")
-	private String gstBaseUrl;
-
-	@Value("${capitaworld.service.itr.url}")
-	private String itrUrl;
 
 	@Autowired
 	ApplicationContext applicationContext;
+	
+	@Value("${capitaworld.service.connect.url}")
+	private String connectUrl;
+	
+	@Value("${capitaworld.service.auth.url}")
+	private String authUrl;
+	
+	@Value("${capitaworld.service.profile.url}")
+	private String profileUrl;
+	
+	@Value("${capitaworld.service.itr.url}")
+	private String itrUrl;
+	
+	@Value("${capitaworld.service.gst.url}")
+	private String gstUrl;
+	
+	
+	@Value("${capitaworld.service.analyzer.url}")
+	private String analyzerUrl;
 
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(LoansMain.class, args);
@@ -107,7 +93,7 @@ public class LoansMain {
 
 	@Bean
 	public NotificationClient notificationMasterClient() {
-		NotificationClient notificationClient = new NotificationClient(notificationURL);
+		NotificationClient notificationClient = new NotificationClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.notification));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(notificationClient);
 		return notificationClient;
 	}
@@ -128,14 +114,14 @@ public class LoansMain {
 
 	@Bean
 	public MatchEngineClient matchEngineClient() {
-		MatchEngineClient matchEngineClient = new MatchEngineClient(matchEngineUrl);
+		MatchEngineClient matchEngineClient = new MatchEngineClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.matchengine));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(matchEngineClient);
 		return matchEngineClient;
 	}
 
 	@Bean
 	public ProposalDetailsClient proposalDetailsClient() {
-		ProposalDetailsClient proposalDetailsClient = new ProposalDetailsClient(matchEngineUrl);
+		ProposalDetailsClient proposalDetailsClient = new ProposalDetailsClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.matchengine));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(proposalDetailsClient);
 		return proposalDetailsClient;
 	}
@@ -170,21 +156,21 @@ public class LoansMain {
 
 	@Bean
 	public GstClient gstClient() {
-		GstClient gstClient = new GstClient(gstBaseUrl);
+		GstClient gstClient = new GstClient(gstUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(gstClient);
 		return gstClient;
 	}
 
 	@Bean
 	public AnalyzerClient analyzerClient() {
-		AnalyzerClient analyzerClient = new AnalyzerClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.analyzer));
+		AnalyzerClient analyzerClient = new AnalyzerClient(analyzerUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(analyzerClient);
 		return analyzerClient;
 	}
 
 	@Bean
 	public ConnectClient connectClient() {
-		ConnectClient connectClient = new ConnectClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.connect));
+		ConnectClient connectClient = new ConnectClient(connectUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(connectClient);
 		return connectClient;
 	}
@@ -247,7 +233,7 @@ public class LoansMain {
 
 	@Bean
 	public ProfileClient profileClient() {
-		ProfileClient profileClient = new ProfileClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.profile));
+		ProfileClient profileClient = new ProfileClient(profileUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(profileClient);
 		return profileClient;
 	}

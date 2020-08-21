@@ -1,5 +1,6 @@
 package com.opl.service.loans.service.fundseeker.corporate.impl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -68,6 +69,8 @@ public class AssociatedConcernDetailServiceImpl implements AssociatedConcernDeta
 		}
 
 	}
+	
+	
 
 	@Override
 	public Boolean saveOrUpdate(List<AssociatedConcernDetailRequest> requests,Long applicationId,Long userId) {
@@ -84,6 +87,25 @@ public class AssociatedConcernDetailServiceImpl implements AssociatedConcernDeta
 			associatedConcernDetail.setModifiedDate(new Date());
 			associatedConcernDetailRepository.save(associatedConcernDetail);
 		}
+		return true;
+	}
+	
+	@Override
+	public Boolean saveOrUpdate(AssociatedConcernDetailRequest request) throws Exception {
+			AssociatedConcernDetail associatedConcernDetail = null;
+			if (request.getId() != null) {
+				associatedConcernDetail = associatedConcernDetailRepository.findOne(request.getId());
+			} else {
+				associatedConcernDetail = new AssociatedConcernDetail();
+				associatedConcernDetail.setCreatedBy(request.getUserId());
+				associatedConcernDetail.setCreatedDate(new Date());
+				associatedConcernDetail.setApplicationId(new LoanApplicationMaster(request.getApplicationId()));
+			}
+			BeanUtils.copyProperties(request, associatedConcernDetail);
+			associatedConcernDetail.setModifiedBy(request.getUserId());
+			associatedConcernDetail.setModifiedDate(new Date());
+			associatedConcernDetailRepository.save(associatedConcernDetail);
+		CommonDocumentUtils.endHook(logger, "saveOrUpdate");
 		return true;
 	}
 
@@ -144,6 +166,24 @@ public class AssociatedConcernDetailServiceImpl implements AssociatedConcernDeta
 			logger.error("Exception  in get monthlyTurnoverDetail  :-",e);
 			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
+	}
+
+
+
+	@Override
+	public Boolean inactive(AssociatedConcernDetailRequest request) {
+		
+		if(CommonUtils.isObjectListNull(request.getId())) {
+			associatedConcernDetailRepository.inActive(request.getUserId(), request.getApplicationId());
+		}else {
+			AssociatedConcernDetail associate = associatedConcernDetailRepository.findOne(request.getId());
+			if(!CommonUtils.isObjectNullOrEmpty(associate)) {
+				associate.setIsActive(false);
+				associatedConcernDetailRepository.save(associate);
+			}
+		}
+		
+		return true;
 	}
 
 }
