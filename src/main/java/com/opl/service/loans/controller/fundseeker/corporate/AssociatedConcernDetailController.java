@@ -91,6 +91,58 @@ public class AssociatedConcernDetailController {
 		}
 
 	}
+	
+	@RequestMapping(value = "/save_associate_concern", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveAssociateConcern(@RequestBody AssociatedConcernDetailRequest acRequest, HttpServletRequest request) {
+		
+		// request must not be null
+		CommonDocumentUtils.startHook(logger, "save");
+		
+		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+
+		if (acRequest == null) {
+			logger.warn("acRequest can not be empty ==>" + acRequest);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+
+		try {
+			acRequest.setUserId(userId);
+			associatedConcernDetaillService.saveOrUpdate(acRequest);
+			CommonDocumentUtils.endHook(logger, "save");
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()), HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while saving Associated Concerns Details==>", e);
+			return new ResponseEntity<LoansResponse>( new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+		}
+
+	}
+	
+	@RequestMapping(value = "/inactive_associate_concern", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> inactiveAssociateConcern(@RequestBody AssociatedConcernDetailRequest acRequest, HttpServletRequest request) {
+		
+		// request must not be null
+		CommonDocumentUtils.startHook(logger, "save");
+		
+		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		
+		if (CommonUtils.isObjectListNull(acRequest, acRequest.getApplicationId())) {
+			logger.warn("acRequest can not be empty ==>" + acRequest);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		
+		try {
+			acRequest.setUserId(userId);
+			associatedConcernDetaillService.inactive(acRequest);
+			CommonDocumentUtils.endHook(logger, "save");
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()), HttpStatus.OK);
+			
+		} catch (Exception e) {
+			logger.error("Error while saving Associated Concerns Details==>", e);
+			return new ResponseEntity<LoansResponse>( new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+		}
+		
+	}
 
 	@RequestMapping(value = "/getListByProposalId/{proposalId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getListByProposalId(@PathVariable Long proposalId, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {

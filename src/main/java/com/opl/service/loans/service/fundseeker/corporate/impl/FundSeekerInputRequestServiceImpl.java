@@ -518,7 +518,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			// Rohit
 			/*** SAVE ASSOCIATED CONCERN DETAILS***/
 			associatedConcernDetailRepository.inActive(fundSeekerInputRequest.getUserId(), fundSeekerInputRequest.getApplicationId());
-			if (fundSeekerInputRequest.getIsAssociateConcern()) {
+			if (fundSeekerInputRequest.getIsAssociateConcern() != null && fundSeekerInputRequest.getIsAssociateConcern()) {
 				for (AssociatedConcernDetailRequest associateDetail : fundSeekerInputRequest.getAssociatedConcernDetailRequestsList()) {
 					AssociatedConcernDetail associatedConcernDetail = new AssociatedConcernDetail();
 					BeanUtils.copyProperties(associateDetail, associatedConcernDetail);

@@ -9,12 +9,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.opl.mudra.api.loans.model.LoanApplicationDetailsForSp;
 import com.opl.service.loans.domain.fundseeker.LoanApplicationMaster;
 
 public interface LoanApplicationRepository extends JpaRepository<LoanApplicationMaster, Long> {
 
+	
+	public LoanApplicationMaster findByIdAndIsActive(Long applicationId,boolean isActive);
+	
 	@Modifying
 	@Query("update LoanApplicationMaster lm set lm.isActive = false,lm.modifiedDate = NOW(),lm.modifiedBy =:userId where lm.id =:id and lm.userId =:userId and lm.isActive = true")
 	public int inActive(@Param("id") Long id, @Param("userId") Long userId);
@@ -428,4 +432,18 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	@Modifying
 	@Query(value = "UPDATE loan_application.fs_loan_application_master cl SET cl.wc_renewal_status=:wsRenwalStatus WHERE cl.application_id=:applicationId",nativeQuery = true)
 	public int updateWcRenewalStatusOfLoanApplicationByApplicationId(@Param("wsRenwalStatus") Integer wsRenwalStatus, @Param("applicationId") Long applicationId);
+	
+	
+	@Transactional
+	@Modifying
+	@Query("UPDATE LoanApplicationMaster lam SET lam.profileMappingId =:profileMappingId , lam.modifiedDate = now() WHERE lam.id =:applicationId AND lam.isActive =:isActive ")
+	public Integer updateProfileMappingId(@Param("profileMappingId") Long profileMappingId ,  @Param("applicationId") Long applicationId , @Param("isActive") Boolean isActive) ;
+	
+	@Query("select lm.profileMappingId from LoanApplicationMaster lm where lm.id =:toApplicationId and lm.isActive = true")
+	public Long getProfileMappingId(@Param("toApplicationId") Long toApplicationId);
+	
+	@Modifying
+	@Query("update LoanApplicationMaster lm set lm.applicationCode =:appCode where lm.id =:id")
+	public int updateApplicationCode(@Param("id") Long id, @Param("appCode") String appCode);
+
 }
