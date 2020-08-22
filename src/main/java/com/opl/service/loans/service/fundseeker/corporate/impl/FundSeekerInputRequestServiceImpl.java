@@ -689,6 +689,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
         		fsInputRes.setOtherExpenses(corporateDetailMudraLoan.getOtherExpenses());
         		fsInputRes.setTotalExpenses(corporateDetailMudraLoan.getTotalExpenses());
         		fsInputRes.setMonthlySurplus(corporateDetailMudraLoan.getMonthlySurplus());
+        		fsInputRes.setOthergovauthorities(corporateDetailMudraLoan.getOthergovauthorities());
+        		fsInputRes.setOtherStatutory(corporateDetailMudraLoan.getOtherStatutory());
+        		fsInputRes.setDrugLicense(corporateDetailMudraLoan.getDrugLicense());
         	}
         	
 //			if (!CommonUtils.isObjectNullOrEmpty(mudraLoan)) {

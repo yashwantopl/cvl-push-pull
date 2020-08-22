@@ -269,7 +269,7 @@ public class CorporateServiceImpl implements CorporateService {
 				GstResponse gstRes = gstClient.checkGstDataUpdatedOrNot(gstReq);
 				if(gstRes != null && gstRes.getData() != null && gstRes.getStatus() == 200) {
 					Map<String, Object> map = (Map<String, Object>) gstRes.getData();
-					Boolean isDataUpdated = (Boolean) map.get("isDataUpdated");
+					Boolean isDataUpdated = Boolean.parseBoolean((String)map.get("isDataUpdated"));
 					if(isDataUpdated) {
 						gstMap.put(COMPLETED, Boolean.TRUE);
 						gstMap.put(DETAIL_VALID_UP_TO, (String) map.get("message"));
