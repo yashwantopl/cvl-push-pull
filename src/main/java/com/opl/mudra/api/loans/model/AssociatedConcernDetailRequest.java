@@ -89,6 +89,10 @@ public class AssociatedConcernDetailRequest implements Serializable{
 	
 	private Long pincode;
 	
+	private Long applicationId;
+	
+	private Long userId;
+	
 	private Long districtMappingId;
 	
 
@@ -379,6 +383,22 @@ public class AssociatedConcernDetailRequest implements Serializable{
 
 	public void setDistrictMappingId(Long districtMappingId) {
 		this.districtMappingId = districtMappingId;
+	}
+
+	public Long getApplicationId() {
+		return applicationId;
+	}
+
+	public void setApplicationId(Long applicationId) {
+		this.applicationId = applicationId;
+	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
 
 	public static void printFields(Object obj) throws LoansException {
