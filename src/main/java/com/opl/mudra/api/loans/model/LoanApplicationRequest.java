@@ -135,6 +135,10 @@ public class LoanApplicationRequest implements Serializable {
     
     /** userOrgId By Maaz*/
     private Long orgId;
+    
+    private Integer connectFlowTypeId;
+    
+    private Long profileId;
 
 	public Long getProposalId() {
 		return proposalId;
@@ -684,6 +688,24 @@ public class LoanApplicationRequest implements Serializable {
 
 	public void setOrgId(Long orgId) {
 		this.orgId = orgId;
+	}
+	
+	
+
+	public Integer getConnectFlowTypeId() {
+		return connectFlowTypeId;
+	}
+
+	public void setConnectFlowTypeId(Integer connectFlowTypeId) {
+		this.connectFlowTypeId = connectFlowTypeId;
+	}
+
+	public Long getProfileId() {
+		return profileId;
+	}
+
+	public void setProfileId(Long profileId) {
+		this.profileId = profileId;
 	}
 
 	@Override

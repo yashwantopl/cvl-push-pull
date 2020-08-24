@@ -216,6 +216,14 @@ public class FundSeekerInputRequestResponse {
 	
 	private Integer employmentGeneration;
 	
+	private String drugLicense;
+	
+	private String otherStatutory;
+	
+	private String registerUnderMsme;
+	
+	private String registerUnderShopEstAct;
+	
 	
 	public Boolean getIsIsoCertified() {
 		return isIsoCertified;
@@ -1001,6 +1009,38 @@ public class FundSeekerInputRequestResponse {
 
 	public void setEmploymentGeneration(Integer employmentGeneration) {
 		this.employmentGeneration = employmentGeneration;
+	}
+
+	public String getDrugLicense() {
+		return drugLicense;
+	}
+
+	public void setDrugLicense(String drugLicense) {
+		this.drugLicense = drugLicense;
+	}
+
+	public String getOtherStatutory() {
+		return otherStatutory;
+	}
+
+	public void setOtherStatutory(String otherStatutory) {
+		this.otherStatutory = otherStatutory;
+	}
+	
+	public String getRegisterUnderShopEstAct() {
+		return registerUnderShopEstAct;
+	}
+
+	public void setRegisterUnderShopEstAct(String registerUnderShopEstAct) {
+		this.registerUnderShopEstAct = registerUnderShopEstAct;
+	}
+
+	public String getRegisterUnderMsme() {
+		return registerUnderMsme;
+	}
+
+	public void setRegisterUnderMsme(String registerUnderMsme) {
+		this.registerUnderMsme = registerUnderMsme;
 	}
 
 	@Override

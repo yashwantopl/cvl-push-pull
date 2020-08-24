@@ -270,6 +270,7 @@ public class UsersRequest implements Serializable {
 	private Double totalWcOs;
 	private Double totalTlOs;
 	private String isMudraCover;
+	private Boolean isNbfcUser;
 	
 	
 	private String industryReason;
