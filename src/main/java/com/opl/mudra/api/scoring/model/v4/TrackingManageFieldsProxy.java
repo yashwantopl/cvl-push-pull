@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.MappedSuperclass;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.opl.mudra.api.common.AuditFieldsProxy;
 
@@ -18,7 +16,6 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
 @AllArgsConstructor
-@MappedSuperclass
 public class TrackingManageFieldsProxy extends AuditFieldsProxy implements Serializable {
 
 	private static final long serialVersionUID = -93321449016462267L;
@@ -43,11 +40,17 @@ public class TrackingManageFieldsProxy extends AuditFieldsProxy implements Seria
 	private Object workFlowData;
 	
 	private List<Long> roleIds;
+	
+	private Long roleId;
 
 	private Long userId;
 	
-	private Integer businessTypeId;
+	private Long businessTypeId;
 	
 	private List<String> actionTakenBy;
+	
+	private Float version;
+	
+	private Boolean isCopied;
 
 }

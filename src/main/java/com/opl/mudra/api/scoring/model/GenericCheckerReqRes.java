@@ -28,4 +28,5 @@ public class GenericCheckerReqRes implements Serializable  {
     private String remark;
     private Boolean actionFlag;
     private Boolean isEdit;
+    private Integer statusId;
 }

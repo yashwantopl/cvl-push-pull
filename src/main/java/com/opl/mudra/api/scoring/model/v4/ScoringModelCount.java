@@ -1,59 +1,25 @@
 package com.opl.mudra.api.scoring.model.v4;
 
-public class ScoringModelCount {
+import java.io.Serializable;
 
-	Integer savedModelCount;
-	Integer sentToCheckerModelCount;
-	Integer sendBackByCheckerModelCount;
-	Integer receivedFromMakerModelCount;
-	Integer sentBackToMakerModelCount;
-	Integer activeModelCount;
-	Integer inactiveModelCount;
-	
-	
-	public Integer getSavedModelCount() {
-		return savedModelCount;
-	}
-	public void setSavedModelCount(Integer savedModelCount) {
-		this.savedModelCount = savedModelCount;
-	}
-	public Integer getSentToCheckerModelCount() {
-		return sentToCheckerModelCount;
-	}
-	public void setSentToCheckerModelCount(Integer sentToCheckerModelCount) {
-		this.sentToCheckerModelCount = sentToCheckerModelCount;
-	}
-	public Integer getSendBackByCheckerModelCount() {
-		return sendBackByCheckerModelCount;
-	}
-	public void setSendBackByCheckerModelCount(Integer sendBackByCheckerModelCount) {
-		this.sendBackByCheckerModelCount = sendBackByCheckerModelCount;
-	}
-	public Integer getReceivedFromMakerModelCount() {
-		return receivedFromMakerModelCount;
-	}
-	public void setReceivedFromMakerModelCount(Integer receivedFromMakerModelCount) {
-		this.receivedFromMakerModelCount = receivedFromMakerModelCount;
-	}
-	public Integer getSentBackToMakerModelCount() {
-		return sentBackToMakerModelCount;
-	}
-	public void setSentBackToMakerModelCount(Integer sentBackToMakerModelCount) {
-		this.sentBackToMakerModelCount = sentBackToMakerModelCount;
-	}
-	public Integer getActiveModelCount() {
-		return activeModelCount;
-	}
-	public void setActiveModelCount(Integer activeModelCount) {
-		this.activeModelCount = activeModelCount;
-	}
-	public Integer getInactiveModelCount() {
-		return inactiveModelCount;
-	}
-	public void setInactiveModelCount(Integer inactiveModelCount) {
-		this.inactiveModelCount = inactiveModelCount;
-	}
-	
-	
-	
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class ScoringModelCount implements Serializable {
+
+	private static final long serialVersionUID = -7362953837063029056L;
+	private Integer savedModelCount;
+	private Integer sentToCheckerModelCount;
+	private Integer sendBackByCheckerModelCount;
+	private Integer receivedFromMakerModelCount;
+	private Integer sentBackToMakerModelCount;
+	private Integer activeModelCount;
+	private Integer inactiveModelCount;
 }
