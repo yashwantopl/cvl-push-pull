@@ -1,18 +1,15 @@
 package com.opl.mudra.api.scoring.v4.enums;
 
 public enum ITRType {
-	AUDITED_LESS_THAN_THREE_YEAR(1, "Audited less than 3 years", "ITR less than 3 years"),
-	AUDITED_THREE_YEAR(3, "Audited 3 years", "ITR 3 years"),
-	PRESUMPTIVE(4, "Presumptive", "Presumptive");
+	AUDITED(1,"Audited ITR"),
+	NO_ITR(2,"No ITR");
 
 	private final Integer id;
 	private final String value;
-	private final String description;
 
-	ITRType(Integer id, String value, String description) {
+	ITRType(Integer id, String value) {
 		this.id = id;
 		this.value = value;
-		this.description = description;
 	}
 
 	public Integer getId() {
@@ -23,21 +20,13 @@ public enum ITRType {
 		return value;
 	}
 
-	public String getDescription() {
-		return description;
-	}
-
 	public static ITRType getById(Integer id) {
-		switch (id) {
-		case 1:
-			return AUDITED_LESS_THAN_THREE_YEAR;
-		case 3:
-			return AUDITED_THREE_YEAR;
-		case 4:
-			return PRESUMPTIVE;
-		default:
-			return null;
+		for(ITRType type : ITRType.values()) {
+			if(type.getId() == id) {
+				return type;
+			}
 		}
+		return null;
 	}
 
 	public static ITRType[] getAll() {
