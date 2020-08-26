@@ -202,7 +202,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 
 	public String getGSTINByAppId(Long applicationId) {
 		return  (String) entityManager
-				.createNativeQuery("SELECT gstin FROM connect.`connect_log` WHERE application_id =:applicationId order by id desc limit 1")
+				.createNativeQuery("SELECT gstin FROM connect_mudra.`connect_log` WHERE application_id =:applicationId order by id desc limit 1")
 						.setParameter("applicationId", applicationId).getSingleResult();
 	}
 
@@ -288,7 +288,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	@SuppressWarnings("unchecked")
 	@Override
 	public Boolean isITRUploaded(Long applicationId) {
-		List<Boolean> result = (List<Boolean>)entityManager.createNativeQuery("SELECT itr.`is_manual_filled` FROM `itr_api`.`itr_tracking` itr WHERE itr.`application_id` =:applicationId AND itr.`is_active` = TRUE")
+		List<Boolean> result = (List<Boolean>)entityManager.createNativeQuery("SELECT itr.`is_manual_filled` FROM `itr_api_mudra`.`itr_tracking` itr WHERE itr.`application_id` =:applicationId AND itr.`is_active` = TRUE")
 				.setParameter("applicationId", applicationId)
 				.getResultList();
 		if(!CommonUtils.isListNullOrEmpty(result)) {
@@ -672,7 +672,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	@Override
 	public boolean getCibilBureauAPITrueOrFalse(Long orgId) {
 		try {
-			BigInteger id =  (BigInteger) entityManager.createNativeQuery("SELECT cb.id FROM `cibil`.`organisation_master` cb WHERE cb.id =:orgId AND cb.`is_msme_api_active` IS TRUE")
+			BigInteger id =  (BigInteger) entityManager.createNativeQuery("SELECT cb.id FROM `cibil_mudra`.`organisation_master` cb WHERE cb.id =:orgId AND cb.`is_msme_api_active` IS TRUE")
 					.setParameter("orgId", orgId).getSingleResult();
 			return id != null ? true : false;
 		} catch (Exception e) {
@@ -705,7 +705,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	@Override
 	@SuppressWarnings("unchecked")
 	public Boolean getIsItrManualFilled(Long applicationId) {
-		List<Boolean> result = 	entityManager.createNativeQuery("SELECT is_manual_filled FROM `itr_api`.`itr_tracking` WHERE application_id =:appId AND is_active = TRUE ORDER BY id DESC LIMIT 1")
+		List<Boolean> result = 	entityManager.createNativeQuery("SELECT is_manual_filled FROM `itr_api_mudra`.`itr_tracking` WHERE application_id =:appId AND is_active = TRUE ORDER BY id DESC LIMIT 1")
 				.setParameter("appId", applicationId)
 				.getResultList(); 
 		return !CommonUtils.isListNullOrEmpty(result) ? result.get(0) : null;
