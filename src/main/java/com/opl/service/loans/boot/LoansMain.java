@@ -50,6 +50,12 @@ public class LoansMain {
 	@Value("${capitaworld.service.connect.url}")
 	private String connectUrl;
 	
+	@Value("${ratingURL}")
+	private String ratingURL;
+	
+	@Value("${capitaworld.service.cibil.url}")
+	private String cibilUrl;
+	
 	@Value("${capitaworld.service.auth.url}")
 	private String authUrl;
 	
@@ -62,9 +68,21 @@ public class LoansMain {
 	@Value("${capitaworld.service.gst.url}")
 	private String gstUrl;
 	
+	@Value("${capitaworld.service.scoring.url}")
+	private String scoringUrl;
+	
 	
 	@Value("${capitaworld.service.analyzer.url}")
 	private String analyzerUrl;
+	
+	@Value("${capitaworld.service.users.url}")
+	private String usersUrl;
+	
+	@Value("${capitaworld.service.oneform.url}")
+	private String oneformUrl;
+	
+	@Value("${capitaworld.service.eligibility.url}")
+	private String eligibilityUrl;
 
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(LoansMain.class, args);
@@ -107,7 +125,7 @@ public class LoansMain {
 
 	@Bean
 	public OneFormClient oneFormClient() {
-		OneFormClient oneFormClient = new OneFormClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.oneform));
+		OneFormClient oneFormClient = new OneFormClient(oneformUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(oneFormClient);
 		return oneFormClient;
 	}
@@ -156,21 +174,21 @@ public class LoansMain {
 
 	@Bean
 	public GstClient gstClient() {
-		GstClient gstClient = new GstClient(gstUrl);
+		GstClient gstClient = new GstClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.gst));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(gstClient);
 		return gstClient;
 	}
 
 	@Bean
 	public AnalyzerClient analyzerClient() {
-		AnalyzerClient analyzerClient = new AnalyzerClient(analyzerUrl);
+		AnalyzerClient analyzerClient = new AnalyzerClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.analyzer));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(analyzerClient);
 		return analyzerClient;
 	}
 
 	@Bean
 	public ConnectClient connectClient() {
-		ConnectClient connectClient = new ConnectClient(connectUrl);
+		ConnectClient connectClient = new ConnectClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.connect));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(connectClient);
 		return connectClient;
 	}
@@ -212,14 +230,14 @@ public class LoansMain {
 
 	@Bean
 	public ITRClient itrClient() {
-		ITRClient itrClient = new ITRClient(itrUrl);
+		ITRClient itrClient = new ITRClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.itr));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(itrClient);
 		return itrClient;
 	}
 	
 	@Bean
 	public AuthClient authClient() {
-		AuthClient authClient = new AuthClient(authUrl);
+		AuthClient authClient = new AuthClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.auth));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(authClient);
 		return authClient;
 	}
@@ -233,7 +251,7 @@ public class LoansMain {
 
 	@Bean
 	public ProfileClient profileClient() {
-		ProfileClient profileClient = new ProfileClient(profileUrl);
+		ProfileClient profileClient = new ProfileClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.profile));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(profileClient);
 		return profileClient;
 	}
