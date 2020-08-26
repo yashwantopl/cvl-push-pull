@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.opl.mudra.api.common.CommonResponse;
 import com.opl.mudra.api.connect.ConnectResponse;
 import com.opl.mudra.api.loans.exception.LoansException;
 import com.opl.mudra.api.loans.model.DirectorBackgroundDetailRequest;
@@ -15,7 +16,7 @@ import com.opl.mudra.api.loans.model.corporate.PrimaryCorporateDetailMudraLoanRe
 
 public interface FundSeekerInputRequestService {
 
-    public boolean saveOrUpdate(FundSeekerInputRequestResponse fundSeekerInputRequest) throws LoansException;
+    public CommonResponse saveOrUpdate(FundSeekerInputRequestResponse fundSeekerInputRequest) throws LoansException;
 
     public ResponseEntity<LoansResponse> saveOrUpdateDirectorDetail(FundSeekerInputRequestResponse fundSeekerInputRequest);
 

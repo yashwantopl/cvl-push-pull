@@ -46,6 +46,7 @@ import com.opl.mudra.api.analyzer.model.common.ReportRequest;
 import com.opl.mudra.api.common.CommonUtils;
 import com.opl.mudra.api.common.CommonUtils.BusinessType;
 import com.opl.mudra.api.common.CommonUtils.LoanType;
+import com.opl.mudra.api.common.MultipleJSONObjectHelper;
 import com.opl.mudra.api.connect.ConnectRequest;
 import com.opl.mudra.api.connect.ConnectResponse;
 import com.opl.mudra.api.dms.model.DocumentRequest;
@@ -102,7 +103,6 @@ import com.opl.mudra.api.loans.model.corporate.CorporateProduct;
 import com.opl.mudra.api.loans.model.mobile.MLoanDetailsResponse;
 import com.opl.mudra.api.loans.model.mobile.MobileLoanRequest;
 import com.opl.mudra.api.loans.model.retail.BankRelationshipRequest;
-import com.opl.mudra.api.loans.utils.MultipleJSONObjectHelper;
 import com.opl.mudra.api.matchengine.exception.MatchException;
 import com.opl.mudra.api.matchengine.model.ProposalCountResponse;
 import com.opl.mudra.api.matchengine.model.ProposalMappingRequest;
@@ -8284,7 +8284,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@Override
 	public String getUserApplicationList(Long userId) {
 		
-		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("loan_application.listUserApplication");
+		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("listUserApplication");
 		storedProcedureQuery.registerStoredProcedureParameter(CommonUtils.USER_ID,Long.class, ParameterMode.IN);
 		storedProcedureQuery.registerStoredProcedureParameter("result",String.class, ParameterMode.OUT);
 		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);

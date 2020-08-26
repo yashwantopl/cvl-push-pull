@@ -46,6 +46,25 @@ public class LoansMain {
 
 	@Autowired
 	ApplicationContext applicationContext;
+	
+	@Value("${capitaworld.service.connect.url}")
+	private String connectUrl;
+	
+	@Value("${capitaworld.service.auth.url}")
+	private String authUrl;
+	
+	@Value("${capitaworld.service.profile.url}")
+	private String profileUrl;
+	
+	@Value("${capitaworld.service.itr.url}")
+	private String itrUrl;
+	
+	@Value("${capitaworld.service.gst.url}")
+	private String gstUrl;
+	
+	
+	@Value("${capitaworld.service.analyzer.url}")
+	private String analyzerUrl;
 
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(LoansMain.class, args);
@@ -137,21 +156,21 @@ public class LoansMain {
 
 	@Bean
 	public GstClient gstClient() {
-		GstClient gstClient = new GstClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.gst));
+		GstClient gstClient = new GstClient(gstUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(gstClient);
 		return gstClient;
 	}
 
 	@Bean
 	public AnalyzerClient analyzerClient() {
-		AnalyzerClient analyzerClient = new AnalyzerClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.analyzer));
+		AnalyzerClient analyzerClient = new AnalyzerClient(analyzerUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(analyzerClient);
 		return analyzerClient;
 	}
 
 	@Bean
 	public ConnectClient connectClient() {
-		ConnectClient connectClient = new ConnectClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.connect));
+		ConnectClient connectClient = new ConnectClient(connectUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(connectClient);
 		return connectClient;
 	}
@@ -193,14 +212,14 @@ public class LoansMain {
 
 	@Bean
 	public ITRClient itrClient() {
-		ITRClient itrClient = new ITRClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.itr));
+		ITRClient itrClient = new ITRClient(itrUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(itrClient);
 		return itrClient;
 	}
 	
 	@Bean
 	public AuthClient authClient() {
-		AuthClient authClient = new AuthClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.auth));
+		AuthClient authClient = new AuthClient(authUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(authClient);
 		return authClient;
 	}
@@ -214,7 +233,7 @@ public class LoansMain {
 
 	@Bean
 	public ProfileClient profileClient() {
-		ProfileClient profileClient = new ProfileClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.profile));
+		ProfileClient profileClient = new ProfileClient(profileUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(profileClient);
 		return profileClient;
 	}
