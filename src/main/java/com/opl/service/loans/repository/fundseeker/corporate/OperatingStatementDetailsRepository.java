@@ -101,7 +101,7 @@ public interface OperatingStatementDetailsRepository  extends JpaRepository<Oper
 	 * @return String 
 	 * @author rohit.chaudhary
 	 */
-	@Query(value="SELECT CAST(JSON_OBJECT('year', JSON_OBJECTAGG(YEAR, net_profit_or_loss)) AS CHAR) AS YEAR FROM `loan_application`.`fs_corporate_cma_operating_statement_details` WHERE application_id=:applicationId and is_active = true AND proposal_mapping_id IS NULL", nativeQuery=true)
+	@Query(value="SELECT CAST(JSON_OBJECT('year', JSON_OBJECTAGG(YEAR, net_profit_or_loss)) AS CHAR) AS YEAR FROM `fs_corporate_cma_operating_statement_details` WHERE application_id=:applicationId and is_active = true AND proposal_mapping_id IS NULL", nativeQuery=true)
 	public String getNetProfitOrLoss(@Param("applicationId") Long applicationId);
 	
 	/**
@@ -111,7 +111,7 @@ public interface OperatingStatementDetailsRepository  extends JpaRepository<Oper
 	 * @return String 
 	 * @author rohit.chaudhary
 	 */
-	@Query(value="SELECT CAST(JSON_OBJECT('year', JSON_OBJECTAGG(YEAR, net_sales)) AS CHAR) AS YEAR FROM `loan_application`.`fs_corporate_cma_operating_statement_details` WHERE application_id=:applicationId and is_active = true AND proposal_mapping_id IS NULL", nativeQuery=true)
+	@Query(value="SELECT CAST(JSON_OBJECT('year', JSON_OBJECTAGG(YEAR, net_sales)) AS CHAR) AS YEAR FROM `fs_corporate_cma_operating_statement_details` WHERE application_id=:applicationId and is_active = true AND proposal_mapping_id IS NULL", nativeQuery=true)
 	public String getNetSales(@Param("applicationId") Long applicationId);
 	
 	

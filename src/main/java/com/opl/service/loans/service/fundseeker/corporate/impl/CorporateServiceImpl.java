@@ -403,7 +403,12 @@ public class CorporateServiceImpl implements CorporateService {
 			GstResponse gstRes = gstClient.checkGstDataUpdatedOrNot(gstReq);
 			if(gstRes != null && gstRes.getData() != null) {
 				Map<String, Object> map = (Map<String, Object>) gstRes.getData();
-				Boolean isDataUpdated = (Boolean) map.get("isDataUpdated");
+				Boolean isDataUpdated = false;
+				if(map.get("isDataUpdated") instanceof String) {					
+					isDataUpdated = Boolean.parseBoolean((String)map.get("isDataUpdated"));
+				}else {
+					isDataUpdated = (Boolean)map.get("isDataUpdated");
+				}
 				if(isDataUpdated != null && isDataUpdated) {
 					isUpdated = Boolean.TRUE;
 				}
@@ -431,7 +436,12 @@ public class CorporateServiceImpl implements CorporateService {
 			
 			AnalyzerResponse analyRes = analyzerClient.isBankStatementIsUpdated(profileId, null);
 			if (analyRes != null) {
-				Boolean isBsUpdated = (Boolean) analyRes.getData();
+				Boolean isBsUpdated  = false;
+				if(analyRes.getData() instanceof String) {
+					isBsUpdated = Boolean.parseBoolean((String)analyRes.getData());
+				}else {
+					isBsUpdated = (Boolean) analyRes.getData();
+				}
 				if(isBsUpdated != null && isBsUpdated) {
 					isUpdated = Boolean.TRUE;
 				}

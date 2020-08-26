@@ -50,7 +50,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	public Boolean isCampaignUser(Long userId) {
 		try {
 			List<String> list =  (List<String>) entityManager
-					.createNativeQuery("SELECT cam.loan_campaign_code FROM loan_application.fs_loan_application_master cam WHERE cam.application_id =:applicationId")
+					.createNativeQuery("SELECT cam.loan_campaign_code FROM fs_loan_application_master cam WHERE cam.application_id =:applicationId")
 					.setParameter(CommonUtils.APPLICATION_ID, userId)
 					.getResultList();
 			return !CommonUtils.isListNullOrEmpty(list);
@@ -209,7 +209,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	public String getCommonPropertiesValue(String key) {
 		try {
 			return (String) entityManager
-					.createNativeQuery("SELECT `value` FROM `loan_application`.`common_properties` WHERE `key` =:key")
+					.createNativeQuery("SELECT `value` FROM `common_properties` WHERE `key` =:key")
 							.setParameter("key", key).getSingleResult();
 		} catch (Exception e) {
 			logger.error("Exception while get common properties value ----->" ,e);
@@ -220,7 +220,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	@Override
 	public Long getOfflineCountByAppId(Long applicationId) {
 		BigInteger count =  (BigInteger) entityManager
-				.createNativeQuery("SELECT COUNT(*) FROM `loan_application`.`ineligible_proposal_details` inl WHERE inl.`application_id` =:applicationId AND inl.`is_active` = TRUE AND inl.`addi_fields` = '1'")
+				.createNativeQuery("SELECT COUNT(*) FROM `ineligible_proposal_details` inl WHERE inl.`application_id` =:applicationId AND inl.`is_active` = TRUE AND inl.`addi_fields` = '1'")
 						.setParameter("applicationId", applicationId).getSingleResult();
 		return count != null ? count.longValue() : 0l;
 	}
@@ -231,8 +231,8 @@ public class LoanRepositoryImpl implements LoanRepository {
 			return  (String) entityManager
 					.createNativeQuery("SELECT CAST(JSON_ARRAYAGG(JSON_OBJECT('applicationId',inl.`application_id`,\r\n" + 
 							"'status',sts.`display_name`,'bankName',org.`organisation_name`,'branchName',brn.`name`,'branchCode', brn.`code`)) AS CHAR) AS JSON \r\n" + 
-							"FROM `loan_application`.`ineligible_proposal_details` inl \r\n" + 
-							"LEFT JOIN `loan_application`.`ineligible_proposal_status` sts ON sts.`id` = inl.`status` \r\n" + 
+							"FROM `ineligible_proposal_details` inl \r\n" + 
+							"LEFT JOIN `ineligible_proposal_status` sts ON sts.`id` = inl.`status` \r\n" + 
 							"LEFT JOIN users.`user_organisation_master` org ON org.`user_org_id` = inl.`user_org_id` \r\n" + 
 							"LEFT JOIN users.`branch_master` brn ON brn.`id` = inl.`branch_id` \r\n" + 
 							"WHERE inl.`application_id` =:applicationId AND inl.`is_active` = TRUE AND inl.`addi_fields` = '1';")
@@ -248,8 +248,8 @@ public class LoanRepositoryImpl implements LoanRepository {
 		try {
 			return  (String) entityManager
 					.createNativeQuery("SELECT CAST(JSON_OBJECT('applicationId',inl.`application_id`,'status',sts.`display_name`,'bankName',org.`organisation_name`,'modifiedDate',inl.`modified_date`) AS CHAR ) \r\n" + 
-							"FROM `loan_application`.`ineligible_proposal_details` inl \r\n" + 
-							"LEFT JOIN `loan_application`.`ineligible_proposal_status` sts ON sts.`id` = inl.`status`\r\n" + 
+							"FROM `ineligible_proposal_details` inl \r\n" + 
+							"LEFT JOIN `ineligible_proposal_status` sts ON sts.`id` = inl.`status`\r\n" + 
 							"LEFT JOIN users.`user_organisation_master` org ON org.`user_org_id` = inl.`user_org_id`\r\n" + 
 							"WHERE inl.`application_id` =:applicationId AND inl.`is_active` = TRUE AND inl.`addi_fields` = '1'")
 							.setParameter("applicationId", applicationId).getSingleResult();	
@@ -264,7 +264,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	@Override
 	public List<Double> getIncomeOfItrOf3Years(Long applicationId) {
 
-		return (List<Double>)entityManager.createNativeQuery("SELECT appInc.`salary_income` FROM `loan_application`.`fs_retail_applicant_income_details` appInc WHERE appInc.`application_id` =:applicationId AND appInc.`proposal_mapping_id` IS NULL AND `appInc`.`salary_income` IS NOT NULL ORDER BY appInc.`year` DESC ").setParameter("applicationId", applicationId) .getResultList();
+		return (List<Double>)entityManager.createNativeQuery("SELECT appInc.`salary_income` FROM `fs_retail_applicant_income_details` appInc WHERE appInc.`application_id` =:applicationId AND appInc.`proposal_mapping_id` IS NULL AND `appInc`.`salary_income` IS NOT NULL ORDER BY appInc.`year` DESC ").setParameter("applicationId", applicationId) .getResultList();
 //		if(!CommonUtils.isListNullOrEmpty(resultList)) {
 //			List<Double> finalList = new ArrayList<>(resultList.size());
 //			for(Object o : resultList) {
@@ -280,7 +280,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	@Override
 	public List<Double> getIncomeOfItrOf3YearsOfCoApplicant(Long coAppId) {
 
-		return (List<Double>)entityManager.createNativeQuery("SELECT appInc.`salary_income` FROM `loan_application`.`fs_retail_co_applicant_income_details` appInc WHERE appInc.`co_app_id` =:id AND appInc.`proposal_mapping_id` IS NULL AND `appInc`.`salary_income` IS NOT NULL ORDER BY appInc.`year` DESC ")
+		return (List<Double>)entityManager.createNativeQuery("SELECT appInc.`salary_income` FROM `fs_retail_co_applicant_income_details` appInc WHERE appInc.`co_app_id` =:id AND appInc.`proposal_mapping_id` IS NULL AND `appInc`.`salary_income` IS NOT NULL ORDER BY appInc.`year` DESC ")
 				.setParameter("id", coAppId)
 				.getResultList();
 	}
@@ -300,7 +300,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	@SuppressWarnings("unchecked")
 	@Override
 	public Boolean isITRUploadedForCoApp(Long applicationId, Long coAppId) {
-		List<BigInteger> result = (List<BigInteger>)entityManager.createNativeQuery("SELECT COUNT(app.`id`) FROM `loan_application`.`fs_retail_co_applicant_details` app WHERE app.`is_itr_completed` = TRUE AND app.`id` =:id AND app.`application_id` =:applicationId AND app.`is_active` = TRUE")
+		List<BigInteger> result = (List<BigInteger>)entityManager.createNativeQuery("SELECT COUNT(app.`id`) FROM `fs_retail_co_applicant_details` app WHERE app.`is_itr_completed` = TRUE AND app.`id` =:id AND app.`application_id` =:applicationId AND app.`is_active` = TRUE")
 				.setParameter("applicationId", applicationId)
 				.setParameter("id", coAppId)
 				.getResultList();
@@ -313,7 +313,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	@SuppressWarnings("unchecked")
 	@Override
 	public Boolean isITRSkippedForCoApp(Long applicationId, Long coAppId) {
-		List<BigInteger> result = (List<BigInteger>)entityManager.createNativeQuery("SELECT COUNT(app.`id`) FROM `loan_application`.`fs_retail_co_applicant_details` app WHERE app.`is_itr_skip` = TRUE AND app.`id` =:id AND app.`application_id` =:applicationId AND app.`is_active` = TRUE")
+		List<BigInteger> result = (List<BigInteger>)entityManager.createNativeQuery("SELECT COUNT(app.`id`) FROM `fs_retail_co_applicant_details` app WHERE app.`is_itr_skip` = TRUE AND app.`id` =:id AND app.`application_id` =:applicationId AND app.`is_active` = TRUE")
 				.setParameter("applicationId", applicationId)
 				.setParameter("id", coAppId)
 				.getResultList();
@@ -326,7 +326,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	@SuppressWarnings("unchecked")
 	@Override
 	public Boolean isITRMannualForCoApp(Long applicationId, Long coAppId) {
-		List<BigInteger> result = (List<BigInteger>)entityManager.createNativeQuery("SELECT COUNT(app.`id`) FROM `loan_application`.`fs_retail_co_applicant_details` app WHERE app.`is_itr_manual` = TRUE AND app.`id` =:id AND app.`application_id` =:applicationId AND app.`is_active` = TRUE")
+		List<BigInteger> result = (List<BigInteger>)entityManager.createNativeQuery("SELECT COUNT(app.`id`) FROM `fs_retail_co_applicant_details` app WHERE app.`is_itr_manual` = TRUE AND app.`id` =:id AND app.`application_id` =:applicationId AND app.`is_active` = TRUE")
 				.setParameter("applicationId", applicationId)
 				.setParameter("id", coAppId)
 				.getResultList();
@@ -339,7 +339,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	@SuppressWarnings("unchecked")
 	@Override
 	public Double getRetailLoanAmountByApplicationId(Long applicationId) {
-		List<Double> result = (List<Double>)entityManager.createNativeQuery("SELECT app.`loan_amount_required` FROM `loan_application`.`fs_retail_applicant_details` app WHERE app.`application_id` =:applicationId AND app.`is_active` = TRUE")
+		List<Double> result = (List<Double>)entityManager.createNativeQuery("SELECT app.`loan_amount_required` FROM `fs_retail_applicant_details` app WHERE app.`application_id` =:applicationId AND app.`is_active` = TRUE")
 				.setParameter("applicationId", applicationId)
 				.getResultList();
 		if(!CommonUtils.isListNullOrEmpty(result)) {
@@ -352,7 +352,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Object[]> getTypeSelectionData() {
-		return (List<Object[]>)entityManager.createNativeQuery("SELECT `type`,`description`,`business_type_id`,`img_path`, `id` ,`parent_id` FROM `loan_application`.`fs_loan_type_selection` WHERE `is_active` = TRUE").getResultList();
+		return (List<Object[]>)entityManager.createNativeQuery("SELECT `type`,`description`,`business_type_id`,`img_path`, `id` ,`parent_id` FROM `fs_loan_type_selection` WHERE `is_active` = TRUE").getResultList();
 	}
 	
 	/**
@@ -362,11 +362,11 @@ public class LoanRepositoryImpl implements LoanRepository {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Object[]> getTypeSelectionData(String userId) {
-		String query = "SELECT `type`,`description`,`business_type_id`,`img_path` FROM `loan_application`.`fs_loan_type_selection` WHERE `is_active` = TRUE AND TYPE!='Retail'\n" + 
+		String query = "SELECT `type`,`description`,`business_type_id`,`img_path` FROM `fs_loan_type_selection` WHERE `is_active` = TRUE AND TYPE!='Retail'\n" + 
 				"UNION ALL\n" + 
 				"SELECT lts.`type`,lts.`description`,lts.`business_type_id`,lts.`img_path`\n" + 
-				"FROM `loan_application`.`fs_loan_type_selection` lts \n" + 
-				"INNER JOIN `loan_application`.`fs_loan_type_accessible_users` ltsu ON (lts.id=ltsu.loan_type_selection_id AND ltsu.is_active=TRUE)\n" + 
+				"FROM `fs_loan_type_selection` lts \n" + 
+				"INNER JOIN `fs_loan_type_accessible_users` ltsu ON (lts.id=ltsu.loan_type_selection_id AND ltsu.is_active=TRUE)\n" + 
 				"WHERE lts.TYPE='Retail' AND ltsu.user_id="+userId;
 		return (List<Object[]>) entityManager.createNativeQuery(query).getResultList();
 	}
@@ -375,7 +375,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	@Override
 	public String checkPanForAlreayInPrinciplOrNotEligible(Integer typeId,Integer selectedLoanTypeId,Long applicationId,String panNumber) {
 		try {
-			StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("loan_application.spRetailCheckPANAlreadyExist");
+			StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spRetailCheckPANAlreadyExist");
 			storedProcedureQuery.registerStoredProcedureParameter("typeId",Integer.class, ParameterMode.IN);
 			storedProcedureQuery.registerStoredProcedureParameter("selectedLoanTypeId",Integer.class, ParameterMode.IN);
 			storedProcedureQuery.registerStoredProcedureParameter("applicationId",Long.class, ParameterMode.IN);
@@ -398,7 +398,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	}
 
 	public String getTutorialsByRoleId(Long userRoleId, Integer loanType){
-		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("loan_application.spFetchBankAdminTutorialList");
+		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchBankAdminTutorialList");
 		storedProcedureQuery.registerStoredProcedureParameter("userRoleId",Long.class, ParameterMode.IN);
 		storedProcedureQuery.registerStoredProcedureParameter("loanType",Integer.class, ParameterMode.IN);
 		storedProcedureQuery.setParameter("userRoleId",userRoleId);
@@ -408,7 +408,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	}
 
 	public String getTutorialsById(Long id){
-		String tutorials = (String) entityManager.createNativeQuery("select CAST(JSON_OBJECT('id',tu.id,'nameTutorial',tu.name_tutorial,'title',tu.title,'description',tu.description,'urlTutorial',tu.url_tutorial,'type',tu.type,'createdDate',tu.created_date,'urlThumbnail',tu.url_thumb,'externalLink',tu.external_link,'fileType',tu.extension,'viewCount',(SELECT COUNT(va.id) FROM loan_application.`tutorial_view_audit` va WHERE va.tutorial_id = tu.id)) AS CHAR) from loan_application.tutorial_upload_manage tu where tu.is_active = TRUE and tu.id =:tutorialId")
+		String tutorials = (String) entityManager.createNativeQuery("select CAST(JSON_OBJECT('id',tu.id,'nameTutorial',tu.name_tutorial,'title',tu.title,'description',tu.description,'urlTutorial',tu.url_tutorial,'type',tu.type,'createdDate',tu.created_date,'urlThumbnail',tu.url_thumb,'externalLink',tu.external_link,'fileType',tu.extension,'viewCount',(SELECT COUNT(va.id) FROM `tutorial_view_audit` va WHERE va.tutorial_id = tu.id)) AS CHAR) from tutorial_upload_manage tu where tu.is_active = TRUE and tu.id =:tutorialId")
 				.setParameter("tutorialId", id)
 				.getSingleResult();
 		return  !CommonUtils.isObjectNullOrEmpty(tutorials) ? tutorials : null;
@@ -417,7 +417,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	@Override
 	public String getPrefillProfileStatus(Long fromLoanId,Long toLoanId) {
 		try {
-			StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("loan_application.spPrefillProfileCheck");
+			StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spPrefillProfileCheck");
 			storedProcedureQuery.registerStoredProcedureParameter("fromLoanId",Long.class, ParameterMode.IN);
 			storedProcedureQuery.registerStoredProcedureParameter("toLoanId",Long.class, ParameterMode.IN);
 			storedProcedureQuery.setParameter("fromLoanId",fromLoanId);
@@ -438,9 +438,9 @@ public class LoanRepositoryImpl implements LoanRepository {
 							"IF(con.`stage_id` = 207,IF(con.`loan_type_id` = 3,'HomeLoan',IF(con.`loan_type_id` = 12,'Auto Loan','PersonalLoan')),CONCAT(IF(con.`loan_type_id` = 3,'HomeLoan',IF(con.`loan_type_id` = 12,'Auto Loan','PersonalLoan')),' - Date:', IF(con.stage_id = 207,DATE_FORMAT(con.modified_date, '%d-%m-%Y'),DATE_FORMAT(con.In_principle_date, '%d-%m-%Y')),' - Rs.',pp.`el_amount`))\r\n" + 
 							")) AS CHAR ) \r\n" + 
 							"FROM connect.`connect_log` con  \r\n" + 
-							"LEFT JOIN `loan_application`.`fs_retail_applicant_details` fs ON fs.`application_id` = con.`application_id` AND fs.`proposal_mapping_id` IS NULL \r\n" + 
-							"LEFT JOIN `loan_application`.`proposal_details` pp ON pp.`application_id` = con.`application_id` AND pp.`id` = con.`proposal_id`\r\n" + 
-							"LEFT JOIN `loan_application`.`application_proposal_mapping` ap ON ap.`application_id` = con.`application_id` AND ap.`proposal_id` = con.`proposal_id` \r\n" + 
+							"LEFT JOIN `fs_retail_applicant_details` fs ON fs.`application_id` = con.`application_id` AND fs.`proposal_mapping_id` IS NULL \r\n" + 
+							"LEFT JOIN `proposal_details` pp ON pp.`application_id` = con.`application_id` AND pp.`id` = con.`proposal_id`\r\n" + 
+							"LEFT JOIN `application_proposal_mapping` ap ON ap.`application_id` = con.`application_id` AND ap.`proposal_id` = con.`proposal_id` \r\n" + 
 							"WHERE con.`id` IN (SELECT cn.`id` FROM connect.`connect_log` cn WHERE cn.`user_id` =:userId AND ((cn.`stage_id` = 207 AND cn.`status` = 6) OR (cn.`stage_id` IN (210,211))) GROUP BY cn.`application_id`);")
 							.setParameter("userId", userId).getSingleResult();
 		} catch (Exception e) {
@@ -453,7 +453,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	@Override
 	public String getAgriLoanApplicationsByOrgIdAndStatus(Integer orgId,Integer status,Integer fromLimit,Integer toLimit) {
 		try {
-			StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("loan_application.spGetAgriApplicationsByOrgIdAndStatus");
+			StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spGetAgriApplicationsByOrgIdAndStatus");
 			storedProcedureQuery.registerStoredProcedureParameter("orgId",Integer.class, ParameterMode.IN);
 			storedProcedureQuery.registerStoredProcedureParameter("stus",Integer.class, ParameterMode.IN);
 			storedProcedureQuery.registerStoredProcedureParameter("fromLimit",Integer.class, ParameterMode.IN);
@@ -485,7 +485,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	@Override
 	public Boolean retailPrefillData(String input) {
 		try {
-			StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("loan_application.spPrefillProfile");
+			StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spPrefillProfile");
 			storedProcedureQuery.registerStoredProcedureParameter("input",String.class, ParameterMode.IN);
 			storedProcedureQuery.setParameter("input",input);
 			storedProcedureQuery.execute();
@@ -500,7 +500,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	public String getApplicationCampaignCode(Long applicationId) {
 		try {
 			return (String) entityManager
-					.createNativeQuery("SELECT fs.`loan_campaign_code` FROM `loan_application`.`fs_loan_application_master` fs WHERE fs.`application_id` =:applicationId")
+					.createNativeQuery("SELECT fs.`loan_campaign_code` FROM `loan_application_mudra`.`fs_loan_application_master` fs WHERE fs.`application_id` =:applicationId")
 							.setParameter("applicationId", applicationId).getSingleResult();
 		} catch (Exception e) {
 			logger.error("Exception while getApplicationCampaignCode  ----->" ,e);
@@ -514,7 +514,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 		try {
 			return (Object[]) entityManager
 					.createNativeQuery("SELECT org.user_org_id,org.organisation_name,fs.`loan_campaign_code`,fs.campaign_code " + 
-							"FROM `loan_application`.`fs_loan_application_master` fs \r\n" + 
+							"FROM `fs_loan_application_master` fs \r\n" + 
 							"LEFT JOIN `users`.`user_organisation_master` org ON org.organisation_code = fs.loan_campaign_code\r\n" + 
 							"WHERE fs.`application_id` =:applicationId")
 							.setParameter("applicationId", applicationId).getSingleResult();
@@ -528,7 +528,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	@Override
 	public Boolean isBankSpecificOn(Long applicationId) {
 		try {
-			BigInteger count =  (BigInteger) entityManager.createNativeQuery("SELECT COUNT(org.`user_org_id`) FROM `users`.`user_organisation_master` org,`loan_application`.`fp_offline_app_config` app,`loan_application`.`fs_loan_application_master` cam \r\n" + 
+			BigInteger count =  (BigInteger) entityManager.createNativeQuery("SELECT COUNT(org.`user_org_id`) FROM `users`.`user_organisation_master` org,`fp_offline_app_config` app,`fs_loan_application_master` cam \r\n" + 
 					"WHERE cam.`application_id` =:applicationId AND cam.`loan_campaign_code` = org.`organisation_code` \r\n" + 
 					"AND org.`user_org_id` = app.`org_id` AND org.`is_active` = TRUE \r\n" + 
 					"AND app.`is_active` = TRUE AND app.`bank_specific` = '1' AND app.business_type_id = cam.business_type_id")
@@ -547,7 +547,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 				.setParameter("tutorialId", longLatrequest.getTutorialId())
 				.getSingleResult();
 		if(singleResult.longValue()  < 1l) {
-			int saveTutorials = entityManager.createNativeQuery("INSERT INTO `loan_application`.tutorial_view_audit(user_id,role_id,tutorial_id,loan_type,view_date) values (:userId,:roleId,:tutorialId,:loanType,NOW())")
+			int saveTutorials = entityManager.createNativeQuery("INSERT INTO tutorial_view_audit(user_id,role_id,tutorial_id,loan_type,view_date) values (:userId,:roleId,:tutorialId,:loanType,NOW())")
 					.setParameter("userId", longLatrequest.getUserId())
 					.setParameter("roleId", longLatrequest.getRoleId())
 					.setParameter("loanType", longLatrequest.getLoanType())
@@ -555,7 +555,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 					.executeUpdate();
 			return saveTutorials > 0;
 		} else {
-			int update = entityManager.createNativeQuery("update `loan_application`.tutorial_view_audit set view_date =:date where user_id=:userId and loan_type=:loanType and tutorial_id=:tutorialId")
+			int update = entityManager.createNativeQuery("update tutorial_view_audit set view_date =:date where user_id=:userId and loan_type=:loanType and tutorial_id=:tutorialId")
 					.setParameter("date", new Date())
 					.setParameter("userId", longLatrequest.getUserId())
 					.setParameter("loanType", longLatrequest.getLoanType())
@@ -568,7 +568,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 
 	@SuppressWarnings("unchecked")
 	public String getTutorialsAudit(TutorialsViewAudits request){
-		List<String> tutorialViewAudit = entityManager.createNativeQuery("SELECT CAST(JSON_ARRAYAGG(JSON_OBJECT('id',a.id,'userName',u.email,'viewDate',a.view_date,'roleName',r.role_name,'branchName',b.name)) AS CHAR) FROM `loan_application`.tutorial_view_audit a LEFT JOIN users.`users` u ON u.user_id = a.user_id LEFT JOIN users.`user_role_master` r ON r.role_id = a.role_id LEFT JOIN users.`branch_master` b ON u.branch_id=b.id\r\n" + 
+		List<String> tutorialViewAudit = entityManager.createNativeQuery("SELECT CAST(JSON_ARRAYAGG(JSON_OBJECT('id',a.id,'userName',u.email,'viewDate',a.view_date,'roleName',r.role_name,'branchName',b.name)) AS CHAR) FROM tutorial_view_audit a LEFT JOIN users.`users` u ON u.user_id = a.user_id LEFT JOIN users.`user_role_master` r ON r.role_id = a.role_id LEFT JOIN users.`branch_master` b ON u.branch_id=b.id\r\n" + 
 				" WHERE a.tutorial_id =:tutorialId")
 				.setParameter("tutorialId", request.getTutorialId())
 				.setFirstResult(request.getPageIndex())
@@ -646,7 +646,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	@Override
 	public Long getCampaignOrgIdByApplicationId(Long applicationId) {
 		try {
-			BigInteger orgId =  (BigInteger) entityManager.createNativeQuery("SELECT org.user_org_id FROM loan_application.fs_loan_application_master ms\r\n" + 
+			BigInteger orgId =  (BigInteger) entityManager.createNativeQuery("SELECT org.user_org_id FROM fs_loan_application_master ms\r\n" + 
 					"INNER JOIN users.`user_organisation_master` org ON (org.organisation_code = ms.loan_campaign_code OR org.campaign_url_code = ms.loan_campaign_code)\r\n" + 
 					"WHERE ms.application_id =:applicationId").setParameter("applicationId", applicationId).getSingleResult();
 			return orgId != null ? orgId.longValue() : null;
@@ -660,7 +660,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	public Object[] getBankBureauFlags(Long orgId){
 		try{
 			Object [] count = (Object [])entityManager
-					.createNativeQuery("SELECT org.is_msme_api_active,org.is_score_enable,org.is_cmr_enable,org.is_main_dir_score_enable,org.is_loans_enable FROM cibil.`organisation_master` org WHERE org.id =:orgId")
+					.createNativeQuery("SELECT org.is_msme_api_active,org.is_score_enable,org.is_cmr_enable,org.is_main_dir_score_enable,org.is_loans_enable FROM cibil_mudra.`organisation_master` org WHERE org.id =:orgId")
 					.setParameter("orgId", orgId).getSingleResult();
 			return count;
 		}catch (Exception e) {
@@ -715,7 +715,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	public Double getAllDirectorAverageBureauScore(Long applicationId) {
 		Double averageScore = null;
 		try{
-			averageScore = (Double)entityManager.createNativeQuery("SELECT AVG(MaxData) AS ScoreData FROM (SELECT CAST(MAX(adrr.actual_score) AS UNSIGNED) AS MaxData FROM cibil.cibil_score_log_details adrr,cibil.cibil_mstr ms WHERE ms.cibil_id = adrr.cibil_id AND ms.application_id =:applicationId AND ms.is_active = TRUE GROUP BY adrr.pan) AS a").setParameter("applicationId", applicationId).getSingleResult();
+			averageScore = (Double)entityManager.createNativeQuery("SELECT AVG(MaxData) AS ScoreData FROM (SELECT CAST(MAX(adrr.actual_score) AS UNSIGNED) AS MaxData FROM cibil_mudra.cibil_score_log_details adrr,cibil_mudra.cibil_mstr ms WHERE ms.cibil_id = adrr.cibil_id AND ms.application_id =:applicationId AND ms.is_active = TRUE GROUP BY adrr.pan) AS a").setParameter("applicationId", applicationId).getSingleResult();
 		}catch(Exception e){
 			logger.error("Error while getting all director Average score for ApplicationId = >{}====>{}",applicationId,e);
 		}
@@ -813,6 +813,33 @@ public class LoanRepositoryImpl implements LoanRepository {
 		}
 		return bankName;
 	}
+
+	@Override
+	public boolean updateProfileVersIdInConnect(Long applicationId, Long profileVerMapId) {
+		try {
+			int update = entityManager.createNativeQuery("UPDATE `connect_mudra`.`connect_log` SET `profile_ver_map_id` =:profileVerMapId WHERE `application_id` =:applicationId")
+					.setParameter("applicationId", applicationId)
+					.setParameter("profileVerMapId", profileVerMapId)
+					.executeUpdate();
+			return update > 0;	
+		} catch (Exception e) {
+			logger.error("Excecption while Update Profile Vers ID in COneec By Application Id ===> " + applicationId, e);
+			return false;
+		}
+	}
 	
+	@Override
+	public boolean updateProfileVersIdInLoanMaster(Long applicationId, Long profileVerMapId) {
+		try {
+			int update = entityManager.createNativeQuery("UPDATE `fs_loan_application_master` SET `profile_mapping_id` =:profileVerMapId WHERE `application_id` =:applicationId")
+					.setParameter("applicationId", applicationId)
+					.setParameter("profileVerMapId", profileVerMapId)
+					.executeUpdate();
+			return update > 0;	
+		} catch (Exception e) {
+			logger.error("Excecption while Update Profile Vers ID in Loan Application Master Application Id ===> " + applicationId, e);
+			return false;
+		}
+	}
 	
 }

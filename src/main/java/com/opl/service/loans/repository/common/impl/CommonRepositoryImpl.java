@@ -40,8 +40,8 @@ public class CommonRepositoryImpl  implements CommonRepository {
 				",f.`registered_city_id`,f.`registered_state_id`,f.`registered_pincode`,f.`registered_country_id`,cl.`wc_renewal_status`,f.`organisation_name`,cl.`user_id`,pri.`purpose_of_loan_id`,cl.`business_type_id`\r\n" + 
 				"FROM connect.`connect_log` cl\r\n" + 
 				"LEFT JOIN users.`users` u ON u.user_id=cl.user_id\r\n" + 
-				"LEFT JOIN `loan_application`.`fs_corporate_applicant_details` f ON cl.`application_id` = f.`application_id`\r\n" + 
-				"LEFT JOIN `loan_application`.`fs_corporate_primary_details` pri ON pri.`application_id` = cl.`application_id`\r\n" + 
+				"LEFT JOIN `fs_corporate_applicant_details` f ON cl.`application_id` = f.`application_id`\r\n" + 
+				"LEFT JOIN `fs_corporate_primary_details` pri ON pri.`application_id` = cl.`application_id`\r\n" + 
 				"WHERE cl.application_id =:applicationId");
 		emailData.setParameter("applicationId", applicationId);
 		
@@ -91,7 +91,7 @@ public class CommonRepositoryImpl  implements CommonRepository {
 	@Override
 	public String getNoteForHLCam(Long applicationId){
 		try {
-			StoredProcedureQuery storedProcedureQuery = manager.createStoredProcedureQuery("loan_application.spRetailCheckPANAlreadyExist");
+			StoredProcedureQuery storedProcedureQuery = manager.createStoredProcedureQuery("spRetailCheckPANAlreadyExist");
 			storedProcedureQuery.registerStoredProcedureParameter("typeId",Integer.class, ParameterMode.IN);
 			storedProcedureQuery.registerStoredProcedureParameter("selectedLoanTypeId",Integer.class, ParameterMode.IN);
 			storedProcedureQuery.registerStoredProcedureParameter("applicationId",Long.class, ParameterMode.IN);
@@ -125,7 +125,7 @@ public class CommonRepositoryImpl  implements CommonRepository {
 
 	@Override
 	public Object[] getInEligibleByApplicationId(Long applicationId) {
-		return (Object[]) manager.createNativeQuery("SELECT ine.user_org_id,ine.branch_id FROM `loan_application`.`ineligible_proposal_details` ine WHERE ine.application_id=:applicationId").setParameter("applicationId", applicationId).getSingleResult();
+		return (Object[]) manager.createNativeQuery("SELECT ine.user_org_id,ine.branch_id FROM `ineligible_proposal_details` ine WHERE ine.application_id=:applicationId").setParameter("applicationId", applicationId).getSingleResult();
 	}
 	
 	@Override
@@ -160,7 +160,7 @@ public class CommonRepositoryImpl  implements CommonRepository {
 	@Override
 	public Object[] getUserDetailsByApplicationId(Long applicationId) throws Exception {
 		return (Object[]) manager.createNativeQuery("SELECT apm.application_id,apm.user_id,pd.id,pd.fp_product_id,apm.product_id,u.email,u.mobile,pd.user_org_id\r\n" + 
-				"FROM loan_application.proposal_details pd  LEFT JOIN loan_application.application_proposal_mapping apm  ON apm.application_id=pd.application_id\r\n" + 
+				"FROM proposal_details pd  LEFT JOIN application_proposal_mapping apm  ON apm.application_id=pd.application_id\r\n" + 
 				"LEFT JOIN users.users u ON u.user_id=apm.user_id WHERE apm.application_id=:applicationId LIMIT 1").setParameter("applicationId", applicationId).getSingleResult();
 	}
 	
@@ -196,7 +196,7 @@ public class CommonRepositoryImpl  implements CommonRepository {
 	@Override
 	public BigInteger checkApplicationDisbursed(String pan) {
 		return (BigInteger) manager.createNativeQuery("SELECT COUNT(*) FROM `connect`.`connect_log` cn\n" +
-				"INNER JOIN `loan_application`.`proposal_details` pd ON pd.application_id=cn.application_id AND pd.is_active=TRUE AND pd.proposal_status_id IN (11,13)\n" +
+				"INNER JOIN `proposal_details` pd ON pd.application_id=cn.application_id AND pd.is_active=TRUE AND pd.proposal_status_id IN (11,13)\n" +
 				"WHERE (SUBSTR(cn.gstin,3,10) =:pan) AND\n" +
 				"((cn.stage_id IN (7,9) AND cn.status=3) OR (cn.stage_id=4 AND cn.status=6))").setParameter("pan", pan).getSingleResult();
 	}

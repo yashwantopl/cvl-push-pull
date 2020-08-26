@@ -119,4 +119,8 @@ public interface LoanRepository{
     public String getIFSCByApplicationId(Long applicationId);
     
     public String getBankNameByIFSC(String ifscPrefix);
+    
+    public boolean updateProfileVersIdInConnect(Long applicationId, Long profileVerMapId);
+	
+	public boolean updateProfileVersIdInLoanMaster(Long applicationId, Long profileVerMapId);
 }

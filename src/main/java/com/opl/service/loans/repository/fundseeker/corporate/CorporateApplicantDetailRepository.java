@@ -80,7 +80,7 @@ public interface CorporateApplicantDetailRepository extends JpaRepository<Corpor
 	@Query("select cr.gstIn from CorporateApplicantDetail cr where cr.applicationId.id =:applicationId and cr.isActive=true and cr.applicationProposalMapping.proposalId =NULL")
 	public String getGstInByApplicationId(@Param("applicationId") Long applicationId);
 	
-	@Query(value="select CAST(AES_DECRYPT(UNHEX(cr.pan),'C@p!ta@W0rld#AES') AS CHAR(50)) from loan_application.fs_corporate_applicant_details cr where cr.application_id =:applicationId and cr.is_active=true and cr.proposal_mapping_id IS NULL",nativeQuery= true)
+	@Query(value="select CAST(AES_DECRYPT(UNHEX(cr.pan),'C@p!ta@W0rld#AES') AS CHAR(50)) from fs_corporate_applicant_details cr where cr.application_id =:applicationId and cr.is_active=true and cr.proposal_mapping_id IS NULL",nativeQuery= true)
 	public String getPanNoByApplicationId(@Param("applicationId") Long applicationId);
 
 	@Modifying
@@ -101,6 +101,6 @@ public interface CorporateApplicantDetailRepository extends JpaRepository<Corpor
 	@Query(value="from CorporateApplicantDetail cr where cr.applicationId.id =:applicationId and cr.applicationProposalMapping IS NULL")
 	public CorporateApplicantDetail getCorporateApplicantDetailByApplicationId(@Param("applicationId") Long applicationId);
 
-	@Query(value="SELECT c.organisation_name FROM loan_application.fs_corporate_applicant_details c WHERE c.application_id=:applicationId LIMIT 1;",nativeQuery = true)
+	@Query(value="SELECT c.organisation_name FROM fs_corporate_applicant_details c WHERE c.application_id=:applicationId LIMIT 1;",nativeQuery = true)
 	public String getOrganizationNameFromId(@Param("applicationId") Long applicationId);
 }
