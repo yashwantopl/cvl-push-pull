@@ -87,6 +87,8 @@ public class FundSeekerInputRequestResponse {
     /////////
     private Double costOfMachinery;
     private Double incrementalTurnover;
+    
+    private Long profileId;
 
     //Sales Variables by Akshay
 
@@ -1041,6 +1043,15 @@ public class FundSeekerInputRequestResponse {
 
 	public void setRegisterUnderMsme(String registerUnderMsme) {
 		this.registerUnderMsme = registerUnderMsme;
+	}
+
+	
+	public Long getProfileId() {
+		return profileId;
+	}
+
+	public void setProfileId(Long profileId) {
+		this.profileId = profileId;
 	}
 
 	@Override
