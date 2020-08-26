@@ -47,42 +47,6 @@ public class LoansMain {
 	@Autowired
 	ApplicationContext applicationContext;
 	
-	@Value("${capitaworld.service.connect.url}")
-	private String connectUrl;
-	
-	@Value("${ratingURL}")
-	private String ratingURL;
-	
-	@Value("${capitaworld.service.cibil.url}")
-	private String cibilUrl;
-	
-	@Value("${capitaworld.service.auth.url}")
-	private String authUrl;
-	
-	@Value("${capitaworld.service.profile.url}")
-	private String profileUrl;
-	
-	@Value("${capitaworld.service.itr.url}")
-	private String itrUrl;
-	
-	@Value("${capitaworld.service.gst.url}")
-	private String gstUrl;
-	
-	@Value("${capitaworld.service.scoring.url}")
-	private String scoringUrl;
-	
-	
-	@Value("${capitaworld.service.analyzer.url}")
-	private String analyzerUrl;
-	
-	@Value("${capitaworld.service.users.url}")
-	private String usersUrl;
-	
-	@Value("${capitaworld.service.oneform.url}")
-	private String oneformUrl;
-	
-	@Value("${capitaworld.service.eligibility.url}")
-	private String eligibilityUrl;
 
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(LoansMain.class, args);
