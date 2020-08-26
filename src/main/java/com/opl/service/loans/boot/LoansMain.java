@@ -125,7 +125,7 @@ public class LoansMain {
 
 	@Bean
 	public OneFormClient oneFormClient() {
-		OneFormClient oneFormClient = new OneFormClient(oneformUrl);
+		OneFormClient oneFormClient = new OneFormClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.oneform));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(oneFormClient);
 		return oneFormClient;
 	}
