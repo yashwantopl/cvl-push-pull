@@ -24,10 +24,10 @@ import org.springframework.web.multipart.MultipartFile;
 import com.capitaworld.service.pennydrop.client.PennydropClient;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.opl.api.pennydrop.model.CommonResponse;
 import com.opl.api.pennydrop.model.PanVerificationRequest;
 import com.opl.mudra.api.analyzer.model.common.ReportRequest;
 import com.opl.mudra.api.cibil.utils.CibilUtils;
+import com.opl.mudra.api.common.CommonResponse;
 import com.opl.mudra.api.connect.ConnectAuditErrorCode;
 import com.opl.mudra.api.connect.ConnectLogAuditRequest;
 import com.opl.mudra.api.connect.ConnectResponse;
@@ -78,6 +78,7 @@ import com.opl.mudra.client.mca.McaClient;
 import com.opl.mudra.client.oneform.OneFormClient;
 import com.opl.mudra.client.users.UsersClient;
 import com.opl.service.loans.config.AsyncComponent;
+import com.opl.service.loans.domain.CommonAuditTable;
 import com.opl.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.opl.service.loans.domain.fundseeker.corporate.AssociatedConcernDetail;
 import com.opl.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
@@ -86,6 +87,7 @@ import com.opl.service.loans.domain.fundseeker.corporate.DirectorPersonalDetail;
 import com.opl.service.loans.domain.fundseeker.corporate.MachineDetailMudraLoan;
 import com.opl.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import com.opl.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetailMudraLoan;
+import com.opl.service.loans.repository.CommonAuditTableRepository;
 import com.opl.service.loans.repository.common.LoanRepository;
 import com.opl.service.loans.repository.fundseeker.corporate.AssociatedConcernDetailRepository;
 import com.opl.service.loans.repository.fundseeker.corporate.CollateralSecurityDetailRepository;
@@ -102,6 +104,7 @@ import com.opl.service.loans.service.fundprovider.FSParameterMappingService;
 import com.opl.service.loans.service.fundseeker.corporate.AssociatedConcernDetailService;
 import com.opl.service.loans.service.fundseeker.corporate.CollateralSecurityDetailService;
 import com.opl.service.loans.service.fundseeker.corporate.CorporateApplicantService;
+import com.opl.service.loans.service.fundseeker.corporate.CorporateService;
 import com.opl.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.opl.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.opl.service.loans.service.fundseeker.corporate.FundSeekerInputRequestService;
@@ -225,11 +228,20 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	@Autowired
 	private PennydropClient pennydropClient; 
 
+	
+	@Autowired
+	private CorporateService corporateService;
+	
+	@Autowired
+	private CommonAuditTableRepository auditTableRepository;
+	
 	/**
 	 * Save oneform details
 	 */
 	@Override
-	public boolean saveOrUpdate(FundSeekerInputRequestResponse fundSeekerInputRequest) throws LoansException {
+	public CommonResponse saveOrUpdate(FundSeekerInputRequestResponse fundSeekerInputRequest) throws LoansException {
+		Long applicationId = fundSeekerInputRequest.getApplicationId();
+		Long profileId = fundSeekerInputRequest.getProfileId();
 		try {
 			logger.info("getting corporateApplicantDetail from applicationId::"
 					+ fundSeekerInputRequest.getApplicationId());
@@ -343,13 +355,55 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			}else{
 				collateralSecurityDetailRepository.inActive(fundSeekerInputRequest.getUserId(), fundSeekerInputRequest.getApplicationId());
 			}
+
+			try {
+
+				// CHECK ALL PROFILE DATA IS UPDATED OR NOT
+				CommonResponse profileUpdatedRes = corporateService.isProfileUpdated(profileId, applicationId, Boolean.TRUE, fundSeekerInputRequest.getUserId());
+				if (!profileUpdatedRes.getFlag()) {
+					auditTableRepository.save(new CommonAuditTable(applicationId, profileId, FundSeekerInputRequestServiceImpl.class.getName(), "saveOrUpdate", "Return False From Check Is Profile Updated Or Not !!"));
+					return new CommonResponse("Kindly update you GST, ITR and Bank Statement Data!!", HttpStatus.OK.value(), Boolean.FALSE);
+				}
+
+				if (profileUpdatedRes.getStatus() != 200 || profileUpdatedRes.getData() == null) {
+					auditTableRepository.save(new CommonAuditTable(applicationId, profileId, FundSeekerInputRequestServiceImpl.class.getName(), "saveOrUpdate", "Return Not Equal 200 From Check Is Profile Updated Or Not !!"));
+					return new CommonResponse("The application has encountered error, Please try after some time !!", HttpStatus.OK.value(), Boolean.FALSE);
+				}
+
+				Long profileVerId = Long.parseLong(profileUpdatedRes.getData().toString());
+
+				// UPDATE LATEST PROFILE VERSION ID IN CONNECT && LOAN APPLICATION MASTER &&
+				// PROFILE APPLICATION MAPPING DATA
+				boolean isConnectUpdated = loanRepository.updateProfileVersIdInConnect(applicationId, profileVerId);
+				if (!isConnectUpdated) {
+					auditTableRepository.save(new CommonAuditTable(applicationId, profileId, FundSeekerInputRequestServiceImpl.class.getName(), "saveOrUpdate", "Return False From Update Profile VerId In Connect Table"));
+					return new CommonResponse("The application has encountered error, Please try after some time !!", HttpStatus.OK.value(), Boolean.FALSE);
+				}
+
+				boolean isLoanMasterUpdated = loanRepository.updateProfileVersIdInLoanMaster(applicationId, profileVerId);
+				if (!isLoanMasterUpdated) {
+					auditTableRepository.save(new CommonAuditTable(applicationId, profileId, FundSeekerInputRequestServiceImpl.class.getName(), "saveOrUpdate", "Return False From Update Profile VerId In Loan Application Master"));
+					return new CommonResponse("The application has encountered error, Please try after some time !!", HttpStatus.OK.value(), Boolean.FALSE);
+				}
+
+				// COPY ALL DATA INTO LOAN DATABASE
+				Boolean isCopyData = loanApplicationService.copyDataForOneForm(applicationId, fundSeekerInputRequest.getProfileId(), fundSeekerInputRequest.getUserId());
+				if (!isCopyData) {
+					return new CommonResponse("The application has encountered error, Please try after some time !!", HttpStatus.OK.value(), Boolean.FALSE);
+				}
+
+				return new CommonResponse("Successfully Updated Data", HttpStatus.OK.value(), Boolean.TRUE);
+			} catch (Exception e) {
+				logger.error("Exception while check all data is updated or not ", e);
+				auditTableRepository.save(new CommonAuditTable(applicationId, profileId, FundSeekerInputRequestServiceImpl.class.getName(), "saveOrUpdate", "Exception while Copy And Update Data : " + e.getMessage()));
+			}
 			
-			
-			return true;
 		} catch (Exception e) {
+			auditTableRepository.save(new CommonAuditTable(applicationId, profileId, FundSeekerInputRequestServiceImpl.class.getName(), "saveOrUpdate", "Exception while Update Oneform Details :" + e.getMessage()));
 			logger.error("Throw Exception while save and update Fundseeker input request !!",e);
 			throw new LoansException(e);
 		}
+		return new CommonResponse("The application has encountered error, Please try after some time !!", HttpStatus.INTERNAL_SERVER_ERROR.value(), Boolean.FALSE);
 	}
 
 	@Override
@@ -689,6 +743,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
         		fsInputRes.setOtherExpenses(corporateDetailMudraLoan.getOtherExpenses());
         		fsInputRes.setTotalExpenses(corporateDetailMudraLoan.getTotalExpenses());
         		fsInputRes.setMonthlySurplus(corporateDetailMudraLoan.getMonthlySurplus());
+        		fsInputRes.setOthergovauthorities(corporateDetailMudraLoan.getOthergovauthorities());
+        		fsInputRes.setOtherStatutory(corporateDetailMudraLoan.getOtherStatutory());
+        		fsInputRes.setDrugLicense(corporateDetailMudraLoan.getDrugLicense());
         	}
         	
 //			if (!CommonUtils.isObjectNullOrEmpty(mudraLoan)) {
@@ -1488,7 +1545,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	public LoansResponse panVerification(List<DirectorBackgroundDetailRequest> directors) {
 
 		LoansResponse resp = new LoansResponse();
-		List<CommonResponse> response = new ArrayList<>();
+		List<com.opl.api.pennydrop.model.CommonResponse> response = new ArrayList<>();
 		
 		for (DirectorBackgroundDetailRequest dir : directors) {
 			PanVerificationRequest request = new PanVerificationRequest();

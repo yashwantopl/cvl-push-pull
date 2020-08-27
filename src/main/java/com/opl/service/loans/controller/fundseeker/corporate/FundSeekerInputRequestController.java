@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.opl.mudra.api.common.CommonResponse;
 import com.opl.mudra.api.connect.ConnectRequest;
 import com.opl.mudra.api.connect.ConnectResponse;
 import com.opl.mudra.api.loans.exception.LoansException;
@@ -51,7 +52,7 @@ public class FundSeekerInputRequestController {
     private LoanApplicationService loanApplicationService;
 
     @RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LoansResponse> save(@RequestBody FundSeekerInputRequestResponse fundSeekerInputRequestResponse,HttpServletRequest request)
+    public ResponseEntity<CommonResponse> save(@RequestBody FundSeekerInputRequestResponse fundSeekerInputRequestResponse,HttpServletRequest request)
             throws LoansException
     {
         try {
@@ -64,30 +65,17 @@ public class FundSeekerInputRequestController {
 
             if (CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getUserId()) || CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getApplicationId())) {
                 logger.warn("userId/applicationId can not be empty");
-                return new ResponseEntity<LoansResponse>(
-                        new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+                return new ResponseEntity<CommonResponse>(new CommonResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value(),Boolean.FALSE), HttpStatus.OK);
             }
 
             logger.info("GOING TO SAVE FUNDSEEKER INPUT REQUEST-------------USERID--->" + userId + "-------------APPLICATION ID --------------------->" + fundSeekerInputRequestResponse.getApplicationId());
-            boolean result = fundSeekerInputRequestService.saveOrUpdate(fundSeekerInputRequestResponse);
-
-        	if(result){
-        		LoansResponse response = fundSeekerInputRequestService.invokeFraudAnalytics(fundSeekerInputRequestResponse);
-        		
-        		/*return null;*/
-        		//harshit's client
-              //  connectClient.saveAuditLog(new ConnectLogAuditRequest(fundSeekerInputRequestResponse.getApplicationId(), ConnectStage.MUDRA_ONE_FORM.getId(),fundSeekerInputRequestResponse.getUserId(),response.getMessage(), ConnectAuditErrorCode.ONFORM_SUBMIT.toString(),CommonUtils.BusinessType.MUDRA_LOAN.getId()));
-        		return new ResponseEntity<LoansResponse>(response,HttpStatus.OK);
-            } else {
-                logger.info("FUNDSEEKER INPUT NOT SAVED");
-                return new ResponseEntity<LoansResponse>(new LoansResponse("Oneform Not Saved", HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
-            }
-
+            CommonResponse result = fundSeekerInputRequestService.saveOrUpdate(fundSeekerInputRequestResponse);
+    		fundSeekerInputRequestService.invokeFraudAnalytics(fundSeekerInputRequestResponse);
+    		return new ResponseEntity<CommonResponse>(result,HttpStatus.OK);
+            
         } catch (Exception e) {
             logger.error("Error while saving one form data : ",e);
-            return new ResponseEntity<LoansResponse>(
-                    new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-                    HttpStatus.OK);
+            return new ResponseEntity<CommonResponse>( new CommonResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
         }
     }
 
