@@ -33,18 +33,19 @@ public interface ProposalDetailsRepository extends JpaRepository<ProposalDetails
     @Query(value = "select count(id) from proposal_details pd where pd.fp_product_id=:fp_product_id and pd.branch_id IN :branchIdList and pd.is_active=1 and pd.application_id in (select application_id from fs_loan_application_master where is_active=1)", nativeQuery = true)
     public Long getProposalCountByFpProductIdAndBranchId(@Param("fp_product_id") Long fpProductId,@Param("branchIdList") List<Long> branchIdList);
 
+
     @Query(value = "SELECT COUNT(pd.id) FROM proposal_details AS pd JOIN fs_loan_application_master AS la ON la.application_id = pd.application_id AND la.is_active = TRUE JOIN users.users AS u ON u.branch_id = pd.branch_id WHERE pd.fp_product_id =:fp_product_id AND pd.is_active=TRUE AND u.user_id =:user_id", nativeQuery = true)
     public Long getProposalCountByUserIdAndFpProductId(@Param("fp_product_id") Long fpProductId,@Param("user_id") Long userId);
 
     @Query(value = "SELECT pd.application_id, cl.user_id, fs.name, usr.email, usr.mobile, pd.created_date, pd.branch_id, \n" +
             "pd.el_amount, pd.el_tenure, pd.el_roi, pd.emi, pd.processing_fee, branch.name AS branchname, \n" +
             "branch.contact_person_name, branch.telephone_no, branch.contact_person_number, org.organisation_name, \n" +
-            "lam.application_code, branch.code, branch.street_name, (SELECT state_name FROM `one_form`.`state` s \n" +
-            "WHERE s.id = branch.state_id), (SELECT city_name FROM `one_form`.`city` c WHERE c.id = branch.city_id), branch.premises_no, \n" +
-            "(SELECT product_id FROM `fp_product_master` pm WHERE pm.fp_product_id = pd.fp_product_id), branch.contact_person_email, \n" +
+            "lam.application_code, branch.code, branch.street_name, (SELECT state_name FROM `one_form_mudra`.`state` s \n" +
+            "WHERE s.id = branch.state_id), (SELECT city_name FROM `one_form_mudra`.`city` c WHERE c.id = branch.city_id), branch.premises_no, \n" +
+            "(SELECT product_id FROM `loan_application_mudra`.`fp_product_master` pm WHERE pm.fp_product_id = pd.fp_product_id), branch.contact_person_email, \n" +
             "(SELECT COUNT(id) FROM `users`.`campaign_details` cd WHERE cd.user_id = cl.user_id),cl.`gstin` \n" +
-            "FROM  `proposal_details` pd \n" +
-            "LEFT JOIN `connect`.`connect_log` cl \n" +
+            "FROM  `loan_application_mudra`.`proposal_details` pd \n" +
+            "LEFT JOIN `connect_mudra`.`connect_log` cl \n" +
             "ON cl.application_id = pd.application_id \n" +
             "LEFT JOIN `users`.`users` usr \n" +
             "ON usr.user_id = cl.user_id \n" +
