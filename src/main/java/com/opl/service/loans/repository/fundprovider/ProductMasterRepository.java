@@ -184,7 +184,7 @@ public interface ProductMasterRepository extends JpaRepository<ProductMaster, Lo
 	@Query("SELECT o.productId FROM ProductMaster o WHERE o.id=:fpProductId")
 	public Integer getProductIdById(@Param("fpProductId")Long fpProductId);
 	
-	@Query(value = "SELECT COUNT(fp_product_id) FROM loan_application.fp_product_master WHERE is_active = TRUE AND is_parameter_filled = TRUE AND (product_id=:productId) AND business_type_id =:businessTypeId AND user_org_id =:userOrgId  AND wc_renewal_status =:wcRenewalStatus AND (campaign_type=2 OR campaign_type=3)",nativeQuery = true)
+	@Query(value = "SELECT COUNT(fp_product_id) FROM loan_application_mudra.fp_product_master WHERE is_active = TRUE AND is_parameter_filled = TRUE AND (product_id=:productId) AND business_type_id =:businessTypeId AND user_org_id =:userOrgId  AND wc_renewal_status =:wcRenewalStatus AND (campaign_type=2 OR campaign_type=3)",nativeQuery = true)
 	public Long getWCRenewalProductsCount(@Param("productId")Integer productId, @Param("userOrgId") Long userOrgId, @Param("businessTypeId") Long businessTypeId, @Param("wcRenewalStatus") Integer wcRenewalStatus);
 	
 

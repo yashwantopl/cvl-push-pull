@@ -408,7 +408,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	}
 
 	public String getTutorialsById(Long id){
-		String tutorials = (String) entityManager.createNativeQuery("select CAST(JSON_OBJECT('id',tu.id,'nameTutorial',tu.name_tutorial,'title',tu.title,'description',tu.description,'urlTutorial',tu.url_tutorial,'type',tu.type,'createdDate',tu.created_date,'urlThumbnail',tu.url_thumb,'externalLink',tu.external_link,'fileType',tu.extension,'viewCount',(SELECT COUNT(va.id) FROM loan_application_mudra.`tutorial_view_audit` va WHERE va.tutorial_id = tu.id)) AS CHAR) from loan_application.tutorial_upload_manage tu where tu.is_active = TRUE and tu.id =:tutorialId")
+		String tutorials = (String) entityManager.createNativeQuery("select CAST(JSON_OBJECT('id',tu.id,'nameTutorial',tu.name_tutorial,'title',tu.title,'description',tu.description,'urlTutorial',tu.url_tutorial,'type',tu.type,'createdDate',tu.created_date,'urlThumbnail',tu.url_thumb,'externalLink',tu.external_link,'fileType',tu.extension,'viewCount',(SELECT COUNT(va.id) FROM loan_application_mudra.`tutorial_view_audit` va WHERE va.tutorial_id = tu.id)) AS CHAR) from loan_application_mudra.tutorial_upload_manage tu where tu.is_active = TRUE and tu.id =:tutorialId")
 				.setParameter("tutorialId", id)
 				.getSingleResult();
 		return  !CommonUtils.isObjectNullOrEmpty(tutorials) ? tutorials : null;
@@ -660,7 +660,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	public Object[] getBankBureauFlags(Long orgId){
 		try{
 			Object [] count = (Object [])entityManager
-					.createNativeQuery("SELECT org.is_msme_api_active,org.is_score_enable,org.is_cmr_enable,org.is_main_dir_score_enable,org.is_loans_enable FROM cibil.`organisation_master` org WHERE org.id =:orgId")
+					.createNativeQuery("SELECT org.is_msme_api_active,org.is_score_enable,org.is_cmr_enable,org.is_main_dir_score_enable,org.is_loans_enable FROM cibil_mudra.`organisation_master` org WHERE org.id =:orgId")
 					.setParameter("orgId", orgId).getSingleResult();
 			return count;
 		}catch (Exception e) {
@@ -715,7 +715,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	public Double getAllDirectorAverageBureauScore(Long applicationId) {
 		Double averageScore = null;
 		try{
-			averageScore = (Double)entityManager.createNativeQuery("SELECT AVG(MaxData) AS ScoreData FROM (SELECT CAST(MAX(adrr.actual_score) AS UNSIGNED) AS MaxData FROM cibil.cibil_score_log_details adrr,cibil.cibil_mstr ms WHERE ms.cibil_id = adrr.cibil_id AND ms.application_id =:applicationId AND ms.is_active = TRUE GROUP BY adrr.pan) AS a").setParameter("applicationId", applicationId).getSingleResult();
+			averageScore = (Double)entityManager.createNativeQuery("SELECT AVG(MaxData) AS ScoreData FROM (SELECT CAST(MAX(adrr.actual_score) AS UNSIGNED) AS MaxData FROM cibil_mudra.cibil_score_log_details adrr,cibil_mudra.cibil_mstr ms WHERE ms.cibil_id = adrr.cibil_id AND ms.application_id =:applicationId AND ms.is_active = TRUE GROUP BY adrr.pan) AS a").setParameter("applicationId", applicationId).getSingleResult();
 		}catch(Exception e){
 			logger.error("Error while getting all director Average score for ApplicationId = >{}====>{}",applicationId,e);
 		}
@@ -806,7 +806,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	public String getBankNameByIFSC(String ifscPrefix) {
 		String bankName = null;
 		try {
-			bankName = (String)entityManager.createNativeQuery("SELECT sb.name FROM statement_analyzer.banklist_data sb WHERE LOWER(sb.ifsc_prefix) = LOWER(:ifscPrefix) ORDER BY sb.id DESC LIMIT 1").setParameter("ifscPrefix", ifscPrefix).getSingleResult();
+			bankName = (String)entityManager.createNativeQuery("SELECT sb.name FROM statement_analyzer_mudra.banklist_data sb WHERE LOWER(sb.ifsc_prefix) = LOWER(:ifscPrefix) ORDER BY sb.id DESC LIMIT 1").setParameter("ifscPrefix", ifscPrefix).getSingleResult();
 		}
 		catch (Exception e) {
 			logger.error("Error While fetching Bank Name by IFSC =====>{}======{}",ifscPrefix,e);

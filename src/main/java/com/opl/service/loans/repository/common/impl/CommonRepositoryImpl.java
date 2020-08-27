@@ -27,7 +27,7 @@ public class CommonRepositoryImpl  implements CommonRepository {
 	
 	@Override
 	public Object[] getUserCampainCodeByApplicationId(Long applicationId) {
-		Query camp = manager.createNativeQuery("SELECT cm.code,cl.`wc_renewal_status` FROM connect.`connect_log` cl\r\n" + 
+		Query camp = manager.createNativeQuery("SELECT cm.code,cl.`wc_renewal_status` FROM connect_mudra.`connect_log` cl\r\n" + 
 				"LEFT JOIN users.`campaign_details` cm ON cm.user_id=cl.`user_id`\r\n" + 
 				"WHERE application_id =:applicationId AND cm.is_active=TRUE");
 		camp.setParameter("applicationId",applicationId);
@@ -38,10 +38,10 @@ public class CommonRepositoryImpl  implements CommonRepository {
 	public Object[] getEmailDataByApplicationId(Long applicationId) {
 		Query emailData = manager.createNativeQuery("SELECT u.email,u.`mobile`,cl.`application_id`,f.`registered_premise_number`,f.`registered_street_name`,f.`registered_land_mark`\r\n" + 
 				",f.`registered_city_id`,f.`registered_state_id`,f.`registered_pincode`,f.`registered_country_id`,cl.`wc_renewal_status`,f.`organisation_name`,cl.`user_id`,pri.`purpose_of_loan_id`,cl.`business_type_id`\r\n" + 
-				"FROM connect.`connect_log` cl\r\n" + 
+				"FROM connect_mudra.`connect_log` cl\r\n" + 
 				"LEFT JOIN users.`users` u ON u.user_id=cl.user_id\r\n" + 
-				"LEFT JOIN `loan_application`.`fs_corporate_applicant_details` f ON cl.`application_id` = f.`application_id`\r\n" + 
-				"LEFT JOIN `loan_application`.`fs_corporate_primary_details` pri ON pri.`application_id` = cl.`application_id`\r\n" + 
+				"LEFT JOIN `loan_application_mudra`.`fs_corporate_applicant_details` f ON cl.`application_id` = f.`application_id`\r\n" + 
+				"LEFT JOIN `loan_application_mudra`.`fs_corporate_primary_details` pri ON pri.`application_id` = cl.`application_id`\r\n" + 
 				"WHERE cl.application_id =:applicationId");
 		emailData.setParameter("applicationId", applicationId);
 		
@@ -50,7 +50,7 @@ public class CommonRepositoryImpl  implements CommonRepository {
 
 	@Override
 	public String getCoApplicatantNameFromITR(Long coAppId) {
-		Query nameData = manager.createNativeQuery("SELECT it.`name` FROM `itr_api`.`itr_home_loan_tracking` it WHERE it.co_app_id=:coAppId");
+		Query nameData = manager.createNativeQuery("SELECT it.`name` FROM `itr_api_mudra`.`itr_home_loan_tracking` it WHERE it.co_app_id=:coAppId");
 		nameData.setParameter("coAppId", coAppId);
 		return (String) nameData.getSingleResult();
 	}
@@ -74,14 +74,14 @@ public class CommonRepositoryImpl  implements CommonRepository {
 	
 	@Override
 	public Object getMakerDate(Long applicationId) {
-		return (Object) manager.createNativeQuery("SELECT wjt.updated_on FROM `workflow`.`workflow_jobs_tracker` wjt WHERE wjt.job_id = "
-				+ "(SELECT wj.id FROM `workflow`.`workflow_jobs` wj WHERE wj.application_id ="+applicationId+" AND wj.is_active = TRUE) "
+		return (Object) manager.createNativeQuery("SELECT wjt.updated_on FROM `workflow_mudra`.`workflow_jobs_tracker` wjt WHERE wjt.job_id = "
+				+ "(SELECT wj.id FROM `workflow_mudra`.`workflow_jobs` wj WHERE wj.application_id ="+applicationId+" AND wj.is_active = TRUE) "
 						+ "AND wjt.action_id=2").getSingleResult();
 	}
 	
 	@Override
 	public Integer getViewedTeaser(String emailId){
-		StoredProcedureQuery storedProcedureQuery = manager.createStoredProcedureQuery("notification.isViewedTeaser");
+		StoredProcedureQuery storedProcedureQuery = manager.createStoredProcedureQuery("notification_mudra.isViewedTeaser");
 		storedProcedureQuery.registerStoredProcedureParameter("emailId",String.class, ParameterMode.IN);
 		storedProcedureQuery.setParameter("emailId",emailId);
 		storedProcedureQuery.execute();
@@ -91,7 +91,7 @@ public class CommonRepositoryImpl  implements CommonRepository {
 	@Override
 	public String getNoteForHLCam(Long applicationId){
 		try {
-			StoredProcedureQuery storedProcedureQuery = manager.createStoredProcedureQuery("loan_application.spRetailCheckPANAlreadyExist");
+			StoredProcedureQuery storedProcedureQuery = manager.createStoredProcedureQuery("loan_application_mudra.spRetailCheckPANAlreadyExist");
 			storedProcedureQuery.registerStoredProcedureParameter("typeId",Integer.class, ParameterMode.IN);
 			storedProcedureQuery.registerStoredProcedureParameter("selectedLoanTypeId",Integer.class, ParameterMode.IN);
 			storedProcedureQuery.registerStoredProcedureParameter("applicationId",Long.class, ParameterMode.IN);
@@ -125,13 +125,13 @@ public class CommonRepositoryImpl  implements CommonRepository {
 
 	@Override
 	public Object[] getInEligibleByApplicationId(Long applicationId) {
-		return (Object[]) manager.createNativeQuery("SELECT ine.user_org_id,ine.branch_id FROM `loan_application`.`ineligible_proposal_details` ine WHERE ine.application_id=:applicationId").setParameter("applicationId", applicationId).getSingleResult();
+		return (Object[]) manager.createNativeQuery("SELECT ine.user_org_id,ine.branch_id FROM `loan_application_mudra`.`ineligible_proposal_details` ine WHERE ine.application_id=:applicationId").setParameter("applicationId", applicationId).getSingleResult();
 	}
 	
 	@Override
 	public String getSidbiAmount() {
 		try {
-			return (String) manager.createNativeQuery("SELECT cp.value FROM payment_service.common_properties cp WHERE cp.name = 'paymentAmount' and cp.type= 'sidbiFees' and cp.is_active=true").getSingleResult();
+			return (String) manager.createNativeQuery("SELECT cp.value FROM payment_service_mudra.common_properties cp WHERE cp.name = 'paymentAmount' and cp.type= 'sidbiFees' and cp.is_active=true").getSingleResult();
 		}catch (Exception e) {
 			return null;
 		}
@@ -140,7 +140,7 @@ public class CommonRepositoryImpl  implements CommonRepository {
 	@Override
 	public String getGatewayProvider() {
 		try {
-			return (String) manager.createNativeQuery("SELECT cp.value FROM payment_service.common_properties cp WHERE cp.name = 'gatewayProvider' and cp.type= 'Integration' and cp.is_active=true").getSingleResult();
+			return (String) manager.createNativeQuery("SELECT cp.value FROM payment_service_mudra.common_properties cp WHERE cp.name = 'gatewayProvider' and cp.type= 'Integration' and cp.is_active=true").getSingleResult();
 		}catch (Exception e) {
 			return null;
 		}
@@ -160,7 +160,7 @@ public class CommonRepositoryImpl  implements CommonRepository {
 	@Override
 	public Object[] getUserDetailsByApplicationId(Long applicationId) throws Exception {
 		return (Object[]) manager.createNativeQuery("SELECT apm.application_id,apm.user_id,pd.id,pd.fp_product_id,apm.product_id,u.email,u.mobile,pd.user_org_id\r\n" + 
-				"FROM loan_application.proposal_details pd  LEFT JOIN loan_application.application_proposal_mapping apm  ON apm.application_id=pd.application_id\r\n" + 
+				"FROM loan_application_mudra.proposal_details pd  LEFT JOIN loan_application_mudra.application_proposal_mapping apm  ON apm.application_id=pd.application_id\r\n" + 
 				"LEFT JOIN users.users u ON u.user_id=apm.user_id WHERE apm.application_id=:applicationId LIMIT 1").setParameter("applicationId", applicationId).getSingleResult();
 	}
 	
@@ -173,7 +173,7 @@ public class CommonRepositoryImpl  implements CommonRepository {
 	@Override
 	public Object getIsNBFCUser(Long applicationId) {
 		try {
-			return manager.createNativeQuery("SELECT COUNT(*) FROM connect.connect_log c WHERE c.application_id="+applicationId+" AND c.stage_id>=5 AND c.stage_id!=8 AND c.is_nbfc_user = true").getSingleResult();
+			return manager.createNativeQuery("SELECT COUNT(*) FROM connect_mudra.connect_log c WHERE c.application_id="+applicationId+" AND c.stage_id>=5 AND c.stage_id!=8 AND c.is_nbfc_user = true").getSingleResult();
 		}catch (Exception e) {
 			return 0;  
 		}
@@ -195,8 +195,8 @@ public class CommonRepositoryImpl  implements CommonRepository {
 	
 	@Override
 	public BigInteger checkApplicationDisbursed(String pan) {
-		return (BigInteger) manager.createNativeQuery("SELECT COUNT(*) FROM `connect`.`connect_log` cn\n" +
-				"INNER JOIN `loan_application`.`proposal_details` pd ON pd.application_id=cn.application_id AND pd.is_active=TRUE AND pd.proposal_status_id IN (11,13)\n" +
+		return (BigInteger) manager.createNativeQuery("SELECT COUNT(*) FROM `connect_mudra`.`connect_log` cn\n" +
+				"INNER JOIN `loan_application_mudra`.`proposal_details` pd ON pd.application_id=cn.application_id AND pd.is_active=TRUE AND pd.proposal_status_id IN (11,13)\n" +
 				"WHERE (SUBSTR(cn.gstin,3,10) =:pan) AND\n" +
 				"((cn.stage_id IN (7,9) AND cn.status=3) OR (cn.stage_id=4 AND cn.status=6))").setParameter("pan", pan).getSingleResult();
 	}
@@ -215,14 +215,14 @@ public class CommonRepositoryImpl  implements CommonRepository {
 	@Override
 	@SuppressWarnings("unchecked")
 	public String getStateByStateCode(Long id) {
-		List<String> states =  manager.createNativeQuery("SELECT state_name FROM one_form.state WHERE id =:id").setParameter("id", id).getResultList();
+		List<String> states =  manager.createNativeQuery("SELECT state_name FROM one_form_mudra.state WHERE id =:id").setParameter("id", id).getResultList();
 		return 	!CommonUtils.isListNullOrEmpty(states) ? states.get(0) : "";  
 	}
 	
 	@Override
 	public Long getCountOfJobId(Long jobId , Long stepId , Long actionId) {
 		try {
-			Object count1 = (Object) manager.createNativeQuery("SELECT COUNT(*) FROM workflow.workflow_jobs_tracker WHERE job_id=:jobId AND step_id=:stepId AND action_id=:actionId")
+			Object count1 = (Object) manager.createNativeQuery("SELECT COUNT(*) FROM workflow_mudra.workflow_jobs_tracker WHERE job_id=:jobId AND step_id=:stepId AND action_id=:actionId")
 					.setParameter("jobId", jobId).setParameter("stepId", stepId).setParameter("actionId", actionId).getSingleResult();
 			return ((BigInteger)count1).longValue();
 		}catch (Exception e) {
