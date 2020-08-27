@@ -200,4 +200,42 @@ public interface ProductMasterRepository extends JpaRepository<ProductMaster, Lo
 
 	@Query(value="select * from scoring_sidbi.scoring_model_temp pm where pm.id=:scoreModelId and pm.is_active = false", nativeQuery=true)
 	public String checkcoringIsActiveForPanding(@Param("scoreModelId")Long scoreModelId);
+	
+	@Query(value = "SELECT fpm.fpName , fpm.name , fpm.userOrgId  , fpm.productId FROM  ProductMaster fpm WHERE fpm.id= :fpProductId AND fpm.isActive =:isActive" )
+	public List<Object[]> getFpDetailAndisActive(@Param("fpProductId")Long fpProductId, @Param("isActive")Boolean isActive);
+	
+	
+	// New
+	@Query(value = "SELECT fpm.productId FROM  ProductMaster fpm WHERE fpm.id= :fpProductId")
+	public Integer getProductIdByFpProductId(@Param("fpProductId")Long fpProductId);
+
+	@Query(value = "SELECT fpm.userOrgId FROM  ProductMaster fpm WHERE fpm.id= :fpProductId and fpm.userOrgId IS NOT NULL and fpm.isActive = true")
+	public Long getOrgIdFromFpMappingId(@Param("fpProductId")Long fpProductId);
+	
+   
+    @Query("select COUNT(*) from ProductMaster pm WHERE pm.productId =:productId and pm.userOrgId=:userOrgId and pm.businessTypeId =:businessTypeId and pm.isActive = true")
+    public Long getProductMasterListCount(@Param("productId") Integer productId, @Param("businessTypeId")Long businessTypeId,@Param("userOrgId") Long userOrgId);
+    
+    @Query("select COUNT(*) from ProductMaster pm WHERE pm.productId =:productId and pm.userOrgId=:userOrgId and pm.businessTypeId =:businessTypeId and pm.isActive = false")
+    public Long getInactiveProductMasterListCount(@Param("productId") Integer productId, @Param("businessTypeId")Long businessTypeId,@Param("userOrgId") Long userOrgId);
+	
+	
+	@Modifying
+	@Query("update ProductMaster pm set pm.isActive =:status,pm.modifiedDate = NOW(),pm.modifiedBy =:userId  where  pm.id=:fpProductId")
+	public int inactiveProduct(@Param("userId") Long userId,@Param("fpProductId") Long fpProductId,@Param("status") Boolean status);
+	
+	@Query("SELECT pm FROM ProductMaster pm WHERE pm.id =:productId and pm.isActive = true")
+    public ProductMaster updateProductMaster(@Param("productId") Long productId);
+	
+//	@Query("select new com.opl.msme.api.model.loans.ProductMasterRequestNewStructure(pm.id, pm.name, pm.productId, pm.createdDate, pm.modifiedDate,pm.version) from ProductMaster pm where pm.userOrgId =:userOrgId  and productId in :productIdist and isActive = true")
+//	public List<ProductMasterRequestNewStructure> getUserCorporateProductListByOrgIdAndProductId(@Param("userOrgId") Long userOrgId,@Param("productIdist") List<Integer> productIdist);
+//
+//	@Query("select new com.opl.mudra.api.loans.model.ProductMasterRequestNewStructure(pm.id, pm.name, pm.productId, pm.createdDate, pm.modifiedDate,pm.version) from ProductMaster pm WHERE pm.productId =:productId and pm.userOrgId=:userOrgId and pm.businessTypeId =:businessTypeId and pm.isActive = true ORDER BY pm.id DESC")
+//	public List<ProductMasterRequestNewStructure> getProductMasterList(Pageable pageable, @Param("productId") Integer productId, @Param("businessTypeId")Long businessTypeId,@Param("userOrgId") Long userOrgId);
+//	
+//	@Query("select new com.opl.mudra.api.loans.model.ProductMasterRequestNewStructure(pm.id, pm.name, pm.productId, pm.createdDate, pm.modifiedDate,pm.version) from ProductMaster pm WHERE pm.productId =:productId and pm.userOrgId=:userOrgId and pm.businessTypeId =:businessTypeId and pm.isActive = false ORDER BY pm.id DESC")
+//	public List<ProductMasterRequestNewStructure> getInactiveProductMasterList(Pageable pageable, @Param("productId") Integer productId, @Param("businessTypeId")Long businessTypeId,@Param("userOrgId") Long userOrgId);
+//	
+//	@Query("select new com.opl.mudra.api.loans.model.ProductMasterRequestNewStructure(pm.id, pm.name, pm.productId, pm.createdDate, pm.modifiedDate) from ProductMaster pm WHERE pm.id =:id")
+//	public ProductMasterRequestNewStructure getSingleProduct(@Param("id") Long id);
 }

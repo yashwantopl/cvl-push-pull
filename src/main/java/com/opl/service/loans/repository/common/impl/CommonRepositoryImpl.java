@@ -8,10 +8,12 @@ import javax.persistence.NoResultException;
 import javax.persistence.ParameterMode;
 import javax.persistence.Query;
 import javax.persistence.StoredProcedureQuery;
+import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Repository;
 
 import com.opl.mudra.api.loans.utils.CommonUtils;
@@ -27,7 +29,7 @@ public class CommonRepositoryImpl  implements CommonRepository {
 	
 	@Override
 	public Object[] getUserCampainCodeByApplicationId(Long applicationId) {
-		Query camp = manager.createNativeQuery("SELECT cm.code,cl.`wc_renewal_status` FROM connect.`connect_log` cl\r\n" + 
+		Query camp = manager.createNativeQuery("SELECT cm.code,cl.`wc_renewal_status` FROM connect_mudra.`connect_log` cl\r\n" + 
 				"LEFT JOIN users.`campaign_details` cm ON cm.user_id=cl.`user_id`\r\n" + 
 				"WHERE application_id =:applicationId AND cm.is_active=TRUE");
 		camp.setParameter("applicationId",applicationId);
@@ -38,7 +40,7 @@ public class CommonRepositoryImpl  implements CommonRepository {
 	public Object[] getEmailDataByApplicationId(Long applicationId) {
 		Query emailData = manager.createNativeQuery("SELECT u.email,u.`mobile`,cl.`application_id`,f.`registered_premise_number`,f.`registered_street_name`,f.`registered_land_mark`\r\n" + 
 				",f.`registered_city_id`,f.`registered_state_id`,f.`registered_pincode`,f.`registered_country_id`,cl.`wc_renewal_status`,f.`organisation_name`,cl.`user_id`,pri.`purpose_of_loan_id`,cl.`business_type_id`\r\n" + 
-				"FROM connect.`connect_log` cl\r\n" + 
+				"FROM connect_mudra.`connect_log` cl\r\n" + 
 				"LEFT JOIN users.`users` u ON u.user_id=cl.user_id\r\n" + 
 				"LEFT JOIN `fs_corporate_applicant_details` f ON cl.`application_id` = f.`application_id`\r\n" + 
 				"LEFT JOIN `fs_corporate_primary_details` pri ON pri.`application_id` = cl.`application_id`\r\n" + 
@@ -173,7 +175,7 @@ public class CommonRepositoryImpl  implements CommonRepository {
 	@Override
 	public Object getIsNBFCUser(Long applicationId) {
 		try {
-			return manager.createNativeQuery("SELECT COUNT(*) FROM connect.connect_log c WHERE c.application_id="+applicationId+" AND c.stage_id>=5 AND c.stage_id!=8 AND c.is_nbfc_user = true").getSingleResult();
+			return manager.createNativeQuery("SELECT COUNT(*) FROM connect_mudra.connect_log c WHERE c.application_id="+applicationId+" AND c.stage_id>=5 AND c.stage_id!=8 AND c.is_nbfc_user = true").getSingleResult();
 		}catch (Exception e) {
 			return 0;  
 		}
@@ -241,6 +243,285 @@ public class CommonRepositoryImpl  implements CommonRepository {
 			logger.error("Error/Exception while check User For Mudra Loan for UserId==>{} .... No User Found For CoOrigination",userId);
 		}catch (Exception e) {
 			logger.error("Error/Exception while check User For Mudra Loan for UserId==>{} exception {}",userId ,e);
+		}
+		return false;
+	}
+	
+	@Override
+	public Long getLoanType(Long applicationId) {
+		try {
+			return Long.valueOf(manager.createNativeQuery("SELECT c.loan_type_id FROM connect_mudra.connect_log c WHERE c.application_id="+applicationId).getSingleResult().toString());
+		}catch (Exception e) {
+			return null;  
+		}
+	}
+	
+	public Long getDelayTimeFromPaymentGateway() {
+		try {
+			return Long.valueOf(manager.createNativeQuery("SELECT cp.value FROM `payment_service_mudra`.`common_properties` cp WHERE cp.name = 'delayTime' AND cp.type= 'AggrePay' AND cp.is_active=TRUE").getSingleResult().toString());
+		}catch (Exception e) {
+			return null;  
+		}
+	}
+	
+	@Override
+	public Object[] findCityStateCountryById(Long cityId , Long stateId, Integer countryId)  {
+		StoredProcedureQuery storedProcedureQuery = manager.createStoredProcedureQuery("loan_application_mudra.fetch_city_state_country_names");
+		storedProcedureQuery.registerStoredProcedureParameter("cityId",Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter("stateId",Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter("countryId",Integer.class, ParameterMode.IN);
+		storedProcedureQuery.setParameter("cityId",cityId);
+		storedProcedureQuery.setParameter("stateId",stateId);
+		storedProcedureQuery.setParameter("countryId",countryId);
+		storedProcedureQuery.execute();
+		return (Object[]) storedProcedureQuery.getSingleResult();
+	}
+
+	@Modifying
+	@Transactional
+	@Override
+	public Integer setFailureReasonToPaymentsTable(String failureReason, Long applicationId, Boolean isActive) {
+		try {
+			return Integer.valueOf(manager.createNativeQuery("UPDATE `payment_service_mudra`.payments ph SET ph.failure_reason = :failureReason WHERE ph.application_id= :applicationId AND ph.is_active = :isActive ORDER BY ph.application_id DESC LIMIT 1 ")
+					.setParameter("failureReason", failureReason).setParameter("applicationId", applicationId).setParameter("isActive", isActive).getSingleResult().toString());
+		}catch (Exception e) {
+			return null;  
+		}
+	}
+
+	@Override
+	public Object[] findPaymentIdAndFailureResonByApplicationIdAndIsActive(Long applicationId, Boolean isActive) {
+		try {
+			return (Object[]) manager.createNativeQuery("SELECT id,failure_reason FROM `payment_service_mudra`.payments ph WHERE ph.application_id=:applicationId AND is_active =:isActive ORDER BY id DESC LIMIT 1")
+					.setParameter("applicationId", applicationId).setParameter("isActive", isActive).getSingleResult();
+		}catch (Exception e) {
+			return null;  
+		}
+	}
+
+	@Override
+	public Object[] findOnlinePaymentDetailByPaymentIAndIsActive(Long paymentId, Boolean isActive) {
+		try {
+			return (Object[]) manager.createNativeQuery("SELECT id,provider_id,STATUS FROM payment_service_mudra.`online_payment` o WHERE o.payment_id=:paymentId AND is_active =:isActive ORDER BY id DESC LIMIT 1")
+					.setParameter("paymentId", paymentId).setParameter("isActive", isActive).getSingleResult();
+		}catch (Exception e) {
+			return null;  
+		}
+	}
+
+	@Override
+	public Integer inActivateOnlinePaymentDetail(Long opid, Boolean isActive) {
+		try {
+			return Integer.valueOf(manager.createNativeQuery("UPDATE payment_service_mudra.`online_payment` ph  SET ph.is_active = FALSE  WHERE ph.id =:id AND ph.is_active =:isActive")
+					.setParameter("id",opid).setParameter("isActive", isActive).getSingleResult().toString());
+		}catch (Exception e) {
+			return null;  
+		}
+	}
+
+	@Override
+	public Integer inActivatePaymentsTable(Long pid, Boolean isActive) {
+		try {
+			return Integer.valueOf(manager.createNativeQuery("UPDATE `payment_service_mudra`.payments ph SET ph.isActive = FALSE WHERE ph.id =:id AND ph.isActive =:isActive")
+					.setParameter("id",pid).setParameter("isActive", isActive).getSingleResult().toString());
+		}catch (Exception e) {
+			return null;  
+		}
+	}
+
+	@Override
+	public Integer getCountofOnlineNotSancAndDis(String panNumber, Integer productId) {
+		try {
+			return Integer.valueOf(manager.createNativeQuery("SELECT payment_service_mudra.day_difference_for_skip_payment(:panNo , :productId)")
+					.setParameter("panNo",panNumber).setParameter("productId", productId).getSingleResult().toString());
+		}catch (Exception e) {
+			logger.error("Exception in finding getCountofOnlineNotSancAndDis :",e);
+			return null;  
+		}
+	}
+	
+	@Override
+	public Object getSbiSpecific(Long applicationId) {
+		try {
+			return manager.createNativeQuery("SELECT COUNT(*) FROM connect_mudra.connect_log c WHERE c.application_id=:applicationId AND c.stage_id>=5 AND c.stage_id!=8 AND c.wc_renewal_status = 2 AND c.org_id=16")
+					.setParameter("applicationId", applicationId).getSingleResult();
+		}catch (Exception e) {
+			return 0;  
+		}
+	}
+	
+	@Override
+	public Object getSidbiSpecific(Long applicationId) {
+		try {
+			return manager.createNativeQuery("SELECT COUNT(*) FROM connect_mudra.connect_log c WHERE c.application_id=:applicationId AND c.stage_id>=5 AND c.stage_id!=8 AND c.wc_renewal_status = 2 AND c.org_id=10")
+					.setParameter("applicationId", applicationId).getSingleResult();
+		}catch (Exception e) {
+			return 0;  
+		}
+	}
+	@Override
+	public Integer getNBFCUser(Long applicationId) {
+		try {
+			return Integer.valueOf(manager.createNativeQuery("SELECT COUNT(*) FROM connect_mudra.connect_log c WHERE c.application_id=:applicationId AND c.stage_id>=5 AND c.stage_id!=8 AND c.is_nbfc_user = true")
+					.setParameter("applicationId", applicationId).getSingleResult().toString());
+		}catch (Exception e) {
+			return 0;  
+		}
+	}
+
+	@Override
+	public String getPaymentStatus(Long applicationId) {
+		try {
+			return manager.createNativeQuery("SELECT op.status FROM `payment_service_mudra`.`payments` p  INNER JOIN `payment_service_mudra`.`online_payment` op  ON op.payment_id=p.id WHERE p.application_id=:applicationId AND p.is_active = TRUE ORDER BY p.id DESC")
+					.setParameter("applicationId", applicationId).getSingleResult().toString();
+		}catch (Exception e) {
+			return null;  
+		}
+
+	}
+	
+	@Transactional
+	@Override
+	public Integer updateConnectWithProposalId(Long applicationId,Long proposalId,Integer stageId,Integer previousStageId,Boolean nbfcFlow){
+		logger.info("Updating ProposalId in Connect Log where applicationId ==>{} with ProposalId==>{} , nbfcFlow==>{} , stageId==>{} , previousStageId==>{}" ,applicationId , proposalId ,nbfcFlow ,stageId , previousStageId);
+		Integer val = 0;
+		try {
+			
+			if(nbfcFlow != null && nbfcFlow){
+				val = manager.createNativeQuery("UPDATE connect_mudra.connect_log cl SET cl.nbfc_proposal_id =:propo1salId "
+						+ " WHERE cl.application_id=:applicationId AND " //AND cl.proposal_id IS NULL
+						+ " cl.is_active=TRUE AND (cl.stage_id<>:stageId AND cl.status<>6) AND cl.stage_id=:previousStageId ORDER BY cl.id desc LIMIT 1") 
+						.setParameter("applicationId",applicationId)
+						.setParameter("proposalId",proposalId)
+						.setParameter("stageId",stageId)
+						.setParameter("previousStageId",previousStageId)
+						.executeUpdate();
+			}else {
+				val = manager.createNativeQuery("UPDATE connect_mudra.connect_log cl SET cl.proposal_id =:proposalId "
+						+ " WHERE cl.application_id=:applicationId AND " //AND cl.proposal_id IS NULL
+						+ " cl.is_active=TRUE AND (cl.stage_id<>:stageId AND cl.status<>6) AND cl.stage_id=:previousStageId ORDER BY cl.id desc LIMIT 1")
+						.setParameter("applicationId",applicationId)
+						.setParameter("proposalId",proposalId)
+						.setParameter("stageId",stageId)
+						.setParameter("previousStageId",previousStageId)
+						.executeUpdate();
+			}
+		}catch (Exception e) {
+			logger.error("Error/Exception while updating proposalID in Connect with Error==>{}" ,e);
+		}
+		return val;
+	}
+	
+	@Override
+	public Object getInprincipleDate(Long applicationId) {
+		try {
+			return manager.createNativeQuery("SELECT c.In_principle_date FROM connect_mudra.connect_log c WHERE c.stage_id in (7,9,210,211,1008,1009) AND c.application_id="+applicationId+" ORDER by c.id desc limit 1").getSingleResult();
+		}catch (Exception e) {
+			return null;  
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Object[]> getUserListByUserOrgIdAndRoleIdAndBranchId(Long branchId, Long roleId, Long userOrgId) {
+		try {
+			return manager.createNativeQuery("SELECT user_id,email,mobile FROM users.users WHERE user_org_id=:userOrgId AND user_role_id=:userRoleId AND branch_id=:branchId")
+					.setParameter("userOrgId", userOrgId).setParameter("userRoleId", roleId).setParameter("branchId", branchId).getResultList();
+		}catch (Exception e) {
+			logger.error("Error/Exception while getting userDetail with Error==>{}" ,e);
+			return null;  
+		}
+
+	}
+	
+	@Override
+	public Boolean checkExistingProductEditDownloadDate(Long fpUserId, Long fpProductId, Integer type,Integer tabId) {
+		try {
+			List<Object> isExistingProductDownload =  manager.createNativeQuery("SELECT download_date FROM `loan_application_mudra`.`fp_product_edit_download` \n" + 
+					"WHERE fp_user_id=:fpUserId AND product_id=:fpProductId AND excel_type=:type AND tab_id=:tabId")
+					.setParameter("fpUserId", fpUserId)
+					.setParameter("fpProductId", fpProductId)
+					.setParameter("type", type)
+					.setParameter("tabId", tabId).getResultList();
+			return !CommonUtils.isListNullOrEmpty(isExistingProductDownload)  ? true : false ; 
+		}catch (Exception e) {
+			return false;
+		}
+	}
+	
+	@Transactional
+	@Override
+	public void insertDateForProductEdit(Long fpUserId, Long fpProductId, Integer type,Integer tabId) {
+		try {
+			manager.createNativeQuery("INSERT INTO `loan_application_mudra`.`fp_product_edit_download`(fp_user_id,product_id,excel_type,tab_id,download_date)VALUES(:fpUserId,:fpProductId,:type,:tabId,DATE_FORMAT(CURDATE(), '%m/%d/%Y'))")
+			.setParameter("fpUserId", fpUserId)
+			.setParameter("fpProductId", fpProductId)
+			.setParameter("type", type)
+			.setParameter("tabId", tabId)
+			.executeUpdate();
+		}catch (Exception e) {
+			logger.error("error in inserting Records in product Edit details date -->",e);
+		}
+	}
+	
+	@Transactional
+	@Override
+	public void updateExisitngProductEditDownloadDate(Long fpUserId, Long fpProductId, Integer type,Integer tabId) {
+		try {
+			manager.createNativeQuery("UPDATE `loan_application_mudra`.`fp_product_edit_download` SET download_date=DATE_FORMAT(CURDATE(), '%m/%d/%Y') \n" + 
+					"WHERE fp_user_id=:fpUserId AND product_id=:fpProductId AND excel_type=:type AND tab_id=:tabId")
+			.setParameter("fpUserId", fpUserId)
+			.setParameter("fpProductId", fpProductId)
+			.setParameter("type", type)
+			.setParameter("tabId", tabId)
+			.executeUpdate();
+		}catch (Exception e) {
+			logger.error("error in updating Existing product Edit Download date -->",e);
+		}
+		
+	}
+	
+	@Override
+	public String getLastDownloadDateForProductEdit(Long fpUserId, Long fpProductId, Integer type,Integer tabId) {
+		try {
+			String isExistingAuditDownload =  (String) manager.createNativeQuery("SELECT download_date FROM `loan_application_mudra`.`fp_product_edit_download`  \n" + 
+					"WHERE fp_user_id=:fpUserId AND product_id=:fpProductId AND excel_type=:type AND tab_id=:tabId")
+					.setParameter("fpUserId", fpUserId)
+					.setParameter("fpProductId", fpProductId)
+					.setParameter("type", type)
+					.setParameter("tabId", tabId).getSingleResult();
+			return !CommonUtils.isObjectNullOrEmpty(isExistingAuditDownload)  ? isExistingAuditDownload : "" ; 
+		}catch (Exception e) {
+			return null;
+		}
+	}
+	
+	@Override
+	public String getCamVersionForBSStandalone(String type) {
+		try{
+			String result =(String)  manager.createNativeQuery("SELECT version_name FROM loan_application.bs_cam_version WHERE type=:type")
+					.setParameter("type", type).getSingleResult();
+			return result;
+		}catch (NoResultException e) {
+			logger.error("No data found for Version type {}",type);
+		}catch (Exception e) {
+			logger.error("Exception while getting version Data {}",e);
+			
+		}
+		
+		return null;
+	}
+
+	@Override
+	public Boolean checkUserWithBusinessTypeId(Long userId , Integer businessTypeId) {
+		try{
+			Object obj = manager.createNativeQuery("SELECT * FROM users.user_role_product_mapping WHERE user_id =:userId AND business_type_id=:businessTypeId")
+					.setParameter("userId", userId).setParameter("businessTypeId", businessTypeId).getSingleResult();
+			return obj != null ? true : false;
+		}catch (NoResultException e) {
+			logger.error("Error/Exception while check User By UserId==>{} with businessTypeId==>{} .... No User Found With Specific BusinessType",userId , businessTypeId);
+		}catch (Exception e) {
+			logger.error("Error/Exception while check User By UserId==>{} with businessTypeId==>{}  exception {}",userId , businessTypeId,e);
 		}
 		return false;
 	}

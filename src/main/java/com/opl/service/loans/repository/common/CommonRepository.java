@@ -22,6 +22,8 @@ public interface CommonRepository {
 	
 	public String getEmailIdFromUsers(Long userId);
 	
+	public Boolean checkUserWithBusinessTypeId(Long userId , Integer businessTypeId);
+	
 	public Object[] getEmailIdAndMobileForNBFCUser(Long userId);
 	
 	public String getNoteForHLCam(Long applicationId);
@@ -54,4 +56,28 @@ public interface CommonRepository {
 	
 	public Boolean checkUserForMudraLoanByUserId(Long userId);
 	
+	/** New payment Queries*/
+	public Long getLoanType(Long applicationId) ;
+	public Long getDelayTimeFromPaymentGateway();
+	Object[] findCityStateCountryById(Long cityId, Long stateId, Integer countryId);
+	public Integer setFailureReasonToPaymentsTable(String failureReason,Long applicationId,Boolean isActive) ;
+	public Object[] findPaymentIdAndFailureResonByApplicationIdAndIsActive(Long applicationId,Boolean isActive);
+	public Object[] findOnlinePaymentDetailByPaymentIAndIsActive(Long paymentId,Boolean isActive);
+	public Integer inActivateOnlinePaymentDetail(Long opid,Boolean isActive);
+	public Integer inActivatePaymentsTable(Long pid,Boolean isActive);
+	public Integer getCountofOnlineNotSancAndDis(String  panNumber,Integer productId);
+	public Object getSbiSpecific(Long applicationId);
+	public Object getSidbiSpecific(Long applicationId);
+	public Integer getNBFCUser(Long applicationId);
+	public String getPaymentStatus(Long applicationId);
+	public Integer updateConnectWithProposalId(Long applicationId,Long proposalId,Integer stageId,Integer previousStageId,Boolean nbfcFlow);
+	public Object getInprincipleDate(Long applicationId);
+	public List<Object[]> getUserListByUserOrgIdAndRoleIdAndBranchId(Long branchId,Long roleId,Long userOrgId);
+	
+	public void insertDateForProductEdit(Long fpUserId ,Long fpProductId,Integer type,Integer tabId);
+	public void updateExisitngProductEditDownloadDate(Long fpUserId ,Long fpProductId,Integer type,Integer tabId);
+	public Boolean checkExistingProductEditDownloadDate(Long fpUserId ,Long fpProductId,Integer type,Integer tabId);
+	public String getLastDownloadDateForProductEdit(Long fpUserId ,Long fpProductId,Integer type,Integer tabId);
+
+	public String getCamVersionForBSStandalone(String type);
 }
