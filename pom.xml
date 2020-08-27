@@ -139,12 +139,6 @@
 			<artifactId>client-profile</artifactId>
 			<version>0.0.1</version>
 		</dependency>
-	    <dependency>
-            <groupId>com.ibm.icu</groupId>
-            <artifactId>icu4j</artifactId>
-            <version>3.4.4</version>
-        </dependency>
-		
 		
 	</dependencies>
 	<build>
