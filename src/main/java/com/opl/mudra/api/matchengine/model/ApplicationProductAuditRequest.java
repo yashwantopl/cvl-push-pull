@@ -80,6 +80,8 @@ public class ApplicationProductAuditRequest implements Serializable{
     
     private String matchesTooltip;
     
+    private Boolean isActive;
+    
     
     public String getConcessionBasedOnType() {
 		return concessionBasedOnType;
@@ -360,6 +362,15 @@ public class ApplicationProductAuditRequest implements Serializable{
 	public void setMatchesTooltip(String matchesTooltip) {
 		this.matchesTooltip = matchesTooltip;
 	}
-    
+
+	public Boolean getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
+	}
+
+	
     
 }

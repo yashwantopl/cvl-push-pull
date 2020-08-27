@@ -126,6 +126,27 @@ public class ProposalMappingRequest implements Serializable {
 	private Integer nbfcFlow;
 
 	private Long ratioId;
+	
+	private Double pfConcession;
+
+	private String pfConcessionText;
+
+	private Integer connectFlowTypeId;
+	
+	private String gstin;
+
+	private Integer businessTypeId;
+
+	private Boolean isOffline;
+
+	private String addiFields;
+
+	private String reopenReason;
+
+	private Boolean isSanctioned;
+
+	private Boolean isDisbursed;
+
 
 	public String getConcessionBasedOnType() {
 		return concessionBasedOnType;
@@ -584,6 +605,87 @@ public class ProposalMappingRequest implements Serializable {
 
 	public void setRatioId(Long ratioId) {
 		this.ratioId = ratioId;
+	}
+	
+
+	public Double getPfConcession() {
+		return pfConcession;
+	}
+
+	public void setPfConcession(Double pfConcession) {
+		this.pfConcession = pfConcession;
+	}
+
+	public String getPfConcessionText() {
+		return pfConcessionText;
+	}
+
+	public void setPfConcessionText(String pfConcessionText) {
+		this.pfConcessionText = pfConcessionText;
+	}
+
+	public Integer getConnectFlowTypeId() {
+		return connectFlowTypeId;
+	}
+
+	public void setConnectFlowTypeId(Integer connectFlowTypeId) {
+		this.connectFlowTypeId = connectFlowTypeId;
+	}
+
+	public String getGstin() {
+		return gstin;
+	}
+
+	public void setGstin(String gstin) {
+		this.gstin = gstin;
+	}
+
+	public Integer getBusinessTypeId() {
+		return businessTypeId;
+	}
+
+	public void setBusinessTypeId(Integer businessTypeId) {
+		this.businessTypeId = businessTypeId;
+	}
+
+	public Boolean getIsOffline() {
+		return isOffline;
+	}
+
+	public void setIsOffline(Boolean isOffline) {
+		this.isOffline = isOffline;
+	}
+
+	public String getAddiFields() {
+		return addiFields;
+	}
+
+	public void setAddiFields(String addiFields) {
+		this.addiFields = addiFields;
+	}
+
+	public String getReopenReason() {
+		return reopenReason;
+	}
+
+	public void setReopenReason(String reopenReason) {
+		this.reopenReason = reopenReason;
+	}
+
+	public Boolean getIsSanctioned() {
+		return isSanctioned;
+	}
+
+	public void setIsSanctioned(Boolean isSanctioned) {
+		this.isSanctioned = isSanctioned;
+	}
+
+	public Boolean getIsDisbursed() {
+		return isDisbursed;
+	}
+
+	public void setIsDisbursed(Boolean isDisbursed) {
+		this.isDisbursed = isDisbursed;
 	}
 
 	@Override
