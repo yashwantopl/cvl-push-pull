@@ -3,6 +3,8 @@ package com.opl.service.loans.repository.fundseeker.corporate;
 import java.math.BigInteger;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -203,5 +205,17 @@ public interface ApplicationProposalMappingRepository extends JpaRepository<Appl
     @Modifying
     @Query("update ApplicationProposalMapping lm set lm.loanAmount=:loanAmount where lm.isActive = true and lm.applicationId=:applicationId")
     public int updateLoanAmount(@Param("loanAmount") Double loanAmount,@Param("applicationId") Long applicationId);
+    
+    @Transactional
+  	@Modifying
+  	@Query("delete from ApplicationProposalMapping where proposalId=:proposalId")
+  	public Integer deleteByProposalId(@Param("proposalId")Long proposalId);
+      
+	@Query("SELECT c.productId FROM ApplicationProposalMapping c WHERE c.proposalId=:proposalId")
+	public Long getProductIdByProposalId(@Param("proposalId") Long proposalId);
+
+	@Query(value = "select product_id from application_proposal_mapping where application_id =:applicationId order  by  proposal_id desc limit 1", nativeQuery = true)
+	public Integer getProductIdByApplicationId(@Param("applicationId") Long applicationId);
+
     
 }

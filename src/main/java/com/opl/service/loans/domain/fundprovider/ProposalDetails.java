@@ -119,6 +119,60 @@ public class ProposalDetails implements Serializable {
 
     @Column(name="nbfc_flow")
     private Integer nbfcFlow;
+    
+    @Column(name="min_pf")
+    private Double minPf;
+	
+	@Column(name="max_pf")
+    private Double maxPf;
+	
+	@Column(name="payment_type_id")
+	private Long paymentTypeId;
+
+    @Column(name="gstin")
+    private String gstin;
+
+    @Column(name = "business_type_id")
+    private Integer businessTypeId;
+
+    @Column(name = "is_offline")
+    private Boolean isOffline;
+
+    @Column(name = "addi_fields")
+    private String addiFields;
+
+    @Column(name="reopen_reason")
+    private String reopenReason;
+
+    @Column(name="is_sanctioned")
+    private Boolean isSanctioned;
+
+    @Column(name="is_Disbursed")
+    private Boolean isDisbursed;
+
+    @Column(name="consession_roi")
+    private Double consessionRoi;
+
+    @Column(name="concession_based_on_type")
+    private String concessionBasedOnType;
+
+    @Column(name="spread_roi")  // SPREAD RATE OF INTEREST
+    private Double spreadRoi;
+
+    @Column(name="mclr_roi") // MCLR RATE OF INTEREST
+    private Double mclrRoi;
+
+    @Column(name="scoring_model_based_on")
+    private Integer scoringModelBasedOn;
+
+    @Column(name = "pf_concession")
+    private Double pfConcession;
+
+    @Column(name = "pf_concession_text")
+    private String pfConcessionText;
+
+    @Column(name = "connect_flow_type_id")
+    private Integer connectFlowTypeId;
 
     public Double getEmi() {
         return emi;
@@ -386,5 +440,150 @@ public class ProposalDetails implements Serializable {
     public void setAdditionalLoanAmount(Double additionalLoanAmount) {
         this.additionalLoanAmount = additionalLoanAmount;
     }
+
+	public Double getMinPf() {
+		return minPf;
+	}
+
+	public void setMinPf(Double minPf) {
+		this.minPf = minPf;
+	}
+
+	public Double getMaxPf() {
+		return maxPf;
+	}
+
+	public void setMaxPf(Double maxPf) {
+		this.maxPf = maxPf;
+	}
+
+	public Boolean getIsOffline() {
+		return isOffline;
+	}
+
+	public void setIsOffline(Boolean isOffline) {
+		this.isOffline = isOffline;
+	}
+
+	public Long getPaymentTypeId() {
+		return paymentTypeId;
+	}
+
+	public void setPaymentTypeId(Long paymentTypeId) {
+		this.paymentTypeId = paymentTypeId;
+	}
+
+	public String getGstin() {
+		return gstin;
+	}
+
+	public void setGstin(String gstin) {
+		this.gstin = gstin;
+	}
+
+	public Integer getBusinessTypeId() {
+		return businessTypeId;
+	}
+
+	public void setBusinessTypeId(Integer businessTypeId) {
+		this.businessTypeId = businessTypeId;
+	}
+
+	public String getAddiFields() {
+		return addiFields;
+	}
+
+	public void setAddiFields(String addiFields) {
+		this.addiFields = addiFields;
+	}
+
+	public String getReopenReason() {
+		return reopenReason;
+	}
+
+	public void setReopenReason(String reopenReason) {
+		this.reopenReason = reopenReason;
+	}
+
+	public Boolean getIsSanctioned() {
+		return isSanctioned;
+	}
+
+	public void setIsSanctioned(Boolean isSanctioned) {
+		this.isSanctioned = isSanctioned;
+	}
+
+	public Boolean getIsDisbursed() {
+		return isDisbursed;
+	}
+
+	public void setIsDisbursed(Boolean isDisbursed) {
+		this.isDisbursed = isDisbursed;
+	}
+
+	public Double getConsessionRoi() {
+		return consessionRoi;
+	}
+
+	public void setConsessionRoi(Double consessionRoi) {
+		this.consessionRoi = consessionRoi;
+	}
+
+	public String getConcessionBasedOnType() {
+		return concessionBasedOnType;
+	}
+
+	public void setConcessionBasedOnType(String concessionBasedOnType) {
+		this.concessionBasedOnType = concessionBasedOnType;
+	}
+
+	public Double getSpreadRoi() {
+		return spreadRoi;
+	}
+
+	public void setSpreadRoi(Double spreadRoi) {
+		this.spreadRoi = spreadRoi;
+	}
+
+	public Double getMclrRoi() {
+		return mclrRoi;
+	}
+
+	public void setMclrRoi(Double mclrRoi) {
+		this.mclrRoi = mclrRoi;
+	}
+
+	public Integer getScoringModelBasedOn() {
+		return scoringModelBasedOn;
+	}
+
+	public void setScoringModelBasedOn(Integer scoringModelBasedOn) {
+		this.scoringModelBasedOn = scoringModelBasedOn;
+	}
+
+	public Double getPfConcession() {
+		return pfConcession;
+	}
+
+	public void setPfConcession(Double pfConcession) {
+		this.pfConcession = pfConcession;
+	}
+
+	public String getPfConcessionText() {
+		return pfConcessionText;
+	}
+
+	public void setPfConcessionText(String pfConcessionText) {
+		this.pfConcessionText = pfConcessionText;
+	}
+
+	public Integer getConnectFlowTypeId() {
+		return connectFlowTypeId;
+	}
+
+	public void setConnectFlowTypeId(Integer connectFlowTypeId) {
+		this.connectFlowTypeId = connectFlowTypeId;
+	}
+	
 
 }

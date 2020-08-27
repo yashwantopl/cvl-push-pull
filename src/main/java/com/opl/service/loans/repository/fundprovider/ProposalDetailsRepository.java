@@ -1,6 +1,7 @@
 
 package com.opl.service.loans.repository.fundprovider;
 import java.math.BigInteger;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.Date;
 import java.util.List;
 
@@ -8,12 +9,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Propagation;
 
 import com.opl.service.loans.domain.fundprovider.ProposalDetails;
 
 public interface ProposalDetailsRepository extends JpaRepository<ProposalDetails,Long>{
 	
 	public ProposalDetails findFirstByApplicationIdAndIsActiveAndNbfcFlowOrderByIdDesc(Long applicationId, Boolean isActive ,Integer nbfcFlow);
+	
+	public ProposalDetails findFirstByApplicationIdAndIsActiveOrderByIdDesc(Long applicationId, Boolean isActive);
 
     @Query("SELECT pd.applicationId FROM ProposalDetails pd WHERE branchId =:branchId and fpProductId=:fpProductId and isActive = 1")
     public List<Long> getApplicationsBasedOnBranchIdAndFpProductId(@Param("branchId") Long branchId,@Param("fpProductId") Long fpProductId);
@@ -251,7 +255,7 @@ public interface ProposalDetailsRepository extends JpaRepository<ProposalDetails
     @Query(value = "SELECT * FROM proposal_details pd WHERE application_id =:applicationId and pd.nbfc_flow =:nbfcFlow and pd.proposal_status_id =5 ORDER BY pd.modified_date desc LIMIT 1",nativeQuery = true)
     public ProposalDetails getSanctionProposalByApplicationBankFlow(@Param("applicationId") Long applicationId,@Param("nbfcFlow") Integer nbfcFlow);
 
-    // Count for checker maker (HOLD REJECT proposal)
+    // Count for checker maker (HOLD REJECT proposal)    
     @Query(value = "SELECT p.id FROM proposal_details p WHERE p.is_active=TRUE and p.user_org_id=:userOrgId and p.branch_id=:branchId and nbfc_flow=:nbfcFlow_1 and p.application_id in (SELECT pd.application_id FROM proposal_details pd WHERE pd.proposal_status_id IN (:proposalStatus) and pd.is_active=TRUE and (pd.nbfc_flow=:nbfcFlow_2 OR pd.nbfc_flow=:nbfcFlow_1))",nativeQuery = true)
     public List<BigInteger> getFPProposalCountByStatusIdAndNBFCFlowType(@Param("proposalStatus") List<Long> proposalStatus,@Param("userOrgId") Long userOrgId, @Param("branchId") Long branchId,@Param("nbfcFlow_1") Integer nbfcFlow_1,  @Param("nbfcFlow_2") Integer nbfcFlow_2);
 
@@ -267,6 +271,78 @@ public interface ProposalDetailsRepository extends JpaRepository<ProposalDetails
     @Query(value = "SELECT p.id FROM proposal_details p WHERE p.is_active=TRUE and p.user_org_id=:userOrgId and nbfc_flow=:nbfcFlow_1 and p.application_id in (SELECT pd.application_id FROM proposal_details pd WHERE pd.proposal_status_id IN (:proposalStatus) and pd.is_active=TRUE and (pd.nbfc_flow=:nbfcFlow_2 OR pd.nbfc_flow=:nbfcFlow_1)) LIMIT :pageIndex,:pageSize",nativeQuery = true)
     public List<BigInteger> getFPProposalPageableByStatusIdAndNBFCFlowType(@Param("proposalStatus") List<Long> proposalStatus,@Param("userOrgId") Long userOrgId,@Param("nbfcFlow_1") Integer nbfcFlow_1,  @Param("nbfcFlow_2") Integer nbfcFlow_2,@Param("pageIndex") int pageIndex, @Param("pageSize") int pageSize);
 
+	@Transactional
+	@Modifying
+	@Query("delete from ProposalDetails pd where pd.id=:proposalId")
+	public Integer deleteByProposalId(@Param("proposalId")Long proposalId);
+	
+	
+	
+
+	@Transactional(propagation = Propagation.REQUIRES_NEW, noRollbackFor = Exception.class)
+	@Modifying
+	@Query(" UPDATE ProposalDetails pd set pd.isActive = :isActive , pd.modifiedDate = now() ,pd.paymentTypeId=:paymentTypeId where pd.applicationId = :applicationId AND pd.fpProductId = :fpProductId")
+	public Integer activeProposalDetailStatusByAppIdAndFpProductId(@Param("isActive") Boolean isActive , @Param("applicationId") Long applicationId ,@Param("fpProductId")  Long fpProductId,@Param("paymentTypeId")  Long paymentTypeId  );
+	
+	@Query("select pd from ProposalDetails pd where pd.id = :proposalId and pd.applicationId = :applicationId and pd.isActive = true AND isOffline = false")
+	public ProposalDetails findByProposalIdAndApplicationIdAndIsActiveTrue(@Param("proposalId") Long proposalId ,@Param("applicationId")Long applicationId);
+	
+	@Query("SELECT COUNT(p.applicationId) FROM ProposalDetails p WHERE p.applicationId=:applicationId and isActive = true AND isOffline = false")
+    public Integer getCountOfProposalDetailsByApplicationIdAndIsActiveTrue(@Param("applicationId") Long applicationId);
+
+    @Modifying //  For In-eligible proposals
+    @Query(value="update proposal_details set is_active =:isActive where application_id =:applicationId AND is_offline = true", nativeQuery = true)
+    public Integer updateInEligibleDataBasedonApplicationId(@Param("applicationId")Long applicationId,@Param("isActive")Boolean isActive);
+
+    @Modifying //  For In-eligible proposals
+    @Query(value="update connect_mudra.connect_log set proposal_id =:proposalId where application_id =:applicationId", nativeQuery = true)
+    public Integer updateProposalId(@Param("applicationId")Long applicationId,@Param("proposalId")Long proposalId);
+
+    @Modifying //  For In-eligible proposals
+    @Query(value="update user_profile.profile_loan_mapping set proposal_id =:proposalId where application_id =:applicationId", nativeQuery = true)
+    public Integer updateProposalIdInProfile(@Param("applicationId")Long applicationId,@Param("proposalId")Long proposalId);
+
+    @Query(value = "SELECT inl.user_org_id FROM `proposal_details` inl WHERE inl.application_id =:applicationId AND is_offline = true", nativeQuery = true)
+    public Long getOrgId(@Param("applicationId") Long applicationId);
+
+    @Query(value = "SELECT inl.old_user_org_id FROM `proposal_details` inl WHERE inl.application_id =:applicationId AND is_offline = true", nativeQuery = true)
+    public Integer getOldUserOrgId(@Param("applicationId") Long applicationId);
+
+    @Query(value = "SELECT * FROM proposal_details WHERE application_id=:applicationId AND is_active=TRUE AND (is_sanctioned = TRUE OR is_disbursed = TRUE) AND is_offline = true", nativeQuery = true)
+    public ProposalDetails getSanctionedByApplicationId(@Param("applicationId")Long applicationId);
+
+    @Query("SELECT p FROM ProposalDetails p WHERE p.applicationId=:applicationId and p.userOrgId=:orgId and isActive = true")
+    public ProposalDetails findByAppliationIdAndOrgId(@Param("applicationId") Long applicationId,@Param("orgId") Long orgId);
+
+    @Modifying
+    @Query("delete from ProposalDetails where applicationId=:applicationId and fpProductId=:fpProductId")
+    public Integer deleteByApplicationId(@Param("applicationId") Long applicationId, @Param("fpProductId") Long fpProductId);
+
+    @Modifying
+    @Query(value = "UPDATE sanction_detail set status =:status WHERE  application_id =:applicationId AND org_id =:orgId AND is_active = true;",nativeQuery = true)
+    public int updateSanctionStatus(@Param("applicationId") Long applicationId, @Param("orgId") Long orgId, @Param("status") Integer status);
+
+    @Query(value = "SELECT * FROM `proposal_details` inl WHERE SUBSTR(inl.gstin,3,10) =:gstin AND inl.`is_active` = TRUE and inl.is_offline = true", nativeQuery = true)
+    public List<ProposalDetails> findByGstinPan(@Param("gstin")String gstin);
+
+    @Query(value = "SELECT ipd.application_id, cl.user_id, fs.name, usr.email, usr.mobile, ipd.created_date, ipd.branch_id, branch.name AS branchname, branch.contact_person_name, branch.telephone_no, branch.contact_person_number, org.organisation_name, lam.application_code, branch.code, branch.street_name, (SELECT state_name FROM `one_form`.`state` s WHERE s.id = branch.state_id), (SELECT city_name FROM `one_form`.`city` c WHERE c.id = branch.city_id), branch.premises_no, branch.contact_person_email\n" +
+            "			FROM `proposal_details` ipd \n" +
+            "			LEFT JOIN `connect_mudra`.`connect_log` cl ON cl.application_id = ipd.application_id \n" +
+            "			LEFT JOIN `users`.`users` usr ON usr.user_id = cl.user_id\n" +
+            "			LEFT JOIN `users`.`fund_seeker_details` fs ON fs.user_id = usr.user_id\n" +
+            "			LEFT JOIN `users`.`branch_master` branch ON branch.id = ipd.branch_id\n" +
+            "			LEFT JOIN `users`.`user_organisation_master` org ON org.user_org_id = ipd.user_org_id\n" +
+            "			LEFT JOIN `fs_loan_application_master` lam ON lam.application_id = ipd.application_id\n" +
+            "			WHERE ipd.user_org_id = :userOrgId AND usr.user_id = cl.user_id AND usr.user_type_id = 1 AND org.user_org_id = :userOrgId and " +
+            "			(ipd.created_date BETWEEN :fromDate and :toDate) AND ipd.is_offline = true GROUP BY ipd.application_id ORDER BY ipd.id DESC", nativeQuery = true)
+    public List<Object[]> getOfflineProposalDetailsByOrgId(@Param("userOrgId")Long userOrgId, @Param("fromDate") Date fromDate, @Param("toDate") Date toDate);
+
+    public ProposalDetails findByApplicationIdAndUserOrgIdAndIsActive(Long applicationId,Long userOrgId,Boolean isActive);
+
+    @Query("select pd from ProposalDetails pd where pd.applicationId=:applicationId and pd.isActive = true and pd.isOffline = true")
+    public List<ProposalDetails> getOfflineProposalByApplicationId(@Param("applicationId") Long applicationId);
+    
+	
 }
 
 

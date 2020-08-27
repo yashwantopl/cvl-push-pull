@@ -27,12 +27,14 @@ import javax.transaction.Transactional;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.velocity.tools.generic.NumberTool;
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.capitaworld.service.fitchengine.model.manufacturing.FitchOutputManu;
 import com.capitaworld.service.fitchengine.model.service.FitchOutputServ;
@@ -47,6 +49,7 @@ import com.opl.mudra.api.analyzer.model.common.Data;
 import com.opl.mudra.api.analyzer.model.common.ReportRequest;
 import com.opl.mudra.api.cibil.model.CibilRequest;
 import com.opl.mudra.api.cibil.model.CibilScoreLogRequest;
+import com.opl.mudra.api.common.CommonUtils.LoanType;
 import com.opl.mudra.api.connect.ConnectRequest;
 import com.opl.mudra.api.connect.ConnectResponse;
 import com.opl.mudra.api.eligibility.model.CalculationJSON;
@@ -144,6 +147,7 @@ import com.opl.mudra.api.workflow.utils.WorkflowUtils;
 import com.opl.mudra.client.analyzer.AnalyzerClient;
 import com.opl.mudra.client.cibil.CIBILClient;
 import com.opl.mudra.client.connect.ConnectClient;
+import com.opl.mudra.client.dms.DMSClient;
 import com.opl.mudra.client.eligibility.EligibilityClient;
 import com.opl.mudra.client.fraudanalytics.FraudAnalyticsClient;
 import com.opl.mudra.client.gst.GstClient;
@@ -152,10 +156,12 @@ import com.opl.mudra.client.matchengine.MatchEngineClient;
 import com.opl.mudra.client.matchengine.ProposalDetailsClient;
 import com.opl.mudra.client.mca.McaClient;
 import com.opl.mudra.client.oneform.OneFormClient;
+import com.opl.mudra.client.reports.ReportsClient;
 import com.opl.mudra.client.scoring.ScoringClient;
 import com.opl.mudra.client.thirdparty.ThirdPartyClient;
 import com.opl.mudra.client.users.UsersClient;
 import com.opl.mudra.client.workflow.WorkflowClient;
+import com.opl.profile.api.utils.dms.DocumentAlias;
 import com.opl.service.loans.domain.fundprovider.ProposalDetails;
 import com.opl.service.loans.domain.fundprovider.TermLoanParameter;
 import com.opl.service.loans.domain.fundprovider.WcTlParameter;
@@ -219,6 +225,7 @@ import com.opl.service.loans.service.irr.IrrService;
 import com.opl.service.loans.service.scoring.ScoringService;
 import com.opl.service.loans.service.teaser.primaryview.CorporatePrimaryViewService;
 import com.opl.service.loans.utils.BanksEnumForReports;
+import com.opl.service.loans.utils.DDRMultipart;
 
 @Service
 @Transactional
@@ -415,6 +422,12 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
     
     @Autowired
     private PennydropClient pennyDropClient;
+    
+    @Autowired
+	private ReportsClient reportsClient;
+        
+    @Autowired
+    private DMSClient dmsClient;
 
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -3191,5 +3204,110 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 	    return map;
 	}
+	
+	@Override
+	public String getCamVersionForBSStandalone(String type) {
+		try {
+		return commonRepository.getCamVersionForBSStandalone(type);
+		}
+		catch (Exception e) {
+			logger.error("Error :{}",e);
+			return type;
+		}
+	}
+	private static final String PRODUCT_DOCUMENT_MAPPING_ID = "productDocumentMappingId";
+	private static final String USER_TYPE = "userType";
+	private static final String ORIGINAL_FILE_NAME = "originalFileName";
+	private static final String ERROR_WHILE_GETTING_MAP_DETAILS = "Error while getting MAP Details==>";
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public byte[] getCamReportPrimaryDetailsByteArray(Long applicationId, Long productId, Long proposalId,boolean isFinalView,Integer loanTypeId ) {
+		
+		if(loanTypeId == null) {
+			loanTypeId = 1;
+		}
+		Map<String, Object> response = new HashMap<String, Object>();		
+		try {
+			com.opl.mudra.api.reports.ReportRequest reportRequest = null;
+			
+			if(loanTypeId == LoanType.WORKING_CAPITAL.getValue() || loanTypeId == LoanType.TERM_LOAN.getValue() || loanTypeId == LoanType.WCTL_LOAN.getValue()) {
+				logger.info("Fetching Cam Data of MSME from Payment Gateway by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}" ,applicationId ,productId, proposalId);
+				response = getCamReportPrimaryDetails(applicationId,productId,proposalId,false);
+				reportRequest = new com.opl.mudra.api.reports.ReportRequest();
+				reportRequest.setParams(response);
+				reportRequest.setTemplate("CAMREPORTPRIMARYSIDBI");
+				reportRequest.setType("CAMREPORTPRIMARYSIDBI");
+			}
+			
+			if(reportRequest != null && !response.isEmpty()) {
+				byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
+				if (byteArr != null && byteArr.length > 0) {
+					try {
+						if(loanTypeId == LoanType.WORKING_CAPITAL.getValue() || loanTypeId == LoanType.TERM_LOAN.getValue() || loanTypeId == LoanType.WCTL_LOAN.getValue()) {
+							MultipartFile multipartFile = new DDRMultipart(byteArr);			  
+							JSONObject jsonObj = new JSONObject();
+							jsonObj.put(CommonUtils.APPLICATION_ID, applicationId);
+							jsonObj.put(PRODUCT_DOCUMENT_MAPPING_ID, 594L);
+							jsonObj.put(USER_TYPE, DocumentAlias.UERT_TYPE_APPLICANT);
+							jsonObj.put(ORIGINAL_FILE_NAME, "INPRINCIPLECAM"+proposalId+".pdf");
+							
+							dmsClient.uploadFile(jsonObj.toString(), multipartFile);
+							logger.info("InPrinciple CAM Uploaded for ==>"+applicationId);
+						}
+					} catch (Exception e) {
+						logger.info("Error while Generated InPrinciple Cam upload to dms for==>{} with Error...{}",applicationId , e);
+					}
+					
+					return byteArr;
+				}
+			}else {
+				logger.error("Error/Excpetion while fetching Cam Report called from Payment Gateway with ApplicationId==>{} ,ProductId==>{} and ProposalId==>{} with LoanTypeId==>{}" , applicationId ,productId ,proposalId ,loanTypeId);
+			}
+		}catch (Exception e) {
+			logger.error(ERROR_WHILE_GETTING_MAP_DETAILS, e);
+		}
+		
+		return null;
+	}
+
+	@Override
+	public byte[] getApplicationForm(Long applicationId, Long productId, Long proposalId,Integer loanTypeId) {
+		
+		if(loanTypeId == null) {
+			loanTypeId = 1;
+		}
+		
+		Map<String, Object> response = new HashMap<String, Object>();		
+		try {
+			com.opl.mudra.api.reports.ReportRequest reportRequest = null;
+			
+			if(loanTypeId == LoanType.WORKING_CAPITAL.getValue() || loanTypeId == LoanType.TERM_LOAN.getValue() || loanTypeId == LoanType.WCTL_LOAN.getValue()) {
+				logger.info("Fetching Data of Personal Loan by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}" ,applicationId ,productId, proposalId);
+				response = getDetailsForApplicationForm(applicationId, productId, proposalId);
+				reportRequest = new com.opl.mudra.api.reports.ReportRequest();
+				reportRequest.setParams(response);
+				reportRequest.setTemplate("MSMEAPPLICATIONFORM");
+				reportRequest.setType("MSMEAPPLICATIONFORM");
+			}
+			
+			if(reportRequest != null && !response.isEmpty()) {
+				byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
+				if (byteArr != null && byteArr.length > 0) {
+					return byteArr;
+				}
+			}else {
+				logger.error("Error/Excpetion while fetching data for report for ApplicationId==>{} ,ProductId==>{} and ProposalId==>{} with LoanTypeId==>{}" , applicationId ,productId ,proposalId ,loanTypeId);
+			}
+		}catch (Exception e) {
+			logger.error(ERROR_WHILE_GETTING_MAP_DETAILS, e);
+		}
+		
+		return null;
+	}
+	
+	
+	
+	
 	
 }

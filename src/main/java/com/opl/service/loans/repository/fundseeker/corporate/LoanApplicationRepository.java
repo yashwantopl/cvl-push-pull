@@ -445,5 +445,14 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	@Modifying
 	@Query("update LoanApplicationMaster lm set lm.applicationCode =:appCode where lm.id =:id")
 	public int updateApplicationCode(@Param("id") Long id, @Param("appCode") String appCode);
-
+	
+	// NEW PAYMENT
+	@Query(value = "SELECT lam.loanCampaignCode FROM LoanApplicationMaster lam WHERE lam.id = :applicationId AND lam.isActive =:isActive")
+	public String isFromBankSpecificOrMarketPalce(@Param("applicationId") Long applicationId , @Param("isActive") Boolean isActive );
+	
+	@Transactional
+	@Modifying
+	@Query("UPDATE LoanApplicationMaster lam SET lam.paymentStatus =:paymentStatus , lam.modifiedDate = now() WHERE lam.id =:applicationId AND lam.isActive =:isActive ")
+	public Integer updatePaymentStatus(@Param("paymentStatus") String paymentStatus ,  @Param("applicationId") Long applicationId , @Param("isActive") Boolean isActive) ;
+	
 }

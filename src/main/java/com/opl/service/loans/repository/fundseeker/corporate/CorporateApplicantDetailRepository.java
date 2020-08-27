@@ -103,4 +103,6 @@ public interface CorporateApplicantDetailRepository extends JpaRepository<Corpor
 
 	@Query(value="SELECT c.organisation_name FROM fs_corporate_applicant_details c WHERE c.application_id=:applicationId LIMIT 1;",nativeQuery = true)
 	public String getOrganizationNameFromId(@Param("applicationId") Long applicationId);
+	
+	public CorporateApplicantDetail findFirstByApplicationIdIdAndIsActiveOrderByIdAsc(Long applicationId, boolean isActive);
 }
