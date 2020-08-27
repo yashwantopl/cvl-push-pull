@@ -416,7 +416,7 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	@Query(value = "UPDATE fs_loan_application_master lm SET lm.status=:status WHERE lm.application_id=:applicationId",nativeQuery = true)
 	public int updateStatus(@Param("applicationId")  Long applicationId,@Param("status") Long status);
 	
-	@Query(value = "SELECT COUNT(id) FROM `loan_application`.`fs_corporate_current_financial_arrangements_details` WHERE (loan_type = 'Overdraft' OR loan_type = 'Cash credit') AND is_active = TRUE AND application_id =:applicationId LIMIT 1", nativeQuery = true)
+	@Query(value = "SELECT COUNT(id) FROM `fs_corporate_current_financial_arrangements_details` WHERE (loan_type = 'Overdraft' OR loan_type = 'Cash credit') AND is_active = TRUE AND application_id =:applicationId LIMIT 1", nativeQuery = true)
 	public Integer checkAppliedForExisitingLoan(@Param("applicationId") Long applicationId);
 	
 	@Query(value = "SELECT wc_renewal_status FROM connect.connect_log WHERE application_id =:applicationId LIMIT 1", nativeQuery = true)
@@ -430,7 +430,7 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	public int updateWcRenewalStatusByApplicationId(@Param("wsRenwalStatus") Integer wsRenwalStatus, @Param("applicationId") Long applicationId);
 	
 	@Modifying
-	@Query(value = "UPDATE loan_application.fs_loan_application_master cl SET cl.wc_renewal_status=:wsRenwalStatus WHERE cl.application_id=:applicationId",nativeQuery = true)
+	@Query(value = "UPDATE fs_loan_application_master cl SET cl.wc_renewal_status=:wsRenwalStatus WHERE cl.application_id=:applicationId",nativeQuery = true)
 	public int updateWcRenewalStatusOfLoanApplicationByApplicationId(@Param("wsRenwalStatus") Integer wsRenwalStatus, @Param("applicationId") Long applicationId);
 	
 	

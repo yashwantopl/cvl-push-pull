@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.opl.mudra.api.common.CommonResponse;
 import com.opl.mudra.api.loans.exception.LoansException;
 import com.opl.mudra.api.loans.model.LoansResponse;
 import com.opl.mudra.api.loans.model.corporate.FundSeekerInputRequestResponse;
@@ -59,8 +60,9 @@ public class FundSeekerInputRequestMobileController {
             }           
 
             logger.info("GOING TO SAVE FUNDSEEKER INPUT REQUEST-------------USERID--->" + fundSeekerInputRequestResponse.getUserId() + "-------------APPLICATION ID --------------------->" + fundSeekerInputRequestResponse.getApplicationId());
-            boolean result = fundSeekerInputRequestService.saveOrUpdate(fundSeekerInputRequestResponse);
+            CommonResponse res = fundSeekerInputRequestService.saveOrUpdate(fundSeekerInputRequestResponse);
 
+            Boolean result = res.getFlag();
             if(result){
                 logger.info("FUNDSEEKER INPUT SAVED SUCCESSFULLY");
                 return new ResponseEntity<MobileApiResponse>(

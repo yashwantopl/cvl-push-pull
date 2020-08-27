@@ -95,7 +95,7 @@ public interface AssetsDetailsRepository extends JpaRepository<AssetsDetails, Lo
 	 * @return String 
 	 * @author rohit.chaudhary
 	 */
-	@Query(value="SELECT CAST(JSON_OBJECT('year', JSON_OBJECTAGG(YEAR, total_assets)) AS CHAR) AS YEAR FROM `loan_application_mudra`.`fs_corporate_cma_assets_details` WHERE application_id=:applicationId and is_active = true AND proposal_mapping_id IS NULL", nativeQuery=true)
+	@Query(value="SELECT CAST(JSON_OBJECT('year', JSON_OBJECTAGG(YEAR, total_assets)) AS CHAR) AS YEAR FROM `fs_corporate_cma_assets_details` WHERE application_id=:applicationId and is_active = true AND proposal_mapping_id IS NULL", nativeQuery=true)
 	public String getTotalAssets(@Param("applicationId") Long applicationId );
 	
 	/**
@@ -105,7 +105,7 @@ public interface AssetsDetailsRepository extends JpaRepository<AssetsDetails, Lo
 	 * @return String 
 	 * @author rohit.chaudhary
 	 */
-	@Query(value="SELECT CAST(JSON_OBJECT('year', JSON_OBJECTAGG(YEAR, inventory)) AS CHAR) AS YEAR FROM `loan_application_mudra`.`fs_corporate_cma_assets_details` WHERE application_id=:applicationId and is_active = true AND proposal_mapping_id IS NULL", nativeQuery=true)
+	@Query(value="SELECT CAST(JSON_OBJECT('year', JSON_OBJECTAGG(YEAR, inventory)) AS CHAR) AS YEAR FROM `fs_corporate_cma_assets_details` WHERE application_id=:applicationId and is_active = true AND proposal_mapping_id IS NULL", nativeQuery=true)
 	public String getInventory(@Param("applicationId") Long applicationId );
 	
 	/**
@@ -115,7 +115,7 @@ public interface AssetsDetailsRepository extends JpaRepository<AssetsDetails, Lo
 	 * @return String 
 	 * @author rohit.chaudhary
 	 */
-	@Query(value="SELECT CAST(JSON_OBJECT('year', JSON_OBJECTAGG(YEAR, debtors)) AS CHAR) AS YEAR FROM `loan_application_mudra`.`fs_corporate_cma_assets_details` WHERE application_id=:applicationId and is_active = true AND proposal_mapping_id IS NULL", nativeQuery=true)
+	@Query(value="SELECT CAST(JSON_OBJECT('year', JSON_OBJECTAGG(YEAR, debtors)) AS CHAR) AS YEAR FROM `fs_corporate_cma_assets_details` WHERE application_id=:applicationId and is_active = true AND proposal_mapping_id IS NULL", nativeQuery=true)
 	public String getDebtors(@Param("applicationId") Long applicationId );
 	
 	/**
@@ -125,7 +125,7 @@ public interface AssetsDetailsRepository extends JpaRepository<AssetsDetails, Lo
 	 * @return String 
 	 * @author rohit.chaudhary
 	 */
-	@Query(value="SELECT CAST(JSON_OBJECT('year', JSON_OBJECTAGG(year, investment_in_plant_machinery)) AS CHAR) AS YEAR FROM `loan_application_mudra`.`fs_corporate_cma_assets_details` WHERE application_id=:applicationId and is_active = true AND proposal_mapping_id IS NULL", nativeQuery=true)
+	@Query(value="SELECT CAST(JSON_OBJECT('year', JSON_OBJECTAGG(year, investment_in_plant_machinery)) AS CHAR) AS YEAR FROM `fs_corporate_cma_assets_details` WHERE application_id=:applicationId and is_active = true AND proposal_mapping_id IS NULL", nativeQuery=true)
 	public String getInvestmentInPlantMachinery(@Param("applicationId") Long applicationId );
 
 	
@@ -137,7 +137,7 @@ public interface AssetsDetailsRepository extends JpaRepository<AssetsDetails, Lo
 	 * @return String 
 	 * @author rohit.chaudhary
 	 */
-	@Query(value = "SELECT CAST(JSON_OBJECT('year', JSON_OBJECTAGG(year, tangible_net_worth)) AS CHAR) AS year FROM `loan_application_mudra`.`fs_corporate_cma_assets_details` WHERE application_id=:applicationId and is_active = true AND proposal_mapping_id IS NULL" , nativeQuery=true)
+	@Query(value = "SELECT CAST(JSON_OBJECT('year', JSON_OBJECTAGG(year, tangible_net_worth)) AS CHAR) AS year FROM `fs_corporate_cma_assets_details` WHERE application_id=:applicationId and is_active = true AND proposal_mapping_id IS NULL" , nativeQuery=true)
 	public String getTangibleNetWorth(@Param("applicationId") Long applicationId);
 	
 	

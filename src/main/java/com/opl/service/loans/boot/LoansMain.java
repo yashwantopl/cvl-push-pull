@@ -46,6 +46,7 @@ public class LoansMain {
 
 	@Autowired
 	ApplicationContext applicationContext;
+	
 
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(LoansMain.class, args);
