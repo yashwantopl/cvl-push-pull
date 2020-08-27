@@ -806,7 +806,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	public String getBankNameByIFSC(String ifscPrefix) {
 		String bankName = null;
 		try {
-			bankName = (String)entityManager.createNativeQuery("SELECT sb.name FROM statement_analyzer.banklist_data sb WHERE LOWER(sb.ifsc_prefix) = LOWER(:ifscPrefix) ORDER BY sb.id DESC LIMIT 1").setParameter("ifscPrefix", ifscPrefix).getSingleResult();
+			bankName = (String)entityManager.createNativeQuery("SELECT sb.name FROM statement_analyzer_mudra.banklist_data sb WHERE LOWER(sb.ifsc_prefix) = LOWER(:ifscPrefix) ORDER BY sb.id DESC LIMIT 1").setParameter("ifscPrefix", ifscPrefix).getSingleResult();
 		}
 		catch (Exception e) {
 			logger.error("Error While fetching Bank Name by IFSC =====>{}======{}",ifscPrefix,e);

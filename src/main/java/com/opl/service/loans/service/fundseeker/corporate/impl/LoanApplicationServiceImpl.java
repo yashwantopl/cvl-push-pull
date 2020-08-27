@@ -6433,53 +6433,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(type.getValue())+"-"+loanApplicationMaster.getId());
 			}
 			loanApplicationRepository.save(loanApplicationMaster);
-//			if (CommonUtils.LoanType.WORKING_CAPITAL.getValue() == loanApplicationRequest.getProductId()) {
-//				PrimaryWorkingCapitalLoanDetail wcLoan = primaryWorkingCapitalLoanDetailRepository
-//						.findByApplicationIdIdAndIsActive(loanApplicationMaster.getId(), true);
-//				if (CommonUtils.isObjectNullOrEmpty(wcLoan)) {
-//					wcLoan = new PrimaryWorkingCapitalLoanDetail();
-//					wcLoan.setId(loanApplicationMaster.getId());
-//					wcLoan.setApplicationId(loanApplicationMaster);
-//					primaryWorkingCapitalLoanDetailRepository.save(wcLoan);
-//				}
-//			} else if (CommonUtils.LoanType.TERM_LOAN.getValue() == loanApplicationRequest.getProductId()) {
-//				PrimaryTermLoanDetail tlLoan = primaryTermLoanDetailRepository
-//						.findByApplicationIdIdAndIsActive(loanApplicationMaster.getId(), true);
-//				if (CommonUtils.isObjectNullOrEmpty(tlLoan)) {
-//					tlLoan = new PrimaryTermLoanDetail();
-//					tlLoan.setId(loanApplicationMaster.getId());
-//					tlLoan.setApplicationId(loanApplicationMaster);
-//					primaryTermLoanDetailRepository.save(tlLoan);
-//				}
-//			} else if (CommonUtils.LoanType.UNSECURED_LOAN.getValue() == loanApplicationRequest.getProductId()) {
-//				PrimaryUnsecuredLoanDetail unsLoan = primaryUnsecuredLoanDetailRepository
-//						.findByApplicationIdIdAndIsActive(loanApplicationMaster.getId(), true);
-//				if (CommonUtils.isObjectNullOrEmpty(unsLoan)) {
-//					unsLoan = new PrimaryUnsecuredLoanDetail();
-//					unsLoan.setId(loanApplicationMaster.getId());
-//					unsLoan.setApplicationId(loanApplicationMaster);
-//					primaryUnsecuredLoanDetailRepository.save(unsLoan);
-//				}
-//			}
 		}
-
-
-		try {
-			logger.info("Call Post Matches -------------------------------------->");
-			ConnectResponse postMatches = connectClient.postMatches(loanApplicationMaster.getId(), loanApplicationMaster.getUserId(), 
-					!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getBusinessTypeId()) ? loanApplicationMaster.getBusinessTypeId() : CommonUtils.BusinessType.EXISTING_BUSINESS.getId());
-			if (!CommonUtils.isObjectNullOrEmpty(postMatches)) {
-				logger.info("Response form Connect client ---------------->" + postMatches.toString());
-				logger.info("Successfully update loan data-------------------------------->"
-						+ loanApplicationRequest.getId());
-				return postMatches.getProceed();
-			} else {
-				logger.info("Response form Connect lient ---------------->" + null);
-			}
-		} catch (Exception e) {
-			logger.error(CommonUtils.EXCEPTION,e);
-		}
-		return false;
+		return true;
 	}
 
 	@Override

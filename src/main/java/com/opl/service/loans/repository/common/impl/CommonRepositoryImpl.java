@@ -29,7 +29,7 @@ public class CommonRepositoryImpl  implements CommonRepository {
 	
 	@Override
 	public Object[] getUserCampainCodeByApplicationId(Long applicationId) {
-		Query camp = manager.createNativeQuery("SELECT cm.code,cl.`wc_renewal_status` FROM connect_mudra.`connect_log` cl\r\n" + 
+		Query camp = manager.createNativeQuery("SELECT cm.code,cl.`wc_renewal_status` FROM connect.`connect_log` cl\r\n" + 
 				"LEFT JOIN users.`campaign_details` cm ON cm.user_id=cl.`user_id`\r\n" + 
 				"WHERE application_id =:applicationId AND cm.is_active=TRUE");
 		camp.setParameter("applicationId",applicationId);
@@ -52,7 +52,7 @@ public class CommonRepositoryImpl  implements CommonRepository {
 
 	@Override
 	public String getCoApplicatantNameFromITR(Long coAppId) {
-		Query nameData = manager.createNativeQuery("SELECT it.`name` FROM `itr_api`.`itr_home_loan_tracking` it WHERE it.co_app_id=:coAppId");
+		Query nameData = manager.createNativeQuery("SELECT it.`name` FROM `itr_api_mudra`.`itr_home_loan_tracking` it WHERE it.co_app_id=:coAppId");
 		nameData.setParameter("coAppId", coAppId);
 		return (String) nameData.getSingleResult();
 	}
@@ -76,14 +76,14 @@ public class CommonRepositoryImpl  implements CommonRepository {
 	
 	@Override
 	public Object getMakerDate(Long applicationId) {
-		return (Object) manager.createNativeQuery("SELECT wjt.updated_on FROM `workflow`.`workflow_jobs_tracker` wjt WHERE wjt.job_id = "
+		return (Object) manager.createNativeQuery("SELECT wjt.updated_on FROM `workflow_mudra`.`workflow_jobs_tracker` wjt WHERE wjt.job_id = "
 				+ "(SELECT wj.id FROM `workflow`.`workflow_jobs` wj WHERE wj.application_id ="+applicationId+" AND wj.is_active = TRUE) "
 						+ "AND wjt.action_id=2").getSingleResult();
 	}
 	
 	@Override
 	public Integer getViewedTeaser(String emailId){
-		StoredProcedureQuery storedProcedureQuery = manager.createStoredProcedureQuery("notification.isViewedTeaser");
+		StoredProcedureQuery storedProcedureQuery = manager.createStoredProcedureQuery("notification_mudra.isViewedTeaser");
 		storedProcedureQuery.registerStoredProcedureParameter("emailId",String.class, ParameterMode.IN);
 		storedProcedureQuery.setParameter("emailId",emailId);
 		storedProcedureQuery.execute();
@@ -133,7 +133,7 @@ public class CommonRepositoryImpl  implements CommonRepository {
 	@Override
 	public String getSidbiAmount() {
 		try {
-			return (String) manager.createNativeQuery("SELECT cp.value FROM payment_service.common_properties cp WHERE cp.name = 'paymentAmount' and cp.type= 'sidbiFees' and cp.is_active=true").getSingleResult();
+			return (String) manager.createNativeQuery("SELECT cp.value FROM payment_service_mudra.common_properties cp WHERE cp.name = 'paymentAmount' and cp.type= 'sidbiFees' and cp.is_active=true").getSingleResult();
 		}catch (Exception e) {
 			return null;
 		}
@@ -142,7 +142,7 @@ public class CommonRepositoryImpl  implements CommonRepository {
 	@Override
 	public String getGatewayProvider() {
 		try {
-			return (String) manager.createNativeQuery("SELECT cp.value FROM payment_service.common_properties cp WHERE cp.name = 'gatewayProvider' and cp.type= 'Integration' and cp.is_active=true").getSingleResult();
+			return (String) manager.createNativeQuery("SELECT cp.value FROM payment_service_mudra.common_properties cp WHERE cp.name = 'gatewayProvider' and cp.type= 'Integration' and cp.is_active=true").getSingleResult();
 		}catch (Exception e) {
 			return null;
 		}
@@ -197,7 +197,7 @@ public class CommonRepositoryImpl  implements CommonRepository {
 	
 	@Override
 	public BigInteger checkApplicationDisbursed(String pan) {
-		return (BigInteger) manager.createNativeQuery("SELECT COUNT(*) FROM `connect`.`connect_log` cn\n" +
+		return (BigInteger) manager.createNativeQuery("SELECT COUNT(*) FROM `connect_mudra`.`connect_log` cn\n" +
 				"INNER JOIN `proposal_details` pd ON pd.application_id=cn.application_id AND pd.is_active=TRUE AND pd.proposal_status_id IN (11,13)\n" +
 				"WHERE (SUBSTR(cn.gstin,3,10) =:pan) AND\n" +
 				"((cn.stage_id IN (7,9) AND cn.status=3) OR (cn.stage_id=4 AND cn.status=6))").setParameter("pan", pan).getSingleResult();
@@ -217,14 +217,14 @@ public class CommonRepositoryImpl  implements CommonRepository {
 	@Override
 	@SuppressWarnings("unchecked")
 	public String getStateByStateCode(Long id) {
-		List<String> states =  manager.createNativeQuery("SELECT state_name FROM one_form.state WHERE id =:id").setParameter("id", id).getResultList();
+		List<String> states =  manager.createNativeQuery("SELECT state_name FROM one_form_mudra.state WHERE id =:id").setParameter("id", id).getResultList();
 		return 	!CommonUtils.isListNullOrEmpty(states) ? states.get(0) : "";  
 	}
 	
 	@Override
 	public Long getCountOfJobId(Long jobId , Long stepId , Long actionId) {
 		try {
-			Object count1 = (Object) manager.createNativeQuery("SELECT COUNT(*) FROM workflow.workflow_jobs_tracker WHERE job_id=:jobId AND step_id=:stepId AND action_id=:actionId")
+			Object count1 = (Object) manager.createNativeQuery("SELECT COUNT(*) FROM workflow_mudra.workflow_jobs_tracker WHERE job_id=:jobId AND step_id=:stepId AND action_id=:actionId")
 					.setParameter("jobId", jobId).setParameter("stepId", stepId).setParameter("actionId", actionId).getSingleResult();
 			return ((BigInteger)count1).longValue();
 		}catch (Exception e) {
@@ -415,7 +415,7 @@ public class CommonRepositoryImpl  implements CommonRepository {
 	@Override
 	public Object getInprincipleDate(Long applicationId) {
 		try {
-			return manager.createNativeQuery("SELECT c.In_principle_date FROM connect_mudra.connect_log c WHERE c.stage_id in (7,9,210,211,1008,1009) AND c.application_id="+applicationId+" ORDER by c.id desc limit 1").getSingleResult();
+			return manager.createNativeQuery("SELECT c.In_principle_date FROM connect.connect_log c WHERE c.stage_id in (7,9,210,211,1008,1009) AND c.application_id="+applicationId+" ORDER by c.id desc limit 1").getSingleResult();
 		}catch (Exception e) {
 			return null;  
 		}
@@ -499,7 +499,7 @@ public class CommonRepositoryImpl  implements CommonRepository {
 	@Override
 	public String getCamVersionForBSStandalone(String type) {
 		try{
-			String result =(String)  manager.createNativeQuery("SELECT version_name FROM loan_application.bs_cam_version WHERE type=:type")
+			String result =(String)  manager.createNativeQuery("SELECT version_name FROM loan_application_mudra.bs_cam_version WHERE type=:type")
 					.setParameter("type", type).getSingleResult();
 			return result;
 		}catch (NoResultException e) {

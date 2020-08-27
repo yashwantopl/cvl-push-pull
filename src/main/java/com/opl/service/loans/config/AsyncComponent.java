@@ -3,6 +3,7 @@ package com.opl.service.loans.config;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -31,7 +32,14 @@ import com.opl.mudra.api.matchengine.model.MatchRequest;
 import com.opl.mudra.api.matchengine.model.ProposalCountResponse;
 import com.opl.mudra.api.matchengine.model.ProposalMappingRequest;
 import com.opl.mudra.api.matchengine.model.ProposalMappingResponse;
+import com.opl.mudra.api.mca.CompaniesHistoryPara;
+import com.opl.mudra.api.mca.CompaniesHistoryRequest;
 import com.opl.mudra.api.mca.McaException;
+import com.opl.mudra.api.mca.McaRequest;
+import com.opl.mudra.api.mca.McaRequestPara;
+import com.opl.mudra.api.mca.SearchCompaniesRequest;
+import com.opl.mudra.api.mca.SearchCompaniesResponse;
+import com.opl.mudra.api.mca.SearchCriteria;
 import com.opl.mudra.api.mca.verifyApi.VerifyAPIRequest;
 import com.opl.mudra.api.notification.exception.NotificationException;
 import com.opl.mudra.api.notification.model.Notification;
@@ -1173,5 +1181,67 @@ public class AsyncComponent {
 		address=!address.equals("")  ? state!=null?address.concat(","+state):address.concat(""):address.concat(state);
 		address=!address.equals("")  ? pincode!=null?address.concat("-"+pincode):address.concat(""):address.concat(pincode.toString());
 		return address;
+	}
+	
+	@Async
+	public void callMCAForData(String cin, Long applicationId, Long userId) {
+		try {
+			callMCA(cin, applicationId, userId);
+		} catch (McaException e) {
+			logger.info("Error==>{}",e);
+		}
+	}
+	
+	private void callMCA(String cin, Long applicationId, Long userId) throws McaException{
+		try {
+			McaRequest request = new McaRequest();
+		
+			SearchCompaniesRequest companiesRequest = new SearchCompaniesRequest();
+		
+			McaRequestPara para = new McaRequestPara();
+			logger.info("Initiated MCA Search Call");
+			SearchCriteria criteria = new SearchCriteria();
+			
+			String[] cins = {cin};
+			criteria.setCins(cins);
+			para.setSearchCriteria(criteria);
+			companiesRequest.setPara(para);
+			request.setSearchCompanies(companiesRequest);
+			request.setApplicationId(applicationId);
+			
+			@SuppressWarnings("unchecked")
+			SearchCompaniesResponse a = MultipleJSONObjectHelper.getObjectFromMap((Map<String, Object>)mcaClient.searchCompanies(request).getData(),SearchCompaniesResponse.class);
+		
+			logger.info("End of MCA Search Call");
+		
+			if(a!=null && a.getCompanies() != null && a.getCompanies().length>0) {
+					String[] companyIds = { a.getCompanies()[0].getCompanyId() };
+					request = new McaRequest();
+					CompaniesHistoryRequest companiesHistoryRequest = new CompaniesHistoryRequest();
+					CompaniesHistoryPara historyPara = new CompaniesHistoryPara();
+					historyPara.setCompanyIds(companyIds);
+					companiesHistoryRequest.setPara(historyPara);
+					request.setCompaniesHistory(companiesHistoryRequest);
+					request.setApplicationId(applicationId);
+					request.setUserId(userId);
+					logger.info("Initiated MCA get Company History Call");
+					mcaClient.getCompanyHistory(request);
+					logger.info("End of  MCA get Company History Call");
+					
+					LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findByIdAndIsActive(applicationId,true);
+					loanApplicationMaster.setMcaCompanyId(companyIds[0]);
+					loanApplicationMaster.setIsMca(true);
+					loanApplicationMaster.setModifiedBy(userId);
+					loanApplicationMaster.setModifiedDate(new Date());
+					logger.info("Initiated MCA data save Call");
+					
+					loanApplicationRepository.save(loanApplicationMaster);
+					logger.info("End of MCA data save Call");
+				}
+		}
+		catch (Exception e) {
+			logger.error("Error/Exception while call mca detail  MSG =>{} ", e +" Application id=====>"+applicationId);
+			throw new McaException();
+		}
 	}
 }

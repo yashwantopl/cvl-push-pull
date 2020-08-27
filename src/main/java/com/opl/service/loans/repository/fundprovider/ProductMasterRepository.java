@@ -1,3 +1,4 @@
+
 package com.opl.service.loans.repository.fundprovider;
 
 import java.util.Date;
@@ -191,14 +192,14 @@ public interface ProductMasterRepository extends JpaRepository<ProductMaster, Lo
 	@Query("from ProductMaster pm where pm.id =:fpProductId and pm.isActive = false")
 	public ProductMaster checkParameterIsactive(@Param("fpProductId")Long fpProductId);
 
-	@Query(value="select * from scoring_sidbi.scoring_model pm where pm.id=:scoreModelId and pm.is_active = false", nativeQuery=true)
+	@Query(value="select * from scoring_mudra.scoring_model pm where pm.id=:scoreModelId and pm.is_active = false", nativeQuery=true)
 	public String checkParameterInScoringIsActive(@Param("scoreModelId")Long scoreModelId);
 
 	@Query("from ProductMasterTemp pm where pm.id =:fpProductId and pm.isActive = false")
 	public ProductMasterTemp checkParameterIsactiveForPanding(@Param("fpProductId")Long fpProductId);
 	
 
-	@Query(value="select * from scoring_sidbi.scoring_model_temp pm where pm.id=:scoreModelId and pm.is_active = false", nativeQuery=true)
+	@Query(value="select * from scoring_mudra.scoring_model_temp pm where pm.id=:scoreModelId and pm.is_active = false", nativeQuery=true)
 	public String checkcoringIsActiveForPanding(@Param("scoreModelId")Long scoreModelId);
 	
 	@Query(value = "SELECT fpm.fpName , fpm.name , fpm.userOrgId  , fpm.productId FROM  ProductMaster fpm WHERE fpm.id= :fpProductId AND fpm.isActive =:isActive" )
