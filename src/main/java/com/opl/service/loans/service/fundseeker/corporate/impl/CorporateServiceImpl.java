@@ -68,6 +68,7 @@ public class CorporateServiceImpl implements CorporateService {
 	public static final String TITLE = "title";
 	public static final String COMPLETED = "completed";
 	public static final String ACTIVAE = "active";
+	public static final String MANUAL_BS_DATA = "manualBSData";
 
 	@Autowired
 	private CorporateApplicantDetailRepository corpApplicantDetailRepo;
@@ -330,6 +331,7 @@ public class CorporateServiceImpl implements CorporateService {
 		bsMap.put(ACTIVAE, Boolean.TRUE);
 		if(!CommonUtils.isObjectNullOrEmpty(profileRes)) {
 			bsMap.put(DESCRIPTION, profileRes.getTotalBankStatement());
+			bsMap.put(MANUAL_BS_DATA, profileRes.getNoBankStatementDetail());
 			bsMap.put(TITLE, "Total Bank Account Added");
 			try {
 				AnalyzerResponse analyRes = analyzerClient.isBankStatementIsUpdated(profileId, profileRes.getBsId());
