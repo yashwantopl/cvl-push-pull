@@ -29,6 +29,7 @@ private List<Integer> ids;
 private Boolean isFromCoOrigination;
 private Boolean isRenewalAffected;
 private Integer stageId;
+private String noBankStatementDetail;
 
 private List<Long> applicationid;
 
@@ -177,5 +178,14 @@ public void setStageId(Integer stageId) {
 	public void setBsMasterId(Long bsMasterId) {
 		this.bsMasterId = bsMasterId;
 	}
+	
+	public String getNoBankStatementDetail() {
+		return noBankStatementDetail;
+	}
+	
+	public void setNoBankStatementDetail(String noBankStatementDetail) {
+		this.noBankStatementDetail = noBankStatementDetail;
+	}
+	
 }
 
