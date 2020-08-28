@@ -37,6 +37,10 @@ public class ITRManualFormRequest implements Serializable {
 	private Integer businessTypeId;
 	private Boolean isAlreadyRead;
 	private String organisationName;
+	private Long profileId;
+	private Boolean isManualFilled;
+	private Integer establishmentMonth;
+	private Integer establishmentYear;
 	private Map<String, Object> incomeDetails;
 	
 	
@@ -203,6 +207,33 @@ public class ITRManualFormRequest implements Serializable {
 	}
 	public void setIncomeDetails(Map<String, Object> incomeDetails) {
 		this.incomeDetails = incomeDetails;
+	}
+	
+	public Long getProfileId() {
+		return profileId;
+	}
+	public void setProfileId(Long profileId) {
+		this.profileId = profileId;
+	}
+	
+	public Boolean getIsManualFilled() {
+		return isManualFilled;
+	}
+	public void setIsManualFilled(Boolean isManualFilled) {
+		this.isManualFilled = isManualFilled;
+	}
+	
+	public Integer getEstablishmentMonth() {
+		return establishmentMonth;
+	}
+	public void setEstablishmentMonth(Integer establishmentMonth) {
+		this.establishmentMonth = establishmentMonth;
+	}
+	public Integer getEstablishmentYear() {
+		return establishmentYear;
+	}
+	public void setEstablishmentYear(Integer establishmentYear) {
+		this.establishmentYear = establishmentYear;
 	}
 	@Override
 	public String toString() {
