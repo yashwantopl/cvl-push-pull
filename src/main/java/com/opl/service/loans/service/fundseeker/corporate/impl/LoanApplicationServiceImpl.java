@@ -8784,6 +8784,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	                }
 	                corporateApplicantDetail.setApplicationId(loanApplicationMaster);
 				}
+				corporateApplicantDetail.setIsActive(true);
 				corporateApplicantDetail.setPanNo(applicantDetailsResponse.getPan());
 				corporateApplicantDetail.setOrganisationName(applicantDetailsResponse.getOrganisationName());
 				corporateApplicantDetail.setDob(applicantDetailsResponse.getDob());;
