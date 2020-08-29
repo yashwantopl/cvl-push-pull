@@ -866,26 +866,24 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			
 			CorporateApplicantDetail applicantDetails = corporateApplicantDetailRepository.findByApplicationIdIdAndIsActive(applicantRequest.getApplicationId(), true);
 			if(!CommonUtils.isObjectNullOrEmpty(applicantDetails)) {
-			applicantDetails.setApplicationId(new LoanApplicationMaster(applicantRequest.getApplicationId()));
-			applicantDetails.setRegisteredCityId(Long.valueOf(applicantRequest.getCityId()));
-			applicantDetails.setRegisteredCountryId(applicantRequest.getCountryId());
-			applicantDetails.setRegisteredLandMark(applicantRequest.getLandmark());
-			applicantDetails.setRegisteredPincode(Long.valueOf(applicantRequest.getPincode()));
-			applicantDetails.setRegisteredPremiseNumber(applicantRequest.getPremiseNo());
-			applicantDetails.setRegisteredStreetName(applicantRequest.getStreetName());
-			applicantDetails.setOrganisationName(applicantRequest.getOrganisationName());
-			applicantDetails.setRegisteredStateId(applicantRequest.getStateId());
-			applicantDetails.setPanNo(applicantRequest.getPan());
-			applicantDetails.setCreatedDate(new Date());
-			applicantDetails.setIsActive(true);
-			applicantDetails.setRegisteredDistMappingId(applicantRequest.getDistId());
-			applicantDetails.setDob(applicantRequest.getDob());
-			corporateApplicantDetailRepository.save(applicantDetails);
-    		saveSalesITRResponse(applicantRequest);
+				applicantDetails.setApplicationId(new LoanApplicationMaster(applicantRequest.getApplicationId()));
+				applicantDetails.setRegisteredCityId(Long.valueOf(applicantRequest.getCityId()));
+				applicantDetails.setRegisteredCountryId(applicantRequest.getCountryId());
+				applicantDetails.setRegisteredLandMark(applicantRequest.getLandmark());
+				applicantDetails.setRegisteredPincode(Long.valueOf(applicantRequest.getPincode()));
+				applicantDetails.setRegisteredPremiseNumber(applicantRequest.getPremiseNo());
+				applicantDetails.setRegisteredStreetName(applicantRequest.getStreetName());
+				applicantDetails.setOrganisationName(applicantRequest.getOrganisationName());
+				applicantDetails.setRegisteredStateId(applicantRequest.getStateId());
+				applicantDetails.setPanNo(applicantRequest.getPan());
+				applicantDetails.setCreatedDate(new Date());
+				applicantDetails.setIsActive(true);
+				applicantDetails.setRegisteredDistMappingId(applicantRequest.getDistId());
+				applicantDetails.setDob(applicantRequest.getDob());
+				corporateApplicantDetailRepository.save(applicantDetails);
+				// saveSalesITRResponse(applicantRequest); commenting because saved code moved in ITR
 			}
     		
-			//SAVE INCOME DETAILS
-//			applicantIncomeService.saveAll(applicantRequest.getIncomeDetailsList());
 			return true;
 		} catch (Exception e) {
 			logger.error("error while saving mudra manaul itr form",e);
@@ -954,23 +952,6 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		    	operatingStatementDetails.setIsActive(true);
 		    	operatingStatementDetailsRepository.save(operatingStatementDetails); 
     		}
-    		
-//    		Map<String, Object>	 yearMapNetworth  = (Map<String, Object>) networth.get("year"); 
-//    		for (Map.Entry<String,Object> yearEntry : yearMapNetworth.entrySet()) {
-//    			String finYearStmt = yearEntry.getKey().equals(""+currentYear) ? "Projected":"Audited";
-//    			LiabilitiesDetails liabilitiesDetails = liabilitiesDetailsRepository.findByFsLoanApplicationMasterIdAndYearAndFinancialYearlyStatementAndIsActive(applicantRequest.getApplicationId(), yearEntry.getKey(), finYearStmt, true);
-//    			if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails)) {
-//    				liabilitiesDetails = new LiabilitiesDetails();
-//    			}
-//		    	liabilitiesDetails.setYear(yearEntry.getKey());
-//		    	liabilitiesDetails.setNetWorth(yearEntry.getValue() != null ? Double.parseDouble(yearEntry.getValue().toString()) : null);
-//		    	liabilitiesDetails.setCreatedDate(new Date());
-//		    	liabilitiesDetails.setCreatedBy(applicantRequest.getUserId());
-//		    	liabilitiesDetails.setFsLoanApplicationMaster(new LoanApplicationMaster(applicantRequest.getApplicationId()));
-//		    	liabilitiesDetails.setFinancialYearlyStatement(finYearStmt);
-//		    	liabilitiesDetails.setIsActive(true);
-//		    	liabilitiesDetailsRepository.save(liabilitiesDetails); 
-//    		}
     		
     		Map<String, Object>	 yearMapProfitAfterTax  = (Map<String, Object>) profitAfterTax.get("year"); 
     		for (Map.Entry<String,Object> yearEntry : yearMapProfitAfterTax.entrySet()) {

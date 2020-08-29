@@ -58,6 +58,7 @@ import com.opl.mudra.api.gst.model.GstResponse;
 import com.opl.mudra.api.gst.model.KeyPersonDetailsResponse;
 import com.opl.mudra.api.gst.model.yuva.request.GSTR1Request;
 import com.opl.mudra.api.itr.model.ITRConnectionResponse;
+import com.opl.mudra.api.itr.model.ITRManualFormRequest;
 import com.opl.mudra.api.loans.exception.LoansException;
 import com.opl.mudra.api.loans.model.AchievementDetailRequest;
 import com.opl.mudra.api.loans.model.AdminPanelLoanDetailsResponse;
@@ -98,6 +99,7 @@ import com.opl.mudra.api.loans.model.common.MinMaxProductDetailRequest;
 import com.opl.mudra.api.loans.model.common.ProposalList;
 import com.opl.mudra.api.loans.model.common.SanctioningDetailResponse;
 import com.opl.mudra.api.loans.model.corporate.CMARequest;
+import com.opl.mudra.api.loans.model.corporate.CorporateApplicantRequest;
 import com.opl.mudra.api.loans.model.corporate.CorporateFinalInfoRequest;
 import com.opl.mudra.api.loans.model.corporate.CorporateProduct;
 import com.opl.mudra.api.loans.model.mobile.MLoanDetailsResponse;
@@ -8758,6 +8760,47 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		Boolean success = false;
 		logger.info("Started copyItrDataForKeyPerson() ===>");
 		try {
+		
+			logger.info("Get applicant details from ITR Start =======>");
+			ITRManualFormRequest itrRequest = new ITRManualFormRequest();
+			itrRequest.setProfileId(profileVerMapRequest.getProfileId());
+			ITRConnectionResponse itrResponse = itrClient.getApplicantDetails(itrRequest);
+			if(itrResponse != null && itrResponse.getData() != null){
+				logger.info("Successfully applicant details fetched from ITR =======>");
+				CorporateApplicantRequest applicantDetailsResponse = MultipleJSONObjectHelper.getObjectFromMap((Map)itrResponse.getData(),CorporateApplicantRequest.class);
+				if(applicantDetailsResponse == null){
+					logger.error("Failed to get data from ITR.");
+					return false;
+				}
+				CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.findByApplicationIdIdAndIsActive(applicationId,true);
+				if(corporateApplicantDetail == null){
+					corporateApplicantDetail = new CorporateApplicantDetail();
+					corporateApplicantDetail.setCreatedBy(profileVerMapRequest.getUserId());
+					corporateApplicantDetail.setCreatedDate(new Date());
+					LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findByIdAndIsActive(applicationId,true);
+					if(loanApplicationMaster == null){
+					    logger.error("application not found");
+					    return false;
+	                }
+	                corporateApplicantDetail.setApplicationId(loanApplicationMaster);
+				}
+				corporateApplicantDetail.setPanNo(applicantDetailsResponse.getPan());
+				corporateApplicantDetail.setOrganisationName(applicantDetailsResponse.getOrganisationName());
+				corporateApplicantDetail.setDob(applicantDetailsResponse.getDob());;
+				corporateApplicantDetail.setRegisteredPremiseNumber(applicantDetailsResponse.getRegisteredPremiseNumber());
+				corporateApplicantDetail.setRegisteredStreetName(applicantDetailsResponse.getRegisteredStreetName());
+				corporateApplicantDetail.setRegisteredLandMark(applicantDetailsResponse.getRegisteredLandMark());
+				corporateApplicantDetail.setRegisteredCountryId(applicantDetailsResponse.getRegisteredCountryId());
+				corporateApplicantDetail.setRegisteredStateId(applicantDetailsResponse.getRegisteredStateId());
+				corporateApplicantDetail.setRegisteredCityId(applicantDetailsResponse.getRegisteredCityId());
+				corporateApplicantDetail.setRegisteredPincode(applicantDetailsResponse.getRegisteredPincode());
+				corporateApplicantDetail.setRegisteredDistMappingId(applicantDetailsResponse.getRegisteredDistMappingId());
+				corporateApplicantDetail.setModifiedBy(profileVerMapRequest.getUserId());
+				corporateApplicantDetail.setModifiedDate(new Date());
+				corporateApplicantDetail = corporateApplicantDetailRepository.save(corporateApplicantDetail);
+			}
+			
+			logger.info("Goto save data in loans CMA details =======>");
 			ITRConnectionResponse itrConnectionResponse = itrClient.saveDataInLoans(applicationId, profileVerMapRequest.getProfileId(), userId);
 			if (itrConnectionResponse != null) {
 				success = true;
@@ -8767,7 +8810,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 		if (!success)
 			logger.error("Failed to copy ITR data for key person");
-		logger.info("End copyItrDataForKeyPerson() ===>");
+			logger.info("End copyItrDataForKeyPerson() ===>");
 		return success;
 	}
 
