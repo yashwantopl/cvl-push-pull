@@ -334,13 +334,17 @@ public class CorporateServiceImpl implements CorporateService {
 			bsMap.put(MANUAL_BS_DATA, profileRes.getNoBankStatementDetail());
 			bsMap.put(TITLE, "Total Bank Account Added");
 			try {
-				AnalyzerResponse analyRes = analyzerClient.isBankStatementIsUpdated(profileId, profileRes.getBsId());
-				if (analyRes != null) {
-					Boolean isUpdated = Boolean.parseBoolean((String)analyRes.getData());
-					if (isUpdated != null && isUpdated) {
-						bsMap.put(COMPLETED, Boolean.TRUE);
+				if(profileRes.getNoBankStatementDetail() != null) {
+					bsMap.put(COMPLETED, Boolean.TRUE);
+				}else {
+					AnalyzerResponse analyRes = analyzerClient.isBankStatementIsUpdated(profileId, profileRes.getBsId());
+					if (analyRes != null) {
+						Boolean isUpdated = Boolean.parseBoolean((String)analyRes.getData());
+						if (isUpdated != null && isUpdated) {
+							bsMap.put(COMPLETED, Boolean.TRUE);
+						}
+						bsMap.put(DETAIL_VALID_UP_TO, analyRes.getMessage());
 					}
-					bsMap.put(DETAIL_VALID_UP_TO, analyRes.getMessage());
 				}
 			} catch (Exception e) {
 				logger.error("Exception while Check Bank Statement data updated or Not ", e);
