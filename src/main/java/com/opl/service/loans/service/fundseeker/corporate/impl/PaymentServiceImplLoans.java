@@ -14,7 +14,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import com.opl.mudra.api.common.CommonUtils;
 import com.opl.mudra.api.common.CommonUtils.PaymentTypeMaster;
@@ -26,6 +31,7 @@ import com.opl.mudra.api.notification.utils.NotificationAlias;
 import com.opl.mudra.api.notification.utils.NotificationConstants;
 import com.opl.mudra.api.notification.utils.NotificationMasterAlias;
 import com.opl.mudra.api.payment.enums.BanksEnum;
+import com.opl.mudra.api.payment.enums.ReportsEnum;
 import com.opl.mudra.api.payment.exception.GatewayException;
 import com.opl.mudra.api.payment.model.GatewayRequest;
 import com.opl.mudra.api.payment.model.GatewayResponse;
@@ -67,6 +73,8 @@ public class PaymentServiceImplLoans implements PaymentServiceLoans{
 	private static final String SKIP_TYPE = "skipType";
 
 	private static final String PAYMENT_TYPE_ID = "paymentTypeId";
+	
+	private static final String REPORT_URL = "/adv/reports/getReport";
 
 	private static final Logger logger = LoggerFactory.getLogger(PaymentServiceImplLoans.class.getName());
 	
@@ -1484,104 +1492,34 @@ public class PaymentServiceImplLoans implements PaymentServiceLoans{
 					/** send inprinciple letter in msme  
 					 * Not send on sidbi specific and sbi specific
 					 *  */
-					if(!CommonUtils.SkipType.SBI_SPECIFIC.equals(gatewayRequest.getSkipType()) && !CommonUtils.SkipType.SIDBI_SPECIFIC.equals(gatewayRequest.getSkipType())
-							&& gatewayRequest.getPaymentTypeId() != PaymentTypeMaster.SBI_SPECIFIC_SKIP_PAYMENT.getId() 
-							&& gatewayRequest.getPaymentTypeId() != PaymentTypeMaster.SIDBI_SPECIFIC_SKIP_PAYMENT.getId() ) {
-						
-						logger.info("Send Inprinciple to fs of ApplicationId==>{} with SkipType==>{}",gatewayRequest.getApplicationId() ,gatewayRequest.getSkipType());
-						List<ContentAttachment> contentAttachmentList =  new ArrayList<ContentAttachment>();
-						ContentAttachment contentAttachmentIndicative = null;
-						ContentAttachment contentAttachment = null;
 					
-						/** indicative document list */
-							byte[] indicativeDocumentList = null;
-							try {
-								ReportRequest request=new ReportRequest();
-								request.setTemplate(JasperReportEnum.INDICTIVE_DOCUMENT_FOR_MSME.getName());
-								request.setIsStaticContent(true);
-								request.setDocumentName("IndicativeDocumentList");
-								indicativeDocumentList = reportsClient.getReport(request);
-								contentAttachmentIndicative = new ContentAttachment("IndicativeDocumentList.pdf", indicativeDocumentList);
-								contentAttachmentList.add(contentAttachmentIndicative);
-							}catch (Exception e) {
-								logger.error("Exception in getting Indicative document list pdf for msmse :{}",e);
-							}
-							
-						/** added condition for invoice used only in payment case*/ 
-							if(mailParameters.containsKey(INVOICE_DATA) && gatewayRequest.getPaymentTypeId().equals(PaymentTypeMaster.ONLINE_PAYMENT.getId())) {
-								ReportRequest reportRequestForFs = new ReportRequest();
-								reportRequestForFs.setParams((Map) mailParameters.get(INVOICE_DATA));
-								
-							/** supplier Attachment and email -- comment for some time*/
-//								reportRequestForFs.setTemplate(CommonUtils.SIDBI_INVOICE_FOR_SUPPLIER);
-//								byte[] invoiceSupplier = reportsClient.generatePDFFile(reportRequestForFs);
-//								contentAttachment = new ContentAttachment("Invoice.pdf", invoiceSupplier);
-//								contentAttachmentList.add(contentAttachment);
-//								
-//								mailStatus = mailComponent.sendMailWithAttachment(supplierEmail ,ccForMail ,mailParameters ,contentAttachmentList ,gatewayRequest.getUserId() ,
-//										NotificationAlias.EXISTING_COMMON_PRINCIPLE_LETTER_SANCTION ,null ,bcc ,domainId , orgId , loanTypeId ,NotificationMasterAlias.MSME_INPRINCIPLE_LETTER.getMasterId());	
-								
-							/** FS Attachment*/
-								contentAttachmentList =  new ArrayList<ContentAttachment>();
-								contentAttachmentList.add(contentAttachmentIndicative);
-								reportRequestForFs.setTemplate(CommonUtils.SIDBI_INVOICE_FOR_FS);
-								byte[] invoiceFS = reportsClient.generatePDFFile(reportRequestForFs);
-								contentAttachment = new ContentAttachment("Invoice.pdf", invoiceFS);
-								contentAttachmentList.add(contentAttachment);
-								
-							}
-							
+					if(CommonUtils.SkipType.MUDRA_LOAN.equals(gatewayRequest.getSkipType())){
+						List<ContentAttachment> contentAttachmentList =  new ArrayList<ContentAttachment>();
+						ContentAttachment contentAttachment = generateIndicativeDocument(mailParameters, gatewayRequest);
+						if(contentAttachment != null) {
+							logger.info("Attachment for Mudra Loan IndicativeDocumentList of ContentAttachment of ApplicationId==>{}" ,gatewayRequest.getApplicationId());
+							contentAttachmentList.add(contentAttachment);
+						}
+						
+						contentAttachment = generateInprincipleLetterPdf(mailParameters, gatewayRequest);
+						if(contentAttachment != null) {
+							logger.info("Attachment for Mudra Loan Inprincple Pdf of ContentAttachment of ApplicationId==>{}" ,gatewayRequest.getApplicationId());
+							//fileName = mailParameters.get(CommonUtils.APPLICATION_IID)+"_MLInpLet_"+sdfForUploadFile.format(date)+".pdf";
+							//uploadFileOnDms(gatewayRequest.getApplicationId(), contentAttachment.getContentInByte(), fileName, INPRINCIPLE_DMS_MAPPING);
+							contentAttachmentList.add(contentAttachment);
+						}
+					
 						/** In principle send to fund seeker with Attachment*/
-							mailStatus = mailComponent.sendMailWithAttachment(to ,ccForMail ,mailParameters ,contentAttachmentList ,gatewayRequest.getUserId() ,
-									NotificationAlias.EXISTING_COMMON_PRINCIPLE_LETTER_SANCTION ,null ,bcc ,domainId , orgId , loanTypeId ,NotificationMasterAlias.MSME_INPRINCIPLE_LETTER.getMasterId());
-							if(mailStatus) {
-								logger.info("===============================================>EMAIL SENT");								
-							}else {
-								logger.info("Error in  sending inprinciple letter of ApplicationId ==> [{}]",gatewayRequest.getApplicationId());
-							}
-						} 
-							
-					/** sbi and sidbi specific thank you email */
-					if(gatewayRequest.getPaymentTypeId() == PaymentTypeMaster.SBI_SPECIFIC_SKIP_PAYMENT.getId() ||  gatewayRequest.getPaymentTypeId() == PaymentTypeMaster.SIDBI_SPECIFIC_SKIP_PAYMENT.getId()) {
-						if(orgId != null && BanksEnum.SBI_BANK.getOrgId() == orgId || (BanksEnum.SIDBI_BANK.getOrgId() == orgId 
-								&& CommonUtils.TRUE.equals(mailParameters.get(CommonUtils.WC_RENEWABLE)))) {
-							String subjecttofs = "PSBLOANSIN59MINUTES - Thankyou For Completing Your Online Journey";
-							try {
-								mailStatus = mailComponent.sendMailWithAttachment(to ,ccForMail ,mailParameters ,null ,gatewayRequest.getUserId() ,NotificationAlias.EMAIL_OF_THANKYOU_BANKSPECIFIC_FS ,subjecttofs ,
-										bcc ,domainId, orgId , loanTypeId ,NotificationMasterAlias.EMAIL_OF_THANKYOU_BANKSPECIFIC_FS.getMasterId());
-								if(mailStatus) {
-									logger.info("===============================================>EMAIL SENT");
-								}else {
-									logger.error("error in sending Thank you mail for SbiSpecific of ApplicationId ==>{} Status :{}",gatewayRequest.getApplicationId() ,mailStatus);
-								}
-							} catch (NotificationException e) {
-								logger.info("Error/Exception in sending inprinciple letter for SbiSpecific of ApplicationId ==>{} ...Error==>{}",gatewayRequest.getApplicationId(),e);
-							}
+						mailStatus = mailComponent.sendMailWithAttachment(to ,ccForMail ,mailParameters ,contentAttachmentList ,gatewayRequest.getUserId() ,
+								NotificationAlias.ML_COMMON_INPRINCIPLE_LETTER ,null ,bcc ,domainId , orgId , loanTypeId ,NotificationMasterAlias.ML_IN_PRINCIPLE_LETTER.getMasterId());
+						if(mailStatus) {
+							logger.info("===============================================>EMAIL SENT");								
+						}else {
+							logger.info("Error in  sending inprinciple letter of ApplicationId ==> [{}]",gatewayRequest.getApplicationId());
 						}
 					}
-							
 				}
 				
-				if(!CommonUtils.SkipType.SBI_SPECIFIC.equals(gatewayRequest.getSkipType()) 
-						&& !CommonUtils.SkipType.SIDBI_SPECIFIC.equals(gatewayRequest.getSkipType())) {
-					
-					if(mailParameters.containsKey(CommonUtils.MOBILE_NO)) {
-						to= mailParameters.get(CommonUtils.MOBILE_NO).toString();
-						mailComponent.sendSMSNotification(to , mailParameters.get(CommonUtils.USER_ID).toString(), mailParameters, NotificationAlias.SMS_FS_PAYS_PAYUMONEY ,
-								domainId , orgId , loanTypeId ,NotificationMasterAlias.SMS_FS_PAYS_CONVIENCE_FEE.getMasterId());
-					}
-					
-				}
-				
-				if(!CommonUtils.SkipType.SBI_SPECIFIC.equals(gatewayRequest.getSkipType()) 
-						&& !CommonUtils.SkipType.SIDBI_SPECIFIC.equals(gatewayRequest.getSkipType())) {
-					
-					if(mailParameters.containsKey(CommonUtils.USER_ID)) {
-						to=mailParameters.get(CommonUtils.USER_ID).toString();
-						mailComponent.sendSYSNotification(to, applicationId, to ,mailParameters , NotificationAlias.SYS_FS_PAYS_PAYUMONEY , String.valueOf(applicationId) ,domainId , orgId ,
-								loanTypeId , NotificationMasterAlias.SYS_FS_PAYS_CONVIENCE_FEE.getMasterId());
-					}
-				}
 			}else {
 				logger.error("Error/Exception while fetching InPrinciple Detail...So not sending Inprinciple Sms And System notification with applicationId==>{} and proposalId==>{}",gatewayRequest.getApplicationId() , proposalId);
 			}
@@ -1641,6 +1579,62 @@ public class PaymentServiceImplLoans implements PaymentServiceLoans{
 		return mailStatus ;
 	}
 	
+	public ContentAttachment generateIndicativeDocument(Map<String, Object> map , GatewayRequest gatewayRequest) {
+		byte[] contentAttachmentForInductiveDocument = callReportsToFetchDocuments(ReportsEnum.INDICATIVE_DOCUMENT_FOR_ML.getId(), null , CommonUtils.SkipType.MUDRA_LOAN);
+		try {
+			logger.info("Indicative Document Attachment pdf for Mail of ApplicationId==>{}",gatewayRequest.getApplicationId());
+			if(contentAttachmentForInductiveDocument != null) {
+				ContentAttachment contentAttachment = new ContentAttachment();
+				contentAttachment.setFileName("IndicativeDocumentList.pdf");
+				contentAttachment.setContentInByte(contentAttachmentForInductiveDocument);
+				return contentAttachment;
+			}
+		}catch (Exception e) {
+			logger.error("Error / Exception Indicative Document attachment failed due to some error check reports log {}",e);
+		}
+		return null;
+	}
+	
+	public ContentAttachment generateInprincipleLetterPdf(Map<String, Object> map , GatewayRequest gatewayRequest) {
+		byte[] contentAttachmentForInductiveDocument = callReportsToFetchDocuments(ReportsEnum.INPRINCIPLE_LETTER_ML.getId(), map ,CommonUtils.SkipType.MUDRA_LOAN);
+		try {
+			logger.info("Inprinciple Letter in pdf for Mail of ApplicationId==>{}",gatewayRequest.getApplicationId());
+			if(contentAttachmentForInductiveDocument != null) {
+				ContentAttachment contentAttachment = new ContentAttachment();
+				contentAttachment.setFileName("InprincipleLetter.pdf");
+				contentAttachment.setContentInByte(contentAttachmentForInductiveDocument);
+				return contentAttachment;
+			}
+		} catch (Exception e) {
+			logger.error("Error / Exception Inprinciple Letter attachment failed due to some error check reports log {}",e);
+		}
+		return null;
+	}
+	
+	public byte[] callReportsToFetchDocuments(Integer templateId , Map<String, Object> parameter , String skipType) {
+		Map<String , Object> reportParameter = new HashMap<String , Object>();
+		reportParameter.put("templateId", templateId);
+		if(parameter != null && !parameter.isEmpty()) {
+			List<Map<String, Object>> bankArr= new ArrayList<Map<String,Object>>();
+			bankArr.add(parameter);
+			reportParameter.put("data", bankArr);
+		}
+		
+		String url = com.opl.commons.lib.common.CommonUtils.getLocalIpAddress(com.opl.commons.lib.common.CommonUtils.UrlType.reports).concat(REPORT_URL);
+		
+		logger.info("Call Reports For {}  and Fetching report with URL==>{} and templateId==>{}", skipType , url , templateId);
+		RestTemplate restTemplate = new RestTemplate();
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("req_auth", "true");
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		try {
+			HttpEntity<Map<String , Object>> entity = new HttpEntity<Map<String , Object>>(reportParameter, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, byte[].class).getBody();
+		} catch (Exception e) {
+			logger.error("Throw Exception while calling {} reports for get Report with templateId-->{} with Error==>{}",skipType ,templateId , e);
+		}
+		return null;
+	}
 	
 	public Boolean sendmailToAllFundProvider(Map<String, Object> map ,ApplicationProposalMapping applicationProposalMapping , GatewayRequest gatewayRequest) throws NotificationException {
 		
