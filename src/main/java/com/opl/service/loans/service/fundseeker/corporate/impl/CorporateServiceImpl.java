@@ -344,7 +344,12 @@ public class CorporateServiceImpl implements CorporateService {
 				}else {
 					AnalyzerResponse analyRes = analyzerClient.isBankStatementIsUpdated(profileId, profileRes.getBsId());
 					if (analyRes != null) {
-						Boolean isUpdated = Boolean.parseBoolean((String)analyRes.getData());
+						Boolean isUpdated = false;
+						if(analyRes.getData() instanceof String) {					
+							isUpdated = Boolean.parseBoolean((String)analyRes.getData());
+						}else {
+							isUpdated = (Boolean)analyRes.getData();
+						}
 						if (isUpdated != null && isUpdated) {
 							bsMap.put(COMPLETED, Boolean.TRUE);
 						}
