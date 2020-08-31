@@ -123,4 +123,6 @@ public interface LoanRepository{
     public boolean updateProfileVersIdInConnect(Long applicationId, Long profileVerMapId);
 	
 	public boolean updateProfileVersIdInLoanMaster(Long applicationId, Long profileVerMapId);
+
+	public Integer getVersionFromOrgId(Long orgId);
 }
