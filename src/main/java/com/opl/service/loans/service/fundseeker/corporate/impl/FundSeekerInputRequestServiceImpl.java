@@ -569,19 +569,19 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			corporateApplicantDetail.setBusinessSinceYear(fundSeekerInputRequest.getSinceYear());
 			corporateApplicantDetail.setBusinessSinceMonth(fundSeekerInputRequest.getSinceMonth());
 
-			// Rohit
-			/*** SAVE ASSOCIATED CONCERN DETAILS***/
-			associatedConcernDetailRepository.inActive(fundSeekerInputRequest.getUserId(), fundSeekerInputRequest.getApplicationId());
-			if (fundSeekerInputRequest.getIsAssociateConcern() != null && fundSeekerInputRequest.getIsAssociateConcern()) {
-				for (AssociatedConcernDetailRequest associateDetail : fundSeekerInputRequest.getAssociatedConcernDetailRequestsList()) {
-					AssociatedConcernDetail associatedConcernDetail = new AssociatedConcernDetail();
-					BeanUtils.copyProperties(associateDetail, associatedConcernDetail);
-					associatedConcernDetail.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
-					associatedConcernDetail.setCreatedBy(fundSeekerInputRequest.getUserId());
-					associatedConcernDetail.setCreatedDate(new Date());
-					associatedConcernDetailRepository.save(associatedConcernDetail); 
-				}
-			}
+//			// Rohit
+//			/*** SAVE ASSOCIATED CONCERN DETAILS***/
+//			associatedConcernDetailRepository.inActive(fundSeekerInputRequest.getUserId(), fundSeekerInputRequest.getApplicationId());
+//			if (fundSeekerInputRequest.getIsAssociateConcern() != null && fundSeekerInputRequest.getIsAssociateConcern()) {
+//				for (AssociatedConcernDetailRequest associateDetail : fundSeekerInputRequest.getAssociatedConcernDetailRequestsList()) {
+//					AssociatedConcernDetail associatedConcernDetail = new AssociatedConcernDetail();
+//					BeanUtils.copyProperties(associateDetail, associatedConcernDetail);
+//					associatedConcernDetail.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
+//					associatedConcernDetail.setCreatedBy(fundSeekerInputRequest.getUserId());
+//					associatedConcernDetail.setCreatedDate(new Date());
+//					associatedConcernDetailRepository.save(associatedConcernDetail); 
+//				}
+//			}
 			
 			
 			corporateApplicantDetail.setBusinessProspects(fundSeekerInputRequest.getBusinessProspects());

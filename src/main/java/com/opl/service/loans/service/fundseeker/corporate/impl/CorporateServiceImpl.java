@@ -382,7 +382,7 @@ public class CorporateServiceImpl implements CorporateService {
             acMap.put(MODULE_NAME, "Associate Concern Details");
             acMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/bankStatement-icon.svg");
             acMap.put(COMPLETED, Boolean.FALSE);
-            acMap.put(ACTIVAE, ((boolean) itrMap.get(COMPLETED) && (boolean) gstMap.get(COMPLETED)&& (boolean) bsMap.get(COMPLETED) && (boolean) keyPerMap.get(COMPLETED)));
+            acMap.put(ACTIVAE, ((boolean) itrMap.get(COMPLETED) && (boolean) gstMap.get(COMPLETED)&& (boolean) bsMap.get(COMPLETED) && (boolean) keyPerMap.get(ACTIVAE)));
             mapList.add(acMap);
 
             // SET ONEFORM DETAILS
