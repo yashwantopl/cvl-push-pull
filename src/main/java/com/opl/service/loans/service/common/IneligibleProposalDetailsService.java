@@ -38,4 +38,6 @@ public interface IneligibleProposalDetailsService {
 	public boolean updateApplicationStatus(InEligibleProposalDetailsRequest inEliProReq);
 
 	public boolean updateSanctionStatus(InEligibleProposalDetailsRequest inEliProReq);
+
+	public Boolean sendMailToFsAndBankBranchForSbiBankSpecific(Long applicationId, Long branchId, Long userOrgId, Integer businessTypeId, Boolean sidbiStatus);
 }

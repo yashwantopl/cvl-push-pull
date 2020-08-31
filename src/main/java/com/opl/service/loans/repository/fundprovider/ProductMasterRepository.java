@@ -1,6 +1,7 @@
 
 package com.opl.service.loans.repository.fundprovider;
 
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 
@@ -227,6 +228,10 @@ public interface ProductMasterRepository extends JpaRepository<ProductMaster, Lo
 	
 	@Query("SELECT pm FROM ProductMaster pm WHERE pm.id =:productId and pm.isActive = true")
     public ProductMaster updateProductMaster(@Param("productId") Long productId);
+	
+	@Query(value = "SELECT `fp_product_id` FROM `fp_product_master` WHERE `user_org_id`=:userOrgId and fp_product_id in(:productIds) and is_active=true limit 1",nativeQuery = true)
+	public BigInteger getProductIds(@Param("userOrgId") Long userOrgId, @Param("productIds") List<Integer> productIds);
+	
 	
 //	@Query("select new com.opl.msme.api.model.loans.ProductMasterRequestNewStructure(pm.id, pm.name, pm.productId, pm.createdDate, pm.modifiedDate,pm.version) from ProductMaster pm where pm.userOrgId =:userOrgId  and productId in :productIdist and isActive = true")
 //	public List<ProductMasterRequestNewStructure> getUserCorporateProductListByOrgIdAndProductId(@Param("userOrgId") Long userOrgId,@Param("productIdist") List<Integer> productIdist);

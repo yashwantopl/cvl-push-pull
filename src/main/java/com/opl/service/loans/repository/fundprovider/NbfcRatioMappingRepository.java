@@ -19,4 +19,9 @@ public interface NbfcRatioMappingRepository extends JpaRepository<NbfcRatioMappi
     
     @Query("select nb.ratioId from NbfcRatioMapping nb where nb.fpProductId=:fpProductId and isActive=true")
     public List<Long> getIdsByFpProductId(@Param("fpProductId") Long fpProductId);
+    
+    @Query("select nb.fpProductId from NbfcRatioMapping nb where nb.ratioId=:ratioId and isActive=true")
+    public List<Integer> getIdsByratioId(@Param("ratioId") Long ratioId);
+    
+    
 }

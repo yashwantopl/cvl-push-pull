@@ -842,4 +842,16 @@ public class LoanRepositoryImpl implements LoanRepository {
 		}
 	}
 	
+	@Override
+	public Integer getVersionFromOrgId(Long orgId) {
+		List<Integer> fpDetails = (List<Integer>) entityManager
+				.createNativeQuery("SELECT version FROM fp_uniform_product_details uni,fp_product_master pm WHERE pm.fp_product_id = uni.fp_product_id and pm.user_org_id =:userOrgId and pm.is_active = true order by uni.fp_product_id desc limit 1")
+				.setParameter("userOrgId", orgId).getResultList();
+		if(CommonUtils.isListNullOrEmpty(fpDetails)){
+			return null;
+		}
+		return fpDetails.get(0);
+	}
+	
+	
 }

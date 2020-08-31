@@ -66,6 +66,7 @@ import com.opl.service.loans.service.fundseeker.corporate.CorporateApplicantServ
 import com.opl.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.opl.service.loans.service.fundseeker.corporate.InEligibleProposalCamReportService;
 import com.opl.service.loans.service.fundseeker.corporate.LoanApplicationService;
+import com.opl.service.loans.service.sidbi.SidbiSpecificService;
 import com.opl.service.loans.utils.CommonDocumentUtils;
 
 /**
@@ -145,6 +146,9 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
     
     @Value("${isSBIFlowForIneligible}")
     private Boolean isSBIFlowForIneligible;
+    
+    @Autowired
+    private SidbiSpecificService sidbiService;
     
 	private static final String EMAIL_ADDRESS_FROM = "no-reply@capitaworld.com";
 
@@ -1144,4 +1148,152 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 				return false;
 			}
 		}
+		
+		@SuppressWarnings("unchecked")
+		@Override
+		public Boolean sendMailToFsAndBankBranchForSbiBankSpecific(Long applicationId,Long branchId,Long userOrgId , Integer businessTypeId ,Boolean sidbiStatus) {
+			Boolean status=false;
+			Object[] user = {}; 
+			try {
+				user = commonRepository.getUserCampainCodeByApplicationId(applicationId);
+			}catch (Exception e) {
+				return status;
+			}
+			if(user!=null) {
+				if((user[0].equals("sbi") && !CommonUtils.isObjectListNull(user[1]) && Integer.valueOf(user[1].toString()).equals(2)  && isSBIFlowForIneligible != null && isSBIFlowForIneligible)
+						|| (user[0].equals("sidbi") && isSIDBIFlowForIneligible != null && isSIDBIFlowForIneligible && ((sidbiStatus && (user[1] == null || Integer.valueOf(user[1].toString()).equals(1))) || Integer.valueOf(user[1].toString()).equals(2)))) {
+				
+					logger.info("Sidbi New condition =={}",(sidbiStatus && (user[1] == null || Integer.valueOf(user[1].toString()).equals(1))) || Integer.valueOf(user[1].toString()).equals(2));
+					logger.info("sidbi renewal condition =={}",Integer.valueOf(user[1].toString()).equals(2));
+					String[] bcc = environment.getProperty("com.ineligible.email.bcc").split(",");
+					Object[] emailData = commonRepository.getEmailDataByApplicationId(applicationId);
+					if(emailData!=null) {
+						Integer buisnessTypeId= Integer.valueOf(String.valueOf(emailData[14]));
+						if(buisnessTypeId == CommonUtils.BusinessType.EXISTING_BUSINESS.getId()) {
+							String fsEmail = String.valueOf(emailData[0]);
+							String fsMobile = String.valueOf(emailData[1]);
+							String fsPrimiseNo = emailData[3]!=null?String.valueOf(emailData[3]):"";
+							String fsStreetName= emailData[4]!=null?String.valueOf(emailData[4]):"";
+							String fsLandMark= emailData[5]!=null?String.valueOf(emailData[5]):"";
+							Long fsCityId= Long.valueOf(String.valueOf(emailData[6]));
+							Long fsStateId= Long.valueOf(String.valueOf(emailData[7]));
+							String fsPincode= emailData[8]!=null?String.valueOf(emailData[8]):"";
+							String fsName= String.valueOf(emailData[11]);
+							Long userId= Long.valueOf(String.valueOf(emailData[12]));
+							Integer proposOfLoanAmount= Integer.valueOf(String.valueOf(emailData[13]));
+							String address ="";
+							try {
+								address = asyncComp.murgedAddress(fsPrimiseNo, fsLandMark, fsStreetName, fsCityId, Long.valueOf(fsPincode), fsStateId);
+							} catch (Exception e) {
+								logger.error("Exception in murging address",e);
+							}
+							Map<String, Object> param =new HashMap<>();
+							try {
+								param = getBankAndBranchDetails(userOrgId, branchId, param);
+							}catch (Exception e) {
+								logger.error("Exception while getting bank and bank and branch details :",e);
+							}
+							param.put("businessTypeId", 1);
+							param.put("fs_name", fsName);
+							param.put("noCode", true);
+							param.put("address", address);
+							if(user[0].equals("sbi")) {
+								param.put("isSBI", "true");
+							}
+							
+							String loanType="";
+							if(proposOfLoanAmount == 1) {
+								loanType = "Term Loan";
+							}else if(proposOfLoanAmount == 2){
+								loanType = "Working Capital";
+							}
+							param.put("loan_type", loanType);
+							String bankLogo = "";
+							try {
+								 bankLogo = gatewayClient.getBankLogoUrlByOrgId(userOrgId);
+								param.put("bank_url", bankLogo);
+							} catch (GatewayException e) {
+								logger.error("Exception while getting bank logo url for ineligible email",e); 
+							}
+							param.put("mobile_no", fsMobile);
+							
+							try {
+								UserResponse orgName = userClient.getOrgNameByOrgId(userOrgId);
+								UserOrganisationRequest request= MultipleJSONObjectHelper.getObjectFromMap((Map) orgName.getData(),UserOrganisationRequest.class);
+								param.put("org_name", request.getOrganisationName());
+							} catch (IOException e2) {
+								logger.error("Exception in getting user organisation name",e2);
+								param.put("org_name", "Bank");
+							}
+							if(fsEmail != null && fsMobile!=null && applicationId != null && !bankLogo.isEmpty()) {
+//								String subject="PSBLOANSIN59MINUTES | Thankyou For Completing Your Online Journey";
+								
+								String[] cc = {String.valueOf(param.get("branch_contact_email"))};
+								List<ContentAttachment> documentList=new ArrayList<ContentAttachment>();
+								if(user[0].equals("sbi") || (user[0].equals("sidbi") && isSIDBIFlowForIneligible && Integer.valueOf(user[1].toString()).equals(1))) {
+									try {
+										DecimalFormat decim = new DecimalFormat("####");
+										Double loanAmount = sidbiService.getLoanAmountByApplicationId(applicationId);
+										param.put("loanAmount", decim.format(loanAmount));
+										ReportRequest request=new ReportRequest();
+										List<Map<String, Object>> dataList=new ArrayList<Map<String,Object>>();
+										dataList.add(param);
+										request.setTemplate(JasperReportEnum.SIDBI_SPECIFIC_DOCUMENT.getName());
+										request.setIsStaticContent(false);
+										request.setData(dataList);
+										request.setParams(new HashMap<>());
+										request.setDocumentName("DocumentList");
+										documentList.add(new ContentAttachment("DocumentList.pdf", reportsClient.getReport(request)));
+									}catch (Exception e) {
+										logger.info("Error/Exception while getting document list for sidbi specific ==>{} ...Error==>{}",applicationId,e);
+									}
+								}
+								
+								try {
+									createNotificationForEmail(fsEmail, String.valueOf(userId), param, NotificationAlias.EMAIL_OF_THANKYOU_BANKSPECIFIC_FS, EmailSubjectAlias.EMAIL_OF_THANKYOU_BANKSPECIFIC_FS.getSubjectId(), applicationId, true, bcc,cc,documentList,null,null,NotificationMasterAlias.EMAIL_OF_THANKYOU_BANKSPECIFIC_FS.getMasterId());
+								} catch (NotificationException e) {
+									logger.error("Exception in sending thankyou email for ineligible prooposal:",e);
+								}
+							}
+							/*Mail to branch*/
+							UserResponse allBranchUsers = userClient.getAllBranchUsers(branchId);
+							if(!allBranchUsers.getListData().isEmpty()) {
+								List<Map<String,Object>> listData =(List<Map<String,Object>>) allBranchUsers.getListData();
+								for (int i = 0; i < listData.size(); i++) {
+									BranchUserResponse resp = new BranchUserResponse();
+									try {
+										resp = MultipleJSONObjectHelper.getObjectFromMap(listData.get(i), BranchUserResponse.class);
+									} catch (IOException e1) {
+										logger.error("Exception in getting branch user",e1);
+									}
+									
+									Boolean checkUser = commonRepository.checkUserWithBusinessTypeId(Long.valueOf(resp.getUserId()), businessTypeId);
+									
+									if(checkUser != null && checkUser) {
+										if(resp.getUserRole().equals("9") || resp.getUserRole().equals("5") || resp.getUserRole().equals("6")) {
+											param.put("bo_name", resp.getUserName()!=null?resp.getUserName():"Sir/Madam");
+		//									String subject = "Intimation of new proposal";
+											try {
+												createNotificationForEmail(resp.getEmail(), String.valueOf(userId), param, NotificationAlias.EMAIL_OF_THANKYOU_BANKSPECIFIC_FP, EmailSubjectAlias.EMAIL_OF_THANKYOU_BANKSPECIFIC_FP.getSubjectId(), applicationId, false, bcc,null,null,null,null,NotificationMasterAlias.EMAIL_OF_THANKYOU_BANKSPECIFIC_FP.getMasterId());
+											} catch (NotificationException e) {
+												logger.error("Exception in sending thankyou email for ineligible prooposal:",e);
+											} 
+										}
+									}
+								}
+							}
+							status=true;
+						}
+					}
+				}else {
+					if(user[0].equals("sidbi")){
+						status = true;
+					}
+				}
+			}else {
+				logger.info("User is not from SBI bank specific and WC_renewal");
+			}
+			return status;
+		}
+		
 }
