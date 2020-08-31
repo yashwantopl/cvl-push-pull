@@ -141,6 +141,9 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			applicantDetail.setIsActive(true);
 			applicantDetail.setApplicationId(new LoanApplicationMaster(applicantRequest.getApplicationId()));
 		}
+		applicantDetail.setPanNo(applicantRequest.getPan());
+		applicantDetail.setOrganisationName(applicantRequest.getOrganisationName());
+		applicantDetail.setDob(applicantRequest.getDob());;
 		applicantDetail.setEstablishmentMonth(applicantRequest.getEstablishmentMonth());
 		applicantDetail.setEstablishmentYear(applicantRequest.getEstablishmentYear());
 		copyAddressFromRequestToDomain(applicantRequest, applicantDetail);
