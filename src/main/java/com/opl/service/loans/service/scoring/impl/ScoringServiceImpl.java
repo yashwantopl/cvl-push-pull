@@ -2288,7 +2288,7 @@ public class ScoringServiceImpl implements ScoringService {
             if (itrConnectionResponse != null && !CommonUtils.isObjectNullOrEmpty(itrConnectionResponse) && !CommonUtils.isObjectNullOrEmpty(itrConnectionResponse.getData())) {
                 Map<String, Object> map = (Map<String, Object>) itrConnectionResponse.getData();
                 ITRBasicDetailsResponse res = MultipleJSONObjectHelper.getObjectFromMap(map, ITRBasicDetailsResponse.class);
-                if (!CommonUtils.isObjectNullOrEmpty(res)) {
+                if (!CommonUtils.isObjectNullOrEmpty(res) && !CommonUtils.isObjectNullOrEmpty(res.getYear())) {
                     year = Integer.valueOf(res.getYear());
                 }
             }
