@@ -37,6 +37,14 @@ public class MatchConstant {
 	        public static final Long DISBURSED = 11L;
 	        public static final Long DISBURSED_BY_NBFC = -11L;
 	        public static final Long PARTIALLY_DISBURSED = 13L;
+	        // In-Eligible statusId
+			public static final Long SANCTIONED = 17L;
+			public static final Long SANCTIONED_BY_OTHER_BANK = 18L;
+			public static final Long SANCTIONED_BY_OTHER_BRANCH = 19L;
+			public static final Long OTHER_BRANCH = 20L;
+			public static final Long OTHER_BANK = 21L;
+			public static final Long ALREADY_ONLINE_IN_PRINCIPLE = 22L;
+			public static final Long DECLINE_AFTER_SANTIONED = 23L;
 	    }
 	    
 	    //initiated by status
