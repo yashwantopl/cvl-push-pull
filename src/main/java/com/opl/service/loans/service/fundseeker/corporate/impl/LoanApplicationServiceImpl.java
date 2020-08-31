@@ -8721,6 +8721,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	                }
 	                corporateApplicantDetail.setApplicationId(loanApplicationMaster);
 				}
+				corporateApplicantDetail.setIsActive(true);
 				corporateApplicantDetail.setGstIn(keyPersonDetailsResponse.getGstin());
 				corporateApplicantDetail.setConstitutionId(keyPersonDetailsResponse.getConstitutionId() == null ? null :keyPersonDetailsResponse.getConstitutionId().intValue());
 				corporateApplicantDetail.setPanNo(keyPersonDetailsResponse.getPan());
@@ -8761,45 +8762,45 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		logger.info("Started copyItrDataForKeyPerson() ===>");
 		try {
 		
-			logger.info("Get applicant details from ITR Start =======>");
-			ITRManualFormRequest itrRequest = new ITRManualFormRequest();
-			itrRequest.setProfileId(profileVerMapRequest.getProfileId());
-			ITRConnectionResponse itrResponse = itrClient.getApplicantDetails(itrRequest);
-			if(itrResponse != null && itrResponse.getData() != null){
-				logger.info("Successfully applicant details fetched from ITR =======>");
-				CorporateApplicantRequest applicantDetailsResponse = MultipleJSONObjectHelper.getObjectFromMap((Map)itrResponse.getData(),CorporateApplicantRequest.class);
-				if(applicantDetailsResponse == null){
-					logger.error("Failed to get data from ITR.");
-					return false;
-				}
-				CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.findByApplicationIdIdAndIsActive(applicationId,true);
-				if(corporateApplicantDetail == null){
-					corporateApplicantDetail = new CorporateApplicantDetail();
-					corporateApplicantDetail.setCreatedBy(profileVerMapRequest.getUserId());
-					corporateApplicantDetail.setCreatedDate(new Date());
-					LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findByIdAndIsActive(applicationId,true);
-					if(loanApplicationMaster == null){
-					    logger.error("application not found");
-					    return false;
-	                }
-	                corporateApplicantDetail.setApplicationId(loanApplicationMaster);
-				}
-				corporateApplicantDetail.setIsActive(true);
-				corporateApplicantDetail.setPanNo(applicantDetailsResponse.getPan());
-				corporateApplicantDetail.setOrganisationName(applicantDetailsResponse.getOrganisationName());
-				corporateApplicantDetail.setDob(applicantDetailsResponse.getDob());;
-				corporateApplicantDetail.setRegisteredPremiseNumber(applicantDetailsResponse.getRegisteredPremiseNumber());
-				corporateApplicantDetail.setRegisteredStreetName(applicantDetailsResponse.getRegisteredStreetName());
-				corporateApplicantDetail.setRegisteredLandMark(applicantDetailsResponse.getRegisteredLandMark());
-				corporateApplicantDetail.setRegisteredCountryId(applicantDetailsResponse.getRegisteredCountryId());
-				corporateApplicantDetail.setRegisteredStateId(applicantDetailsResponse.getRegisteredStateId());
-				corporateApplicantDetail.setRegisteredCityId(applicantDetailsResponse.getRegisteredCityId());
-				corporateApplicantDetail.setRegisteredPincode(applicantDetailsResponse.getRegisteredPincode());
-				corporateApplicantDetail.setRegisteredDistMappingId(applicantDetailsResponse.getRegisteredDistMappingId());
-				corporateApplicantDetail.setModifiedBy(profileVerMapRequest.getUserId());
-				corporateApplicantDetail.setModifiedDate(new Date());
-				corporateApplicantDetail = corporateApplicantDetailRepository.save(corporateApplicantDetail);
-			}
+//			logger.info("Get applicant details from ITR Start =======>");
+//			ITRManualFormRequest itrRequest = new ITRManualFormRequest();
+//			itrRequest.setProfileId(profileVerMapRequest.getProfileId());
+//			ITRConnectionResponse itrResponse = itrClient.getApplicantDetails(itrRequest);
+//			if(itrResponse != null && itrResponse.getData() != null){
+//				logger.info("Successfully applicant details fetched from ITR =======>");
+//				CorporateApplicantRequest applicantDetailsResponse = MultipleJSONObjectHelper.getObjectFromMap((Map)itrResponse.getData(),CorporateApplicantRequest.class);
+//				if(applicantDetailsResponse == null){
+//					logger.error("Failed to get data from ITR.");
+//					return false;
+//				}
+//				CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.findByApplicationIdIdAndIsActive(applicationId,true);
+//				if(corporateApplicantDetail == null){
+//					corporateApplicantDetail = new CorporateApplicantDetail();
+//					corporateApplicantDetail.setCreatedBy(profileVerMapRequest.getUserId());
+//					corporateApplicantDetail.setCreatedDate(new Date());
+//					LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findByIdAndIsActive(applicationId,true);
+//					if(loanApplicationMaster == null){
+//					    logger.error("application not found");
+//					    return false;
+//	                }
+//	                corporateApplicantDetail.setApplicationId(loanApplicationMaster);
+//				}
+//				corporateApplicantDetail.setIsActive(true);
+//				corporateApplicantDetail.setPanNo(applicantDetailsResponse.getPan());
+//				corporateApplicantDetail.setOrganisationName(applicantDetailsResponse.getOrganisationName());
+//				corporateApplicantDetail.setDob(applicantDetailsResponse.getDob());;
+//				corporateApplicantDetail.setRegisteredPremiseNumber(applicantDetailsResponse.getRegisteredPremiseNumber());
+//				corporateApplicantDetail.setRegisteredStreetName(applicantDetailsResponse.getRegisteredStreetName());
+//				corporateApplicantDetail.setRegisteredLandMark(applicantDetailsResponse.getRegisteredLandMark());
+//				corporateApplicantDetail.setRegisteredCountryId(applicantDetailsResponse.getRegisteredCountryId());
+//				corporateApplicantDetail.setRegisteredStateId(applicantDetailsResponse.getRegisteredStateId());
+//				corporateApplicantDetail.setRegisteredCityId(applicantDetailsResponse.getRegisteredCityId());
+//				corporateApplicantDetail.setRegisteredPincode(applicantDetailsResponse.getRegisteredPincode());
+//				corporateApplicantDetail.setRegisteredDistMappingId(applicantDetailsResponse.getRegisteredDistMappingId());
+//				corporateApplicantDetail.setModifiedBy(profileVerMapRequest.getUserId());
+//				corporateApplicantDetail.setModifiedDate(new Date());
+//				corporateApplicantDetail = corporateApplicantDetailRepository.save(corporateApplicantDetail);
+//			}
 			
 			logger.info("Goto save data in loans CMA details =======>");
 			ITRConnectionResponse itrConnectionResponse = itrClient.saveDataInLoans(applicationId, profileVerMapRequest.getProfileId(), userId);
