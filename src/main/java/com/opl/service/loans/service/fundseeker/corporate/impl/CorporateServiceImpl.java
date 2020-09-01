@@ -343,6 +343,7 @@ public class CorporateServiceImpl implements CorporateService {
 			try {
 				if(profileRes.getNoBankStatementDetail() != null) {
 					bsMap.put(COMPLETED, Boolean.TRUE);
+					bsMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/bankStatement-icon-blue.svg");
 				}else {
 					AnalyzerResponse analyRes = analyzerClient.isBankStatementIsUpdated(profileId, profileRes.getBsId());
 					if (analyRes != null) {
