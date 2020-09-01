@@ -253,11 +253,11 @@ public class CorporateServiceImpl implements CorporateService {
 		Map<String, Object> gstMap = new HashMap<String, Object>();
 		gstMap.put(MODULE_TYPE, ProfileModuleType.GST);
 		gstMap.put(MODULE_NAME, "Sales Details");
-		gstMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/gst-icon.svg");
+		gstMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/gst-icon-gray.svg");
 		gstMap.put(COMPLETED, Boolean.FALSE);
 		gstMap.put(ACTIVAE, Boolean.TRUE);
 		
-		if(!CommonUtils.isObjectNullOrEmpty(profileRes)) {
+		if(!CommonUtils.isObjectNullOrEmpty(profileRes) && !CommonUtils.isObjectNullOrEmpty(profileRes.getGstId())) {
 			gstMap.put(DETAIL_VALID_UP_TO, "Details Valid Up To 1 Month");
 			gstMap.put(DESCRIPTION, profileRes.getGstOrgName());
 			gstMap.put(TITLE, "Company Name");
@@ -279,6 +279,7 @@ public class CorporateServiceImpl implements CorporateService {
 					if(isDataUpdated) {
 						gstMap.put(COMPLETED, Boolean.TRUE);
 						gstMap.put(DETAIL_VALID_UP_TO, (String) map.get("message"));
+                        gstMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/gst-icon-blue.svg");
 					} else {
 						gstMap.put(DETAIL_VALID_UP_TO, "Update GST Details");
 					}
@@ -296,10 +297,10 @@ public class CorporateServiceImpl implements CorporateService {
 		Map<String, Object> itrMap = new HashMap<String, Object>();
 		itrMap.put(MODULE_TYPE, ProfileModuleType.ITR);
 		itrMap.put(MODULE_NAME, "Income Tax Return");
-		itrMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/income-tax-icon.svg");
+		itrMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/income-tax-icon-gray.svg");
 		itrMap.put(COMPLETED, Boolean.FALSE);
 		itrMap.put(ACTIVAE, Boolean.TRUE);
-		if(!CommonUtils.isObjectNullOrEmpty(profileRes)) {
+		if(!CommonUtils.isObjectNullOrEmpty(profileRes) && !CommonUtils.isObjectNullOrEmpty(profileRes.getItrId())) {
 			itrMap.put(DESCRIPTION, profileRes.getItrYearRange());
 			if (profileRes.getItrYearRange() != null) {
 				Integer itrYearCount = 1;
@@ -309,7 +310,7 @@ public class CorporateServiceImpl implements CorporateService {
 					Integer secondYear = Integer.parseInt(split[1]);
 					itrYearCount = ((secondYear - firstYear) == 1) ? 2 : 3;
 				}
-				itrMap.put(TITLE, "Last " + itrYearCount + " years of ITR");
+				itrMap.put(TITLE, "Last " + itrYearCount + " year/s of ITR");
 			}
 			try {
 				CommonResponse itrRes = itrClient.checkIsITRUpdated(profileId, profileRes.getItrId());
@@ -317,6 +318,7 @@ public class CorporateServiceImpl implements CorporateService {
 					if (itrRes.getFlag()) {
 						itrMap.put(COMPLETED, Boolean.TRUE);
 						itrMap.put(DETAIL_VALID_UP_TO, itrRes.getMessage());
+                        itrMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/income-tax-icon-blue.svg");
 					} else {
 						itrMap.put(DETAIL_VALID_UP_TO, "Update ITR Details");
 					}
@@ -331,10 +333,10 @@ public class CorporateServiceImpl implements CorporateService {
 		Map<String, Object> bsMap = new HashMap<String, Object>();
 		bsMap.put(MODULE_TYPE, ProfileModuleType.BS);
 		bsMap.put(MODULE_NAME, "Bank Statement");
-		bsMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/bankStatement-icon.svg");
+		bsMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/bankStatement-icon-gray.svg");
 		bsMap.put(COMPLETED, Boolean.FALSE);
 		bsMap.put(ACTIVAE, Boolean.TRUE);
-		if(!CommonUtils.isObjectNullOrEmpty(profileRes)) {
+		if(!CommonUtils.isObjectNullOrEmpty(profileRes) && !CommonUtils.isObjectNullOrEmpty(profileRes.getBsId())) {
 			bsMap.put(DESCRIPTION, profileRes.getTotalBankStatement());
 			bsMap.put(MANUAL_BS_DATA, profileRes.getNoBankStatementDetail());
 			bsMap.put(TITLE, "Total Bank Account Added");
@@ -352,6 +354,7 @@ public class CorporateServiceImpl implements CorporateService {
 						}
 						if (isUpdated != null && isUpdated) {
 							bsMap.put(COMPLETED, Boolean.TRUE);
+                            bsMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/bankStatement-icon-blue.svg");
 						}
 						bsMap.put(DETAIL_VALID_UP_TO, analyRes.getMessage());
 					}
@@ -366,13 +369,14 @@ public class CorporateServiceImpl implements CorporateService {
             Map<String, Object> keyPerMap = new HashMap<String, Object>();
             keyPerMap.put(MODULE_TYPE, 4);
             keyPerMap.put(MODULE_NAME, "Key Person Details");
-            keyPerMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/bankStatement-icon.svg");
+            keyPerMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/key-person-gray.svg");
             keyPerMap.put(COMPLETED, Boolean.FALSE);
             keyPerMap.put(ACTIVAE, ((boolean) itrMap.get(COMPLETED) && (boolean) gstMap.get(COMPLETED)&& (boolean) bsMap.get(COMPLETED)));
             DirectorBackgroundDetail dirBackGroundDetails = backgroundDetailsRepository.getByAppIdAndIsMainDirector(applicationId);
             if (dirBackGroundDetails != null) {
                 keyPerMap.put(DESCRIPTION, dirBackGroundDetails.getFirstName() + " " + dirBackGroundDetails.getMiddleName() + " " + dirBackGroundDetails.getLastName());
                 keyPerMap.put(TITLE, "Main Partner");
+                keyPerMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/key-person-blue.svg");
             }
             mapList.add(keyPerMap);
             
@@ -389,13 +393,14 @@ public class CorporateServiceImpl implements CorporateService {
             Map<String, Object> oneFormMap = new HashMap<String, Object>();
             oneFormMap.put(MODULE_TYPE, 5);
             oneFormMap.put(MODULE_NAME, "One Form");
-            oneFormMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/bankStatement-icon.svg");
+            oneFormMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/oneform-gray.svg");
             oneFormMap.put(COMPLETED, Boolean.FALSE);
 			oneFormMap.put(ACTIVAE, keyPerMap.get(COMPLETED));
             Double loanAmount = primaryCorporateDetailRepository.getLoanAmountByApplication(applicationId);
             if (loanAmount != null) {
                 keyPerMap.put(DESCRIPTION, loanAmount);
                 keyPerMap.put(TITLE, "Loan Required");
+                keyPerMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/oneform-blue.svg");
             }
             mapList.add(oneFormMap);
         }
