@@ -375,6 +375,7 @@ public class CorporateServiceImpl implements CorporateService {
             keyPerMap.put(ACTIVAE, ((boolean) itrMap.get(COMPLETED) && (boolean) gstMap.get(COMPLETED)&& (boolean) bsMap.get(COMPLETED)));
             DirectorBackgroundDetail dirBackGroundDetails = backgroundDetailsRepository.getByAppIdAndIsMainDirector(applicationId);
             if (dirBackGroundDetails != null) {
+            	keyPerMap.put(COMPLETED, Boolean.TRUE);
                 keyPerMap.put(DESCRIPTION, dirBackGroundDetails.getFirstName() + " " + dirBackGroundDetails.getMiddleName() + " " + dirBackGroundDetails.getLastName());
                 keyPerMap.put(TITLE, "Main Partner");
                 keyPerMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/key-person-blue.svg");
@@ -387,7 +388,7 @@ public class CorporateServiceImpl implements CorporateService {
             acMap.put(MODULE_NAME, "Associate Concern Details");
             acMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/bankStatement-icon.svg");
             acMap.put(COMPLETED, Boolean.FALSE);
-            acMap.put(ACTIVAE, ((boolean) itrMap.get(COMPLETED) && (boolean) gstMap.get(COMPLETED)&& (boolean) bsMap.get(COMPLETED) && (boolean) keyPerMap.get(ACTIVAE)));
+            acMap.put(ACTIVAE, ((boolean) itrMap.get(COMPLETED) && (boolean) gstMap.get(COMPLETED)&& (boolean) bsMap.get(COMPLETED) && (boolean) keyPerMap.get(COMPLETED)));
             mapList.add(acMap);
 
             // SET ONEFORM DETAILS
@@ -396,7 +397,7 @@ public class CorporateServiceImpl implements CorporateService {
             oneFormMap.put(MODULE_NAME, "One Form");
             oneFormMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/oneform-gray.svg");
             oneFormMap.put(COMPLETED, Boolean.FALSE);
-			oneFormMap.put(ACTIVAE, keyPerMap.get(COMPLETED));
+			oneFormMap.put(ACTIVAE, acMap.get(COMPLETED));
             Double loanAmount = primaryCorporateDetailRepository.getLoanAmountByApplication(applicationId);
             if (loanAmount != null) {
                 keyPerMap.put(DESCRIPTION, loanAmount);
