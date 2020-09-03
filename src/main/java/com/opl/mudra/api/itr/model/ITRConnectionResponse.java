@@ -31,6 +31,15 @@ public class ITRConnectionResponse implements Serializable {
 		byteArray = new ArrayList<byte[]>();
 	}
 	
+	public ITRConnectionResponse(Object data, String message, Integer status) {
+		super();
+		this.message = message;
+		this.status = status;
+		this.data = data;
+	}
+
+
+
 	public ITRConnectionResponse(String message,String errorCode , String success) {
 		super();
 		this.message = message;
