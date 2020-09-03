@@ -2,6 +2,7 @@ package com.opl.mudra.api.analyzer.model.common;
 
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -35,6 +36,14 @@ public class AnalyzerResponse implements Serializable{
 	private String missingMonth;
 
 	private Integer totalBankStatement;
+
+	public Date nextDueDate;
+	
+	public Date lastUpdatedDate;
+
+	public List<BankStatementResponse> bankStatementList;
+
+
 	
 	public byte[] getContentInBytes() {
 		return contentInBytes;
@@ -171,4 +180,29 @@ public class AnalyzerResponse implements Serializable{
 	public void setTotalBankStatement(Integer totalBankStatement) {
 		this.totalBankStatement = totalBankStatement;
 	}
+
+	public Date getNextDueDate() {
+		return nextDueDate;
+	}
+
+	public void setNextDueDate(Date nextDueDate) {
+		this.nextDueDate = nextDueDate;
+	}
+
+	public Date getLastUpdatedDate() {
+		return lastUpdatedDate;
+	}
+
+	public void setLastUpdatedDate(Date lastUpdatedDate) {
+		this.lastUpdatedDate = lastUpdatedDate;
+	}
+
+	public List<BankStatementResponse> getBankStatementList() {
+		return bankStatementList;
+	}
+
+	public void setBankStatementList(List<BankStatementResponse> bankStatementList) {
+		this.bankStatementList = bankStatementList;
+	}
+	
 }
