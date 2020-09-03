@@ -48,6 +48,8 @@ public class GSTNotApplicable implements Serializable {
 	
 	private Double highestSalesPerticularfromIM;
 	
+	private Date dateOfIncorporation;
+	
 	
 	public GSTNotApplicable() {
 		this.entityName="";
@@ -197,5 +199,15 @@ public class GSTNotApplicable implements Serializable {
 	public void setMonthSalesDetails(List<MonthListSales> monthSalesDetails) {
 		this.monthSalesDetails = monthSalesDetails;
 	}
+
+	public Date getDateOfIncorporation() {
+		return dateOfIncorporation;
+	}
+
+	public void setDateOfIncorporation(Date dateOfIncorporation) {
+		this.dateOfIncorporation = dateOfIncorporation;
+	}
+	
+	
 	
 }
