@@ -30,6 +30,7 @@ private Boolean isFromCoOrigination;
 private Boolean isRenewalAffected;
 private Integer stageId;
 private String noBankStatementDetail;
+private Boolean isFromFederal;
 
 private List<Long> applicationid;
 
@@ -186,6 +187,14 @@ public void setStageId(Integer stageId) {
 	public void setNoBankStatementDetail(String noBankStatementDetail) {
 		this.noBankStatementDetail = noBankStatementDetail;
 	}
+	public Boolean getIsFromFederal() {
+		return isFromFederal;
+	}
+	public void setIsFromFederal(Boolean isFromFederal) {
+		this.isFromFederal = isFromFederal;
+	}
+	
+	
 	
 }
 
