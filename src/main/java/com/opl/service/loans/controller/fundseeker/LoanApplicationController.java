@@ -1445,6 +1445,7 @@ public class LoanApplicationController {
 			@RequestParam(value = "clientId", required = false) Long clientId,
 			@RequestParam(value = "isActive", required = false) Boolean isActive,
 			@RequestParam(value = "businessType", required = false) Integer busineeTypeId,
+			@RequestParam(value = "connectFlowTypeId", required = false) Integer connectFlowTypeId,
 			@RequestBody List<String> campaignCodes) {
 		try {
 			logger.info("start createLoanFromCampaign()");
@@ -1459,20 +1460,21 @@ public class LoanApplicationController {
 				if (!CommonUtils.isListNullOrEmpty(campaignCodes)) {
 					isMsmeUserFromGeneric = campaignCodes.contains(CommonUtils.CampaignCodes.ALL1MSME.getValue());
 					logger.info("codeExist====>{}", isMsmeUserFromGeneric);
-					if (isMsmeUserFromGeneric) {
-						// In this case
-						Long createdId =null;
-						if(CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId() == busineeTypeId || CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId() == busineeTypeId){
-							createdId = loanApplicationService.createRetailLoan(clientId, isActive, busineeTypeId);
-						}else{
-							createdId = loanApplicationService.createMsmeLoan(clientId, isActive, busineeTypeId);
-						}
-
-						return new ResponseEntity<LoansResponse>(
-								new LoansResponse(createdId, "Successfully New Loan Created", HttpStatus.OK.value()),
-								HttpStatus.OK);
-
+					String userOrgId = null;
+					if(!isMsmeUserFromGeneric){
+						userOrgId = campaignCodes.get(0);
 					}
+					Long createdId =null;
+					createdId = loanApplicationService.createMsmeLoan(clientId, isActive, busineeTypeId,userOrgId);
+					return new ResponseEntity<LoansResponse>(
+							new LoansResponse(createdId, "Successfully New Loan Created", HttpStatus.OK.value()),
+							HttpStatus.OK);
+
+					/*if (isMsmeUserFromGeneric) {
+						// In this case
+
+
+					}*/
 					/* Integer index = campaignCodes
 					   .indexOf(CommonUtils.CampaignCodes.ALL1MSME.getValue());
 					   logger.info("index==={}=of Code====>{}", index,

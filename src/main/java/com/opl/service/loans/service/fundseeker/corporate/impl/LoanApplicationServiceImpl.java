@@ -257,6 +257,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	private static final String DIRECT_LITERAL = "Direct";
 	private static final String ORG_ID = "org_id";
 	private static final String LOAN_RETAILS_ENABLE="cw.loan.retails.enable";
+	private static final String APPLICATION_CODE = "OPL-";
 
 	@Autowired
 	private DMSClient dmsClient;
@@ -8982,6 +8983,53 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return null;
 		}
 	}
+
 	
+	@Override
+	public Long createMsmeLoan(Long userId, Boolean isActive, Integer businessTypeId,String userOrgId) {
+		logger.info("IsActive======================>{}", isActive);
+
+		if (isActive != null && isActive) {
+			int inActiveCount = loanApplicationRepository.inActiveCorporateLoan(userId);
+			logger.info("Inactivated Application Count of Users are ====== {} ", inActiveCount);
+		}
+		logger.info("Entry in createMsmeLoan--------------------------->" + userId);
+//		LoanApplicationMaster corporateLoan = loanApplicationRepository.getCorporateLoan(userId, businessTypeId);
+//		if (!CommonUtils.isObjectNullOrEmpty(corporateLoan)) {
+//			logger.info("Corporate Application Id is Already Exists===>{}", corporateLoan.getId());
+//			return corporateLoan.getId();
+//		}
+		logger.info("Successfully get result");
+		LoanApplicationMaster corporateLoan = new PrimaryCorporateDetail();
+		corporateLoan.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.OPEN));
+		corporateLoan.setDdrStatusId(CommonUtils.DdrStatus.OPEN);
+		//corporateLoan.setLoanCampaignCode(loanRepository.getCampaignUser(userId, com.opl.msme.api.utils.matches.CommonUtils.CampaignLoanType.Msme.getId()));
+		if(userOrgId !=null){
+			corporateLoan.setLoanCampaignCode(userOrgId);
+		}
+		corporateLoan.setCreatedBy(userId);
+		corporateLoan.setCreatedDate(new Date());
+		corporateLoan.setUserId(userId);
+		corporateLoan.setApplicationCode("OPL-New");
+		corporateLoan.setIsActive(true);
+		logger.info("after set is active true");
+		corporateLoan.setBusinessTypeId(businessTypeId);
+		corporateLoan.setCurrencyId(Currency.RUPEES.getId());
+		corporateLoan.setDenominationId(Denomination.ABSOLUTE.getId());
+		logger.info("Going to Create new Corporate UserId===>{}", userId);
+		corporateLoan = loanApplicationRepository.save(corporateLoan);
+		loanApplicationRepository.updateApplicationCode(corporateLoan.getId(), createApplicationCode(corporateLoan.getId()));
+		logger.info("Created New Corporate Loan of User Id==>{}", userId);
+		logger.info("Setting Last Application is as Last access Id in User Table---->" + corporateLoan.getIsActive());
+		UsersRequest usersRequest = new UsersRequest();
+		usersRequest.setLastAccessApplicantId(corporateLoan.getId());
+		usersRequest.setId(userId);
+		userClient.setLastAccessApplicant(usersRequest);
+		logger.info("Exit in createMsmeLoan");
+		return corporateLoan.getId();
+	}
 	
+	 private String createApplicationCode(Long applicationId) {
+    	return APPLICATION_CODE + applicationId;
+    }
 }

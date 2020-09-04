@@ -320,6 +320,8 @@ public interface LoanApplicationService {
 	public Boolean copyDataForKeyPerson(Long applicationId, Long profileId, Long userId);
 
 	public Long getProfileMappingId(Long applicationId);
+
+	public Long createMsmeLoan(Long userId, Boolean isActive, Integer businessTypeId, String userOrgId);
 	
 
 }
