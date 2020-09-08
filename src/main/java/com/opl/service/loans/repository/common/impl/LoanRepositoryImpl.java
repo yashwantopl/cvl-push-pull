@@ -288,7 +288,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	@SuppressWarnings("unchecked")
 	@Override
 	public Boolean isITRUploaded(Long applicationId) {
-		List<Boolean> result = (List<Boolean>)entityManager.createNativeQuery("SELECT itr.`is_manual_filled` FROM `itr_api_mudra`.`itr_tracking` itr WHERE itr.`application_id` =:applicationId AND itr.`is_active` = TRUE")
+		List<Boolean> result = (List<Boolean>)entityManager.createNativeQuery("SELECT itr.`is_manual_filled` FROM `itr_api_msme`.`itr_tracking` itr WHERE itr.`application_id` =:applicationId AND itr.`is_active` = TRUE")
 				.setParameter("applicationId", applicationId)
 				.getResultList();
 		if(!CommonUtils.isListNullOrEmpty(result)) {
@@ -705,7 +705,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	@Override
 	@SuppressWarnings("unchecked")
 	public Boolean getIsItrManualFilled(Long applicationId) {
-		List<Boolean> result = 	entityManager.createNativeQuery("SELECT is_manual_filled FROM `itr_api_mudra`.`itr_tracking` WHERE application_id =:appId AND is_active = TRUE ORDER BY id DESC LIMIT 1")
+		List<Boolean> result = 	entityManager.createNativeQuery("SELECT is_manual_filled FROM `itr_api_msme`.`itr_tracking` WHERE application_id =:appId AND is_active = TRUE ORDER BY id DESC LIMIT 1")
 				.setParameter("appId", applicationId)
 				.getResultList(); 
 		return !CommonUtils.isListNullOrEmpty(result) ? result.get(0) : null;
@@ -806,7 +806,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	public String getBankNameByIFSC(String ifscPrefix) {
 		String bankName = null;
 		try {
-			bankName = (String)entityManager.createNativeQuery("SELECT sb.name FROM statement_analyzer_mudra.banklist_data sb WHERE LOWER(sb.ifsc_prefix) = LOWER(:ifscPrefix) ORDER BY sb.id DESC LIMIT 1").setParameter("ifscPrefix", ifscPrefix).getSingleResult();
+			bankName = (String)entityManager.createNativeQuery("SELECT sb.name FROM statement_analyzer_msme.banklist_data sb WHERE LOWER(sb.ifsc_prefix) = LOWER(:ifscPrefix) ORDER BY sb.id DESC LIMIT 1").setParameter("ifscPrefix", ifscPrefix).getSingleResult();
 		}
 		catch (Exception e) {
 			logger.error("Error While fetching Bank Name by IFSC =====>{}======{}",ifscPrefix,e);
