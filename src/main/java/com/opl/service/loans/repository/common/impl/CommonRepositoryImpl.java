@@ -52,7 +52,7 @@ public class CommonRepositoryImpl  implements CommonRepository {
 
 	@Override
 	public String getCoApplicatantNameFromITR(Long coAppId) {
-		Query nameData = manager.createNativeQuery("SELECT it.`name` FROM `itr_api_mudra`.`itr_home_loan_tracking` it WHERE it.co_app_id=:coAppId");
+		Query nameData = manager.createNativeQuery("SELECT it.`name` FROM `itr_api_msme`.`itr_home_loan_tracking` it WHERE it.co_app_id=:coAppId");
 		nameData.setParameter("coAppId", coAppId);
 		return (String) nameData.getSingleResult();
 	}
