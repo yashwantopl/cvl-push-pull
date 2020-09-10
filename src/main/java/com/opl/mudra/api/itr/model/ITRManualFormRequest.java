@@ -39,6 +39,7 @@ public class ITRManualFormRequest implements Serializable {
 	private String organisationName;
 	private Long profileId;
 	private Boolean isManualFilled;
+	private Boolean isITRUploaded;
 	private Integer establishmentMonth;
 	private Integer establishmentYear;
 	private Map<String, Object> incomeDetails;
@@ -234,6 +235,12 @@ public class ITRManualFormRequest implements Serializable {
 	}
 	public void setEstablishmentYear(Integer establishmentYear) {
 		this.establishmentYear = establishmentYear;
+	}
+	public Boolean getIsITRUploaded() {
+		return isITRUploaded;
+	}
+	public void setIsITRUploaded(Boolean isITRUploaded) {
+		this.isITRUploaded = isITRUploaded;
 	}
 	@Override
 	public String toString() {
