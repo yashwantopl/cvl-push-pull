@@ -35,6 +35,7 @@ public class BankStatementResponse implements Serializable {
     private Boolean completed;
     private Date createdDate;
     private Date modifiedDate;
+    private String ifscCode;
 
 
     public Long getUserId() {
@@ -252,5 +253,13 @@ public class BankStatementResponse implements Serializable {
     public void setModifiedDate(Date modifiedDate) {
         this.modifiedDate = modifiedDate;
     }
+
+	public String getIfscCode() {
+		return ifscCode;
+	}
+
+	public void setIfscCode(String ifscCode) {
+		this.ifscCode = ifscCode;
+	}
 }
 

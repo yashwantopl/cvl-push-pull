@@ -31,6 +31,7 @@ private Boolean isRenewalAffected;
 private Integer stageId;
 private String noBankStatementDetail;
 private Boolean isFromFederal;
+private ManualBsReportRequest manualBsReportRequest;
 
 private List<Long> applicationid;
 
@@ -192,6 +193,12 @@ public void setStageId(Integer stageId) {
 	}
 	public void setIsFromFederal(Boolean isFromFederal) {
 		this.isFromFederal = isFromFederal;
+	}
+	public ManualBsReportRequest getManualBsReportRequest() {
+		return manualBsReportRequest;
+	}
+	public void setManualBsReportRequest(ManualBsReportRequest manualBsReportRequest) {
+		this.manualBsReportRequest = manualBsReportRequest;
 	}
 	
 	
