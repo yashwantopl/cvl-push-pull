@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.opl.mudra.api.analyzer.model.common.AnalyzerResponse;
 import com.opl.mudra.api.common.CommonResponse;
@@ -338,12 +339,14 @@ public class CorporateServiceImpl implements CorporateService {
 		bsMap.put(ACTIVAE, Boolean.TRUE);
 		if(!CommonUtils.isObjectNullOrEmpty(profileRes) && !CommonUtils.isObjectNullOrEmpty(profileRes.getBsId())) {
 			bsMap.put(DESCRIPTION, profileRes.getTotalBankStatement());
-			bsMap.put(MANUAL_BS_DATA, profileRes.getNoBankStatementDetail());
 			bsMap.put(TITLE, "Total Bank Account Added");
 			try {
 				if(profileRes.getNoBankStatementDetail() != null) {
 					bsMap.put(COMPLETED, Boolean.TRUE);
 					bsMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/bankStatement-icon-blue.svg");
+					bsMap.put(TITLE, "Manual Bank Account Added");
+					String[] manualBsData = profileRes.getNoBankStatementDetail() != null && profileRes.getNoBankStatementDetail().contains("|") ? StringUtils.split(profileRes.getNoBankStatementDetail(), "|") : null;
+					bsMap.put(MANUAL_BS_DATA, manualBsData != null ? manualBsData[0] : null);
 				}else {
 					AnalyzerResponse analyRes = analyzerClient.isBankStatementIsUpdated(profileId, profileRes.getBsId());
 					if (analyRes != null) {
