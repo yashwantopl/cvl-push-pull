@@ -42,11 +42,14 @@ public class ConnectRequest implements Serializable {
 	private Boolean isFillAdditionalForm;
 
 	private Long coAppId;
+	private String campaignCode;
 	private Long loanTypeId;
 	private Boolean isItrReturnFilled;
 	private Boolean isNbfcUser;
 	private Object dataInput;
 	private Integer newStageId; // Stage id to be used for updating stage
+	
+
 
 	public Date getInPrincipleDate() {
 		return inPrincipleDate;
@@ -320,6 +323,14 @@ public class ConnectRequest implements Serializable {
 
 	public void setProfileVerMapId(Long profileVerMapId) {
 		this.profileVerMapId = profileVerMapId;
+	}
+	
+	public String getCampaignCode() {
+		return campaignCode;
+	}
+
+	public void setCampaignCode(String campaignCode) {
+		this.campaignCode = campaignCode;
 	}
 
 	@Override
