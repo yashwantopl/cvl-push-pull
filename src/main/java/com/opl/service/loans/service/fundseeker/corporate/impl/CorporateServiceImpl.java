@@ -70,6 +70,7 @@ public class CorporateServiceImpl implements CorporateService {
 	public static final String COMPLETED = "completed";
 	public static final String ACTIVAE = "active";
 	public static final String MANUAL_BS_DATA = "manualBSData";
+	public static final String BS_MANUAL_FILL = "isManualUpload";
 
 	@Autowired
 	private CorporateApplicantDetailRepository corpApplicantDetailRepo;
@@ -339,31 +340,42 @@ public class CorporateServiceImpl implements CorporateService {
 		bsMap.put(ACTIVAE, Boolean.TRUE);
 		if(!CommonUtils.isObjectNullOrEmpty(profileRes) && !CommonUtils.isObjectNullOrEmpty(profileRes.getBsId())) {
 			bsMap.put(DESCRIPTION, profileRes.getTotalBankStatement());
-			bsMap.put(MANUAL_BS_DATA, profileRes.getNoBankStatementDetail());
 			bsMap.put(TITLE, "Total Bank Account Added");
 			try {
+				/*
 				if(profileRes.getNoBankStatementDetail() != null) {
 					bsMap.put(COMPLETED, Boolean.TRUE);
 					bsMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/bankStatement-icon-blue.svg");
-					bsMap.put(TITLE, "Manual Bank Account Added");
+					bsMap.put(TITLE, "Bank Account Verified");
 					String[] manualBsData = profileRes.getNoBankStatementDetail() != null && profileRes.getNoBankStatementDetail().contains("|") ? StringUtils.split(profileRes.getNoBankStatementDetail(), "|") : null;
 					bsMap.put(DESCRIPTION, manualBsData != null ? manualBsData[0] : null);
-				}else {
+				}else {*/
 					AnalyzerResponse analyRes = analyzerClient.isBankStatementIsUpdated(profileId, profileRes.getBsId());
 					if (analyRes != null) {
-						Boolean isUpdated = false;
-						if(analyRes.getData() instanceof String) {					
-							isUpdated = Boolean.parseBoolean((String)analyRes.getData());
-						}else {
-							isUpdated = (Boolean)analyRes.getData();
-						}
+//						Boolean isUpdated = false;
+//						if(analyRes.getData() instanceof String) {					
+//							isUpdated = Boolean.parseBoolean((String)analyRes.getData());
+//						}else {
+//							isUpdated = (Boolean)analyRes.getData();
+//						}
+//						if (isUpdated != null && isUpdated) {
+//							bsMap.put(COMPLETED, Boolean.TRUE);
+//                            bsMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/bankStatement-icon-blue.svg");
+//						}
+//						bsMap.put(DETAIL_VALID_UP_TO, "Details Valid Up To "+ analyRes.getMessage());
+						
+						Boolean isUpdated = (Boolean) analyRes.getData();
 						if (isUpdated != null && isUpdated) {
 							bsMap.put(COMPLETED, Boolean.TRUE);
-                            bsMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/bankStatement-icon-blue.svg");
+							bsMap.put(DETAIL_VALID_UP_TO, "Data Valid Up To " + analyRes.getMessage());
+							bsMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/bankStatement-icon-blue.svg");
+							bsMap.put(MANUAL_BS_DATA, profileRes.getNoBankStatementDetail());
+							bsMap.put(BS_MANUAL_FILL,analyRes.getIsManualUpload());
+						}else{
+							bsMap.put(DETAIL_VALID_UP_TO, "Update Bank Statement Details");
 						}
-						bsMap.put(DETAIL_VALID_UP_TO, analyRes.getMessage());
 					}
-				}
+//				}
 			} catch (Exception e) {
 				logger.error("Exception while Check Bank Statement data updated or Not ", e);
 			}
