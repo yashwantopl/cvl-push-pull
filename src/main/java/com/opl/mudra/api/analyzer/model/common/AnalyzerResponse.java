@@ -42,8 +42,8 @@ public class AnalyzerResponse implements Serializable{
 	public Date lastUpdatedDate;
 
 	public List<BankStatementResponse> bankStatementList;
-
-
+	
+	private Boolean isManualUpload;
 	
 	public byte[] getContentInBytes() {
 		return contentInBytes;
@@ -203,6 +203,14 @@ public class AnalyzerResponse implements Serializable{
 
 	public void setBankStatementList(List<BankStatementResponse> bankStatementList) {
 		this.bankStatementList = bankStatementList;
+	}
+
+	public Boolean getIsManualUpload() {
+		return isManualUpload;
+	}
+
+	public void setIsManualUpload(Boolean isManualUpload) {
+		this.isManualUpload = isManualUpload;
 	}
 	
 }
