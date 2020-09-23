@@ -364,13 +364,17 @@ public class CorporateServiceImpl implements CorporateService {
 //						}
 //						bsMap.put(DETAIL_VALID_UP_TO, "Details Valid Up To "+ analyRes.getMessage());
 						
-						Boolean isUpdated = (Boolean) analyRes.getData();
+						Boolean isUpdated = Boolean.parseBoolean(analyRes.getData() != null ? String.valueOf(analyRes.getData()) : null);
 						if (isUpdated != null && isUpdated) {
 							bsMap.put(COMPLETED, Boolean.TRUE);
 							bsMap.put(DETAIL_VALID_UP_TO, "Data Valid Up To " + analyRes.getMessage());
 							bsMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/bankStatement-icon-blue.svg");
 							bsMap.put(MANUAL_BS_DATA, profileRes.getNoBankStatementDetail());
 							bsMap.put(BS_MANUAL_FILL,analyRes.getIsManualUpload());
+							
+							if(analyRes.getIsManualUpload() != null && analyRes.getIsManualUpload()) {
+								bsMap.put(TITLE, "Bank Account Verified");
+							}
 						}else{
 							bsMap.put(DETAIL_VALID_UP_TO, "Update Bank Statement Details");
 						}
