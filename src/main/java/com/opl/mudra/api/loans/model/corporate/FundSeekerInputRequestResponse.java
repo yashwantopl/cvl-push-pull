@@ -225,8 +225,17 @@ public class FundSeekerInputRequestResponse {
 	private String registerUnderMsme;
 	
 	private String registerUnderShopEstAct;
+	private Long bsMasterId;;
 	
 	
+	public Long getBsMasterId() {
+		return bsMasterId;
+	}
+
+	public void setBsMasterId(Long bsMasterId) {
+		this.bsMasterId = bsMasterId;
+	}
+
 	public Boolean getIsIsoCertified() {
 		return isIsoCertified;
 	}
