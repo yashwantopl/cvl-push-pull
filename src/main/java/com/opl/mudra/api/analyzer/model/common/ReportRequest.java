@@ -17,7 +17,7 @@ public class ReportRequest implements Serializable{
 	private static final long serialVersionUID = 1372696341293083083L;
 private Long userId;
 private Long applicationId;
-private Long appId;
+//private Long appId;
 private Long coApplicantId;
 private Long storageId;
 private Long directorId;
@@ -205,11 +205,11 @@ public void setStageId(Integer stageId) {
 	public void setManualBsReportRequest(ManualBsReportRequest manualBsReportRequest) {
 		this.manualBsReportRequest = manualBsReportRequest;
 	}
-	public Long getAppId() {
-		return appId;
-	}
-	public void setAppId(Long appId) {
-		this.appId = appId;
-	}
+//	public Long getAppId() {
+//		return appId;
+//	}
+//	public void setAppId(Long appId) {
+//		this.appId = appId;
+//	}
 }
 
