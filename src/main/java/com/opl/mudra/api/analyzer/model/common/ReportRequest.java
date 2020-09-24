@@ -1,9 +1,9 @@
 package com.opl.mudra.api.analyzer.model.common;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import java.io.Serializable;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * @author jitesh.savaliya
@@ -11,8 +11,13 @@ import java.util.List;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ReportRequest implements Serializable{
+/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1372696341293083083L;
 private Long userId;
 private Long applicationId;
+private Long appId;
 private Long coApplicantId;
 private Long storageId;
 private Long directorId;
@@ -200,8 +205,11 @@ public void setStageId(Integer stageId) {
 	public void setManualBsReportRequest(ManualBsReportRequest manualBsReportRequest) {
 		this.manualBsReportRequest = manualBsReportRequest;
 	}
-	
-	
-	
+	public Long getAppId() {
+		return appId;
+	}
+	public void setAppId(Long appId) {
+		this.appId = appId;
+	}
 }
 
