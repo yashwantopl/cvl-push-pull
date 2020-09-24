@@ -23,8 +23,6 @@ public class FundSeekerInputRequestResponse {
 
     private Long clientId;
     
-    private Long bsMasterId;
-
     private Long applicationId;
     private Integer businessTypeId;
 
@@ -1065,14 +1063,6 @@ public class FundSeekerInputRequestResponse {
 		this.profileId = profileId;
 	}
 	
-
-	public Long getBsMasterId() {
-		return bsMasterId;
-	}
-
-	public void setBsMasterId(Long bsMasterId) {
-		this.bsMasterId = bsMasterId;
-	}
 
 	@Override
 	public String toString() {
