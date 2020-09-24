@@ -783,6 +783,8 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getConstitutionId()) && (Constitution.SOLE_PROPRIETORSHIP.getId().equals(corporateApplicantDetail.getConstitutionId()))){
 				ReportRequest reportRequest = new ReportRequest();
 				reportRequest.setApplicationId(fundSeekerInputRequest.getApplicationId());
+				reportRequest.setAppId(fundSeekerInputRequest.getApplicationId());
+				reportRequest.setBsMasterId(fundSeekerInputRequest.getBsMasterId());
 				try {
 					String orgName = analyzerClient.getOrgNameByAppId(reportRequest);
 					fundSeekerInputResponse.setOrganisationName(orgName);
