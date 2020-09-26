@@ -8869,7 +8869,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			logger.info("copyDataForOneForm() start profileId: " + profileVerMapRequest.getProfileId() + ",profileVersionId: " + profileVerMapRequest.getId() + ",applicationId:" + applicationId);
 			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findByIdAndIsActive(applicationId,true);
-			if(loanApplicationMaster.getProfileMappingId() != null && profileVerMapRequest.getId().longValue() == loanApplicationMaster.getProfileMappingId().longValue() &&  loanApplicationMaster.getDataCopiedFor() == DataCopiedForEnum.COPIED_DATA_FOR_ONE_FORM.getId()){
+			if(loanApplicationMaster.getProfileMappingId() != null && profileVerMapRequest.getId().longValue() == loanApplicationMaster.getProfileMappingId().longValue() &&  DataCopiedForEnum.COPIED_DATA_FOR_ONE_FORM.getId().equals(loanApplicationMaster.getDataCopiedFor())){
 				logger.info("Already copied.");
 				return true;
 			}
@@ -8946,7 +8946,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			logger.info("profileId: " + profileVerMapRequest.getProfileId() + ",profileVersionId: " + profileVerMapRequest.getId() + ",applicationId:" + applicationId);
 			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findByIdAndIsActive(applicationId,true);
-			if(loanApplicationMaster.getProfileMappingId() != null && profileVerMapRequest.getId().longValue() == loanApplicationMaster.getProfileMappingId().longValue() && loanApplicationMaster.getDataCopiedFor() == DataCopiedForEnum.COPIED_DATA_FOR_KPD.getId()){
+			if(loanApplicationMaster.getProfileMappingId() != null && profileVerMapRequest.getId().longValue() == loanApplicationMaster.getProfileMappingId().longValue() && DataCopiedForEnum.COPIED_DATA_FOR_KPD.getId().equals(loanApplicationMaster.getDataCopiedFor())){
 				logger.info("Already copied.");
 				return true;
 			}
