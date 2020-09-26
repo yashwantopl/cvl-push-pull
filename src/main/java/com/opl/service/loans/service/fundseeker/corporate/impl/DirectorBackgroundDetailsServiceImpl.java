@@ -11,15 +11,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.service.pennydrop.client.PennydropClient;
 import com.opl.mudra.api.connect.ConnectResponse;
 import com.opl.mudra.api.loans.exception.LoansException;
 import com.opl.mudra.api.loans.model.DirectorBackgroundDetailRequest;
 import com.opl.mudra.api.loans.model.DirectorPersonalDetailRequest;
 import com.opl.mudra.api.loans.model.EmploymentDetailRequest;
 import com.opl.mudra.api.loans.model.FrameRequest;
+import com.opl.mudra.api.loans.model.LoansResponse;
 import com.opl.mudra.api.loans.utils.CommonUtils;
 import com.opl.mudra.api.loans.utils.CommonUtils.APIFlags;
 import com.opl.mudra.api.loans.utils.MultipleJSONObjectHelper;
@@ -50,8 +53,11 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 	private CommonRepository commonRepository;
 	//private static final String SIDBI_AMOUNT = "com.capitaworld.sidbi.amount";
 	
+//	@Autowired
+//	private Environment environment;
+	
 	@Autowired
-	private Environment environment;
+	private PennydropClient pennydropClient;
 
 	@Override
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
@@ -247,6 +253,31 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 		return inActive > 0;
 	}
 
-	
+	@Override
+	public LoansResponse panVerification(List<DirectorBackgroundDetailRequest> directors) {
+
+		LoansResponse resp = new LoansResponse();
+		List<com.opl.api.pennydrop.model.CommonResponse> response = new ArrayList<>();
+		
+		for (DirectorBackgroundDetailRequest dir : directors) {
+			com.opl.api.pennydrop.model.PanVerificationRequest request = new com.opl.api.pennydrop.model.PanVerificationRequest();
+			request.setPan(dir.getPanNo());
+			request.setDob(dir.getDobString());
+			request.setApplicationId(dir.getApplicationId());
+			request.setName(dir.getDirectorsName());
+
+			try {
+				response.add(pennydropClient.panVerification(request));
+				resp.setStatus(HttpStatus.OK.value());
+			} catch (Exception e) {
+				logger.error("Exception in panVerification :{} ",e);
+				resp.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+				resp.setMessage("Some thing went wrong");
+				logger.error("Error while Validating Pan For Director = >{}",e);
+			}
+		}
+		resp.setData(response);
+		return resp;
+	}		
 
 }

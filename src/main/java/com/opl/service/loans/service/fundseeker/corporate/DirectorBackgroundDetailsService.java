@@ -2,9 +2,11 @@ package com.opl.service.loans.service.fundseeker.corporate;
 
 import java.util.List;
 
+
 import com.opl.mudra.api.loans.exception.LoansException;
 import com.opl.mudra.api.loans.model.DirectorBackgroundDetailRequest;
 import com.opl.mudra.api.loans.model.FrameRequest;
+import com.opl.mudra.api.loans.model.LoansResponse;
 
 /**
  * @author Sanket
@@ -27,5 +29,7 @@ public interface DirectorBackgroundDetailsService {
 	public boolean saveDirectorInfo(DirectorBackgroundDetailRequest backgroundDetailRequest,Long applicationId,Long userId);
 	
 	public boolean inactive(Long applicationId,Long userId);
+	
+	public LoansResponse panVerification(List<DirectorBackgroundDetailRequest> directors);
 
 }
