@@ -44,6 +44,8 @@ public class AnalyzerResponse implements Serializable{
 	public List<BankStatementResponse> bankStatementList;
 	
 	private Boolean isManualUpload;
+
+	private String failureReason;
 	
 	public byte[] getContentInBytes() {
 		return contentInBytes;
@@ -212,5 +214,12 @@ public class AnalyzerResponse implements Serializable{
 	public void setIsManualUpload(Boolean isManualUpload) {
 		this.isManualUpload = isManualUpload;
 	}
-	
+
+	public String getFailureReason() {
+		return failureReason;
+	}
+
+	public void setFailureReason(String failureReason) {
+		this.failureReason = failureReason;
+	}
 }
