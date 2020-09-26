@@ -413,13 +413,14 @@ public class CorporateServiceImpl implements CorporateService {
             acMap.put(ACTIVAE, ((boolean) itrMap.get(COMPLETED) && (boolean) gstMap.get(COMPLETED)&& (boolean) bsMap.get(COMPLETED) && (boolean) keyPerMap.get(COMPLETED)));
 			Integer currentStage = associatedConcernDetailRepository.currentStage(applicationId);
 			if(!CommonUtils.isObjectNullOrEmpty(currentStage) && currentStage == 1005){ // For Oneform stage if proceed form Associate concern
+
 				List<AssociatedConcernDetailRequest> associatedConcernsDetailList = associatedConcernDetailService.getAssociatedConcernsDetailList(applicationId, userId);
 				if(!CommonUtils.isListNullOrEmpty(associatedConcernsDetailList)){
 					acMap.put(COMPLETED, Boolean.TRUE);
-					keyPerMap.put(DESCRIPTION, associatedConcernsDetailList.size());
-					keyPerMap.put(TITLE, "Total Associate Concern Added");
+					acMap.put(DESCRIPTION, associatedConcernsDetailList.size());
+					acMap.put(TITLE, "Total Associate Concern Added");
 				} else {
-					keyPerMap.put(TITLE, "No Associate Concern Added");
+					acMap.put(TITLE, "No Associate Concern Added");
 				}
 				acMap.put(COMPLETED, Boolean.TRUE);
 			}
