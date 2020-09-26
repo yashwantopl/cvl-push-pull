@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.opl.mudra.api.loans.exception.LoansException;
 import com.opl.mudra.api.loans.model.DirectorBackgroundDetailRequest;
 import com.opl.mudra.api.loans.model.FrameRequest;
 import com.opl.mudra.api.loans.model.LoansResponse;
@@ -319,4 +320,21 @@ public class DirectorBackgroundDetailsController {
 
 	}
 
+	 /**
+     * Multiple PAN Verification
+     * @param directors
+     * @param request
+     * @return
+     * @throws LoansException
+     */
+    @RequestMapping(value = "/panVerification", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> panVerification(@RequestBody List<DirectorBackgroundDetailRequest> directors,HttpServletRequest request) throws LoansException
+    {
+        try {
+            return new ResponseEntity<LoansResponse>(directorBackgroundDetailsService.panVerification(directors), HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error multiple director panVerification : ",e);
+            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

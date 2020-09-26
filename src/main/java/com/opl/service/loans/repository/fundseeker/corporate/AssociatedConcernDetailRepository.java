@@ -35,5 +35,8 @@ public interface AssociatedConcernDetailRepository extends JpaRepository<Associa
 	@Query("update AssociatedConcernDetail pm set pm.isActive = false,pm.modifiedDate = NOW(),pm.modifiedBy =:userId where pm.applicationId.id =:applicationId and pm.isActive = true")
 	public int inActive(@Param("userId") Long userId,@Param("applicationId") Long applicationId);
 
+	@Query(value = "SELECT stage_id FROM connect_mudra.connect_log WHERE application_id =:applicationId", nativeQuery = true)
+	public Integer currentStage(@Param("applicationId") Long applicationId);
+
 
 }
