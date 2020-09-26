@@ -651,7 +651,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 					"WHERE ms.application_id =:applicationId").setParameter("applicationId", applicationId).getSingleResult();
 			return orgId != null ? orgId.longValue() : null;
 		} catch (Exception e) {
-			logger.error("Exception while get campaign bank id from application id " + applicationId,e.getMessage());
+			logger.error("Exception while get campaign bank id from application id " + applicationId,e);
 		}
 		return null;
 	}

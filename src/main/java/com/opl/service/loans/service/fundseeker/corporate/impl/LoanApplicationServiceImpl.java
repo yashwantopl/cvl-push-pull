@@ -59,6 +59,7 @@ import com.opl.mudra.api.gst.model.KeyPersonDetailsResponse;
 import com.opl.mudra.api.gst.model.yuva.request.GSTR1Request;
 import com.opl.mudra.api.itr.model.ITRConnectionResponse;
 import com.opl.mudra.api.itr.model.ITRManualFormRequest;
+import com.opl.mudra.api.loans.enums.DataCopiedForEnum;
 import com.opl.mudra.api.loans.exception.LoansException;
 import com.opl.mudra.api.loans.model.AchievementDetailRequest;
 import com.opl.mudra.api.loans.model.AdminPanelLoanDetailsResponse;
@@ -8868,10 +8869,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			logger.info("copyDataForOneForm() start profileId: " + profileVerMapRequest.getProfileId() + ",profileVersionId: " + profileVerMapRequest.getId() + ",applicationId:" + applicationId);
 			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findByIdAndIsActive(applicationId,true);
-			if(loanApplicationMaster.getProfileMappingId() != null && profileVerMapRequest.getId().longValue() == loanApplicationMaster.getProfileMappingId().longValue()){
+			if(loanApplicationMaster.getProfileMappingId() != null && profileVerMapRequest.getId().longValue() == loanApplicationMaster.getProfileMappingId().longValue() &&  loanApplicationMaster.getDataCopiedFor() == DataCopiedForEnum.COPIED_DATA_FOR_ONE_FORM.getId()){
 				logger.info("Already copied.");
 				return true;
 			}
+			loanApplicationMaster.setDataCopiedFor(DataCopiedForEnum.COPIED_DATA_FOR_ONE_FORM.getId());
+			loanApplicationMaster.setProfileMappingId(profileVerMapRequest.getId());
+			loanApplicationRepository.save(loanApplicationMaster);
+			
 			boolean isBsDataCopied = copyBankStatementData(applicationId, profileVerMapRequest);
 			if (!isBsDataCopied) {
 				logger.error("Failed to copy Bank Statement data.");
@@ -8881,19 +8886,23 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			
 			// COPY ELIGIBILITY DATA
-			try {
-				EligibilityResponse elgRes = eligibilityClient.saveGstCalculation(profileVerMapRequest.getGstId(), applicationId);
-				if(elgRes != null && elgRes.getData() != null && ((Boolean) elgRes.getData())) {
-					logger.info("Successfully Copy Eligiblity GST DATaa");
-				} else {
-					auditTableRepository.save(new CommonAuditTable(applicationId, profileVerMapRequest.getProfileId(), LoanApplicationServiceImpl.class.getName(), "copyDataForOneForm", "Response Null Or Empty While Copy GST Data In to Eligiblity Table"));
-					return false;
-				}
-			} catch (Exception e) {
-				logger.error("Exception while Copy GST Data To Eligiblity ==>" , e);
-				auditTableRepository.save(new CommonAuditTable(applicationId, profileVerMapRequest.getProfileId(), LoanApplicationServiceImpl.class.getName(), "copyDataForOneForm", "Exception while Copy GST data into Eligiblity :-" + e.getMessage()));
-				return false;
-			}
+			/*
+			 * try { EligibilityResponse elgRes =
+			 * eligibilityClient.saveGstCalculation(profileVerMapRequest.getGstId(),
+			 * applicationId); if(elgRes != null && elgRes.getData() != null && ((Boolean)
+			 * elgRes.getData())) { logger.info("Successfully Copy Eligiblity GST DATaa"); }
+			 * else { auditTableRepository.save(new CommonAuditTable(applicationId,
+			 * profileVerMapRequest.getProfileId(),
+			 * LoanApplicationServiceImpl.class.getName(), "copyDataForOneForm",
+			 * "Response Null Or Empty While Copy GST Data In to Eligiblity Table")); return
+			 * false; } } catch (Exception e) {
+			 * logger.error("Exception while Copy GST Data To Eligiblity ==>" , e);
+			 * auditTableRepository.save(new CommonAuditTable(applicationId,
+			 * profileVerMapRequest.getProfileId(),
+			 * LoanApplicationServiceImpl.class.getName(), "copyDataForOneForm",
+			 * "Exception while Copy GST data into Eligiblity :-" + e.getMessage())); return
+			 * false; }
+			 */
 			
 			boolean isItrDataCopied = copyItrDataForOneForm(applicationId, profileVerMapRequest, userId);
 			if (!isItrDataCopied) {
@@ -8937,10 +8946,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			logger.info("profileId: " + profileVerMapRequest.getProfileId() + ",profileVersionId: " + profileVerMapRequest.getId() + ",applicationId:" + applicationId);
 			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findByIdAndIsActive(applicationId,true);
-			if(loanApplicationMaster.getProfileMappingId() != null && profileVerMapRequest.getId().longValue() == loanApplicationMaster.getProfileMappingId().longValue()){
+			if(loanApplicationMaster.getProfileMappingId() != null && profileVerMapRequest.getId().longValue() == loanApplicationMaster.getProfileMappingId().longValue() && loanApplicationMaster.getDataCopiedFor() == DataCopiedForEnum.COPIED_DATA_FOR_KPD.getId()){
 				logger.info("Already copied.");
 				return true;
 			}
+			loanApplicationMaster.setDataCopiedFor(DataCopiedForEnum.COPIED_DATA_FOR_KPD.getId());
+			loanApplicationRepository.save(loanApplicationMaster);
+
 			boolean isItrDataCopied = copyItrDataForKeyPerson(applicationId, profileVerMapRequest, userId);
 			if (!isItrDataCopied) {
 				logger.error("Failed to copy ITR data.");
