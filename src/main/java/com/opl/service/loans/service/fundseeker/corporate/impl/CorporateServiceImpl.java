@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import com.opl.mudra.api.analyzer.model.common.AnalyzerResponse;
 import com.opl.mudra.api.common.CommonResponse;
@@ -49,6 +48,8 @@ import com.opl.service.loans.repository.fundseeker.corporate.LoanApplicationRepo
 import com.opl.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
 import com.opl.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.opl.service.loans.service.fundseeker.corporate.CorporateService;
+
+
 
 @Service
 @Transactional
