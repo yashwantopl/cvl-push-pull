@@ -7,6 +7,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.opl.mudra.api.loans.model.AssociatedConcernDetailRequest;
+import com.opl.service.loans.repository.fundseeker.corporate.*;
+import com.opl.service.loans.service.fundseeker.corporate.AssociatedConcernDetailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -40,14 +43,6 @@ import com.opl.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetai
 import com.opl.service.loans.domain.fundseeker.corporate.LiabilitiesDetails;
 import com.opl.service.loans.domain.fundseeker.corporate.OperatingStatementDetails;
 import com.opl.service.loans.repository.CommonAuditTableRepository;
-import com.opl.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
-import com.opl.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
-import com.opl.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
-import com.opl.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
-import com.opl.service.loans.repository.fundseeker.corporate.LiabilitiesDetailsRepository;
-import com.opl.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
-import com.opl.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
-import com.opl.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.opl.service.loans.service.fundseeker.corporate.CorporateService;
 
 @Service
@@ -113,6 +108,12 @@ public class CorporateServiceImpl implements CorporateService {
 	
 	@Autowired
 	private CommonAuditTableRepository auditTableRepository;
+
+	@Autowired
+	private AssociatedConcernDetailRepository associatedConcernDetailRepository;
+
+	@Autowired
+	private AssociatedConcernDetailService associatedConcernDetailService;
 	
 	/**
 	 * CHECK ALL DATA ENTERY IN DATABASE IS CORRECT OR WRONG AND
@@ -409,9 +410,21 @@ public class CorporateServiceImpl implements CorporateService {
             acMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/bankStatement-icon.svg");
             acMap.put(COMPLETED, Boolean.FALSE);
             acMap.put(ACTIVAE, ((boolean) itrMap.get(COMPLETED) && (boolean) gstMap.get(COMPLETED)&& (boolean) bsMap.get(COMPLETED) && (boolean) keyPerMap.get(COMPLETED)));
-            mapList.add(acMap);
+			Integer currentStage = associatedConcernDetailRepository.currentStage(applicationId);
+			if(!CommonUtils.isObjectNullOrEmpty(currentStage) && currentStage == 1005){ // For Oneform stage if proceed form Associate concern
+				List<AssociatedConcernDetailRequest> associatedConcernsDetailList = associatedConcernDetailService.getAssociatedConcernsDetailList(applicationId, userId);
+				if(!CommonUtils.isListNullOrEmpty(associatedConcernsDetailList)){
+					acMap.put(COMPLETED, Boolean.TRUE);
+					keyPerMap.put(DESCRIPTION, associatedConcernsDetailList.size());
+					keyPerMap.put(TITLE, "Total Associate Concern Added");
+				} else {
+					keyPerMap.put(TITLE, "No Associate Concern Added");
+				}
+				acMap.put(COMPLETED, Boolean.TRUE);
+			}
+			mapList.add(acMap);
 
-            // SET ONEFORM DETAILS
+			// SET ONEFORM DETAILS
             Map<String, Object> oneFormMap = new HashMap<String, Object>();
             oneFormMap.put(MODULE_TYPE, 5);
             oneFormMap.put(MODULE_NAME, "One Form");
