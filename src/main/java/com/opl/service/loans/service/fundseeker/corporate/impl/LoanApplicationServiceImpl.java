@@ -8972,7 +8972,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@Override
 	public Long getProfileMappingId(Long applicationId) {
 		try {
-			LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
 			LoanApplicationMaster applicationMaster = loanApplicationRepository.getById(applicationId);
 			if(applicationMaster == null){
 				return  null;
