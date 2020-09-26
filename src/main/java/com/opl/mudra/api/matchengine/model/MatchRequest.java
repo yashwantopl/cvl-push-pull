@@ -14,6 +14,11 @@ public class MatchRequest implements Serializable{
 	private Long proposalId;
 	
 	private Long applicationId;
+	private Long gstId;
+	
+	private Long bsId;
+	
+	private Long itrId;
 
 	private Long userId;
 
@@ -254,5 +259,29 @@ public class MatchRequest implements Serializable{
 
 	public void setIsBSManual(Boolean isBSManual) {
 		this.isBSManual = isBSManual;
+	}
+
+	public Long getGstId() {
+		return gstId;
+	}
+
+	public void setGstId(Long gstId) {
+		this.gstId = gstId;
+	}
+
+	public Long getBsId() {
+		return bsId;
+	}
+
+	public void setBsId(Long bsId) {
+		this.bsId = bsId;
+	}
+
+	public Long getItrId() {
+		return itrId;
+	}
+
+	public void setItrId(Long itrId) {
+		this.itrId = itrId;
 	}
 }
