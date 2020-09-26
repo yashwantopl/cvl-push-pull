@@ -423,6 +423,7 @@ public class CorporateServiceImpl implements CorporateService {
 					acMap.put(TITLE, "No Associate Concern Added");
 				}
 				acMap.put(COMPLETED, Boolean.TRUE);
+				acMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/bankStatement-icon-blue.svg");
 			}
 			mapList.add(acMap);
 
