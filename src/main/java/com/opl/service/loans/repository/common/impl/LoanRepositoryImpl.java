@@ -19,6 +19,8 @@ import com.opl.mudra.api.loans.utils.CommonUtils;
 import com.opl.service.loans.domain.fundseeker.BankingRelation;
 import com.opl.service.loans.repository.common.LoanRepository;
 
+
+@SuppressWarnings("unchecked")
 @Repository
 public class LoanRepositoryImpl implements LoanRepository {
 
@@ -45,7 +47,6 @@ public class LoanRepositoryImpl implements LoanRepository {
 		return null;
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public Boolean isCampaignUser(Long userId) {
 		try {
@@ -260,7 +261,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 		
 	}
 
-	@SuppressWarnings("unchecked")
+	
 	@Override
 	public List<Double> getIncomeOfItrOf3Years(Long applicationId) {
 
@@ -276,7 +277,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 //		}
 	}
 	
-	@SuppressWarnings("unchecked")
+	
 	@Override
 	public List<Double> getIncomeOfItrOf3YearsOfCoApplicant(Long coAppId) {
 
@@ -285,7 +286,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 				.getResultList();
 	}
 	
-	@SuppressWarnings("unchecked")
+	
 	@Override
 	public Boolean isITRUploaded(Long applicationId) {
 		List<Boolean> result = (List<Boolean>)entityManager.createNativeQuery("SELECT itr.`is_manual_filled` FROM `itr_api_msme`.`itr_tracking` itr WHERE itr.`application_id` =:applicationId AND itr.`is_active` = TRUE")
@@ -297,7 +298,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
+	
 	@Override
 	public Boolean isITRUploadedForCoApp(Long applicationId, Long coAppId) {
 		List<BigInteger> result = (List<BigInteger>)entityManager.createNativeQuery("SELECT COUNT(app.`id`) FROM `fs_retail_co_applicant_details` app WHERE app.`is_itr_completed` = TRUE AND app.`id` =:id AND app.`application_id` =:applicationId AND app.`is_active` = TRUE")
@@ -310,7 +311,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 		return null;
 	}
 	
-	@SuppressWarnings("unchecked")
+	
 	@Override
 	public Boolean isITRSkippedForCoApp(Long applicationId, Long coAppId) {
 		List<BigInteger> result = (List<BigInteger>)entityManager.createNativeQuery("SELECT COUNT(app.`id`) FROM `fs_retail_co_applicant_details` app WHERE app.`is_itr_skip` = TRUE AND app.`id` =:id AND app.`application_id` =:applicationId AND app.`is_active` = TRUE")
@@ -323,7 +324,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 		return null;
 	}
 	
-	@SuppressWarnings("unchecked")
+	
 	@Override
 	public Boolean isITRMannualForCoApp(Long applicationId, Long coAppId) {
 		List<BigInteger> result = (List<BigInteger>)entityManager.createNativeQuery("SELECT COUNT(app.`id`) FROM `fs_retail_co_applicant_details` app WHERE app.`is_itr_manual` = TRUE AND app.`id` =:id AND app.`application_id` =:applicationId AND app.`is_active` = TRUE")
@@ -336,7 +337,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
+	
 	@Override
 	public Double getRetailLoanAmountByApplicationId(Long applicationId) {
 		List<Double> result = (List<Double>)entityManager.createNativeQuery("SELECT app.`loan_amount_required` FROM `fs_retail_applicant_details` app WHERE app.`application_id` =:applicationId AND app.`is_active` = TRUE")
@@ -349,7 +350,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	}
 
 	//1/6/2019...................
-	@SuppressWarnings("unchecked")
+	
 	@Override
 	public List<Object[]> getTypeSelectionData() {
 		return (List<Object[]>)entityManager.createNativeQuery("SELECT `type`,`description`,`business_type_id`,`img_path`, `id` ,`parent_id` FROM `fs_loan_type_selection` WHERE `is_active` = TRUE").getResultList();
@@ -359,7 +360,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	 * @author vijay.chauhan
 	 * @param userId
 	 */	
-	@SuppressWarnings("unchecked")
+	
 	@Override
 	public List<Object[]> getTypeSelectionData(String userId) {
 		String query = "SELECT `type`,`description`,`business_type_id`,`img_path` FROM `fs_loan_type_selection` WHERE `is_active` = TRUE AND TYPE!='Retail'\n" + 
@@ -566,7 +567,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	
 	public String getTutorialsAudit(TutorialsViewAudits request){
 		List<String> tutorialViewAudit = entityManager.createNativeQuery("SELECT CAST(JSON_ARRAYAGG(JSON_OBJECT('id',a.id,'userName',u.email,'viewDate',a.view_date,'roleName',r.role_name,'branchName',b.name)) AS CHAR) FROM tutorial_view_audit a LEFT JOIN users.`users` u ON u.user_id = a.user_id LEFT JOIN users.`user_role_master` r ON r.role_id = a.role_id LEFT JOIN users.`branch_master` b ON u.branch_id=b.id\r\n" + 
 				" WHERE a.tutorial_id =:tutorialId")
@@ -617,7 +618,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
+	
 	public List<Object[]> getCoLendingAllRatio(Long applicationId){
 		List<Object[]> ratioList = (List<Object[]>)entityManager.createNativeQuery("SELECT m.ratio_id,fc.nbfc_ratio,fc.bank_ratio,fc.tenure,m.fp_product_id,fc.bank_id FROM nbfc_ratio_mapping m " +
 				"INNER JOIN fp_co_lending_ratio fc ON fc.id=m.ratio_id AND fc.is_proposal_active=TRUE AND fc.is_active=TRUE " +
@@ -627,7 +628,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 		return ratioList;
 	}
 	
-	@SuppressWarnings("unchecked")
+	
 	public String getScoringMinAndMaxRangeValue(List<Long> scoreModelId,List<Long> fieldMasterId) {
 		try {
 			return (String) entityManager.createNativeQuery("SELECT CAST(JSON_ARRAYAGG(JSON_OBJECT('scoreModelId',mp.scoring_model_id,'minRange',md.min_range,'maxRange',md.max_range,'score',md.score,'description',md.description,'fieldMasterId',mp.`field_master_id`)) AS CHAR) "
@@ -681,7 +682,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 		return false;
 	}
 
-	@SuppressWarnings("unchecked")
+	
 	@Override
 	public List<BankingRelation> listBankRelationAppId(Long id) {
 		List<BankingRelation> bankingRelations = new ArrayList<BankingRelation>();
@@ -691,7 +692,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 		return bankingRelations;
 	}
 
-	@SuppressWarnings("unchecked")
+	
 	@Override
 	public List<BankingRelation> listBankRelationAppId(Long id, Long applicantId) {
 		List<BankingRelation> bankingRelations = new ArrayList<BankingRelation>();
@@ -703,7 +704,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
+	
 	public Boolean getIsItrManualFilled(Long applicationId) {
 		List<Boolean> result = 	entityManager.createNativeQuery("SELECT is_manual_filled FROM `itr_api_msme`.`itr_tracking` WHERE application_id =:appId AND is_active = TRUE ORDER BY id DESC LIMIT 1")
 				.setParameter("appId", applicationId)
@@ -851,6 +852,31 @@ public class LoanRepositoryImpl implements LoanRepository {
 			return null;
 		}
 		return fpDetails.get(0);
+	}
+	
+	@Override
+	public Long getProfileMappingIdByApplicationId(Long applicationId) {
+		List<BigInteger> result = entityManager.createNativeQuery("SELECT profile_mapping_id FROM `loan_application_mudra`.`fs_loan_application_master` WHERE application_id =:applicationId")
+				 .setParameter("applicationId",applicationId)
+				 .getResultList();
+		 return !CommonUtils.isListNullOrEmpty(result) ? result.get(0).longValue() : null; 
+	}
+
+	
+	@Override
+	public Object[] getProfileVersionDetailsByProfileId(Long profileId) {
+		List<Object[]> result = entityManager.createNativeQuery("SELECT itr_id,gst_id,bs_id FROM `user_profile`.`profile_version_mapping` WHERE id =:profileId AND is_active = TRUE ORDER BY `version` DESC limit 1")
+				 .setParameter("profileId",profileId)
+				 .getResultList();
+		 return !CommonUtils.isListNullOrEmpty(result) ? result.get(0) : null;
+	}
+
+	@Override
+	public Object[] getProfileVersionDetailsByApplicationId(Long applicationId) {
+		List<Object[]> result = entityManager.createNativeQuery("SELECT itr_id,gst_id,bs_id FROM `user_profile`.`profile_version_mapping` WHERE id = (SELECT profile_mapping_id FROM `loan_application_mudra`.`fs_loan_application_master` WHERE application_id =:applicationId) AND is_active = TRUE ORDER BY `version` DESC limit 1")
+				 .setParameter("applicationId",applicationId)
+				 .getResultList();
+		 return !CommonUtils.isListNullOrEmpty(result) ? result.get(0) : null;
 	}
 	
 	
