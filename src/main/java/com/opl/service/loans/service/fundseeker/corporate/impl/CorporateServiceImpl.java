@@ -416,12 +416,11 @@ public class CorporateServiceImpl implements CorporateService {
 
 				List<AssociatedConcernDetailRequest> associatedConcernsDetailList = associatedConcernDetailService.getAssociatedConcernsDetailList(applicationId, userId);
 				if(!CommonUtils.isListNullOrEmpty(associatedConcernsDetailList)){
-					acMap.put(COMPLETED, Boolean.TRUE);
 					acMap.put(DESCRIPTION, associatedConcernsDetailList.size());
-					acMap.put(TITLE, "Total Associate Concern Added");
 				} else {
-					acMap.put(TITLE, "No Associate Concern Added");
+					acMap.put(DESCRIPTION, 0);
 				}
+				acMap.put(TITLE, "Total Associate Concern Added");
 				acMap.put(COMPLETED, Boolean.TRUE);
 				acMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/bankStatement-icon-blue.svg");
 			}
