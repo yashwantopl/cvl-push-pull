@@ -6532,9 +6532,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 						if (CommonUtils.BusinessTypeForItr.MANUFACTURING == businessTypeId) {
 							natureOfEntity = "Manufacturer";
-						} else if (CommonUtils.BusinessTypeForItr.MANUFACTURING == businessTypeId) {
+						} else if (CommonUtils.BusinessTypeForItr.SERVICE == businessTypeId) {
 							natureOfEntity = "Service";
-						} else if (CommonUtils.BusinessTypeForItr.MANUFACTURING == businessTypeId) {
+						} else if (CommonUtils.BusinessTypeForItr.TRADING == businessTypeId) {
 							natureOfEntity = "Trader";
 						}
 
