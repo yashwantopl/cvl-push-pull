@@ -1,8 +1,10 @@
 package com.opl.service.loans.repository.common;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import com.opl.mudra.api.loans.model.TutorialsViewAudits;
+import com.opl.mudra.api.matchengine.utils.CommonUtils;
 import com.opl.service.loans.domain.fundseeker.BankingRelation;
 
 public interface LoanRepository{
@@ -125,4 +127,10 @@ public interface LoanRepository{
 	public boolean updateProfileVersIdInLoanMaster(Long applicationId, Long profileVerMapId);
 
 	public Integer getVersionFromOrgId(Long orgId);
+	
+	public Long getProfileMappingIdByApplicationId(Long applicationId);
+	
+	public Object[] getProfileVersionDetailsByProfileId(Long profileId);
+	
+	public Object[] getProfileVersionDetailsByApplicationId(Long applicationId);
 }
