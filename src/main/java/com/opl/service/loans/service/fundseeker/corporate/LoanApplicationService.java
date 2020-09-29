@@ -322,6 +322,8 @@ public interface LoanApplicationService {
 	public Long getProfileMappingId(Long applicationId);
 
 	public Long createMsmeLoan(Long userId, Boolean isActive, Integer businessTypeId, String userOrgId);
+
+	public Boolean updateCopyId(Long applicationId, Long copyId);
 	
 
 }

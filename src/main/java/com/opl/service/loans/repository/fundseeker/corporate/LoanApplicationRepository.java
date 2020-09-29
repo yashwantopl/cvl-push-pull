@@ -454,5 +454,9 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	@Modifying
 	@Query("UPDATE LoanApplicationMaster lam SET lam.paymentStatus =:paymentStatus , lam.modifiedDate = now() WHERE lam.id =:applicationId AND lam.isActive =:isActive ")
 	public Integer updatePaymentStatus(@Param("paymentStatus") String paymentStatus ,  @Param("applicationId") Long applicationId , @Param("isActive") Boolean isActive) ;
+
+	@Modifying
+	@Query(value = "UPDATE fs_loan_application_master lm SET lm.data_copied_for=:copyId WHERE lm.application_id=:applicationId",nativeQuery = true)
+	public int updateCopyId(@Param("applicationId") Long applicationId, @Param("copyId") Long copyId);
 	
 }

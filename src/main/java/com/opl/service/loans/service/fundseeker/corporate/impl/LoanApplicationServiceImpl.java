@@ -9043,4 +9043,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	 private String createApplicationCode(Long applicationId) {
     	return APPLICATION_CODE + applicationId;
     }
+
+	@Override
+	public Boolean updateCopyId(Long applicationId, Long copyId) {
+		try{
+			int numUpdatedRow = loanApplicationRepository.updateCopyId(applicationId,copyId);
+			return numUpdatedRow > 0;
+		}catch (Exception e){
+			logger.error("Error while updating copy id:: ",e);
+		}
+		return false;
+	}
 }
