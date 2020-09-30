@@ -2003,7 +2003,7 @@ public class CommonUtils {
 				return convertToDoubleForXml(obj, null);
 			}
 		} else {
-			if (obj.getClass().getName().startsWith("com.capitaworld")) {
+			if (obj.getClass().getName().startsWith("com.capitaworld") || obj.getClass().getName().startsWith("com.opl")) {
 				Field[] fields = obj.getClass().getDeclaredFields();
 				for (Field field : fields) {
 					if ((field.getModifiers() & Modifier.STATIC) == Modifier.STATIC) {
