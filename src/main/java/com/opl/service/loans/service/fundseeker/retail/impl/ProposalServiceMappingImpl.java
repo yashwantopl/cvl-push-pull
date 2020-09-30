@@ -176,65 +176,65 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	@Autowired
 	private IneligibleProposalDetailsRepository ineligibleProposalDetailsRepository;
 
-	@Value("${cw.maxdays.recalculation}")
-	private String mxaDays;
+//	@Value("${cw.maxdays.recalculation}")
+//	private String mxaDays;
+//
+//	@Value("${cw.daysdiff.recalculation}")
+//	private String daysDiff;
+//
+//	@Value("${cw.maxdays.recalculation.offline}")
+//	private String maxDaysForOffline;
+//
+//	@Value("${cw.interval.days.recalculation.offline}")
+//	private String daysIntervalForOffline;
+//
+//	@Value("${cw.interval.start.recalculation.offline}")
+//	private String startIntervalForOffline;
 
-	@Value("${cw.daysdiff.recalculation}")
-	private String daysDiff;
-
-	@Value("${cw.maxdays.recalculation.offline}")
-	private String maxDaysForOffline;
-
-	@Value("${cw.interval.days.recalculation.offline}")
-	private String daysIntervalForOffline;
-
-	@Value("${cw.interval.start.recalculation.offline}")
-	private String startIntervalForOffline;
-
-	@Value("${cw.maxdays.recalculation.retail}")
-	private String maxDaysRetail;
-	
-	@Value("${cw.maxdays.recalculation.retail.hl}")
-	private String maxDaysRetailHL;
-	
-	@Value("${cw.maxdays.recalculation.retail.al}")
-	private String maxDaysRetailAL;
-
-	@Value("${cw.daysdiff.recalculation.retail}")
-	private String daysDiffRetail;
-
-	@Value("${cw.daysdiff.recalculation.retail.hl}")
-	private String daysDiffRetailHL;
-	
-	@Value("${cw.daysdiff.recalculation.retail.al}")
-	private String daysDiffRetailAL;
-	
-	@Value("${cw.maxdays.recalculation.offline.retail}")
-	private String maxDaysForOfflineRetail;
-
-	@Value("${cw.maxdays.recalculation.offline.retail.hl}")
-	private String maxDaysForOfflineRetailHL;
-	
-	@Value("${cw.maxdays.recalculation.offline.retail.al}")
-	private String maxDaysForOfflineRetailAL;
-	
-	@Value("${cw.interval.days.recalculation.offline.retail}")
-	private String daysIntervalForOfflineRetail;
-	
-	@Value("${cw.interval.days.recalculation.offline.retail.hl}")
-	private String daysIntervalForOfflineRetailHL;
-	
-	@Value("${cw.interval.days.recalculation.offline.retail.al}")
-	private String daysIntervalForOfflineRetailAL;
-	
-	@Value("${cw.interval.start.recalculation.offline.retail}")
-	private String startIntervalForOfflineRetail;
-
-	@Value("${cw.interval.start.recalculation.offline.retail.hl}")
-	private String startIntervalForOfflineRetailHL;
-	
-	@Value("${cw.interval.start.recalculation.offline.retail.al}")
-	private String startIntervalForOfflineRetailAL;
+//	@Value("${cw.maxdays.recalculation.retail}")
+//	private String maxDaysRetail;
+//	
+//	@Value("${cw.maxdays.recalculation.retail.hl}")
+//	private String maxDaysRetailHL;
+//	
+//	@Value("${cw.maxdays.recalculation.retail.al}")
+//	private String maxDaysRetailAL;
+//
+//	@Value("${cw.daysdiff.recalculation.retail}")
+//	private String daysDiffRetail;
+//
+//	@Value("${cw.daysdiff.recalculation.retail.hl}")
+//	private String daysDiffRetailHL;
+//	
+//	@Value("${cw.daysdiff.recalculation.retail.al}")
+//	private String daysDiffRetailAL;
+//	
+//	@Value("${cw.maxdays.recalculation.offline.retail}")
+//	private String maxDaysForOfflineRetail;
+//
+//	@Value("${cw.maxdays.recalculation.offline.retail.hl}")
+//	private String maxDaysForOfflineRetailHL;
+//	
+//	@Value("${cw.maxdays.recalculation.offline.retail.al}")
+//	private String maxDaysForOfflineRetailAL;
+//	
+//	@Value("${cw.interval.days.recalculation.offline.retail}")
+//	private String daysIntervalForOfflineRetail;
+//	
+//	@Value("${cw.interval.days.recalculation.offline.retail.hl}")
+//	private String daysIntervalForOfflineRetailHL;
+//	
+//	@Value("${cw.interval.days.recalculation.offline.retail.al}")
+//	private String daysIntervalForOfflineRetailAL;
+//	
+//	@Value("${cw.interval.start.recalculation.offline.retail}")
+//	private String startIntervalForOfflineRetail;
+//
+//	@Value("${cw.interval.start.recalculation.offline.retail.hl}")
+//	private String startIntervalForOfflineRetailHL;
+//	
+//	@Value("${cw.interval.start.recalculation.offline.retail.al}")
+//	private String startIntervalForOfflineRetailAL;
 
 	DecimalFormat df = new DecimalFormat("#");
 
@@ -2595,15 +2595,18 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	@Override
 	public Boolean checkMainLogicForMultiBankSelection(Long applicationId, Integer businessTypeId,List<ConnectRequest> filteredAppListList) {
 		try {
-			IneligibleProposalDetails ineligibleProposalDetails = ineligibleProposalDetailsRepository.getSanctionedByApplicationId(applicationId);
+			ProposalDetails ineligibleProposalDetails = proposalDetailRepository.getSanctionedByApplicationId(applicationId);
 			if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)){
 				return Boolean.FALSE;
 			}
-			List<ProposalDetails> proposalDetailsList = proposalDetailRepository.findByApplicationIdAndIsActive(applicationId,true);
+			List<ProposalDetails> proposalDetailsList = proposalDetailRepository.findByApplicationIdAndIsActiveForMBOnline(applicationId,true,false);
 			List<ProposalMappingRequest> inActivityProposalList = new ArrayList<ProposalMappingRequest>();
 			for (int i = 0; i < proposalDetailsList.size(); i++) {
 				ProposalDetails proposalDetail = proposalDetailsList.get(i);
-				if(proposalDetail.getProposalStatusId().getId()== MatchConstant.ProposalStatus.ACCEPT || proposalDetail.getProposalStatusId().getId()==MatchConstant.ProposalStatus.HOLD || proposalDetail.getProposalStatusId().getId()==MatchConstant.ProposalStatus.DECLINE || proposalDetail.getProposalStatusId().getId()== ProposalStatus.CANCELED){
+				if(proposalDetail.getProposalStatusId().getId()== MatchConstant.ProposalStatus.ACCEPT
+						|| proposalDetail.getProposalStatusId().getId()==MatchConstant.ProposalStatus.HOLD
+						|| proposalDetail.getProposalStatusId().getId()==MatchConstant.ProposalStatus.DECLINE
+						|| proposalDetail.getProposalStatusId().getId()== MatchConstant.ProposalStatus.CANCELED){
 					ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
 					BeanUtils.copyProperties(proposalDetail, proposalMappingRequest);
 					inActivityProposalList.add(proposalMappingRequest);
@@ -2642,39 +2645,18 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						days = Days.daysBetween(new LocalDate(connectRequest1.getModifiedDate()),
 								new LocalDate(new Date())).getDays();
 					}
-					if(connectRequest1.getBusinessTypeId() == BusinessType.EXISTING_BUSINESS.getId() &&
-							days> Integer.parseInt(mxaDays)){//take 22 from application.properties file
+					String maxDays = loanRepository.getCommonPropertiesValue("MAX_DAYS_RECALCULATION");
+					if(connectRequest1.getBusinessTypeId() == CommonUtils.BusinessType.MUDRA_LOAN.getId() &&
+							days> Integer.parseInt(maxDays)){//take 22 from application.properties file
 						return Boolean.FALSE;
-					}else if((connectRequest1.getBusinessTypeId() == BusinessType.RETAIL_PERSONAL_LOAN.getId()) &&
-							days> Integer.parseInt(maxDaysRetail)){//take 22 from application.properties file
-						return Boolean.FALSE;
-					}
-					else if((connectRequest1.getBusinessTypeId() == BusinessType.RETAIL_HOME_LOAN.getId()) &&
-							days> Integer.parseInt(maxDaysRetailHL)){//take 22 from application.properties file
-						return Boolean.FALSE;
-					}
-					else if((connectRequest1.getBusinessTypeId() == BusinessType.RETAIL_AUTO_LOAN.getId()) &&
-							days> Integer.parseInt(maxDaysRetailAL)){//take 22 from application.properties file
-						return Boolean.FALSE;
-					}
-					else{
+					}else{
+						
+						String daysDiff = loanRepository.getCommonPropertiesValue("DAYS_DIFF_RECALCULATION");
 						if(inActivityProposalList.size()<3 && connectListSize ==1) {
-							if(connectRequest1.getBusinessTypeId() == BusinessType.EXISTING_BUSINESS.getId() &&
+							if(connectRequest1.getBusinessTypeId() == CommonUtils.BusinessType.MUDRA_LOAN.getId() &&
 									days >= Integer.parseInt(daysDiff)) {//take 7 from application.properties file
 								return Boolean.TRUE;
-							}else if((connectRequest1.getBusinessTypeId() == BusinessType.RETAIL_PERSONAL_LOAN.getId()) &&
-									days >= Integer.parseInt(daysDiffRetail)) {//take 10 from application.properties file
-								return Boolean.TRUE;
 							}
-							else if((connectRequest1.getBusinessTypeId() == BusinessType.RETAIL_HOME_LOAN.getId()) &&
-									days >= Integer.parseInt(daysDiffRetailHL)) {//take 10 from application.properties file
-								return Boolean.TRUE;
-							}
-							else if((connectRequest1.getBusinessTypeId() == BusinessType.RETAIL_AUTO_LOAN.getId()) &&
-									days >= Integer.parseInt(daysDiffRetailAL)) {//take 10 from application.properties file
-								return Boolean.TRUE;
-							}
-							
 						}else if(inActivityProposalList.size()<3 ){ //&& (connectListSize > 1 && connectListSize < 3)){
 							if(connectListSize > 1 && connectListSize < 3){
 								ConnectRequest connectReqObj = new ConnectRequest();
@@ -2692,23 +2674,10 @@ public class ProposalServiceMappingImpl implements ProposalService {
 									days = Days.daysBetween(new LocalDate(connectReqObj.getModifiedDate()),
 											new LocalDate(new Date())).getDays();
 								}
-								if(connectReqObj.getBusinessTypeId() == BusinessType.EXISTING_BUSINESS.getId() &&
+								if(connectReqObj.getBusinessTypeId() == CommonUtils.BusinessType.MUDRA_LOAN.getId() &&
 										days >= Integer.parseInt(daysDiff)){//take 7 from application.properties file
 									return Boolean.TRUE;
-								}
-								else if((connectReqObj.getBusinessTypeId() == BusinessType.RETAIL_PERSONAL_LOAN.getId()) &&
-										days >= Integer.parseInt(daysDiffRetail)){//take 7 from application.properties file
-									return Boolean.TRUE;
-								}
-								else if((connectReqObj.getBusinessTypeId() == BusinessType.RETAIL_HOME_LOAN.getId()) &&
-										days >= Integer.parseInt(daysDiffRetailHL)){//take 7 from application.properties file
-									return Boolean.TRUE;
-								}
-								else if((connectReqObj.getBusinessTypeId() == BusinessType.RETAIL_AUTO_LOAN.getId()) &&
-										days >= Integer.parseInt(daysDiffRetailAL)){//take 7 from application.properties file
-									return Boolean.TRUE;
-								}
-								else {
+								}else {
 									return Boolean.FALSE;
 								}
 							}else if(connectListSize >= 3){
@@ -2748,23 +2717,10 @@ public class ProposalServiceMappingImpl implements ProposalService {
 										days = Days.daysBetween(new LocalDate(connectReqObj.getModifiedDate()),
 												new LocalDate(new Date())).getDays();
 									}
-									if(connectReqObj.getBusinessTypeId() == BusinessType.EXISTING_BUSINESS.getId() &&
+									if(connectReqObj.getBusinessTypeId() == CommonUtils.BusinessType.MUDRA_LOAN.getId() &&
 											eligibleCnt>=1 && days >= Integer.parseInt(daysDiff)){//take 7 from application.properties file
 										return Boolean.TRUE;
-									}else if((connectReqObj.getBusinessTypeId() == BusinessType.RETAIL_PERSONAL_LOAN.getId()) &&
-											eligibleCnt>=1 && days >= Integer.parseInt(daysDiffRetail)){//take 7 from application.properties file
-										return Boolean.TRUE;
-									}
-									else if((connectReqObj.getBusinessTypeId() == BusinessType.RETAIL_HOME_LOAN.getId()) &&
-											eligibleCnt>=1 && days >= Integer.parseInt(daysDiffRetailHL)){//take 7 from application.properties file
-										return Boolean.TRUE;
-									}
-									else if((connectReqObj.getBusinessTypeId() == BusinessType.RETAIL_AUTO_LOAN.getId()) &&
-											eligibleCnt>=1 && days >= Integer.parseInt(daysDiffRetailAL)){//take 7 from application.properties file
-										return Boolean.TRUE;
-									}
-									
-									else {
+									}else {
 										return Boolean.FALSE;
 									}
 								}else {
@@ -2805,66 +2761,34 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				}
 				//ConnectRequest connectRequestOffline = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponseOffline.getDataList().get(0),ConnectRequest.class);
 				if(!CommonUtils.isObjectNullOrEmpty(connectRequestOffline) && CommonUtils.isObjectNullOrEmpty(connectRequestOffline.getOrgId())){
+					String maxDaysForOffline = loanRepository.getCommonPropertiesValue("MAX_DAYS_RECALCULATION_OFFLINE");
+					
 					days = Days.daysBetween(new LocalDate(connectRequestOffline.getModifiedDate()),
 							new LocalDate(new Date())).getDays();
-					if(connectRequestOffline.getBusinessTypeId() == BusinessType.EXISTING_BUSINESS.getId() &&
+					if(connectRequestOffline.getBusinessTypeId() == CommonUtils.BusinessType.MUDRA_LOAN.getId() &&
 							days > Integer.parseInt(maxDaysForOffline)){
 						return Boolean.FALSE;
-					}
-					else if((connectRequestOffline.getBusinessTypeId() == BusinessType.RETAIL_PERSONAL_LOAN.getId()) &&
-							days > Integer.parseInt(maxDaysForOfflineRetail)){
-						return Boolean.FALSE;
-					}
-					else if((connectRequestOffline.getBusinessTypeId() == BusinessType.RETAIL_HOME_LOAN.getId()) &&
-							days > Integer.parseInt(maxDaysForOfflineRetailHL)){
-						return Boolean.FALSE;
-					}
-					else if((connectRequestOffline.getBusinessTypeId() == BusinessType.RETAIL_AUTO_LOAN.getId()) &&
-							days > Integer.parseInt(maxDaysForOfflineRetailAL)){
-						return Boolean.FALSE;
-					}
-					
-					
-					else {
+					}else {
 						//int offlineResponseListSize = connectResponseOffline.getDataList().size();
 						ConnectRequest connectReqObj = new ConnectRequest();
-						if(connectListSize > 1){
+						if(connectListSize == 1){
 							connectReqObj = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponseOffline.getDataList().get(connectListSize-1),ConnectRequest.class);
 							days = Days.daysBetween(new LocalDate(connectReqObj.getModifiedDate()),
 									new LocalDate(new Date())).getDays();
-							if(connectReqObj.getBusinessTypeId() == BusinessType.EXISTING_BUSINESS.getId() &&
+							
+							String daysIntervalForOffline = loanRepository.getCommonPropertiesValue("INTERVAL_DAYS_RECALCULATION_OFFLINE");
+							if(connectReqObj.getBusinessTypeId() == CommonUtils.BusinessType.MUDRA_LOAN.getId() &&
 									days >= Integer.parseInt(daysIntervalForOffline)) {//take 1 from application.properties file
 								return Boolean.TRUE;
 								
-							}else if((connectReqObj.getBusinessTypeId() == BusinessType.RETAIL_PERSONAL_LOAN.getId()) &&
-									days >= Integer.parseInt(daysIntervalForOfflineRetail)) {//take 1 from application.properties file
-								return Boolean.TRUE;
 							}
-							
-							else if((connectReqObj.getBusinessTypeId() == BusinessType.RETAIL_HOME_LOAN.getId()) &&
-									days >= Integer.parseInt(daysIntervalForOfflineRetailHL)) {//take 1 from application.properties file
-								return Boolean.TRUE;
-							}
-							
-							else if((connectReqObj.getBusinessTypeId() == BusinessType.RETAIL_AUTO_LOAN.getId()) &&
-									days >= Integer.parseInt(daysIntervalForOfflineRetailAL)) {//take 1 from application.properties file
-								return Boolean.TRUE;
-							}
-							
-						}else{
-							if(connectReqObj.getBusinessTypeId() == BusinessType.EXISTING_BUSINESS.getId() &&
+						}else if(connectListSize > 1){
+							connectReqObj = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponseOffline.getDataList().get(connectListSize-1),ConnectRequest.class);
+							days = Days.daysBetween(new LocalDate(connectReqObj.getModifiedDate()),
+									new LocalDate(new Date())).getDays();
+							String startIntervalForOffline = loanRepository.getCommonPropertiesValue("INTERVAL_START_RECALCULATION_OFFLINE");
+							if(connectReqObj.getBusinessTypeId() == CommonUtils.BusinessType.MUDRA_LOAN.getId() &&
 									days >= Integer.parseInt(startIntervalForOffline)) {//take 15 from application.properties file
-								return Boolean.TRUE;
-							}else if((connectReqObj.getBusinessTypeId() == BusinessType.RETAIL_PERSONAL_LOAN.getId()) &&
-									days >= Integer.parseInt(startIntervalForOfflineRetail)) {//take 15 from application.properties file
-								return Boolean.TRUE;
-							}
-							else if(( connectReqObj.getBusinessTypeId() == BusinessType.RETAIL_HOME_LOAN.getId()) &&
-									days >= Integer.parseInt(startIntervalForOfflineRetailHL)) {//take 15 from application.properties file
-								return Boolean.TRUE;
-							}
-							else if((connectReqObj.getBusinessTypeId() == BusinessType.RETAIL_AUTO_LOAN.getId()) &&
-									days >= Integer.parseInt(startIntervalForOfflineRetailAL)) {//take 15 from application.properties file
 								return Boolean.TRUE;
 							}
 						}
@@ -2911,16 +2835,9 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						schedulerDataMultipleBankRequest.setApplicationId(connectRequest1.getApplicationId());
 						if((connectRequest1.getStageId().equals(4) || connectRequest1.getStageId().equals(207)) && connectRequest1.getStatus().equals(6)){
 							schedulerDataMultipleBankRequest.setInpricipleDate(connectRequest1.getModifiedDate());
-							if(connectRequest1.getBusinessTypeId() == BusinessType.EXISTING_BUSINESS.getId()){
+							if(connectRequest1.getBusinessTypeId() == BusinessType.MUDRA_LOAN.getId()){
+								String daysIntervalForOffline = loanRepository.getCommonPropertiesValue("INTERVAL_DAYS_RECALCULATION_OFFLINE");
 								schedulerDataMultipleBankRequest.setDayDiffrence(Integer.parseInt(daysIntervalForOffline));
-							}else if(connectRequest1.getBusinessTypeId() == BusinessType.RETAIL_PERSONAL_LOAN.getId()){
-								schedulerDataMultipleBankRequest.setDayDiffrence(Integer.parseInt(daysIntervalForOfflineRetail));
-							}
-							else if(connectRequest1.getBusinessTypeId() == BusinessType.RETAIL_HOME_LOAN.getId()){
-								schedulerDataMultipleBankRequest.setDayDiffrence(Integer.parseInt(daysIntervalForOfflineRetailHL));
-							}
-							else if(connectRequest1.getBusinessTypeId() == BusinessType.RETAIL_AUTO_LOAN.getId()){
-								schedulerDataMultipleBankRequest.setDayDiffrence(Integer.parseInt(daysIntervalForOfflineRetailAL));
 							}
 							//schedulerDataMultipleBankRequest.setDayDiffrence(Integer.parseInt(daysIntervalForOffline));
 							//set offline
@@ -2941,17 +2858,9 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							}else{
 								schedulerDataMultipleBankRequest.setInpricipleDate(connectRequest1.getModifiedDate());
 							}
-							if(connectRequest1.getBusinessTypeId() == BusinessType.EXISTING_BUSINESS.getId()){
+							if(connectRequest1.getBusinessTypeId() == BusinessType.MUDRA_LOAN.getId()){
+								String daysDiff = loanRepository.getCommonPropertiesValue("DAYS_DIFF_RECALCULATION");
 								schedulerDataMultipleBankRequest.setDayDiffrence(Integer.parseInt(daysDiff));
-							}
-							else if(connectRequest1.getBusinessTypeId() == BusinessType.RETAIL_PERSONAL_LOAN.getId()){
-								schedulerDataMultipleBankRequest.setDayDiffrence(Integer.parseInt(daysDiffRetail));
-							}
-							else if(connectRequest1.getBusinessTypeId() == BusinessType.RETAIL_HOME_LOAN.getId()){
-								schedulerDataMultipleBankRequest.setDayDiffrence(Integer.parseInt(daysDiffRetailHL));
-							}
-							else if(connectRequest1.getBusinessTypeId() == BusinessType.RETAIL_AUTO_LOAN.getId()){
-								schedulerDataMultipleBankRequest.setDayDiffrence(Integer.parseInt(daysDiffRetailAL));
 							}
 							
 							//schedulerDataMultipleBankRequest.setDayDiffrence(Integer.parseInt(daysDiff));
@@ -3289,13 +3198,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	@Override
 	public String getDayDiffrenceForInprinciple(Integer loanType) {
 		if(loanType == LoanType.WORKING_CAPITAL.getValue() ||loanType ==  LoanType.WCTL_LOAN.getValue() || loanType ==  LoanType.TERM_LOAN.getValue()) {
-			return daysDiff;
-		}else if(loanType == LoanType.PERSONAL_LOAN.getValue()) {
-			return daysDiffRetail;
-		}else if(loanType == LoanType.HOME_LOAN.getValue()) {
-			return daysDiffRetailHL;
-		}else if(loanType == LoanType.AUTO_LOAN.getValue()) {
-			return daysDiffRetailAL;
+			return loanRepository.getCommonPropertiesValue("DAYS_DIFF_RECALCULATION");
 		}
 		return null;
 	}
