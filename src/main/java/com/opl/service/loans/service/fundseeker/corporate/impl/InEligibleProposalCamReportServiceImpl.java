@@ -123,6 +123,7 @@ import com.opl.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import com.opl.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetailMudraLoan;
 import com.opl.service.loans.domain.fundseeker.retail.BankingRelation;
 import com.opl.service.loans.repository.common.CommonRepository;
+import com.opl.service.loans.repository.common.LoanRepository;
 import com.opl.service.loans.repository.common.impl.LoanRepositoryImpl;
 import com.opl.service.loans.repository.fundprovider.FSParameterMappingRepository;
 import com.opl.service.loans.repository.fundprovider.ProposalDetailsRepository;
@@ -272,6 +273,9 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
     
     @Autowired
     private PennydropClient pennyDropClient;
+    
+    @Autowired
+    private LoanRepository loanRepository;
 
 	private static final Logger logger = LoggerFactory.getLogger(InEligibleProposalCamReportServiceImpl.class);
 	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -279,6 +283,15 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 	@Override
 	public Map<String, Object> getInEligibleCamReport(Long applicationId) {
 
+		Object[] profileVersionDetails = loanRepository.getProfileVersionDetailsByApplicationId(applicationId);
+		if(CommonUtils.isObjectNullOrEmpty(profileVersionDetails)) {
+			logger.error("Profile not found for applicationId =======>"+applicationId);
+			return null;
+		}
+		Long itrId = profileVersionDetails[0] != null ? Long.valueOf(profileVersionDetails[0].toString()) : null;
+		Long gstId = profileVersionDetails[1] != null ? Long.valueOf(profileVersionDetails[1].toString()) : null;
+		Long bsId =  profileVersionDetails[2] != null ? Long.valueOf(profileVersionDetails[2].toString()) : null;
+		
 		Map<String, Object> map = new HashMap<String, Object>();
 		DecimalFormat decim = new DecimalFormat("####");
 		Long userId = loanApplicationRepository.getUserIdByApplicationId(applicationId);
@@ -495,7 +508,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		
 		//GST Comparision by Maaz
 		try{
-			FinancialInputRequest finaForCam = camReportPdfDetailsService.finaForCam(applicationId,null);
+			FinancialInputRequest finaForCam = camReportPdfDetailsService.finaForCam(applicationId,null,itrId);
 			map.put("gstComparision", corporatePrimaryViewService.gstVsItrVsBsComparision(applicationId, finaForCam));
 		}catch (Exception e) {
 			logger.error("error in getting gst comparision data in Ineligible Cam : {}",e);
@@ -512,7 +525,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		// GST DATA
 		try {
 			GSTR1Request gstr1Request = new GSTR1Request();
-			gstr1Request.setApplicationId(applicationId);
+			gstr1Request.setApplicationId(gstId);
 			gstr1Request.setUserId(userId);
 			gstr1Request.setGstin(corporateApplicantRequest.getGstIn());
 			GstResponse response = gstClient.getCalculations(gstr1Request);
@@ -948,7 +961,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 
 		// NAME AS PER ITR
 		try {
-			ITRConnectionResponse itrResponse = itrClient.getITRBasicDetails(applicationId);
+			ITRConnectionResponse itrResponse = itrClient.getITRBasicDetails(itrId);
 			logger.info("ITR RESPONSE===========>" + itrResponse);
 			map.put("nameAsPerItr", CommonUtils.printFields(itrResponse.getData(), null));
 		} catch (Exception e) {
@@ -969,6 +982,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		ReportRequest reportRequest = new ReportRequest();
 		reportRequest.setApplicationId(applicationId);
 		reportRequest.setUserId(userId);
+		reportRequest.setBsMasterId(bsId);
 
 		List<Data> datas = new ArrayList<>();
 //		List<Object> bankStatement = new ArrayList<Object>();

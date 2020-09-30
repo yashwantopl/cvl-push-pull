@@ -179,6 +179,7 @@ import com.opl.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import com.opl.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetailMudraLoan;
 import com.opl.service.loans.domain.fundseeker.retail.BankingRelation;
 import com.opl.service.loans.repository.common.CommonRepository;
+import com.opl.service.loans.repository.common.LoanRepository;
 import com.opl.service.loans.repository.common.impl.LoanRepositoryImpl;
 import com.opl.service.loans.repository.fundprovider.FSParameterMappingRepository;
 import com.opl.service.loans.repository.fundprovider.NbfcProposalBlendedRateRepository;
@@ -301,9 +302,6 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	private GstClient gstClient;
 	
 	@Autowired
-	private FSParameterMappingService fsParameterMappingForDirBack;
-	
-	@Autowired
 	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
 	
 	@Autowired
@@ -392,9 +390,6 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
         
     @Autowired
     private FinancialArrangementDetailsService arrangementsDetailServiceImpl;
-		
-	@Autowired
-	private NbfcProposalBlendedRateRepository nbfcProposalBlendedRateRepository;
         
     @Autowired
     private LoanRepositoryImpl loanRepoImpl;
@@ -428,6 +423,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
         
     @Autowired
     private DMSClient dmsClient;
+    
+    @Autowired
+    private LoanRepository loanRepository;
 
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -440,6 +438,14 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	public Map<String, Object> getCamReportPrimaryDetails(Long applicationId, Long productId,Long proposalId, boolean isFinalView) {
 
 		ProposalMappingRequestString proposalMappingRequestString = null;
+		Object[] profileVersionDetails = loanRepository.getProfileVersionDetailsByApplicationId(applicationId);
+		if(CommonUtils.isObjectNullOrEmpty(profileVersionDetails)) {
+			logger.error("Profile not found for applicationId =======>"+applicationId);
+			return null;
+		}
+		Long itrId = profileVersionDetails[0] != null ? Long.valueOf(profileVersionDetails[0].toString()) : null;
+		Long gstId = profileVersionDetails[1] != null ? Long.valueOf(profileVersionDetails[1].toString()) : null;
+		Long bsId =  profileVersionDetails[2] != null ? Long.valueOf(profileVersionDetails[2].toString()) : null;
 		Map<String, Object> map = new HashMap<String, Object>();
 		
 		Long userOrgId = proposalDetailsRepository.getOrgIdByProposalId(proposalId);
@@ -509,7 +515,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 
         try {
 			GSTR1Request gstr1Request = new GSTR1Request();
-			gstr1Request.setApplicationId(applicationId);
+			gstr1Request.setApplicationId(gstId);
 			gstr1Request.setUserId(userId);
 			gstr1Request.setGstin(corporateApplicantRequest.getGstIn());
 			GstResponse response = gstClient.getCalculations(gstr1Request);
@@ -651,9 +657,11 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		try {
 			PrimaryCorporateDetailMudraLoanReqRes primaryCorporateDetailMudraLoanReqRes = new PrimaryCorporateDetailMudraLoanReqRes(); 
 			PrimaryCorporateDetailMudraLoan primaryCorporateDetailMudraLoan = primaryCorporateDetailsMudra.findFirstByApplicationIdAndApplicationProposalMappingProposalIdOrderByIdDesc(toApplicationId, proposalId);
-			BeanUtils.copyProperties(primaryCorporateDetailMudraLoan, primaryCorporateDetailMudraLoanReqRes);
-			if (primaryCorporateDetailMudraLoanReqRes != null) {
-				map.put("statutoryObligation", CommonUtils.printFields(primaryCorporateDetailMudraLoanReqRes , null));
+			if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetailMudraLoan)) {
+				BeanUtils.copyProperties(primaryCorporateDetailMudraLoan, primaryCorporateDetailMudraLoanReqRes);
+				if (primaryCorporateDetailMudraLoanReqRes != null) {
+					map.put("statutoryObligation", CommonUtils.printFields(primaryCorporateDetailMudraLoanReqRes , null));
+				}				
 			}
 		}catch (Exception e) {
 			logger.error("Error/Exception statutoryObligation==>{}",e);
@@ -661,7 +669,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		//FINANCIALS AND NOTES TO ACCOUNTS
 		try {
 			//PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(toApplicationId, userId);
-			int currentYear = scoringService.getFinYear(toApplicationId);
+			int currentYear = scoringService.getFinYear(itrId);
 			map.put("currentYr",currentYear-1);
 			// PENDING
 			Long denominationValue = 1l;
@@ -677,7 +685,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				financials.put(year, data);
 			}
 			
-			calculateRatioAnalysis(financials, toApplicationId);
+			calculateRatioAnalysis(financials, toApplicationId,itrId);
 			map.put("financials", financials);
 			Map<Integer, Object[]> projectedFin = new HashMap<Integer, Object[]>(applicationProposalMapping.getTenure().intValue());
 			//if(primaryCorporateRequest.getProductId() == 1) { previous
@@ -737,7 +745,6 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				response.getIncomeDetails().get("creditors");
 				loansResponse.setData(response.getIncomeDetails());
 				DateFormat dfYear = new SimpleDateFormat("yyyy");
-				DateFormat dfMonth = new SimpleDateFormat("MM");
 				Date dateNoItr = new Date();
 				dateNoItr = response.getDob();
 				if (!CommonUtils.isObjectNullOrEmpty(dateNoItr)) {
@@ -825,10 +832,6 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			} catch (Exception e) {
 				logger.error("Error while Getting Associate Concern Details = >{}",e);
 			}
-			
-				
-				
-				
 				
 		
 		//SCORING DATA 
@@ -838,45 +841,58 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			scoringRequest.setFpProductId(productId);
 			ScoringResponse scoringResponse = scoringClient.getScore(scoringRequest);
 			DecimalFormat df = new DecimalFormat(".##");
-			List<Map<String,Object>> scoreResponse = new ArrayList<>(scoringResponse.getDataList().size());
-			Map<String,Object> mudraScoringMap =new HashMap<>();
-			ProposalScoreResponse proposalScoreResponse =  (ProposalScoreResponse)MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)scoringResponse.getDataObject(),ProposalScoreResponse.class);
-			mudraScoringMap.put("scoringDataObject",CommonUtils.printFields(proposalScoreResponse,null));
-			map.put("scoringModelName", proposalScoreResponse.getScoringModelName() !=null ? CommonUtils.printFields(proposalScoreResponse.getScoringModelName(), null) : "-");
-			if(!CommonUtils.isObjectNullOrEmpty(proposalScoreResponse)) {
-				map.put("managementRiskScore",!CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getManagementRiskScore()) ? proposalScoreResponse.getManagementRiskScore().intValue(): "-");
-				map.put("managementRiskMaxTotalScore",!CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getManagementRiskMaxTotalScore()) ?  proposalScoreResponse.getManagementRiskMaxTotalScore().intValue():"-");
-				map.put("managementRiskWeightOfScoring",!CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getManagementRiskWeightOfScoring()) ? df.format(proposalScoreResponse.getManagementRiskWeightOfScoring()) :"-");
-				map.put("managementRiskWeight", !CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getManagementRiskWeight()) ? Math.round(proposalScoreResponse.getManagementRiskWeight()): "-");
-				map.put("managementRiskMaxTotalWeight", !CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getManagementRiskMaxTotalWeight()) ? Math.round(proposalScoreResponse.getManagementRiskMaxTotalWeight()): "-");
-				
-				map.put("financialRiskScore",!CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getFinancialRiskScore()) ? proposalScoreResponse.getFinancialRiskScore().intValue() : "-");
-				map.put("financialRiskMaxTotalScore",!CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getFinancialRiskMaxTotalScore()) ? proposalScoreResponse.getFinancialRiskMaxTotalScore().intValue():"-");
-				map.put("financialRiskWeightOfScoring",!CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getFinancialRiskWeightOfScoring()) ? df.format(proposalScoreResponse.getFinancialRiskWeightOfScoring()): "-");
-				map.put("financialRiskWeight",!CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getFinancialRiskWeight()) ? Math.round(proposalScoreResponse.getFinancialRiskWeight()): "-");
-				map.put("financialRiskMaxTotalWeight",!CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getFinancialRiskMaxTotalWeight()) ? CommonUtils.convertValueRound(proposalScoreResponse.getFinancialRiskMaxTotalWeight()) : "-");
-				
-				map.put("businessRiskScore", !CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getBusinessRiskScore()) ? proposalScoreResponse.getBusinessRiskScore().intValue():"-");
-				map.put("businessRiskMaxTotalScore",!CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getBusinessRiskMaxTotalScore()) ? proposalScoreResponse.getBusinessRiskMaxTotalScore().intValue():"-");
-				map.put("businessRiskWeightOfScoring", !CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getBusinessRiskWeightOfScoring()) ? df.format(proposalScoreResponse.getBusinessRiskWeightOfScoring()):"-");
-				map.put("businessRiskWeight", !CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getBusinessRiskWeight()) ? Math.round(proposalScoreResponse.getBusinessRiskWeight()):"-");
-				map.put("businessRiskMaxTotalWeight", !CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getBusinessRiskMaxTotalWeight()) ? CommonUtils.convertValueRound(proposalScoreResponse.getBusinessRiskMaxTotalWeight()):"-");
-				
-				map.put("totalActualScore", CommonUtils.addNumbers(proposalScoreResponse.getManagementRiskScore(), proposalScoreResponse.getFinancialRiskScore(), proposalScoreResponse.getBusinessRiskScore()).intValue());
-				map.put("totalOutOfScore", CommonUtils.addNumbers(proposalScoreResponse.getManagementRiskMaxTotalScore(), proposalScoreResponse.getFinancialRiskMaxTotalScore(), proposalScoreResponse.getBusinessRiskMaxTotalScore()).intValue());
-				map.put("totalWeight", df.format(CommonUtils.addNumbers(proposalScoreResponse.getManagementRiskWeightOfScoring(), proposalScoreResponse.getFinancialRiskWeightOfScoring(), proposalScoreResponse.getBusinessRiskWeightOfScoring()).doubleValue()));
-				
-				if(proposalScoreResponse.getManagementRiskWeight()!=null && proposalScoreResponse.getFinancialRiskWeight() != null && proposalScoreResponse.getBusinessRiskWeight()!= null){
-				map.put("totalRiskWeight", Math.addExact(Math.addExact(Math.round(proposalScoreResponse.getManagementRiskWeight()), Math.round(proposalScoreResponse.getFinancialRiskWeight())), Math.round(proposalScoreResponse.getBusinessRiskWeight())));
-				}
-				map.put("totalRiskMaxWeight", Math.round(CommonUtils.addNumbers(proposalScoreResponse.getManagementRiskMaxTotalWeight(), proposalScoreResponse.getFinancialRiskMaxTotalWeight(), proposalScoreResponse.getBusinessRiskMaxTotalWeight()).intValue()));
-				
-				map.put("interpretation", StringEscapeUtils.escapeXml(proposalScoreResponse.getInterpretation()));
-				map.put("proposalScoreResp", proposalScoreResponse);
+			List<Map<String,Object>> scoreResponse = null;
+			if(!CommonUtils.isListNullOrEmpty(scoringResponse.getDataList())) {
+				scoreResponse = new ArrayList<>(scoringResponse.getDataList().size());
+			}else {
+				scoreResponse = new ArrayList<>();
+			}
+			Map<String,Object> mudraScoringMap = new HashMap<>();
+			if(!CommonUtils.isObjectNullOrEmpty(scoringResponse.getDataObject())) {
+				ProposalScoreResponse proposalScoreResponse =  (ProposalScoreResponse)MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)scoringResponse.getDataObject(),ProposalScoreResponse.class);
+				mudraScoringMap.put("scoringDataObject",CommonUtils.printFields(proposalScoreResponse,null));
+				map.put("scoringModelName", proposalScoreResponse.getScoringModelName() !=null ? CommonUtils.printFields(proposalScoreResponse.getScoringModelName(), null) : "-");
+				if(!CommonUtils.isObjectNullOrEmpty(proposalScoreResponse)) {
+					map.put("managementRiskScore",!CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getManagementRiskScore()) ? proposalScoreResponse.getManagementRiskScore().intValue(): "-");
+					map.put("managementRiskMaxTotalScore",!CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getManagementRiskMaxTotalScore()) ?  proposalScoreResponse.getManagementRiskMaxTotalScore().intValue():"-");
+					map.put("managementRiskWeightOfScoring",!CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getManagementRiskWeightOfScoring()) ? df.format(proposalScoreResponse.getManagementRiskWeightOfScoring()) :"-");
+					map.put("managementRiskWeight", !CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getManagementRiskWeight()) ? Math.round(proposalScoreResponse.getManagementRiskWeight()): "-");
+					map.put("managementRiskMaxTotalWeight", !CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getManagementRiskMaxTotalWeight()) ? Math.round(proposalScoreResponse.getManagementRiskMaxTotalWeight()): "-");
+					
+					map.put("financialRiskScore",!CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getFinancialRiskScore()) ? proposalScoreResponse.getFinancialRiskScore().intValue() : "-");
+					map.put("financialRiskMaxTotalScore",!CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getFinancialRiskMaxTotalScore()) ? proposalScoreResponse.getFinancialRiskMaxTotalScore().intValue():"-");
+					map.put("financialRiskWeightOfScoring",!CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getFinancialRiskWeightOfScoring()) ? df.format(proposalScoreResponse.getFinancialRiskWeightOfScoring()): "-");
+					map.put("financialRiskWeight",!CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getFinancialRiskWeight()) ? Math.round(proposalScoreResponse.getFinancialRiskWeight()): "-");
+					map.put("financialRiskMaxTotalWeight",!CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getFinancialRiskMaxTotalWeight()) ? CommonUtils.convertValueRound(proposalScoreResponse.getFinancialRiskMaxTotalWeight()) : "-");
+					
+					map.put("businessRiskScore", !CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getBusinessRiskScore()) ? proposalScoreResponse.getBusinessRiskScore().intValue():"-");
+					map.put("businessRiskMaxTotalScore",!CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getBusinessRiskMaxTotalScore()) ? proposalScoreResponse.getBusinessRiskMaxTotalScore().intValue():"-");
+					map.put("businessRiskWeightOfScoring", !CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getBusinessRiskWeightOfScoring()) ? df.format(proposalScoreResponse.getBusinessRiskWeightOfScoring()):"-");
+					map.put("businessRiskWeight", !CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getBusinessRiskWeight()) ? Math.round(proposalScoreResponse.getBusinessRiskWeight()):"-");
+					map.put("businessRiskMaxTotalWeight", !CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getBusinessRiskMaxTotalWeight()) ? CommonUtils.convertValueRound(proposalScoreResponse.getBusinessRiskMaxTotalWeight()):"-");
+					
+					map.put("totalActualScore", CommonUtils.addNumbers(proposalScoreResponse.getManagementRiskScore(), proposalScoreResponse.getFinancialRiskScore(), proposalScoreResponse.getBusinessRiskScore()).intValue());
+					map.put("totalOutOfScore", CommonUtils.addNumbers(proposalScoreResponse.getManagementRiskMaxTotalScore(), proposalScoreResponse.getFinancialRiskMaxTotalScore(), proposalScoreResponse.getBusinessRiskMaxTotalScore()).intValue());
+					map.put("totalWeight", df.format(CommonUtils.addNumbers(proposalScoreResponse.getManagementRiskWeightOfScoring(), proposalScoreResponse.getFinancialRiskWeightOfScoring(), proposalScoreResponse.getBusinessRiskWeightOfScoring()).doubleValue()));
+					
+					if(proposalScoreResponse.getManagementRiskWeight()!=null && proposalScoreResponse.getFinancialRiskWeight() != null && proposalScoreResponse.getBusinessRiskWeight()!= null){
+					map.put("totalRiskWeight", Math.addExact(Math.addExact(Math.round(proposalScoreResponse.getManagementRiskWeight()), Math.round(proposalScoreResponse.getFinancialRiskWeight())), Math.round(proposalScoreResponse.getBusinessRiskWeight())));
+					}
+					map.put("totalRiskMaxWeight", Math.round(CommonUtils.addNumbers(proposalScoreResponse.getManagementRiskMaxTotalWeight(), proposalScoreResponse.getFinancialRiskMaxTotalWeight(), proposalScoreResponse.getBusinessRiskMaxTotalWeight()).intValue()));
+					
+					map.put("interpretation", StringEscapeUtils.escapeXml(proposalScoreResponse.getInterpretation()));
+					map.put("proposalScoreResp", proposalScoreResponse);
+				}				
 			}
 		
 //			FOR FILTERING MUDRA LOANS SCORING PARAMETERS
-			List<LinkedHashMap<String, Object>> mapList = (List<LinkedHashMap<String, Object>>)scoringResponse.getDataList();
+			List<LinkedHashMap<String, Object>> mapList = Collections.emptyList();;
+			if(!CommonUtils.isListNullOrEmpty(scoringResponse.getDataList())) {
+				mapList = (List<LinkedHashMap<String, Object>>)scoringResponse.getDataList();
+			}else {
+				mapList = new ArrayList<>();
+			}
+			
 			List<ProposalScoreDetailResponse> newMapList = new ArrayList<>(mapList.size());
 			for(LinkedHashMap<String, Object> mp : mapList) {
 				newMapList.add(MultipleJSONObjectHelper.getObjectFromMap(mp,ProposalScoreDetailResponse.class));
@@ -1165,7 +1181,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		//ITR (CHECK IF UPLOADED USING XML OR ONLINE)
 		try {
-			ITRConnectionResponse itrConnectionResponse= itrClient.getIsUploadAndYearDetails(toApplicationId);
+			ITRConnectionResponse itrConnectionResponse= itrClient.getIsUploadAndYearDetails(itrId);
 			if(!CommonUtils.isObjectNullOrEmpty(itrConnectionResponse)) {
 				map.put("checkItr", itrConnectionResponse.getData());
 			}
@@ -1185,7 +1201,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		//GST Comparision by Maaz
 		try{
-			FinancialInputRequest finaForCam = finaForCam(applicationId,proposalId);
+			FinancialInputRequest finaForCam = finaForCam(applicationId,proposalId,itrId);
 			map.put("gstComparision", corporatePrimaryViewService.gstVsItrVsBsComparision(applicationId, finaForCam));
 		}catch (Exception e) {
 			logger.error("error in getting gst comparision data : {}",e);
@@ -1193,7 +1209,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		//Get BankStatement
 		try {
-			map.putAll(getBankStatementDetails(toApplicationId, userId));
+			map.putAll(getBankStatementDetails(toApplicationId, userId,bsId));
 		}catch (Exception e) {
 			logger.error("Error in getting Bank Statemnt from Perfios in MSME Cam Report with applicationId==>{}",applicationId);
 		}
@@ -1832,8 +1848,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		return new Object[] {osDetailsString, liabilitiesDetailsString, assetDetailsString , financialInputRequestString , financialInputRequestDbl };
 	}
 	
-	public void calculateRatioAnalysis(Map<Integer, Object[]>financials,Long toapplicationId) {
-		int currentYear = scoringService.getFinYear(toapplicationId);
+	public void calculateRatioAnalysis(Map<Integer, Object[]>financials,Long toapplicationId,Long itrId) {
+		int currentYear = scoringService.getFinYear(itrId);
 		DecimalFormat decim = new DecimalFormat("###.##");
 		Object[] curFinYear = financials.get(currentYear - 1);
 		Object[] prevFinYear = financials.get(currentYear - 2);
@@ -2049,11 +2065,11 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	}
 
 	@Override
-	public FinancialInputRequest finaForCam(Long aplicationId,Long proposalId) {
+	public FinancialInputRequest finaForCam(Long aplicationId,Long proposalId,Long itrId) {
 		FinancialInputRequest financialInputRequest = new FinancialInputRequest();
 		OperatingStatementDetails operatingStatementDetails;
 		HashMap<String, Object> yearSalesPurchase = new HashMap<>();
-		int currentYear = scoringService.getFinYear(aplicationId);
+		int currentYear = scoringService.getFinYear(itrId);
 		List<Map<String, Object>> financialYearAndSalesAndPurchase = new ArrayList<>();
 		try {
 			if(proposalId != null) {
@@ -2883,10 +2899,11 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 	}
 	
-	public Map<String,Object> getBankStatementDetails(Long applicationId ,Long userId){
+	public Map<String,Object> getBankStatementDetails(Long applicationId ,Long userId,Long bsId){
 		//PERFIOS API DATA (BANK STATEMENT ANALYSIS)
 		ReportRequest reportRequest = new ReportRequest();
 		reportRequest.setApplicationId(applicationId);
+		reportRequest.setBsMasterId(bsId);
 		reportRequest.setUserId(userId);
 
 		Map<String,Object> bankStatement = new HashMap<String, Object>();  
@@ -2982,6 +2999,14 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	@Override
 	public Map < String, Object > getDetailsForApplicationForm(Long applicationId, Long productId, Long proposalId) {
 
+		Object[] profileVersionDetails = loanRepository.getProfileVersionDetailsByApplicationId(applicationId);
+		if(CommonUtils.isObjectNullOrEmpty(profileVersionDetails)) {
+			logger.error("Profile not found for applicationId =======>"+applicationId);
+			return null;
+		}
+		Long itrId = profileVersionDetails[0] != null ? Long.valueOf(profileVersionDetails[0].toString()) : null;
+		Long gstId = profileVersionDetails[1] != null ? Long.valueOf(profileVersionDetails[1].toString()) : null;
+		Long bsId =  profileVersionDetails[2] != null ? Long.valueOf(profileVersionDetails[2].toString()) : null;
 	    Map < String, Object > map = new HashMap < String, Object > ();
 	    DecimalFormat decim = new DecimalFormat("####");
 	    //CGTMSE DATA
@@ -3036,7 +3061,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		map.putAll(getMatchesAndEligiblityDetails(applicationId,productId,proposalId));
 		
 		//bank Statement data
-		map.putAll(getBankStatementDetails(applicationId, userId));
+		map.putAll(getBankStatementDetails(applicationId, userId,bsId));
 		
 		// GET ASSOCIATE CONCERN DETAILS
 		List<AssociatedConcernDetailRequest> associatedConcernResList = new ArrayList<>(); 
@@ -3123,7 +3148,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		//ITR (CHECK IF UPLOADED USING XML OR ONLINE)
 		try {
-			ITRConnectionResponse itrConnectionResponse= itrClient.getIsUploadAndYearDetails(applicationId);
+			ITRConnectionResponse itrConnectionResponse= itrClient.getIsUploadAndYearDetails(itrId);
 			if(!CommonUtils.isObjectNullOrEmpty(itrConnectionResponse)) {
 				map.put("checkItr", itrConnectionResponse.getData());
 			}
@@ -3185,7 +3210,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		//Get BankStatement
 		try {
-			map.putAll(getBankStatementDetails(applicationId, userId));
+			map.putAll(getBankStatementDetails(applicationId, userId,bsId));
 		}catch (Exception e) {
 			logger.error("Error in getting Bank Statemnt from Perfios in MSME Cam Report with applicationId==>{}",applicationId);
 		}

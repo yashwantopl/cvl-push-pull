@@ -15,7 +15,7 @@ public interface CamReportPdfDetailsService {
 	
 	public Map<String ,Object> getGstReportData(String panNo);
 	
-	public FinancialInputRequest finaForCam(Long aplicationId,Long proposalId);
+	public FinancialInputRequest finaForCam(Long aplicationId,Long proposalId,Long itrId);
 	
 	//for application Form (MSME)
 	public Map<String, Object> getDetailsForApplicationForm(Long applicationId, Long productId,Long proposalId);
