@@ -2276,7 +2276,7 @@ public class ScoringServiceImpl implements ScoringService {
     }
 
 
-    public Integer getFinYear(Long applicationId) {
+    public Integer getFinYear(Long applicationId) { //ITR master Id
         Integer year = 0;
         ITRConnectionResponse itrConnectionResponse = null;
         try {

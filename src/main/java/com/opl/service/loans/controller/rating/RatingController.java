@@ -66,7 +66,7 @@ private static final Logger logger = LoggerFactory.getLogger(RatingController.cl
 
 			Long denomination=1l;
 			logger.info("denomination:::"+denomination);
-			FinancialInputRequest financialInputRequest=irrService.cmaIrrMappingService(userId, proposalMappingRequest.getApplicationId(), null, denomination,proposalMappingRequest.getId());
+			FinancialInputRequest financialInputRequest=irrService.cmaIrrMappingService(userId, proposalMappingRequest.getApplicationId(), null, denomination,proposalMappingRequest.getId(),proposalMappingRequest.getItrId());
 			return new ResponseEntity<RatingResponse>(new RatingResponse(financialInputRequest,"financial input fetched from cma", HttpStatus.OK.value()), HttpStatus.OK);
 			
 		} catch (Exception e) {

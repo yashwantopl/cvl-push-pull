@@ -941,7 +941,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		Long denomination = Denomination.getById(primaryCorporateDetail.getDenominationId()).getDigit();
 		try {
 			FinancialInputRequest financialInputRequest = irrService.cmaIrrMappingService(userId, toApplicationId, null,
-					denomination,proposalMapId);
+					denomination,proposalMapId,null);
 
 			logger.info("financialInputRequest.getYear()===>>>{}" , financialInputRequest.getYear());
 			// Profit & Loss Statement

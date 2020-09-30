@@ -37,6 +37,7 @@ import com.opl.service.loans.domain.fundseeker.corporate.CreditRatingCompanyDeta
 import com.opl.service.loans.domain.fundseeker.corporate.LiabilitiesDetails;
 import com.opl.service.loans.domain.fundseeker.corporate.OperatingStatementDetails;
 import com.opl.service.loans.domain.fundseeker.corporate.ProfitibilityStatementDetail;
+import com.opl.service.loans.repository.common.LoanRepository;
 import com.opl.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.opl.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
 import com.opl.service.loans.repository.fundseeker.corporate.BalanceSheetDetailRepository;
@@ -44,14 +45,9 @@ import com.opl.service.loans.repository.fundseeker.corporate.CorporateApplicantD
 import com.opl.service.loans.repository.fundseeker.corporate.CorporateMcqDetailRepository;
 import com.opl.service.loans.repository.fundseeker.corporate.CreditRatingCompanyDetailsRepository;
 import com.opl.service.loans.repository.fundseeker.corporate.LiabilitiesDetailsRepository;
-import com.opl.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.opl.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
-import com.opl.service.loans.repository.fundseeker.corporate.PrimaryTermLoanDetailRepository;
-import com.opl.service.loans.repository.fundseeker.corporate.PrimaryUnsecuredLoanDetailRepository;
-import com.opl.service.loans.repository.fundseeker.corporate.PrimaryWorkingCapitalLoanDetailRepository;
 import com.opl.service.loans.repository.fundseeker.corporate.ProfitibilityStatementDetailRepository;
 import com.opl.service.loans.service.common.DocumentManagementService;
-import com.opl.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.opl.service.loans.service.fundseeker.corporate.CorporateFinalInfoService;
 import com.opl.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.opl.service.loans.service.irr.IrrService;
@@ -95,22 +91,7 @@ public class IrrServiceImpl implements IrrService{
 	FinalUnsecuredLoanDetailRepository finalUnsecuredLoanDetailRepository;*/
 	
 	@Autowired
-	private LoanApplicationRepository loanApplicationRepository;
-	
-	@Autowired
-	private CorporateApplicantService applicantService;
-	
-	@Autowired
 	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
-	
-	@Autowired
-	private PrimaryTermLoanDetailRepository primaryTermLoanDetailRepository;
-	
-	@Autowired
-	private PrimaryWorkingCapitalLoanDetailRepository primaryWorkingCapitalLoanDetailRepository;
-	
-	@Autowired
-	private PrimaryUnsecuredLoanDetailRepository primaryUnsecuredLoanDetailRepository;
 	
 	@Autowired
 	private LoanApplicationService loanApplicationService;
@@ -123,6 +104,9 @@ public class IrrServiceImpl implements IrrService{
 	
 	@Autowired
 	private ApplicationProposalMappingRepository applicationProposalMappingRepository;
+	
+	@Autowired
+	private LoanRepository loanRepository;
 
 	private final Logger log = LoggerFactory.getLogger(IrrServiceImpl.class);
 
@@ -261,7 +245,7 @@ public class IrrServiceImpl implements IrrService{
 
 			// if CMA filled
 			if(isCmaUploaded) {
-				irrRequest.setFinancialInputRequest(cmaIrrMappingService(usrId, appId, industry, denom,proposalId));
+				irrRequest.setFinancialInputRequest(cmaIrrMappingService(usrId, appId, industry, denom,proposalId,null));
 			}
 
 			/*// if coAct filled
@@ -341,7 +325,7 @@ public class IrrServiceImpl implements IrrService{
 	}
 	
 	@Override
-	public FinancialInputRequest cmaIrrMappingService(Long userId, Long aplicationId,String industry,Long denom, Long proposalId) throws LoansException {
+	public FinancialInputRequest cmaIrrMappingService(Long userId, Long aplicationId,String industry,Long denom, Long proposalId,Long itrId) throws LoansException {
 		//JSONObject jSONObject = new JSONObject();
 		log.info("APPLICATION ID:::"+aplicationId);
 		log.info("DENO::"+denom);
@@ -350,7 +334,16 @@ public class IrrServiceImpl implements IrrService{
 		OperatingStatementDetails operatingStatementDetails;
 		LiabilitiesDetails liabilitiesDetails;
 		AssetsDetails assetsDetails;
-		CorporateFinalInfoRequest  corporateFinalInfoRequest = new CorporateFinalInfoRequest();
+		CorporateFinalInfoRequest  corporateFinalInfoRequest = null;
+		
+		if(itrId == null) {
+			Object[] profileVersionDetails = loanRepository.getProfileVersionDetailsByApplicationId(aplicationId);
+			if(CommonUtils.isObjectNullOrEmpty(profileVersionDetails)) {
+				log.error("Profile not found for applicationId =======>"+aplicationId);
+				return null;
+			}
+			itrId = profileVersionDetails[0] != null ? Long.valueOf(profileVersionDetails[0].toString()) : null;			
+		}
 
 		//corporateFinalInfoRequest = corporateFinalInfoService.get(userId ,aplicationId); // PREVIOUS
 		try {
@@ -402,7 +395,7 @@ public class IrrServiceImpl implements IrrService{
 		financialInputRequest.setNoOfMonthFy(12.0);
 		// -------------------------------------------------------THIRD year data-------------------------------------------------------------------------
 		//========= ==========================================OPERATINGSTATEMENT DETAIL 3 YR========================================================
-		int currentYear = scoringService.getFinYear(aplicationId);
+		int currentYear = scoringService.getFinYear(itrId);
 		List<Map<String, Object>> financialYearAndSalesAndPurchase = new ArrayList<>();
 		financialInputRequest.setYear(currentYear-1);
 
@@ -723,13 +716,7 @@ public class IrrServiceImpl implements IrrService{
 				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOtherIncomeNeedTocCheckAsset()))
 					assetsDetails.setOtherIncomeNeedTocCheckAsset(0.0);
 				financialInputRequest.setOtherIncomeNeedTocCheckAssetFy(assetsDetails.getOtherIncomeNeedTocCheckAsset() * denom);
-				
-				// -----CONTIGENT LIABILITIES
-				if(corporateFinalInfoRequest == null)
-					financialInputRequest.setContingentLiablitiesFy(null);
-				else
-					financialInputRequest.setContingentLiablitiesFy(CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getContLiabilityFyAmt()) ? 0.0 : (corporateFinalInfoRequest.getContLiabilityFyAmt()* denom));
-				
+				financialInputRequest.setContingentLiablitiesFy(CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getContLiabilityFyAmt()) ? 0.0 : (corporateFinalInfoRequest.getContLiabilityFyAmt()* denom));
 				
 			}else {
 				

@@ -107,7 +107,6 @@ import com.opl.mudra.api.user.model.UserResponse;
 import com.opl.mudra.api.user.model.UsersRequest;
 import com.opl.mudra.client.analyzer.AnalyzerClient;
 import com.opl.mudra.client.cibil.CIBILClient;
-import com.opl.mudra.client.connect.ConnectClient;
 import com.opl.mudra.client.dms.DMSClient;
 import com.opl.mudra.client.eligibility.EligibilityClient;
 import com.opl.mudra.client.fraudanalytics.FraudAnalyticsClient;
@@ -132,8 +131,8 @@ import com.opl.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import com.opl.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetailMudraLoan;
 import com.opl.service.loans.domain.fundseeker.retail.BankingRelation;
 import com.opl.service.loans.repository.common.CommonRepository;
+import com.opl.service.loans.repository.common.LoanRepository;
 import com.opl.service.loans.repository.fundprovider.FSParameterMappingRepository;
-import com.opl.service.loans.repository.fundprovider.NbfcProposalBlendedRateRepository;
 import com.opl.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.opl.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.opl.service.loans.repository.fundprovider.TermLoanParameterRepository;
@@ -147,11 +146,8 @@ import com.opl.service.loans.repository.fundseeker.corporate.MachineDetailsRepos
 import com.opl.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailMudraLoanRepository;
 import com.opl.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.opl.service.loans.repository.fundseeker.retail.BankingRelationlRepository;
-import com.opl.service.loans.repository.sanction.LoanDisbursementRepository;
-import com.opl.service.loans.repository.sanction.LoanSanctionRepository;
 import com.opl.service.loans.service.common.CommonService;
 import com.opl.service.loans.service.common.PincodeDateService;
-import com.opl.service.loans.service.fundseeker.corporate.CamReportPdfDetailsService;
 import com.opl.service.loans.service.fundseeker.corporate.CollateralSecurityDetailService;
 import com.opl.service.loans.service.fundseeker.corporate.CorporateFinalInfoService;
 import com.opl.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
@@ -256,24 +252,12 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 	@Value("${capitaworld.gstdata.enable}")
 	private Boolean gstCompRelFlag;
 	
-	@Autowired
-	private ConnectClient connectClient;
-	
     @Autowired
     ProposalDetailsRepository proposalDetailsRepository;
     
 	@Autowired
-	private NbfcProposalBlendedRateRepository nbfcProposalBlendedRateRepository;
-
-	@Autowired
-    private LoanSanctionRepository loanSanctionRepository;
-	
-	@Autowired
 	private CommonRepository commonRepository;
 
-	@Autowired
-	private LoanDisbursementRepository loanDisbursementRepository;
-	
 	@Autowired
 	private PrimaryCorporateDetailMudraLoanRepository mudraLoanRepo ;
 	
@@ -290,10 +274,10 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 	BankingRelationlRepository bankingRelationlRepository;
 	
 	@Autowired
-	private CamReportPdfDetailsService camReportPdfDetailsService;
+	private ProposalDetailsClient proposalDetailsClient;
 	
 	@Autowired
-	private ProposalDetailsClient proposalDetailsClient;
+	private LoanRepository loanRepository;
 	
 	DecimalFormat decim = new DecimalFormat("#,###.00");
 
@@ -303,6 +287,15 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 
 	CorporatePrimaryViewResponse corporatePrimaryViewResponse = new CorporatePrimaryViewResponse();
 	//for NBFC and Code
+		Object[] profileVersionDetails = loanRepository.getProfileVersionDetailsByApplicationId(applicationId);
+		if(CommonUtils.isObjectNullOrEmpty(profileVersionDetails)) {
+			logger.error("Profile not found for applicationId =======>"+applicationId);
+			return corporatePrimaryViewResponse;
+		}
+		Long itrId = profileVersionDetails[0] != null ? Long.valueOf(profileVersionDetails[0].toString()) : null;
+		Long gstId = profileVersionDetails[1] != null ? Long.valueOf(profileVersionDetails[1].toString()) : null;
+		Long bsId =  profileVersionDetails[2] != null ? Long.valueOf(profileVersionDetails[2].toString()) : null;
+	
 		ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalId); // NEW BASED ON PROPOSAL MAPPING ID
 		logger.info("AppId===========>{}",applicationProposalMapping.getApplicationId());
 		Long toApplicationId = applicationProposalMapping.getApplicationId(); // new
@@ -488,7 +481,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				// .getData();
 
 				SectorIndustryModel sectorIndustryModel = MultipleJSONObjectHelper
-						.getObjectFromMap((Map) formResponse.getData(), SectorIndustryModel.class);
+						.getObjectFromMap((Map<String,Object>) formResponse.getData(), SectorIndustryModel.class);
 
 				// get key vertical sector value
 				OneFormResponse oneFormResponse = oneFormClient
@@ -878,7 +871,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		try {
 		//	FinancialInputRequest financialInputRequest = irrService.cmaIrrMappingService(userId, toApplicationId, null,enomination); //=======>>>>PREVIOUS
 			FinancialInputRequest financialInputRequest = irrService.cmaIrrMappingService(toUserId, toApplicationId, null,
-					denomination,proposalId); // CHANGES PROPOSAL ID NEW
+					denomination,proposalId,itrId); // CHANGES PROPOSAL ID NEW
 
 			logger.info("financialInputRequest.getYear()===>>>{}" , financialInputRequest.getYear());
 			// Profit & Loss Statement
@@ -1126,7 +1119,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 
 		// itr xml isUpload or Online check
 		try {
-			ITRConnectionResponse itrConnectionResponse = itrClient.getIsUploadAndYearDetails(toApplicationId);
+			ITRConnectionResponse itrConnectionResponse = itrClient.getIsUploadAndYearDetails(itrId);
 			if (itrConnectionResponse != null) {
 				corporatePrimaryViewResponse.setItrXmlIsUploaded(itrConnectionResponse.getData());
 			} else {
@@ -1141,6 +1134,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		// bank statement data
 		ReportRequest reportRequest = new ReportRequest();
 		reportRequest.setApplicationId(toApplicationId);
+		reportRequest.setBsMasterId(bsId);
 		reportRequest.setUserId(toUserId);
 		List<Data> datas = new ArrayList<>();
 		try {
@@ -1403,7 +1397,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		// Name As Per
 
 		try {
-			ITRConnectionResponse resNameAsPerITR = itrClient.getITRBasicDetails(toApplicationId);
+			ITRConnectionResponse resNameAsPerITR = itrClient.getITRBasicDetails(itrId);
 			if (resNameAsPerITR != null) {
 
 				corporatePrimaryViewResponse
@@ -1424,7 +1418,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				/*if(corporateApplicantDetail.getGstIn()!= null) {*/
 				CAMGSTData resp =null;
 				GSTR1Request req= new GSTR1Request();
-				req.setApplicationId(toApplicationId);
+				req.setApplicationId(gstId);
 				req.setUserId(toUserId);
 				req.setGstin(corporateApplicantDetail.getGstIn());
 				
@@ -1617,7 +1611,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		}
 		//ENDS HERE NBFC DOWNLOADS
 		
-		if(gstCompRelFlag) {
+		if(gstCompRelFlag != null && gstCompRelFlag) {
 			LinkedHashMap<String, Object> gstVsItrVsBsComparision = gstVsItrVsBsComparision(applicationId, (FinancialInputRequest) corporatePrimaryViewResponse.getFinancialInputRequest());
 			corporatePrimaryViewResponse.setBankComparisionData(gstVsItrVsBsComparision);
 				
@@ -1662,7 +1656,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 						Double bsValue= 0d;
 						for (Map.Entry<String, Object> entry : bsMap.entrySet()) {
 							Date parse = sdf1.parse(String.valueOf(entry.getKey()));
-							HashMap<String,Object>gstSalesVsBankStatementMonthly = new HashMap();
+							HashMap<String,Object>gstSalesVsBankStatementMonthly = new HashMap<String,Object>();
 	
 							gstSalesVsBankStatementMonthly.put("month", displayFormate.format(parse));
 							gstSalesVsBankStatementMonthly.put("gstValue", " - ");
@@ -1868,7 +1862,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		return !CommonUtils.isObjectNullOrEmpty(value) ? decim.format(value) : "0";
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked" })
 	@Override
 	public com.opl.mudra.api.loans.model.LoansResponse getCubictreeReport(Long applicationId) throws LoansException {
 		com.opl.mudra.api.loans.model.LoansResponse response=new com.opl.mudra.api.loans.model.LoansResponse();
