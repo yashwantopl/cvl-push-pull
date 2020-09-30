@@ -146,6 +146,8 @@ public class ProposalMappingRequest implements Serializable {
 	private Boolean isSanctioned;
 
 	private Boolean isDisbursed;
+	
+	private Long itrId;
 
 
 	public String getConcessionBasedOnType() {
@@ -686,6 +688,14 @@ public class ProposalMappingRequest implements Serializable {
 
 	public void setIsDisbursed(Boolean isDisbursed) {
 		this.isDisbursed = isDisbursed;
+	}
+
+	public Long getItrId() {
+		return itrId;
+	}
+
+	public void setItrId(Long itrId) {
+		this.itrId = itrId;
 	}
 
 	@Override
