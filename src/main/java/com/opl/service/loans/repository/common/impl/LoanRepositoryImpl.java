@@ -24,7 +24,7 @@ import com.opl.service.loans.repository.common.LoanRepository;
 @Repository
 public class LoanRepositoryImpl implements LoanRepository {
 
-	private static final Logger logger = LoggerFactory.getLogger(LoanRepositoryImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(LoanRepositoryImpl.class);
 
 	private static final String ORG_ID = "orgId";
 	private static final String BRANCH_ID = "branchId";
@@ -42,7 +42,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 					.setParameter(CommonUtils.USER_ID, userId)
 					.getSingleResult();
 		} catch (Exception e) {
-			logger.error(CommonUtils.EXCEPTION,e);
+			LOGGER.error(CommonUtils.EXCEPTION,e);
 		}
 		return null;
 	}
@@ -56,7 +56,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 					.getResultList();
 			return !CommonUtils.isListNullOrEmpty(list);
 		} catch (Exception e) {
-			logger.error(CommonUtils.EXCEPTION,e);
+			LOGGER.error(CommonUtils.EXCEPTION,e);
 		}
 		return null;
 	}
@@ -75,7 +75,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 					.getSingleResult();
 			return !CommonUtils.isObjectNullOrEmpty(code) ? code : null;
 		} catch (Exception e) {
-			logger.error(CommonUtils.EXCEPTION,e);
+			LOGGER.error(CommonUtils.EXCEPTION,e);
 		}
 		return null;
 	}
@@ -87,7 +87,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 					.setParameter(CommonUtils.USER_ID, userId)
 					.getSingleResult();
 		} catch (Exception e) {
-			logger.error(CommonUtils.EXCEPTION,e);
+			LOGGER.error(CommonUtils.EXCEPTION,e);
 		}
 		return null;
 	}
@@ -213,7 +213,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 					.createNativeQuery("SELECT `value` FROM `common_properties` WHERE `key` =:key")
 							.setParameter("key", key).getSingleResult();
 		} catch (Exception e) {
-			logger.error("Exception while get common properties value ----->" ,e);
+			LOGGER.error("Exception while get common properties value ----->" ,e);
 		}
 		return null;
 	}
@@ -239,7 +239,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 							"WHERE inl.`application_id` =:applicationId AND inl.`is_active` = TRUE AND inl.`addi_fields` = '1';")
 							.setParameter("applicationId", applicationId).getSingleResult();	
 		} catch (Exception e) {
-			logger.error("Exception while get offline details by application id ----->" ,e);
+			LOGGER.error("Exception while get offline details by application id ----->" ,e);
 		}
 		return null;
 	}
@@ -255,7 +255,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 							"WHERE inl.`application_id` =:applicationId AND inl.`is_active` = TRUE AND inl.`addi_fields` = '1'")
 							.setParameter("applicationId", applicationId).getSingleResult();	
 		} catch (Exception e) {
-			logger.error("Exception while get offline status  ----->" ,e);
+			LOGGER.error("Exception while get offline status  ----->" ,e);
 		}
 		return null;
 		
@@ -393,7 +393,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 				return (String) storedProcedureQuery.getOutputParameterValue("message");
 			}
 		} catch (Exception e) {
-			logger.error("EXCEPTION spRetailCheckPANAlreadyExist :=- ", e);
+			LOGGER.error("EXCEPTION spRetailCheckPANAlreadyExist :=- ", e);
 		}
 		return null;
 	}
@@ -425,7 +425,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 			storedProcedureQuery.setParameter("toLoanId",toLoanId);
 			return (String) storedProcedureQuery.getSingleResult();
 	    } catch (Exception e) {
-	    	logger.error("EXCEPTION spPrefillProfileCheck :=- ", e);
+	    	LOGGER.error("EXCEPTION spPrefillProfileCheck :=- ", e);
 	    }
 		return null;
 	}
@@ -445,7 +445,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 							"WHERE con.`id` IN (SELECT cn.`id` FROM connect.`connect_log` cn WHERE cn.`user_id` =:userId AND ((cn.`stage_id` = 207 AND cn.`status` = 6) OR (cn.`stage_id` IN (210,211))) GROUP BY cn.`application_id`);")
 							.setParameter("userId", userId).getSingleResult();
 		} catch (Exception e) {
-			logger.error("Exception while getApplicationListForPrefillProfile  ----->" ,e);
+			LOGGER.error("Exception while getApplicationListForPrefillProfile  ----->" ,e);
 		}
 		return null;
 		
@@ -478,7 +478,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 			return (String)storedProcedureQuery.getOutputParameterValue("result");
 			
 		} catch (Exception e) {
-			logger.error("EXCEPTION spGetAgriApplicationsByOrgIdAndStatus :=- {}", e);
+			LOGGER.error("EXCEPTION spGetAgriApplicationsByOrgIdAndStatus :=- {}", e);
 		}
 		return null;
 	}
@@ -492,7 +492,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 			storedProcedureQuery.execute();
 			return true;
 	    } catch (Exception e) {
-	    	logger.error("EXCEPTION spPrefillProfile :=- ", e);
+	    	LOGGER.error("EXCEPTION spPrefillProfile :=- ", e);
 	    }
 		return false;
 	}
@@ -504,7 +504,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 					.createNativeQuery("SELECT fs.`loan_campaign_code` FROM `loan_application_mudra`.`fs_loan_application_master` fs WHERE fs.`application_id` =:applicationId")
 							.setParameter("applicationId", applicationId).getSingleResult();
 		} catch (Exception e) {
-			logger.error("Exception while getApplicationCampaignCode  ----->" ,e);
+			LOGGER.error("Exception while getApplicationCampaignCode  ----->" ,e);
 		}
 		return null;
 		
@@ -520,7 +520,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 							"WHERE fs.`application_id` =:applicationId")
 							.setParameter("applicationId", applicationId).getSingleResult();
 		} catch (Exception e) {
-			logger.error("Exception while getApplicationCampaignDetails  ----->" ,e);
+			LOGGER.error("Exception while getApplicationCampaignDetails  ----->" ,e);
 		}
 		return null;
 		
@@ -536,7 +536,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 			.setParameter("applicationId", applicationId).getSingleResult();
 			return count.longValue() > 0;			
 		} catch (Exception e) {
-			logger.error("Exception while isBankSpecificOn  ----->" ,e);
+			LOGGER.error("Exception while isBankSpecificOn  ----->" ,e);
 		}
 		return null;
 	}
@@ -600,7 +600,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 			object = new Object[2];
 			object[0] = 1;
 			object[1] = 2;
-			logger.error("Error while getting version from Scoring Model Id = >{}",scoringModelId);
+			LOGGER.error("Error while getting version from Scoring Model Id = >{}",scoringModelId);
 		}
 		return object;
 	}
@@ -613,7 +613,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 					.getSingleResult();
 			return obj;
 		}catch (Exception e){
-			logger.error("Data not found for userId:",userId);
+			LOGGER.error("Data not found for userId:",userId);
 		}
 		return null;
 	}
@@ -639,7 +639,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 					.setParameter("fieldMasterId", fieldMasterId)
 					.getSingleResult();	
 		} catch (Exception e) {
-			logger.error("Exception while Get Scoring Min And Max Range Value",e);
+			LOGGER.error("Exception while Get Scoring Min And Max Range Value",e);
 		}
 		return null;
 	}
@@ -652,7 +652,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 					"WHERE ms.application_id =:applicationId").setParameter("applicationId", applicationId).getSingleResult();
 			return orgId != null ? orgId.longValue() : null;
 		} catch (Exception e) {
-			logger.error("Exception while get campaign bank id from application id " + applicationId,e);
+			LOGGER.error("Exception while get campaign bank id from application id " + applicationId,e);
 		}
 		return null;
 	}
@@ -665,7 +665,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 					.setParameter("orgId", orgId).getSingleResult();
 			return count;
 		}catch (Exception e) {
-			logger.error("Error while Getting Bank Bureau Flags ==>{}",e);
+			LOGGER.error("Error while Getting Bank Bureau Flags ==>{}",e);
 			return null;
 		}
 	}
@@ -677,7 +677,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 					.setParameter("orgId", orgId).getSingleResult();
 			return id != null ? true : false;
 		} catch (Exception e) {
-			logger.error("Exception while get Cibil bureau API true or false by OrgId " + orgId,e.getMessage());
+			LOGGER.error("Exception while get Cibil bureau API true or false by OrgId " + orgId,e.getMessage());
 		}
 		return false;
 	}
@@ -718,7 +718,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 		try{
 			averageScore = (Double)entityManager.createNativeQuery("SELECT AVG(MaxData) AS ScoreData FROM (SELECT CAST(MAX(adrr.actual_score) AS UNSIGNED) AS MaxData FROM cibil_mudra.cibil_score_log_details adrr,cibil_mudra.cibil_mstr ms WHERE ms.cibil_id = adrr.cibil_id AND ms.application_id =:applicationId AND ms.is_active = TRUE GROUP BY adrr.pan) AS a").setParameter("applicationId", applicationId).getSingleResult();
 		}catch(Exception e){
-			logger.error("Error while getting all director Average score for ApplicationId = >{}====>{}",applicationId,e);
+			LOGGER.error("Error while getting all director Average score for ApplicationId = >{}====>{}",applicationId,e);
 		}
 		return averageScore;
 	}
@@ -729,7 +729,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 		try{
 			count = (BigInteger)entityManager.createNativeQuery("SELECT COUNT(a.id) FROM `pennydrop`.`audit_log_details` a WHERE a.application_id =:applicationId AND a.status = 1 AND a.request_type = '1' ORDER BY a.id DESC LIMIT 1").setParameter("applicationId", applicationId).getSingleResult();
 		}catch(Exception e){
-			logger.error("Error while getting count for pennydrop for ApplicationId = >{}====>{}",applicationId,e);
+			LOGGER.error("Error while getting count for pennydrop for ApplicationId = >{}====>{}",applicationId,e);
 		}
 		if(CommonUtils.isObjectNullOrEmpty(count)){
 			return false;
@@ -747,7 +747,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 					.setParameter("bankName", bankName).getSingleResult();
 		}
 		catch (Exception e) {
-			logger.error("Error While fetching months in relation with banks =====>{}======{}",applicationId,e);
+			LOGGER.error("Error While fetching months in relation with banks =====>{}======{}",applicationId,e);
 		}
 		if(CommonUtils.isObjectNullOrEmpty(relationInMonths)){
 			return 0;
@@ -766,7 +766,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 					.setParameter("id", applicationId).getSingleResult();
 		}
 		catch (Exception e) {
-			logger.error("Error While fetching months in relation with banks =====>{}======{}",applicationId,e);
+			LOGGER.error("Error While fetching months in relation with banks =====>{}======{}",applicationId,e);
 		}
 		if(CommonUtils.isObjectNullOrEmpty(relationInMonths)){
 			return 0;
@@ -783,7 +783,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 					.setParameter("bankName", bankName).getSingleResult();
 		}
 		catch (Exception e) {
-			logger.error("Error While fetching months in relation with banks =====>{}======{}",applicationId,e);
+			LOGGER.error("Error While fetching months in relation with banks =====>{}======{}",applicationId,e);
 		}
 		if(CommonUtils.isObjectNullOrEmpty(relationInMonths)){
 			return 0;
@@ -798,7 +798,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 			ifsc = (String)entityManager.createNativeQuery("SELECT o.ifsc FROM pennydrop.account_details o WHERE o.application_id =:id and o.is_active = true and o.since_month IS NOT NULL and o.since_year IS NOT NULL order by o.id desc limit 1").setParameter("id", applicationId).getSingleResult();
 		}
 		catch (Exception e) {
-			logger.error("Error While fetching IFSC by Application =====>{}======{}",applicationId,e);
+			LOGGER.error("Error While fetching IFSC by Application =====>{}======{}",applicationId,e);
 		}
 		return ifsc;
 	}
@@ -810,7 +810,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 			bankName = (String)entityManager.createNativeQuery("SELECT sb.name FROM statement_analyzer_msme.banklist_data sb WHERE LOWER(sb.ifsc_prefix) = LOWER(:ifscPrefix) ORDER BY sb.id DESC LIMIT 1").setParameter("ifscPrefix", ifscPrefix).getSingleResult();
 		}
 		catch (Exception e) {
-			logger.error("Error While fetching Bank Name by IFSC =====>{}======{}",ifscPrefix,e);
+			LOGGER.error("Error While fetching Bank Name by IFSC =====>{}======{}",ifscPrefix,e);
 		}
 		return bankName;
 	}
@@ -824,7 +824,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 					.executeUpdate();
 			return update > 0;	
 		} catch (Exception e) {
-			logger.error("Excecption while Update Profile Vers ID in COneec By Application Id ===> " + applicationId, e);
+			LOGGER.error("Excecption while Update Profile Vers ID in COneec By Application Id ===> " + applicationId, e);
 			return false;
 		}
 	}
@@ -838,7 +838,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 					.executeUpdate();
 			return update > 0;	
 		} catch (Exception e) {
-			logger.error("Excecption while Update Profile Vers ID in Loan Application Master Application Id ===> " + applicationId, e);
+			LOGGER.error("Excecption while Update Profile Vers ID in Loan Application Master Application Id ===> " + applicationId, e);
 			return false;
 		}
 	}
@@ -878,6 +878,16 @@ public class LoanRepositoryImpl implements LoanRepository {
 				 .getResultList();
 		 return !CommonUtils.isListNullOrEmpty(result) ? result.get(0) : null;
 	}
-	
+	@Override
+	public Boolean isManualBs(Long bsId) {
+		try {
+			Boolean isManual =  (Boolean) entityManager.createNativeQuery("SELECT is_manual_upload FROM `statement_analyzer_msme`.`bs_profile_master` WHERE id =:bsId")
+					.setParameter("bsId", bsId).getSingleResult();
+			return (isManual != null && isManual);
+		} catch (Exception e) {
+			LOGGER.error("Exception while get is Bank Statement Uploaded  or Manual Filled for BS Id : " + bsId,e.getMessage());
+		}
+		return false;
+	}	
 	
 }

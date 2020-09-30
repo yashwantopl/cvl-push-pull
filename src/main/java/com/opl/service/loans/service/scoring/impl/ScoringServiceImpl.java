@@ -430,6 +430,14 @@ public class ScoringServiceImpl implements ScoringService {
     @Override
     public ResponseEntity<LoansResponse> calculateMudraScoringList(List<ScoringRequestLoans> scoringRequestLoansList) {
 
+    	Object[] profileVersionDetails = loanRepository.getProfileVersionDetailsByApplicationId(scoringRequestLoansList.get(0).getApplicationId());
+		if(CommonUtils.isObjectNullOrEmpty(profileVersionDetails)) {
+			logger.error("Profile not found for applicationId =======>" + scoringRequestLoansList.get(0).getApplicationId());
+			return new ResponseEntity<>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
+		}
+		Long itrId = profileVersionDetails[0] != null ? Long.valueOf(profileVersionDetails[0].toString()) : null;
+		Long gstId = profileVersionDetails[1] != null ? Long.valueOf(profileVersionDetails[1].toString()) : null;
+		Long bsId =  profileVersionDetails[2] != null ? Long.valueOf(profileVersionDetails[2].toString()) : null;
         ScoringResponse scoringResponseMain = null;
 
         List<ScoringRequest> scoringRequestList=new ArrayList<ScoringRequest>();
@@ -539,7 +547,7 @@ public class ScoringServiceImpl implements ScoringService {
 		Double noOfChequeBounce6Month = 0.0;
 		Double totalCredit = 0.0;
 		Double totalCreditLast6Month = 0.0;
-		Boolean isNoBankStatement = loanRepository.isNoBankStatement(applicationId);
+		Boolean isNoBankStatement = loanRepository.isManualBs(bsId);
         logger.info("isNoBankStatement ==>{}==>for ApplicationId===>{}",applicationId,isNoBankStatement);
         String noBankStatementBankName = null;
         if(isNoBankStatement){
@@ -558,6 +566,7 @@ public class ScoringServiceImpl implements ScoringService {
         	try {
     			ReportRequest reportRequest = new ReportRequest();
                 reportRequest.setApplicationId(applicationId);
+                reportRequest.setBsMasterId(bsId);
                 reportRequest.setDirectorId(null);
     			analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
                 if(!CommonUtils.isObjectNullOrEmpty(analyzerResponse) && !CommonUtils.isObjectNullOrEmpty(analyzerResponse.getData())){
@@ -597,7 +606,7 @@ public class ScoringServiceImpl implements ScoringService {
 		ITRBasicDetailsResponse itrClientResponse = null;
 		try {
 			ITRBasicDetailsResponse arg0 = new ITRBasicDetailsResponse();
-        	arg0.setApplicationId(applicationId);
+        	arg0.setApplicationId(itrId);
         	itrClientResponse = itrClient.getAppOrCoAppBasicDetails(arg0);
 		} catch (Exception e) {
 			logger.error("Error while getting Bank Statement Response = >",e);
@@ -639,7 +648,7 @@ public class ScoringServiceImpl implements ScoringService {
         
         // call gst client for gstr3b sales data for 6 months
         GSTR1Request gstr =  new GSTR1Request();
-        gstr.setApplicationId(applicationId);
+        gstr.setApplicationId(gstId);
         gstr.setGstin(corporateApplicantDetail.getGstIn());
         gstr.setRequestedMonths(GST_SIX_MONTHS_SALES);
         Double gstSixMonthData = 0d;
@@ -721,7 +730,7 @@ public class ScoringServiceImpl implements ScoringService {
         try {
             GSTR1Request gstr1Request = new GSTR1Request();
             gstr1Request.setGstin(gstNumber);
-            gstr1Request.setApplicationId(applicationId);
+            gstr1Request.setApplicationId(gstId);
             gstResponse = gstClient.getCalculations(gstr1Request);
 
             if (!CommonUtils.isObjectNullOrEmpty(gstResponse) && !CommonUtils.isObjectNullOrEmpty(gstResponse.getData())) {
@@ -750,7 +759,7 @@ public class ScoringServiceImpl implements ScoringService {
         PrimaryCorporateDetailMudraLoan corporateDetailMudraLoan  = primaryCorporateDetailMudraLoanRepository.findFirstByApplicationIdAndApplicationProposalMappingProposalIdIsNullOrderByIdDesc(applicationId);
         // GET SCORE CORPORATE LOAN PARAMETERS
         
-        int currentYear = getFinYear(applicationId);
+        int currentYear = getFinYear(itrId);
         if (CommonUtils.isObjectNullOrEmpty(currentYear)) {
             logger.error("error while getting current year from itr");
             LoansResponse loansResponse = new LoansResponse("error while getting current year from itr.", HttpStatus.INTERNAL_SERVER_ERROR.value());
