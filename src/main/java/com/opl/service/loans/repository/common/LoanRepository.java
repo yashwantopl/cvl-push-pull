@@ -3,7 +3,7 @@ package com.opl.service.loans.repository.common;
 import java.util.List;
 
 import com.opl.mudra.api.loans.model.TutorialsViewAudits;
-import com.opl.service.loans.domain.fundseeker.BankingRelation;
+import com.opl.service.loans.domain.fundseeker.retail.BankingRelation;
 
 public interface LoanRepository{
 
