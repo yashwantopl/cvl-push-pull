@@ -1907,7 +1907,7 @@ public class CommonUtils {
 			if (obj instanceof Double) {
 				obj = Double.parseDouble(decim.format(obj));
 				return obj;
-			} else if (obj.getClass().getName().startsWith("com.capitaworld")) {
+			} else if (obj.getClass().getName().startsWith("com.opl")) {
 				Field[] fields = obj.getClass().getDeclaredFields();
 				for (Field field : fields) {
 					field.setAccessible(true);
@@ -1946,7 +1946,7 @@ public class CommonUtils {
 			if (obj instanceof Double) {
 				obj = Double.parseDouble(decim.format(obj));
 				return obj;
-			} else if (obj.getClass().getName().startsWith("com.capitaworld")) {
+			} else if (obj.getClass().getName().startsWith("com.opl")) {
 				Field[] fields = obj.getClass().getDeclaredFields();
 				for (Field field : fields) {
 					field.setAccessible(true);
@@ -2003,7 +2003,7 @@ public class CommonUtils {
 				return convertToDoubleForXml(obj, null);
 			}
 		} else {
-			if (obj.getClass().getName().startsWith("com.capitaworld")) {
+			if (obj.getClass().getName().startsWith("com.opl")) {
 				Field[] fields = obj.getClass().getDeclaredFields();
 				for (Field field : fields) {
 					if ((field.getModifiers() & Modifier.STATIC) == Modifier.STATIC) {
@@ -2028,7 +2028,7 @@ public class CommonUtils {
 			if (obj instanceof Double) {
 				obj = Double.parseDouble(decim.format(obj));
 				return obj;
-			} else if (obj.getClass().getName().startsWith("com.capitaworld")) {
+			} else if (obj.getClass().getName().startsWith("com.opl")) {
 				Field[] fields = obj.getClass().getDeclaredFields();
 				for (Field field : fields) {
 					field.setAccessible(true);
@@ -2085,7 +2085,7 @@ public class CommonUtils {
 				return convertValueWithoutDecimal((Double) obj);
 			}
 		} else {
-			if (obj.getClass().getName().startsWith("com.capitaworld")) {
+			if (obj.getClass().getName().startsWith("com.opl")) {
 				Field[] fields = obj.getClass().getDeclaredFields();
 				for (Field field : fields) {
 					if ((field.getModifiers() & Modifier.STATIC) == Modifier.STATIC) {
@@ -2129,7 +2129,7 @@ public class CommonUtils {
 				return convertValueWithoutDecimal((Double) obj);
 			}
 		} else {
-			if (obj.getClass().getName().startsWith("com.capitaworld")) {
+			if (obj.getClass().getName().startsWith("com.opl")) {
 				Field[] fields = obj.getClass().getDeclaredFields();
 				for (Field field : fields) {
 					if ((field.getModifiers() & Modifier.STATIC) == Modifier.STATIC) {
@@ -2175,7 +2175,7 @@ public class CommonUtils {
 				return convertValueIndianCurrencyWithDecimal((Double) obj);
 			}
 		} else {
-			if (obj.getClass().getName().startsWith("com.capitaworld")) {
+			if (obj.getClass().getName().startsWith("com.opl")) {
 				Field[] fields = obj.getClass().getDeclaredFields();
 				for (Field field : fields) {
 					if ((field.getModifiers() & Modifier.STATIC) == Modifier.STATIC) {
