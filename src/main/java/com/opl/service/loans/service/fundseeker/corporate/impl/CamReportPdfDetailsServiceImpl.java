@@ -517,7 +517,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			GSTR1Request gstr1Request = new GSTR1Request();
 			gstr1Request.setApplicationId(gstId);
 			gstr1Request.setUserId(userId);
-			gstr1Request.setGstin(corporateApplicantRequest.getGstIn());
+			gstr1Request.setGstin(corporateApplicantRequest.getGstIn() != null ? corporateApplicantRequest.getGstIn() : commonRepository.getGSTInFromConnectWithApplicationIdAndProposalId(applicationId));
 			GstResponse response = gstClient.getCalculations(gstr1Request);
 			GstCalculation gstData = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)response.getData(),GstCalculation.class);
 			int noOfCustomer = gstData.getNoOfCustomer().intValue();
@@ -2245,8 +2245,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					try {
 						GSTR1Request req= new GSTR1Request();
 						req.setApplicationId(applicationId);
-						req.setUserId(userId);
-						req.setGstin(corporateApplicantRequest.getGstIn());	
+						req.setUserId(userId);						
+						req.setGstin(corporateApplicantRequest.getGstIn() != null ? corporateApplicantRequest.getGstIn() : commonRepository.getGSTInFromConnectWithApplicationIdAndProposalId(applicationId));	
 						List<CAMGSTData> resp = new ArrayList<>();
 						GstResponse response = gstClient.detailCalculation(req);
 						
