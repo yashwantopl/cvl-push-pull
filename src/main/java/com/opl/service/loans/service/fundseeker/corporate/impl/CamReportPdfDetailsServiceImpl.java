@@ -1182,9 +1182,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		//ITR (CHECK IF UPLOADED USING XML OR ONLINE)
 		try {
 			ITRConnectionResponse itrConnectionResponse= itrClient.getIsUploadAndYearDetails(itrId);
-			if(!CommonUtils.isObjectNullOrEmpty(itrConnectionResponse)) {
-				map.put("checkItr", itrConnectionResponse.getData());
-			}
+			map.put("checkItr", itrConnectionResponse != null && itrConnectionResponse.getData() != null ? CommonUtils.printFields(itrConnectionResponse.getData(), null) : null);
 		}catch(Exception e) {
 			logger.error("Error while getting ITR data : ",e);
 		}
@@ -2460,8 +2458,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		//ONE-FORM DATA			
 		if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest)) {
 			try {
-	    		map.put("corporateApplicant", corporateApplicantRequest);
-				map.put("orgName", CommonUtils.printFields(corporateApplicantRequest.getOrganisationName(),null));
+	    		map.put("corporateApplicant", CommonUtils.printFields(corporateApplicantRequest ,null));
+				map.put("orgName", corporateApplicantRequest.getOrganisationName());
 				map.put("constitution", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getConstitutionId()) ? StringEscapeUtils.escapeXml(Constitution.getById(corporateApplicantRequest.getConstitutionId()).getValue()) : " ");
 				
 				
