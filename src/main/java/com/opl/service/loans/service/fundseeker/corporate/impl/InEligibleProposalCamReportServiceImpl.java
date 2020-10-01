@@ -509,7 +509,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		//GST Comparision by Maaz
 		try{
 			FinancialInputRequest finaForCam = camReportPdfDetailsService.finaForCam(applicationId,null,itrId);
-			map.put("gstComparision", corporatePrimaryViewService.gstVsItrVsBsComparision(applicationId, finaForCam));
+			map.put("gstComparision", corporatePrimaryViewService.gstVsItrVsBsComparision(applicationId, finaForCam , gstId ,itrId ,bsId));
 		}catch (Exception e) {
 			logger.error("error in getting gst comparision data in Ineligible Cam : {}",e);
 		}
