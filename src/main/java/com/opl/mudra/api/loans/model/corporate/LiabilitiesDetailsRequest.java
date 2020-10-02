@@ -101,6 +101,8 @@ public class LiabilitiesDetailsRequest implements Serializable{
 	
 	private Double otherIncomeNeedTocCheckLia;
 	
+	private Double creditors;
+	
 	
 	public LiabilitiesDetailsRequest() {
 		super();
@@ -145,6 +147,7 @@ public class LiabilitiesDetailsRequest implements Serializable{
 		this.otherNcl  = 0.0;
 		this.termLiabilitiesUnsecured = 0.0;
 		this.otherIncomeNeedTocCheckLia=0.0;
+		this.creditors=0.0;
 	}
 
 	public Double getOtherNcl() {
@@ -570,9 +573,14 @@ public class LiabilitiesDetailsRequest implements Serializable{
 		this.otherIncomeNeedTocCheckLia = otherIncomeNeedTocCheckLia;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
+	public Double getCreditors() {
+		return creditors;
+	}
+
+	public void setCreditors(Double creditors) {
+		this.creditors = creditors;
+	}
+
 	@Override
 	public String toString() {
 		return "LiabilitiesDetailsRequest [id=" + id + ", advancePaymentsFromCustomers=" + advancePaymentsFromCustomers
@@ -598,12 +606,13 @@ public class LiabilitiesDetailsRequest implements Serializable{
 				+ otherNclUnsecuredLoansFromOther + ", otherNclLongTermProvisions=" + otherNclLongTermProvisions
 				+ ", otherNclOthers=" + otherNclOthers + ", otherNclUnsecuredLoansFromPromoters="
 				+ otherNclUnsecuredLoansFromPromoters + ", otherNcl=" + otherNcl + ", otherIncomeNeedTocCheckLia="
-				+ otherIncomeNeedTocCheckLia + ", termLiabilitiesUnsecured=" + termLiabilitiesUnsecured + ", year="
-				+ year + ", storageDetailsId=" + storageDetailsId + ", applicationId=" + applicationId + "]";
+				+ otherIncomeNeedTocCheckLia + ", creditors=" + creditors + ", termLiabilitiesUnsecured="
+				+ termLiabilitiesUnsecured + ", year=" + year + ", storageDetailsId=" + storageDetailsId
+				+ ", applicationId=" + applicationId + "]";
 	}
 
-
-
-	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 
 }

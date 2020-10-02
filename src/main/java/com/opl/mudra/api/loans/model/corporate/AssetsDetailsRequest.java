@@ -154,6 +154,10 @@ public class AssetsDetailsRequest implements Serializable {
 
 	private Long applicationId;
 	
+	private Double investmentInPlantMachinery;
+	
+	private Double debtors;
+	
 	
 	public AssetsDetailsRequest() {
 		super();
@@ -220,6 +224,8 @@ public class AssetsDetailsRequest implements Serializable {
 		this.GrossBlock3 = 0.0;
 		this.GrossBlock4 = 0.0;
 		this.OtherIncomeNeedTocCheckAsset=0.0;
+		this.investmentInPlantMachinery=0.0;
+		this.debtors=0.0;
 	}
 
 	public Long getStorageDetailsId() {
@@ -827,10 +833,23 @@ public class AssetsDetailsRequest implements Serializable {
 	public void setOtherIncomeNeedTocCheckAsset(Double otherIncomeNeedTocCheckAsset) {
 		OtherIncomeNeedTocCheckAsset = otherIncomeNeedTocCheckAsset;
 	}
+	
+	public Double getInvestmentInPlantMachinery() {
+		return investmentInPlantMachinery;
+	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
+	public void setInvestmentInPlantMachinery(Double investmentInPlantMachinery) {
+		this.investmentInPlantMachinery = investmentInPlantMachinery;
+	}
+
+	public Double getDebtors() {
+		return debtors;
+	}
+
+	public void setDebtors(Double debtors) {
+		this.debtors = debtors;
+	}
+
 	@Override
 	public String toString() {
 		return "AssetsDetailsRequest [id=" + id + ", advancePaymentTaxes=" + advancePaymentTaxes
@@ -869,11 +888,8 @@ public class AssetsDetailsRequest implements Serializable {
 				+ ", totalOtherNcaOther=" + totalOtherNcaOther + ", otherNcaOtherCapitalWorkInprogress="
 				+ otherNcaOtherCapitalWorkInprogress + ", GrossBlock1=" + GrossBlock1 + ", GrossBlock2=" + GrossBlock2
 				+ ", GrossBlock3=" + GrossBlock3 + ", GrossBlock4=" + GrossBlock4 + ", OtherIncomeNeedTocCheckAsset="
-				+ OtherIncomeNeedTocCheckAsset + ", applicationId=" + applicationId + "]";
+				+ OtherIncomeNeedTocCheckAsset + ", applicationId=" + applicationId + ", investmentInPlantMachinery="
+				+ investmentInPlantMachinery + ", debtors=" + debtors + "]";
 	}
-
-	
-
-	
 
 }
