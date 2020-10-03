@@ -16,7 +16,7 @@ import org.springframework.stereotype.Repository;
 
 import com.opl.mudra.api.loans.model.TutorialsViewAudits;
 import com.opl.mudra.api.loans.utils.CommonUtils;
-import com.opl.service.loans.domain.fundseeker.BankingRelation;
+import com.opl.service.loans.domain.fundseeker.retail.BankingRelation;
 import com.opl.service.loans.repository.common.LoanRepository;
 
 

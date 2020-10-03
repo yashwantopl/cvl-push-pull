@@ -1612,7 +1612,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		//ENDS HERE NBFC DOWNLOADS
 		
 		if(gstCompRelFlag != null && gstCompRelFlag) {
-			LinkedHashMap<String, Object> gstVsItrVsBsComparision = gstVsItrVsBsComparision(applicationId, (FinancialInputRequest) corporatePrimaryViewResponse.getFinancialInputRequest());
+			LinkedHashMap<String, Object> gstVsItrVsBsComparision = gstVsItrVsBsComparision(applicationId, (FinancialInputRequest) corporatePrimaryViewResponse.getFinancialInputRequest() , gstId , itrId , bsId);
 			corporatePrimaryViewResponse.setBankComparisionData(gstVsItrVsBsComparision);
 				
 			Map<String, Object> gstRelatedPartyDetails = loanApplicationService.getGstRelatedPartyDetails(applicationId);
@@ -1627,15 +1627,15 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public LinkedHashMap<String,Object> gstVsItrVsBsComparision(Long applicationId,FinancialInputRequest financialInputRequest) {
+	public LinkedHashMap<String,Object> gstVsItrVsBsComparision(Long applicationId,FinancialInputRequest financialInputRequest , Long gstMasterId , Long itrMasterId , Long bsMasterId) {
 		LinkedHashMap<String,Object>comparisionData=new LinkedHashMap<>();
 		GstResponse gstResp = null;
 		Map<String,Object> bsMap=new HashMap<>();
 		try {
 			GSTR1Request request=new GSTR1Request();
-			request.setApplicationId(applicationId);
+			request.setApplicationId(gstMasterId);
 			gstResp = gstClient.getbankComparisonData(request);
-			ReportRequest requestReport = new ReportRequest(applicationId);
+			ReportRequest requestReport = new ReportRequest(bsMasterId);
 			bsMap  = (LinkedHashMap<String, Object>)analyzerClient.getDetailsByCategoryWise(requestReport).getData();
 		}catch (Exception e) {
 			logger.error("Exception in getting gst and BS data for teaserview {}",e);

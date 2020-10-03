@@ -327,6 +327,8 @@ public class AssetsDetails implements Serializable {
 		this.GrossBlock3 = 0.0;
 		this.GrossBlock4 = 0.0;
 		this.otherIncomeNeedTocCheckAsset=0.0;
+		this.debtors=0.0;
+		this.investmentInPlantMachinery=0.0;
 	}
 
 	public Long getStorageDetailsId() {

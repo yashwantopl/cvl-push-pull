@@ -164,7 +164,7 @@ import com.opl.service.loans.domain.fundprovider.ProductMaster;
 import com.opl.service.loans.domain.fundprovider.ProposalDetails;
 import com.opl.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.opl.service.loans.domain.fundseeker.ApplicationStatusMaster;
-import com.opl.service.loans.domain.fundseeker.BankingRelation;
+import com.opl.service.loans.domain.fundseeker.retail.BankingRelation;
 import com.opl.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.opl.service.loans.domain.fundseeker.corporate.AchievementDetail;
 import com.opl.service.loans.domain.fundseeker.corporate.AssociatedConcernDetail;
@@ -206,7 +206,6 @@ import com.opl.service.loans.repository.fundseeker.corporate.AchievementDetailsR
 import com.opl.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.opl.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
 import com.opl.service.loans.repository.fundseeker.corporate.AssociatedConcernDetailRepository;
-import com.opl.service.loans.repository.fundseeker.corporate.BankingRelationRepository;
 import com.opl.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.opl.service.loans.repository.fundseeker.corporate.CorporateCoApplicantRepository;
 import com.opl.service.loans.repository.fundseeker.corporate.CreditRatingOrganizationDetailsRepository;
@@ -221,6 +220,7 @@ import com.opl.service.loans.repository.fundseeker.corporate.PromotorBackgroundD
 import com.opl.service.loans.repository.fundseeker.corporate.ProposedProductDetailsRepository;
 import com.opl.service.loans.repository.fundseeker.corporate.SecurityCorporateDetailsRepository;
 import com.opl.service.loans.repository.fundseeker.corporate.TotalCostOfProjectRepository;
+import com.opl.service.loans.repository.fundseeker.retail.BankingRelationlRepository;
 import com.opl.service.loans.repository.fundseeker.retail.CoApplicantDetailRepository;
 import com.opl.service.loans.repository.fundseeker.retail.GuarantorDetailsRepository;
 import com.opl.service.loans.repository.fundseeker.retail.PrimaryHomeLoanDetailRepository;
@@ -442,7 +442,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	private CorporateFinalInfoService corporateFinalInfoService;
 	
     @Autowired
-    private BankingRelationRepository bankingRelationRepository;
+    private BankingRelationlRepository bankingRelationRepository;
 	
 	public static final DecimalFormat decim = new DecimalFormat("#,###.00");
 	
