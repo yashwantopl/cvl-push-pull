@@ -11,7 +11,11 @@ import java.util.List;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BankStatementResponse implements Serializable {
-    private Long userId;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -2435459460648065955L;
+	private Long userId;
     private Long applicationId;
     private Long storageId;
     private Long bsMasterId;
@@ -36,6 +40,8 @@ public class BankStatementResponse implements Serializable {
     private Date createdDate;
     private Date modifiedDate;
     private String ifscCode;
+    private String lastMonth;
+    private String lastYear;
 
 
     public Long getUserId() {
@@ -260,6 +266,30 @@ public class BankStatementResponse implements Serializable {
 
 	public void setIfscCode(String ifscCode) {
 		this.ifscCode = ifscCode;
+	}
+
+	public Boolean getCompleted() {
+		return completed;
+	}
+
+	public void setCompleted(Boolean completed) {
+		this.completed = completed;
+	}
+
+	public String getLastMonth() {
+		return lastMonth;
+	}
+
+	public void setLastMonth(String lastMonth) {
+		this.lastMonth = lastMonth;
+	}
+
+	public String getLastYear() {
+		return lastYear;
+	}
+
+	public void setLastYear(String lastYear) {
+		this.lastYear = lastYear;
 	}
 }
 
