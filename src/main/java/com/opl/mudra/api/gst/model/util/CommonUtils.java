@@ -4195,8 +4195,9 @@ public class CommonUtils {
 			
 			if(modifiedDate.before(dbGstDate)) {
 				if(modifiedDate.get(Calendar.YEAR) == dbGstDate.get(Calendar.YEAR)) {
-					if((modifiedDate.get(Calendar.DATE) >= dbGstDate.get(Calendar.DATE)) && (modifiedDate.get(Calendar.MONTH) == (dbGstDate.get(Calendar.MONTH) - 1)) || (modifiedDate.get(Calendar.DATE) <= dbGstDate.get(Calendar.DATE)) && (modifiedDate.get(Calendar.MONTH) == (dbGstDate.get(Calendar.MONTH)))) {
+					if((modifiedDate.get(Calendar.MONTH) >= dbGstDate.get(Calendar.MONTH))) {
 						map.put("isDataUpdated", true);
+						dbGstDate.set(dbGstDate.get(Calendar.YEAR), dbGstDate.get(Calendar.MONTH) + 1 , Integer.valueOf(commonDate));
 						map.put("message", "Data valid upto " + dayDiffrence(currDate.getTime(),dbGstDate.getTime()) + " days.");
 						map.put("days", dayDiffrence(currDate.getTime(),dbGstDate.getTime()));
 					}
