@@ -9042,10 +9042,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	 private String createApplicationCode(Long applicationId, Integer businessTypeId) {
 		 if(businessTypeId == null) {
 			 businessTypeId = 1;
-		 }
-	    DecimalFormat df = new DecimalFormat("000"); 
-		String format = df.format(businessTypeId);
-	    return "OPL-" + format + "-" + applicationId;
+		 } 
+		 DecimalFormat df = new DecimalFormat("000"); 
+		 String format = df.format(businessTypeId);
+		 return "OPL-" + format + "-" + applicationId;
     }
 
 	@Override
