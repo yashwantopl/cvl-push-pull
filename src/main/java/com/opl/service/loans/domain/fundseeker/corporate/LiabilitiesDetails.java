@@ -213,6 +213,7 @@ public class LiabilitiesDetails implements Serializable{
 		this.otherNcl  = 0.0;
 		this.termLiabilitiesUnsecured = 0.0;
 		this.otherIncomeNeedTocCheckLia=0.0;
+		this.creditors=0.0;
 	}
 
 	public Double getOtherNcl() {

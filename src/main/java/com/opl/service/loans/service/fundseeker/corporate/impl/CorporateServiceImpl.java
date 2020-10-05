@@ -67,6 +67,7 @@ public class CorporateServiceImpl implements CorporateService {
 	public static final String ACTIVAE = "active";
 	public static final String MANUAL_BS_DATA = "manualBSData";
 	public static final String BS_MANUAL_FILL = "isManualUpload";
+	private static final String ITR_FILL_TYPE = "itrFillType";
 
 	@Autowired
 	private CorporateApplicantDetailRepository corpApplicantDetailRepo;
@@ -319,6 +320,7 @@ public class CorporateServiceImpl implements CorporateService {
 			try {
 				CommonResponse itrRes = itrClient.checkIsITRUpdated(profileId, profileRes.getItrId());
 				if (itrRes != null && itrRes.getStatus() == 200) {
+					itrMap.put(ITR_FILL_TYPE,  itrRes.getData() != null ? ((Map<String,Object>) itrRes.getData()).get("itrFillType") :null ); // Just to sync the code
 					if (itrRes.getFlag()) {
 						itrMap.put(COMPLETED, Boolean.TRUE);
 						itrMap.put(DETAIL_VALID_UP_TO, itrRes.getMessage());
@@ -344,28 +346,8 @@ public class CorporateServiceImpl implements CorporateService {
 			bsMap.put(DESCRIPTION, profileRes.getTotalBankStatement());
 			bsMap.put(TITLE, "Total Bank Account Added");
 			try {
-				/*
-				if(profileRes.getNoBankStatementDetail() != null) {
-					bsMap.put(COMPLETED, Boolean.TRUE);
-					bsMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/bankStatement-icon-blue.svg");
-					bsMap.put(TITLE, "Bank Account Verified");
-					String[] manualBsData = profileRes.getNoBankStatementDetail() != null && profileRes.getNoBankStatementDetail().contains("|") ? StringUtils.split(profileRes.getNoBankStatementDetail(), "|") : null;
-					bsMap.put(DESCRIPTION, manualBsData != null ? manualBsData[0] : null);
-				}else {*/
 					AnalyzerResponse analyRes = analyzerClient.isBankStatementIsUpdated(profileId, profileRes.getBsId());
 					if (analyRes != null) {
-//						Boolean isUpdated = false;
-//						if(analyRes.getData() instanceof String) {					
-//							isUpdated = Boolean.parseBoolean((String)analyRes.getData());
-//						}else {
-//							isUpdated = (Boolean)analyRes.getData();
-//						}
-//						if (isUpdated != null && isUpdated) {
-//							bsMap.put(COMPLETED, Boolean.TRUE);
-//                            bsMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/bankStatement-icon-blue.svg");
-//						}
-//						bsMap.put(DETAIL_VALID_UP_TO, "Details Valid Up To "+ analyRes.getMessage());
-						
 						Boolean isUpdated = Boolean.parseBoolean(analyRes.getData() != null ? String.valueOf(analyRes.getData()) : null);
 						if (isUpdated != null && isUpdated) {
 							bsMap.put(COMPLETED, Boolean.TRUE);
@@ -375,11 +357,15 @@ public class CorporateServiceImpl implements CorporateService {
 							bsMap.put(BS_MANUAL_FILL,analyRes.getIsManualUpload());
 							
 							if(analyRes.getIsManualUpload() != null && analyRes.getIsManualUpload()) {
-								bsMap.put(TITLE, "Bank Account Verified");
+								bsMap.put(DESCRIPTION, "1 Bank Account Verified");
+								bsMap.put(DETAIL_VALID_UP_TO, "");
+								bsMap.put(TITLE, "");
 							}
 						}else{
 							bsMap.put(DETAIL_VALID_UP_TO, "Update Bank Statement Details");
 						}
+					}else {
+						bsMap.put(DETAIL_VALID_UP_TO, "Update Bank Statement Details");
 					}
 //				}
 			} catch (Exception e) {
@@ -413,15 +399,16 @@ public class CorporateServiceImpl implements CorporateService {
             acMap.put(ACTIVAE, ((boolean) itrMap.get(COMPLETED) && (boolean) gstMap.get(COMPLETED)&& (boolean) bsMap.get(COMPLETED) && (boolean) keyPerMap.get(COMPLETED)));
 			Integer currentStage = associatedConcernDetailRepository.currentStage(applicationId);
 			if(!CommonUtils.isObjectNullOrEmpty(currentStage) && currentStage == 1005){ // For Oneform stage if proceed form Associate concern
+
 				List<AssociatedConcernDetailRequest> associatedConcernsDetailList = associatedConcernDetailService.getAssociatedConcernsDetailList(applicationId, userId);
 				if(!CommonUtils.isListNullOrEmpty(associatedConcernsDetailList)){
-					acMap.put(COMPLETED, Boolean.TRUE);
-					keyPerMap.put(DESCRIPTION, associatedConcernsDetailList.size());
-					keyPerMap.put(TITLE, "Total Associate Concern Added");
+					acMap.put(DESCRIPTION, associatedConcernsDetailList.size());
 				} else {
-					keyPerMap.put(TITLE, "No Associate Concern Added");
+					acMap.put(DESCRIPTION, 0);
 				}
+				acMap.put(TITLE, "Total Associate Concern Added");
 				acMap.put(COMPLETED, Boolean.TRUE);
+				acMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/bankStatement-icon-blue.svg");
 			}
 			mapList.add(acMap);
 

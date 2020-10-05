@@ -227,6 +227,9 @@ public class LoanApplicationMaster implements Serializable {
 
 	@Column(name = "profile_mapping_id")
 	private Long profileMappingId;
+	
+	@Column(name = "data_copied_for")
+	private Integer dataCopiedFor;
 
 	public Long getFpMakerId() {
 		return fpMakerId;
@@ -765,6 +768,12 @@ public class LoanApplicationMaster implements Serializable {
 	public void setProfileMappingId(Long profileMappingId) {
 		this.profileMappingId = profileMappingId;
 	}
-	
 
+	public Integer getDataCopiedFor() {
+		return dataCopiedFor;
+	}
+
+	public void setDataCopiedFor(Integer dataCopiedFor) {
+		this.dataCopiedFor = dataCopiedFor;
+	}
 }

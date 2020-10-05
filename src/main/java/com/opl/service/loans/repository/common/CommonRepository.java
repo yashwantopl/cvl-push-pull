@@ -80,4 +80,7 @@ public interface CommonRepository {
 	public String getLastDownloadDateForProductEdit(Long fpUserId ,Long fpProductId,Integer type,Integer tabId);
 
 	public String getCamVersionForBSStandalone(String type);
+	
+	public String getGSTInFromConnectWithApplicationIdAndProposalId(Long applicationId);
+	
 }

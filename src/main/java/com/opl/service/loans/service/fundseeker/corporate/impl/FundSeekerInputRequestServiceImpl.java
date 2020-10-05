@@ -74,9 +74,10 @@ import com.opl.mudra.client.connect.ConnectClient;
 import com.opl.mudra.client.dms.DMSClient;
 import com.opl.mudra.client.fraudanalytics.FraudAnalyticsClient;
 import com.opl.mudra.client.gst.GstClient;
-import com.opl.mudra.client.mca.McaClient;
 import com.opl.mudra.client.oneform.OneFormClient;
 import com.opl.mudra.client.users.UsersClient;
+import com.opl.profile.api.model.ProfileVerMapRequest;
+import com.opl.profile.client.ProfileClient;
 import com.opl.service.loans.config.AsyncComponent;
 import com.opl.service.loans.domain.CommonAuditTable;
 import com.opl.service.loans.domain.fundseeker.LoanApplicationMaster;
@@ -175,7 +176,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	private DMSClient dMSClient;
 	
 	@Autowired
-	private McaClient mcaClient;
+	private ProfileClient profileClient;
 	
 	@Autowired
 	private AsyncComponent asyncComp;
@@ -716,9 +717,20 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			}
 			fsInputRes.setMachineDetails(machineDetails);
 			
+			// Long profileMappingId = loanRepository.getProfileMappingIdByApplicationId(fsInputReq.getApplicationId());
+			Object[] profileVersionDetails = loanRepository.getProfileVersionDetailsByApplicationId(fsInputReq.getApplicationId());
+			if(CommonUtils.isObjectNullOrEmpty(profileVersionDetails)) {
+				logger.error("Profile not found for applicationId =======>"+fsInputReq.getApplicationId());
+				return new ResponseEntity<LoansResponse>(new LoansResponse("Something went wrong while processing your request.", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+			}
+//			Long itrId = profileVersionDetails[0] != null ? Long.valueOf(profileVersionDetails[0].toString()) : null;
+			Long gstId = profileVersionDetails[1] != null ? Long.valueOf(profileVersionDetails[1].toString()) : null;
+//			Long bsId =  profileVersionDetails[0] != null ? Long.valueOf(profileVersionDetails[0].toString()) : null;
+			
 			GSTR1Request gstr1Request = new GSTR1Request();
-	        gstr1Request.setApplicationId(fsInputReq.getApplicationId());
+	        gstr1Request.setApplicationId(gstId);
 	        gstr1Request.setGstin(fsInputReq.getGstIn());
+	        
 			GstResponse calculationForScoring = gstClient.getCalculations(gstr1Request);
 			
             if(!CommonUtils.isObjectNullOrEmpty(calculationForScoring) && !CommonUtils.isObjectNullOrEmpty(calculationForScoring.getData())){
@@ -759,6 +771,27 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 					HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 		}
 	}
+	
+//	public ProfileVerMapRequest getProfileVersionDetails(Long applicationId) {
+//		// Get Profile Mapping Id 
+//		Long profileMappingId = matchEngineRepository.getProfileMappingIdByApplicationId(applicationId);
+//		if(CommonUtils.isObjectNullOrEmpty(profileMappingId)) {
+//			logger.info("profileMappingId not fount for applicationId  ------>" + applicationId);
+//			return null;
+//		}
+//		//Get GST, ITR, BS primary id
+//		ProfileVerMapRequest profile = null;
+//		CommonResponse response = profileClient.getProfileVersionDetailsByPrimaryId(profileMappingId);
+//		if(!CommonUtils.isObjectNullOrEmpty(response) && !CommonUtils.isObjectNullOrEmpty(response.getData()) ) {			
+//			Map<String, Object> profileMap = (Map<String, Object>) response.getData();
+//			try {
+//				profile = MultipleJSONObjectHelper.getObjectFromMap(profileMap, ProfileVerMapRequest.class);
+//			} catch (IOException e) {
+//				logger.error(CommonUtils.EXCEPTION+e.getMessage(), e);
+//			}
+//		}
+//		return profile;
+//	}
 
 	@Override
 	public ResponseEntity<LoansResponse> getDirectorDetail(FundSeekerInputRequestResponse fundSeekerInputRequest) {

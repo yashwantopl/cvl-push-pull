@@ -13,13 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.opl.mudra.api.user.model.FpProfileBasicDetailRequest;
 import com.opl.mudra.api.user.model.UserResponse;
 import com.opl.mudra.api.user.model.UsersRequest;
@@ -3321,6 +3315,19 @@ public class LoanApplicationController {
 		}
 	}
 
+	@GetMapping(value = "/updateCopyId/{applicationId}/{copyId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> updateCopyId(@PathVariable("applicationId") Long applicationId, @PathVariable("copyId") Long copyId) {
+		try {
+			if (applicationId == null) {
+				return new ResponseEntity<>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			Boolean success = loanApplicationService.updateCopyId(applicationId,copyId);
+			return new ResponseEntity<>(new LoansResponse(CommonUtils.SUCCESS, HttpStatus.OK.value(),success), HttpStatus.OK);
+		}catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+			return new ResponseEntity<>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 	
 	
 }

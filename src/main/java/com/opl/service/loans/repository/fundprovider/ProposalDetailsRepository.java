@@ -125,6 +125,9 @@ public interface ProposalDetailsRepository extends JpaRepository<ProposalDetails
     public ProposalDetails getSanctionProposalByApplicationId(@Param("applicationId") Long applicationId);
 
     public List<ProposalDetails> findByApplicationIdAndIsActive(Long applicationId, Boolean isActive);
+    
+    @Query(value = "SELECT * FROM proposal_details pd WHERE application_id =:applicationId and pd.is_active=:isActive and (pd.is_offline is null or  pd.is_offline=:isOffline)",nativeQuery = true)
+    public List<ProposalDetails> findByApplicationIdAndIsActiveForMBOnline(@Param("applicationId")Long applicationId,@Param("isActive") Boolean isActive,@Param("isOffline")Boolean isOffline);
 
     @Query("SELECT pd.userOrgId FROM ProposalDetails pd WHERE pd.id =:proposalId")
     public Long getOrgIdByProposalId(@Param("proposalId") Long proposalId);

@@ -150,7 +150,7 @@ public class CommonRepositoryImpl  implements CommonRepository {
 	
 	@Override
 	public List<Object[]> getBankDetails(Long applicationId, Long orgId){
-		StoredProcedureQuery storedProcedureQuery = manager.createStoredProcedureQuery("users.getCurrentBranchByAppIdAndOrgId");
+		StoredProcedureQuery storedProcedureQuery = manager.createStoredProcedureQuery("users.getCurrentBranchByAppIdAndOrgId_Mudra");
 		storedProcedureQuery.registerStoredProcedureParameter("applicationId",Long.class, ParameterMode.IN);
 		storedProcedureQuery.registerStoredProcedureParameter("orgId",Long.class, ParameterMode.IN);
 		storedProcedureQuery.setParameter("applicationId" ,applicationId);
@@ -526,4 +526,14 @@ public class CommonRepositoryImpl  implements CommonRepository {
 		return false;
 	}
 	
+	@Override
+	public String getGSTInFromConnectWithApplicationIdAndProposalId(Long applicationId) {
+		try {
+			return (String)manager.createNativeQuery("SELECT cl.gstin FROM connect_mudra.connect_log cl WHERE cl.application_id=:applicationId AND is_active=TRUE ORDER BY cl.id DESC LIMIT 1")
+					.setParameter("applicationId", applicationId).getSingleResult();
+		}catch (Exception e) {
+			logger.error("Error/Exception while fetching GSTIn from Connect with applicationId==>{} with error==>{}",applicationId ,e);
+		}
+		return null;
+	}
 }

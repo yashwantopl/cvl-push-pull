@@ -131,6 +131,8 @@ public class LoansMain {
 
 	@Bean
 	public ScoringClient scoringClient() {
+		System.out.println("CommonUtils.getDomainSpecificUrl(CommonUtils.DomainUrlType.domainUrlscoring) : " + CommonUtils.getDomainSpecificUrl(CommonUtils.DomainUrlType.domainUrlscoring));
+		System.out.println("CommonUtils.getLocalIpAddress(CommonUtils.UrlType.scoring) : " + CommonUtils.getLocalIpAddress(CommonUtils.UrlType.scoring));
 		ScoringClient scoringClient = new ScoringClient(CommonUtils.getLocalIpAddress(CommonUtils.UrlType.scoring));
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(scoringClient);
 		return scoringClient;

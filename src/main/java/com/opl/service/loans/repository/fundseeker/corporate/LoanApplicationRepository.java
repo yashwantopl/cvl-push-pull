@@ -419,7 +419,7 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	@Query(value = "SELECT COUNT(id) FROM `fs_corporate_current_financial_arrangements_details` WHERE (loan_type = 'Overdraft' OR loan_type = 'Cash credit') AND is_active = TRUE AND application_id =:applicationId LIMIT 1", nativeQuery = true)
 	public Integer checkAppliedForExisitingLoan(@Param("applicationId") Long applicationId);
 	
-	@Query(value = "SELECT wc_renewal_status FROM connect.connect_log WHERE application_id =:applicationId LIMIT 1", nativeQuery = true)
+	@Query(value = "SELECT wc_renewal_status FROM connect_mudra.connect_log WHERE application_id =:applicationId LIMIT 1", nativeQuery = true)
 	public Integer checkLoanTypeByApplicationId(@Param("applicationId") Long applicationId);
 	
 	@Query(value = "SELECT organisation_name FROM users.user_organisation_master WHERE user_org_id =:userOrganisationId LIMIT 1", nativeQuery = true)
@@ -454,5 +454,9 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	@Modifying
 	@Query("UPDATE LoanApplicationMaster lam SET lam.paymentStatus =:paymentStatus , lam.modifiedDate = now() WHERE lam.id =:applicationId AND lam.isActive =:isActive ")
 	public Integer updatePaymentStatus(@Param("paymentStatus") String paymentStatus ,  @Param("applicationId") Long applicationId , @Param("isActive") Boolean isActive) ;
+
+	@Modifying
+	@Query(value = "UPDATE fs_loan_application_master lm SET lm.data_copied_for=:copyId WHERE lm.application_id=:applicationId",nativeQuery = true)
+	public int updateCopyId(@Param("applicationId") Long applicationId, @Param("copyId") Long copyId);
 	
 }

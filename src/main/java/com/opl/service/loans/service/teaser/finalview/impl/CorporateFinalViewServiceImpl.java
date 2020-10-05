@@ -162,6 +162,7 @@ import com.opl.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.opl.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.opl.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import com.opl.service.loans.repository.common.CommonRepository;
+import com.opl.service.loans.repository.common.LoanRepository;
 import com.opl.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.opl.service.loans.repository.fundprovider.TermLoanParameterRepository;
 import com.opl.service.loans.repository.fundprovider.WcTlLoanParameterRepository;
@@ -334,6 +335,9 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 	@Autowired
 	private CorporatePrimaryViewService primaryCorpService;
 	
+	@Autowired
+	private LoanRepository loanRepository;
+	
 	@Value("${capitaworld.gstdata.enable}")
 	private Boolean gstCompRelFlag;
 
@@ -349,6 +353,15 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 
 		CorporateFinalViewResponse corporateFinalViewResponse = new CorporateFinalViewResponse();
 
+		Object[] profileVersionDetails = loanRepository.getProfileVersionDetailsByApplicationId(toapplicationId);
+		if(CommonUtils.isObjectNullOrEmpty(profileVersionDetails)) {
+			logger.error("Profile not found for applicationId =======>"+toapplicationId);
+			return corporateFinalViewResponse;
+		}
+		Long itrId = profileVersionDetails[0] != null ? Long.valueOf(profileVersionDetails[0].toString()) : null;
+		Long gstId = profileVersionDetails[1] != null ? Long.valueOf(profileVersionDetails[1].toString()) : null;
+		Long bsId =  profileVersionDetails[2] != null ? Long.valueOf(profileVersionDetails[2].toString()) : null;
+		
 		DisbursementRequestModel request = new DisbursementRequestModel();
 		request.setApplicationId(toapplicationId);
 		request.setProposalId(proposalMapId);
@@ -941,7 +954,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		Long denomination = Denomination.getById(primaryCorporateDetail.getDenominationId()).getDigit();
 		try {
 			FinancialInputRequest financialInputRequest = irrService.cmaIrrMappingService(userId, toApplicationId, null,
-					denomination,proposalMapId);
+					denomination,proposalMapId,null);
 
 			logger.info("financialInputRequest.getYear()===>>>{}" , financialInputRequest.getYear());
 			// Profit & Loss Statement
@@ -2535,7 +2548,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		}
 		
 		if(gstCompRelFlag) {
-			LinkedHashMap<String, Object> gstVsItrVsBsComparision =primaryCorpService.gstVsItrVsBsComparision(toapplicationId, (FinancialInputRequest) corporateFinalViewResponse.getFinancialInputRequest());
+			LinkedHashMap<String, Object> gstVsItrVsBsComparision =primaryCorpService.gstVsItrVsBsComparision(toapplicationId, (FinancialInputRequest) corporateFinalViewResponse.getFinancialInputRequest() , gstId , itrId ,bsId);
 			corporateFinalViewResponse.setBankComparisionData(gstVsItrVsBsComparision);
 				
 			Map<String, Object> gstRelatedPartyDetails = loanApplicationService.getGstRelatedPartyDetails(toapplicationId);

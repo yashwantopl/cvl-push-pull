@@ -14,7 +14,7 @@ import com.opl.service.loans.domain.fundseeker.corporate.CreditRatingCompanyDeta
 
 public interface IrrService {
 
-	public  FinancialInputRequest cmaIrrMappingService(Long userId, Long aplicationId,String industry,Long denom, Long proposalMapId) throws LoansException;
+	public  FinancialInputRequest cmaIrrMappingService(Long userId, Long aplicationId,String industry,Long denom, Long proposalMapId,Long itrId) throws LoansException;
 	
 	public  FinancialInputRequest coActIrrMappingService(Long userId, Long aplicationId,String industry,Long denom) throws LoansException;
 	
