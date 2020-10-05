@@ -6341,6 +6341,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		retailLoanObj.setCurrencyId(Currency.RUPEES.getId());
 		retailLoanObj.setDenominationId(Denomination.ABSOLUTE.getId());
 		retailLoanObj = loanApplicationRepository.save(retailLoanObj);
+		loanApplicationRepository.updateApplicationCode(retailLoanObj.getId(), createApplicationCode(retailLoanObj.getId(), retailLoanObj.getBusinessTypeId()));
 		UsersRequest usersRequest = new UsersRequest();
 		usersRequest.setLastAccessApplicantId(retailLoanObj.getId());
 		usersRequest.setId(userId);
@@ -9017,7 +9018,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		corporateLoan.setDenominationId(Denomination.ABSOLUTE.getId());
 		logger.info("Going to Create new Corporate UserId===>{}", userId);
 		corporateLoan = loanApplicationRepository.save(corporateLoan);
-		loanApplicationRepository.updateApplicationCode(corporateLoan.getId(), createApplicationCode(corporateLoan.getId()));
+		loanApplicationRepository.updateApplicationCode(corporateLoan.getId(), createApplicationCode(corporateLoan.getId(), corporateLoan.getBusinessTypeId()));
 		logger.info("Created New Corporate Loan of User Id==>{}", userId);
 		logger.info("Setting Last Application is as Last access Id in User Table---->" + corporateLoan.getIsActive());
 		UsersRequest usersRequest = new UsersRequest();
@@ -9028,7 +9029,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		return corporateLoan.getId();
 	}
 	
-	 private String createApplicationCode(Long applicationId) {
-    	return APPLICATION_CODE + applicationId;
+	 private String createApplicationCode(Long applicationId, Integer businessTypeId) {
+		 if(businessTypeId == null) {
+			 businessTypeId = 1;
+		 }
+	    DecimalFormat df = new DecimalFormat("000"); 
+		String format = df.format(businessTypeId);
+	    return "OPL-" + format + "-" + applicationId;
     }
 }
