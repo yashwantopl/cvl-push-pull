@@ -650,7 +650,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		map.put("gstDetailedResp" , getGstDetails(applicationId, userId));		
 		
 		//COMMON ONE-FORM DATA
-		map.putAll(getOneFormData(applicationId,proposalId,userId));
+		map.putAll(getOneFormData(applicationId,proposalId,userId,itrId));
 		
 		map.putAll(getMatchesAndEligiblityDetails(applicationId,productId,proposalId));
 		
@@ -2336,7 +2336,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			}		
 	
 	//ONE_FORM COMMON
-	public Map<String ,Object> getOneFormData(Long applicationId, Long proposalId,Long userId){
+	public Map<String ,Object> getOneFormData(Long applicationId, Long proposalId,Long userId , Long itrMasterId){
 		
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
 		
@@ -2777,7 +2777,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				
 				//NAME AS PER ITR
 				try{
-					ITRConnectionResponse itrResponse = itrClient.getITRBasicDetails(applicationId);
+					ITRConnectionResponse itrResponse = itrClient.getITRBasicDetails(itrMasterId);
 					logger.info("ITR RESPONSE===========>{}",itrResponse);
 					map.put("nameAsPerItr", CommonUtils.printFields(itrResponse.getData(),null));
 				}catch(Exception e) {
@@ -3053,7 +3053,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		map.put("bankUrl", str != null && str.length > 1 && str[1] != null ? str[1] : null);
 		map.put("bankFullName", str != null && str.length > 2 && str[2] != null ? str[2] : " ");
 		
-		map.putAll(getOneFormData(applicationId,proposalId,userId));
+		map.putAll(getOneFormData(applicationId,proposalId,userId,itrId));
 		
 		//matches common
 		map.putAll(getMatchesAndEligiblityDetails(applicationId,productId,proposalId));
