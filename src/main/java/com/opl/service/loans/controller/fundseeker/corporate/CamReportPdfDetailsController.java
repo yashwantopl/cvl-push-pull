@@ -282,6 +282,31 @@ public class CamReportPdfDetailsController {
 		}
 
 	}
+	
+	@GetMapping(value = "/getInEligiblePrimaryDataMapinByteArray/{applicationId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public byte[] getInEligiblePrimaryDataMapinByteArray(@PathVariable(value = "applicationId") Long applicationId)  {
+
+		if (CommonUtils.isObjectNullOrEmpty(applicationId)) {
+				logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, applicationId);
+				return null;
+		}
+		try {
+
+			Map<String,Object> response = inEligibleProposalCamReportService.getInEligibleCamReport(applicationId);
+			ReportRequest reportRequest = new ReportRequest();
+			reportRequest.setParams(response);
+			reportRequest.setTemplate("MUDRALOANINELIGIBLECAM");
+			reportRequest.setType("MUDRALOANINELIGIBLECAM");
+			byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
+			if(byteArr != null && byteArr.length > 0){
+				return byteArr;
+			}
+				
+		} catch (Exception e) {
+			logger.error(ERROR_WHILE_GETTING_MAP_DETAILS, e);
+		}
+		return null;
+	}
 
 	@GetMapping(value = "/getGstDataReport/{panNo}" , produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getGSTDataReport(@PathVariable(value = "panNo") String panNo, HttpServletResponse  httpServletResponse) {
