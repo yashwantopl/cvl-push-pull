@@ -11,7 +11,7 @@ public interface CamReportPdfDetailsService {
 	public Map<String, Object> getCamReportPrimaryDetails(Long applicationId, Long productId,Long proposalId, boolean isFinalView);
 	public Map<String, Object> getBankStatementAnalysisReport(Long applicationId, Long productId);
 	
-	public List<CAMGSTData> getGstDetails(Long applicationId ,Long userId);
+	public List<CAMGSTData> getGstDetails(Long applicationId ,Long userId ,Long gstMasterId);
 	
 	public Map<String ,Object> getGstReportData(String panNo);
 	
