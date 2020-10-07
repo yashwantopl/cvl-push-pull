@@ -647,7 +647,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}*/
 		
 		//COMMON GST DATA		
-		map.put("gstDetailedResp" , getGstDetails(applicationId, userId));		
+		map.put("gstDetailedResp" , getGstDetails(applicationId, userId , gstId));		
 		
 		//COMMON ONE-FORM DATA
 		map.putAll(getOneFormData(applicationId,proposalId,userId,itrId));
@@ -2235,7 +2235,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	
 	//GST COMMON METHOD
 			@Override
-			public List<CAMGSTData> getGstDetails(Long applicationId ,Long userId){
+			public List<CAMGSTData> getGstDetails(Long applicationId ,Long userId ,Long gstMasterId){
 				//Fetch Bank Details
 				//GST DATA
 				
@@ -2244,7 +2244,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					
 					try {
 						GSTR1Request req= new GSTR1Request();
-						req.setApplicationId(applicationId);
+						req.setApplicationId(gstMasterId);
 						req.setUserId(userId);						
 						req.setGstin(corporateApplicantRequest.getGstIn() != null ? corporateApplicantRequest.getGstIn() : commonRepository.getGSTInFromConnectWithApplicationIdAndProposalId(applicationId));	
 						List<CAMGSTData> resp = new ArrayList<>();
@@ -3019,7 +3019,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}	    
 	    
 	    //GST COMMON DATA
-	    map.put("gstDetailedResp",getGstDetails(applicationId, userId));
+	    map.put("gstDetailedResp",getGstDetails(applicationId, userId,gstId));
 	        
 	    CorporateApplicantRequest corporateApplicantRequest = corporateApplicantService.getCorporateApplicant(applicationId);
 	    map.put("panNo", corporateApplicantRequest != null && !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getPanNo()) ? corporateApplicantRequest.getPanNo() : " ");

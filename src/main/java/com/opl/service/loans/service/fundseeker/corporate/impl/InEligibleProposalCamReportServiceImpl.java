@@ -382,9 +382,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 			// ConnectStage.COMPLETE.getId(),
 			// com.capitaworld.service.loans.utils.CommonUtils.BusinessType.EXISTING_BUSINESS.getId());
 			Date InPrincipleDate = loanApplicationRepository.getInEligibleModifiedDate(applicationId,ConnectStage.MUDRA_ONE_FORM.getId(), 6);
-			if (!CommonUtils.isObjectNullOrEmpty(InPrincipleDate)) {
-				map.put("dateOfInEligible", !CommonUtils.isObjectNullOrEmpty(InPrincipleDate)? CommonUtils.DATE_FORMAT.format(InPrincipleDate): "-");
-			}
+			map.put("dateOfInEligible", !CommonUtils.isObjectNullOrEmpty(InPrincipleDate)? CommonUtils.DATE_FORMAT.format(InPrincipleDate): "-");
 		} catch (Exception e2) {
 			logger.error(CommonUtils.EXCEPTION, e2);
 		}
@@ -407,7 +405,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		
 		//ITR (CHECK IF UPLOADED USING XML OR ONLINE)
 		try {
-			ITRConnectionResponse itrConnectionResponse= itrClient.getIsUploadAndYearDetails(applicationId);
+			ITRConnectionResponse itrConnectionResponse= itrClient.getIsUploadAndYearDetails(itrId);
 			if(!CommonUtils.isObjectNullOrEmpty(itrConnectionResponse)) {
 				map.put("checkItr", itrConnectionResponse.getData());
 			}
@@ -538,7 +536,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 			logger.error(CommonUtils.EXCEPTION, e);
 		}
 
-		map.put("gstDetailedResp", camReportPdfDetailsService.getGstDetails(applicationId, userId));
+		map.put("gstDetailedResp", camReportPdfDetailsService.getGstDetails(applicationId, userId,gstId));
 		
 		
 		String categoryType = "";
