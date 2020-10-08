@@ -86,8 +86,8 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 	public boolean saveDirectorInfo(DirectorBackgroundDetailRequest backgroundDetailRequest,Long applicationId,Long userId){
 
 		DirectorBackgroundDetail  directorBackgroundDetail= null;
-		if (backgroundDetailRequest.getId() != null) {
-			directorBackgroundDetail = directorBackgroundDetailsRepository.findOne(backgroundDetailRequest.getId());
+		if (backgroundDetailRequest.getPanNo() != null && applicationId != null) {
+			directorBackgroundDetail = directorBackgroundDetailsRepository.findByApplicationIdIdAndIsActiveIsTrueAndPanNo(applicationId,backgroundDetailRequest.getPanNo());
 		} else {
 			directorBackgroundDetail = new DirectorBackgroundDetail();
 			directorBackgroundDetail.setCreatedBy(userId);
