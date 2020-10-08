@@ -62,9 +62,9 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 	@Override
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
 		
-		if(!CommonUtils.isObjectNullOrEmpty(frameRequest) && !CommonUtils.isObjectNullOrEmpty(frameRequest.getIsFromClient()) && frameRequest.getIsFromClient() ) {
-					directorBackgroundDetailsRepository.inActive(frameRequest.getUserId(), frameRequest.getApplicationId());
-		}
+//		if(!CommonUtils.isObjectNullOrEmpty(frameRequest) && !CommonUtils.isObjectNullOrEmpty(frameRequest.getIsFromClient()) && frameRequest.getIsFromClient() ) {
+//					directorBackgroundDetailsRepository.inActive(frameRequest.getUserId(), frameRequest.getApplicationId());
+//		}
 		
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
@@ -93,7 +93,20 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 			directorBackgroundDetail.setCreatedBy(userId);
 			directorBackgroundDetail.setCreatedDate(new Date());
 		}
-		BeanUtils.copyProperties(backgroundDetailRequest, directorBackgroundDetail, "applicationId");
+		directorBackgroundDetail.setPanNo(backgroundDetailRequest.getPanNo());
+		directorBackgroundDetail.setAddress(backgroundDetailRequest.getAddress());
+		directorBackgroundDetail.setDirectorsName(backgroundDetailRequest.getDirectorsName());
+		directorBackgroundDetail.setPincode(backgroundDetailRequest.getPincode());
+		directorBackgroundDetail.setRelationshipType(backgroundDetailRequest.getRelationshipType());
+		directorBackgroundDetail.setFirstName(backgroundDetailRequest.getFirstName());
+		directorBackgroundDetail.setLastName(backgroundDetailRequest.getLastName());
+		directorBackgroundDetail.setMiddleName(backgroundDetailRequest.getMiddleName());
+		directorBackgroundDetail.setPremiseNumber(backgroundDetailRequest.getPremiseNumber());
+		directorBackgroundDetail.setLandmark(backgroundDetailRequest.getLandmark());
+		directorBackgroundDetail.setCountryId(101);
+		directorBackgroundDetail.setStateId(backgroundDetailRequest.getStateId());
+		directorBackgroundDetail.setCityId(backgroundDetailRequest.getCityId());		
+//		BeanUtils.copyProperties(backgroundDetailRequest, directorBackgroundDetail, "applicationId","id","directorPersonalDetail");
 		directorBackgroundDetail.setApplicationId(new LoanApplicationMaster(applicationId));
 		directorBackgroundDetail.setModifiedBy(userId);
 		directorBackgroundDetail.setModifiedDate(new Date());
