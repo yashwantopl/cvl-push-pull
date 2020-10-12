@@ -399,7 +399,7 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	
 	
 	/*For cam report In-principleDate for hl pl*/
-	@Query(value = "select lg.In_principle_date from connect.connect_log lg where lg.application_id=:applicationId ORDER BY lg.id desc LIMIT 1", nativeQuery = true)
+	@Query(value = "select lg.In_principle_date from connect_mudra.connect_log lg where lg.application_id=:applicationId ORDER BY lg.id desc LIMIT 1", nativeQuery = true)
 	Date getInPrincipleDate(@Param("applicationId")  Long applicationId);
 	
 	@Modifying
@@ -409,7 +409,7 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 
 	/*For select on on Loan Type*/
 	@Modifying
-	@Query(value = "UPDATE connect.connect_log SET loan_type_id =:loanType, is_coapp_page = false where application_id=:applicationId", nativeQuery = true)
+	@Query(value = "UPDATE connect_mudra.connect_log SET loan_type_id =:loanType, is_coapp_page = false where application_id=:applicationId", nativeQuery = true)
 	public int updateLoanType(@Param("applicationId")  Long applicationId,@Param("loanType") Long loanType);
 
 	@Modifying
@@ -426,7 +426,7 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	public String getOrganisationNameByOrgId(@Param("userOrganisationId") Long userOrganisationId);
 	
 	@Modifying
-	@Query(value = "UPDATE connect.connect_log cl SET cl.wc_renewal_status=:wsRenwalStatus WHERE cl.application_id=:applicationId",nativeQuery = true)
+	@Query(value = "UPDATE connect_mudra.connect_log cl SET cl.wc_renewal_status=:wsRenwalStatus WHERE cl.application_id=:applicationId",nativeQuery = true)
 	public int updateWcRenewalStatusByApplicationId(@Param("wsRenwalStatus") Integer wsRenwalStatus, @Param("applicationId") Long applicationId);
 	
 	@Modifying
