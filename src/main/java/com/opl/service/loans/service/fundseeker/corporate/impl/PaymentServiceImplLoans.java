@@ -784,7 +784,10 @@ public class PaymentServiceImplLoans implements PaymentServiceLoans{
 					try {
 //						Boolean connectPost = false;
 //						connectPost = connectPostPayment(gatewayRequest); //
-						asyncComp.callMCAForData(loanApplicationMaster.getCompanyCinNumber(),gatewayRequest.getApplicationId() , loanApplicationMaster.getUserId());
+						logger.info("loanApplicationMaster.getCompanyCinNumber()==============> {}", loanApplicationMaster.getCompanyCinNumber());
+						if (loanApplicationMaster.getCompanyCinNumber() != null) {					
+							asyncComp.callMCAForData(loanApplicationMaster.getCompanyCinNumber(),gatewayRequest.getApplicationId() , loanApplicationMaster.getUserId());
+						}
 //						logger.info("Call Connect Post Payment in case of Skip Payment of applicationId==>{} Status ==>{}",gatewayRequest.getApplicationId() ,connectPost);
 					}catch (Exception e) {
 						logger.error("Error/Exception while changing stage on call post payment of application id==>{} ...Error=>{}",gatewayRequest.getApplicationId(),e);
