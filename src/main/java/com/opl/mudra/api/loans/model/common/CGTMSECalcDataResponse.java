@@ -44,7 +44,7 @@ public class CGTMSECalcDataResponse {
 	
 	private Integer businessTypeId;
 	
-	
+	private Double turnoover;
 	
 	
 	/**
@@ -159,6 +159,14 @@ public class CGTMSECalcDataResponse {
 	 */
 	public void setColleteralValue(Double colleteralValue) {
 		this.colleteralValue = colleteralValue;
+	}
+
+	public Double getTurnoover() {
+		return turnoover;
+	}
+
+	public void setTurnoover(Double turnoover) {
+		this.turnoover = turnoover;
 	}
 
 	/* (non-Javadoc)

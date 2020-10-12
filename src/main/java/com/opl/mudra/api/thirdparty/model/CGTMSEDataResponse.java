@@ -90,7 +90,7 @@ public class CGTMSEDataResponse implements Serializable {
 	
 	private List<CGSTMSEMappingData> cgtmseMappingData;
 
-
+	private Double turnOver;
 
 
 
@@ -644,8 +644,14 @@ public class CGTMSEDataResponse implements Serializable {
 	}
 
 
+	public Double getTurnOver() {
+		return turnOver;
+	}
 
-	
-	
+
+	public void setTurnOver(Double turnOver) {
+		this.turnOver = turnOver;
+	}
+
 
 }

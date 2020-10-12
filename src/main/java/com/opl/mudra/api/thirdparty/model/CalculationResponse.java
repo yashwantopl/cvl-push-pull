@@ -88,7 +88,7 @@ public class CalculationResponse {
 	
 	private Boolean isPurchaseOfEqup;
 	
-	
+	private Double turnOver;
 	
 	
 	public Boolean getIsPurchaseOfEqup() {
@@ -353,8 +353,14 @@ public class CalculationResponse {
 	public void setColleteralCoverage(Double colleteralCoverage) {
 		this.colleteralCoverage = colleteralCoverage;
 	}
-	
-	
+
+	public Double getTurnOver() {
+		return turnOver;
+	}
+
+	public void setTurnOver(Double turnOver) {
+		this.turnOver = turnOver;
+	}
 	
 
 }
