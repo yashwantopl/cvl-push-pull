@@ -384,7 +384,7 @@ public class CorporateServiceImpl implements CorporateService {
             DirectorBackgroundDetail dirBackGroundDetails = backgroundDetailsRepository.getByAppIdAndIsMainDirector(applicationId);
             if (dirBackGroundDetails != null) {
             	keyPerMap.put(COMPLETED, Boolean.TRUE);
-                keyPerMap.put(DESCRIPTION, dirBackGroundDetails.getFirstName() + " " + dirBackGroundDetails.getMiddleName() + " " + dirBackGroundDetails.getLastName());
+                keyPerMap.put(DESCRIPTION, dirBackGroundDetails.getFirstName() + " " + (CommonUtils.isObjectNullOrEmpty(dirBackGroundDetails.getMiddleName()) ? "" : dirBackGroundDetails.getMiddleName()) + " " + dirBackGroundDetails.getLastName());
                 keyPerMap.put(TITLE, "Main Partner");
                 keyPerMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/key-person-blue.svg");
             }
