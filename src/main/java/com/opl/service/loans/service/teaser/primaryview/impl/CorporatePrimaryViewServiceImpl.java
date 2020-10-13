@@ -295,7 +295,8 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		Long itrId = profileVersionDetails[0] != null ? Long.valueOf(profileVersionDetails[0].toString()) : null;
 		Long gstId = profileVersionDetails[1] != null ? Long.valueOf(profileVersionDetails[1].toString()) : null;
 		Long bsId =  profileVersionDetails[2] != null ? Long.valueOf(profileVersionDetails[2].toString()) : null;
-	
+		Long profileId =  profileVersionDetails[3] != null ? Long.valueOf(profileVersionDetails[3].toString()) : null;
+		
 		ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalId); // NEW BASED ON PROPOSAL MAPPING ID
 		logger.info("AppId===========>{}",applicationProposalMapping.getApplicationId());
 		Long toApplicationId = applicationProposalMapping.getApplicationId(); // new
@@ -1552,7 +1553,17 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		}
 		documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_BANK_STATEMENT);
 		try {
-			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+			DocumentRequest documentRequest1 = new DocumentRequest();
+			documentRequest1.setApplicationId(toApplicationId);
+			documentRequest1.setUserType(DocumentAlias.USER_TYPE_APPLICANT_PROFILE);
+			documentRequest1.setProfileId(profileId);
+			//TO GET BANK STATEMENT
+			List<Long> proMapIds=new ArrayList<Long>();
+			proMapIds.add(DocumentAlias.WORKING_CAPITAL_BANK_STATEMENT);
+			documentRequest1.setProMapIds(proMapIds);
+			documentRequest1.setModuleMasterId(bsId);
+			DocumentResponse documentResponse = dmsClient.listProDocByMultiProMapId(documentRequest1);
+			//DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 			corporatePrimaryViewResponse.setBankStatement(documentResponse.getDataList());
 		} catch (DocumentException e) {
 			logger.error(CommonUtils.EXCEPTION,e);
