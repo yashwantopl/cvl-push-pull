@@ -421,9 +421,9 @@ public class CorporateServiceImpl implements CorporateService {
 			oneFormMap.put(ACTIVAE, acMap.get(COMPLETED));
             Double loanAmount = primaryCorporateDetailRepository.getLoanAmountByApplication(applicationId);
             if (loanAmount != null) {
-                keyPerMap.put(DESCRIPTION, loanAmount);
-                keyPerMap.put(TITLE, "Loan Required");
-                keyPerMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/oneform-blue.svg");
+            	oneFormMap.put(DESCRIPTION, loanAmount);
+            	oneFormMap.put(TITLE, "Loan Required");
+                oneFormMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/oneform-blue.svg");
             }
             mapList.add(oneFormMap);
         }
