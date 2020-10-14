@@ -38,6 +38,8 @@ private String noBankStatementDetail;
 private Boolean isFromFederal;
 private ManualBsReportRequest manualBsReportRequest;
 
+private Boolean isFromMonitoring;
+
 private List<Long> applicationid;
 
 public List<Long> getApplicationid() {
@@ -211,5 +213,11 @@ public void setStageId(Integer stageId) {
 //	public void setAppId(Long appId) {
 //		this.appId = appId;
 //	}
+	public Boolean getIsFromMonitoring() {
+		return isFromMonitoring;
+	}
+	public void setIsFromMonitoring(Boolean isFromMonitoring) {
+		this.isFromMonitoring = isFromMonitoring;
+	}
 }
 
