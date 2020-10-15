@@ -296,6 +296,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		Long gstId = profileVersionDetails[1] != null ? Long.valueOf(profileVersionDetails[1].toString()) : null;
 		Long bsId =  profileVersionDetails[2] != null ? Long.valueOf(profileVersionDetails[2].toString()) : null;
 		Long profileId =  profileVersionDetails[3] != null ? Long.valueOf(profileVersionDetails[3].toString()) : null;
+		corporatePrimaryViewResponse.setProfileId(profileId);
 		
 		ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalId); // NEW BASED ON PROPOSAL MAPPING ID
 		logger.info("AppId===========>{}",applicationProposalMapping.getApplicationId());
