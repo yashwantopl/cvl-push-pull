@@ -185,6 +185,7 @@ public class CorporatePrimaryViewResponse {
 	private String concessionRoiBased;
 	private String finalRoi;
 	private String scoringBasedOn;
+	private Long profileId;
 	
 	
 	public CorporatePrimaryViewResponseNbfc getNbfcData() {
@@ -1471,6 +1472,12 @@ public class CorporatePrimaryViewResponse {
 	}
 	public void setScoringBasedOn(String scoringBasedOn) {
 		this.scoringBasedOn = scoringBasedOn;
+	}
+	public Long getProfileId() {
+		return profileId;
+	}
+	public void setProfileId(Long profileId) {
+		this.profileId = profileId;
 	}
 
 	/*

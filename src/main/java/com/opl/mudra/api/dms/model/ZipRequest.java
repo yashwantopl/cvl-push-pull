@@ -24,6 +24,8 @@ public class ZipRequest implements Serializable {
 	    private List<Long> productDocumentMappingIds;
 	    private List<Long> coAppId;
 	    private String userType;
+	    private Long profileId;
+	    
 		/**
 		 * @return the applicationId
 		 */
@@ -79,7 +81,10 @@ public class ZipRequest implements Serializable {
 		public void setCoAppId(List<Long> coAppId) {
 			this.coAppId = coAppId;
 		}
-	    
-	    
-		
+		public Long getProfileId() {
+			return profileId;
+		}
+		public void setProfileId(Long profileId) {
+			this.profileId = profileId;
+		}
 }
