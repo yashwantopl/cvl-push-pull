@@ -39,10 +39,11 @@ public class BankStatementResponse implements Serializable {
     private Boolean completed;
     private Date createdDate;
     private Date modifiedDate;
+    private Integer accountType;
     private String ifscCode;
     private String lastMonth;
     private String lastYear;
-
+    private Boolean isManualUpload;
 
     public Long getUserId() {
         return userId;
@@ -290,6 +291,22 @@ public class BankStatementResponse implements Serializable {
 
 	public void setLastYear(String lastYear) {
 		this.lastYear = lastYear;
+	}
+
+	public Integer getAccountType() {
+		return accountType;
+	}
+
+	public void setAccountType(Integer accountType) {
+		this.accountType = accountType;
+	}
+
+	public Boolean getIsManualUpload() {
+		return isManualUpload;
+	}
+
+	public void setIsManualUpload(Boolean isManualUpload) {
+		this.isManualUpload = isManualUpload;
 	}
 }
 
