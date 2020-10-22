@@ -89,11 +89,14 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 		if (backgroundDetailRequest.getPanNo() != null && applicationId != null) {
 			directorBackgroundDetail = directorBackgroundDetailsRepository.findByApplicationIdIdAndIsActiveIsTrueAndPanNo(applicationId,backgroundDetailRequest.getPanNo());
 		}
-		
 		if(CommonUtils.isObjectNullOrEmpty(directorBackgroundDetail)) {
 			directorBackgroundDetail = new DirectorBackgroundDetail();
 			directorBackgroundDetail.setCreatedBy(userId);
-			directorBackgroundDetail.setCreatedDate(new Date());		
+			directorBackgroundDetail.setCreatedDate(new Date());
+			directorBackgroundDetail.setIsActive(true);
+		}else {
+			directorBackgroundDetail.setModifiedDate(new Date());
+			directorBackgroundDetail.setModifiedBy(userId);
 		}
 		directorBackgroundDetail.setPanNo(backgroundDetailRequest.getPanNo());
 		directorBackgroundDetail.setAddress(backgroundDetailRequest.getAddress());
@@ -110,8 +113,6 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 		directorBackgroundDetail.setCityId(backgroundDetailRequest.getCityId());		
 //		BeanUtils.copyProperties(backgroundDetailRequest, directorBackgroundDetail, "applicationId","id","directorPersonalDetail");
 		directorBackgroundDetail.setApplicationId(new LoanApplicationMaster(applicationId));
-		directorBackgroundDetail.setModifiedBy(userId);
-		directorBackgroundDetail.setModifiedDate(new Date());
 		directorBackgroundDetailsRepository.save(directorBackgroundDetail);
 		return true;
 	}
