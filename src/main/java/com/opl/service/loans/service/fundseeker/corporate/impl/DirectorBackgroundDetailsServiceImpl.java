@@ -88,10 +88,12 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 		DirectorBackgroundDetail  directorBackgroundDetail= null;
 		if (backgroundDetailRequest.getPanNo() != null && applicationId != null) {
 			directorBackgroundDetail = directorBackgroundDetailsRepository.findByApplicationIdIdAndIsActiveIsTrueAndPanNo(applicationId,backgroundDetailRequest.getPanNo());
-		} else {
+		}
+		
+		if(CommonUtils.isObjectNullOrEmpty(directorBackgroundDetail)) {
 			directorBackgroundDetail = new DirectorBackgroundDetail();
 			directorBackgroundDetail.setCreatedBy(userId);
-			directorBackgroundDetail.setCreatedDate(new Date());
+			directorBackgroundDetail.setCreatedDate(new Date());		
 		}
 		directorBackgroundDetail.setPanNo(backgroundDetailRequest.getPanNo());
 		directorBackgroundDetail.setAddress(backgroundDetailRequest.getAddress());
