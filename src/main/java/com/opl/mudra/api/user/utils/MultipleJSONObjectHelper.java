@@ -55,5 +55,24 @@ public class MultipleJSONObjectHelper implements Serializable {
 //		final ObjectMapper mapper = new ObjectMapper(); // jackson's
 //		return mapper.readValue(map, mapper.getTypeFactory().constructCollectionType(List.class, clazz));
 //	}
+	
+	public static <T> T convertJSONToObject(String response, Class<T> clazz) {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+        try {
+            return  mapper.readValue(response, clazz);
+        } catch (Exception e) {
+            return null;
+        }
+    }
 
+
+    public static String convertObjectToString(Object value) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.writeValueAsString(value);
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }
