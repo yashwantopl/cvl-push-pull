@@ -35,6 +35,15 @@ public class OrgMasterRequest implements Serializable {
     private Boolean isCmrEnable;
     private Boolean isMainDirScoreEnable;
     private Boolean isLoansEnable;
+    
+    private String headerTokenKey;
+    
+    private String oplPrivateKey;
+    
+    private String bankPublicKey;
+    
+    private Boolean isBureauReportShareEnable;
+    
 
 	public Long getId() {
 		return id;
@@ -146,6 +155,38 @@ public class OrgMasterRequest implements Serializable {
 
 	public void setIsLoansEnable(Boolean isLoansEnable) {
 		this.isLoansEnable = isLoansEnable;
+	}
+
+	public String getHeaderTokenKey() {
+		return headerTokenKey;
+	}
+
+	public void setHeaderTokenKey(String headerTokenKey) {
+		this.headerTokenKey = headerTokenKey;
+	}
+
+	public String getOplPrivateKey() {
+		return oplPrivateKey;
+	}
+
+	public void setOplPrivateKey(String oplPrivateKey) {
+		this.oplPrivateKey = oplPrivateKey;
+	}
+
+	public String getBankPublicKey() {
+		return bankPublicKey;
+	}
+
+	public void setBankPublicKey(String bankPublicKey) {
+		this.bankPublicKey = bankPublicKey;
+	}
+
+	public Boolean getIsBureauReportShareEnable() {
+		return isBureauReportShareEnable;
+	}
+
+	public void setIsBureauReportShareEnable(Boolean isBureauReportShareEnable) {
+		this.isBureauReportShareEnable = isBureauReportShareEnable;
 	}
 	
 }

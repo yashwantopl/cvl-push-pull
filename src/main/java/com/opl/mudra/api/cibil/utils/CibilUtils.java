@@ -12,6 +12,7 @@ public class CibilUtils {
 	private  static final Logger logger = LoggerFactory.getLogger(CibilUtils.class);
 	public static final String CIBIL_SCORE_VERSION_2 = "CibilScoreVersion2";
 	public static final Long SIDBI_ORD_ID = 10L;
+	public static final Long SBI_ORD_ID = 16L;
 	public static final Long CAPITAWORLD_ORD_ID = 31L;
 	public static final String USER_ID = "userId";
 	public static final String USER_TYPE = "userType";
@@ -99,6 +100,7 @@ public class CibilUtils {
 	public interface CallType {
 		public static final Integer DIRECT_HIT = 1;
 		public static final Integer UPLOAD = 2;
+		public static final Integer INTEGRATION_API = 3;
 	}
 	
 	public interface ReportPrefixName {
@@ -2961,4 +2963,18 @@ public class CibilUtils {
 		}
 	}
 	
+	public static String validateStringSBI(String str, Integer maxLength, Boolean isSpecialCharacterAllowed) {
+
+		if(isObjectNullOrEmpty(str)) {
+			return str;
+		}
+
+		if(!isSpecialCharacterAllowed) {
+			str = str.replaceAll("[^a-zA-Z0-9]", " ");
+		}
+		if(maxLength != null && str.length() > maxLength) {
+			str = str.substring(0, maxLength);
+		}
+		return str;
+	}
 }

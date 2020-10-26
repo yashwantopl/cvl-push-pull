@@ -3547,5 +3547,10 @@ public class CibilUtils {
 	    	return (double)(byteSize / 1024) / 1024;
 	 }
 
+	 public interface MBCReportStatusType {
+			public static final String PENDING = "PENDING";
+			public static final String ERROR = "ERROR";
+			public static final String SUCCESS = "SUCCESS";
+	 }
 	
 }

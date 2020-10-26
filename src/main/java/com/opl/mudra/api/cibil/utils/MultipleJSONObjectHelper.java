@@ -179,4 +179,10 @@ public class MultipleJSONObjectHelper implements Serializable {
 			return null;
 		}
 	}
+	
+	public static <T> T getObjectFromString(String data, Class<?> clazz) throws IOException {
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		return (T) mapper.readValue(data, clazz);
+	}
 }
