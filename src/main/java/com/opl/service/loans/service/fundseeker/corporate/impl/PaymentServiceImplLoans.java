@@ -692,17 +692,8 @@ public class PaymentServiceImplLoans implements PaymentServiceLoans{
 		
 		logger.info("Checking user for skip payment of White Label of ApplicationId==>{} and BusinessTypeId==>{} with LoanTypeId==>{}" , gatewayRequest.getApplicationId() , businessTypeId , gatewayRequest.getLoanTypeId());
 			
-		String paymentStatus = CommonUtils.PaymentStatus.PENDING;
-		
-		if(!gatewayRequest.getSkipPayment() && gatewayRequest.getPaymentTypeId() == CommonUtils.PaymentTypeMaster.ONLINE_PAYMENT.getId()) { 
-			paymentStatus = commonRepository.getPaymentStatus(gatewayRequest.getApplicationId()) ;
-		}
-		
-		// put here condition if skip payment false and payment type id is online payment
-		if(gatewayRequest.getSkipPayment()) {
-			paymentStatus = CommonUtils.PaymentStatus.SUCCESS ;
-		}
-		
+		String paymentStatus = CommonUtils.PaymentStatus.BYPASS;
+		gatewayRequest.setSkipType(CommonUtils.SkipType.MUDRA_LOAN);
 		
 //		if (/* gatewayRequest.getSkipPayment() == null || */ !(gatewayRequest.getSkipPayment()) && (gatewayRequest.getSameProductIdSamePan() != null && !gatewayRequest.getSameProductIdSamePan())) {
 //			OnlinePaymentTransactionsAuditLog onlinePaymentTransactionsAuditLog=onlinePaymentTransactionAuditLogRepository.findFirstByApplicationIdAndIsActiveOrderByIdDesc(gatewayRequest.getApplicationId(), true);
@@ -729,7 +720,7 @@ public class PaymentServiceImplLoans implements PaymentServiceLoans{
  		Map<String, Object> mailParameter = null ;
 		int rowUpdate=0;
 			
-		if(paymentStatus != null && (CommonUtils.PaymentStatus.SUCCESS.equals(paymentStatus))) {
+		if(paymentStatus != null && (CommonUtils.PaymentStatus.BYPASS.equals(paymentStatus))) {
 			logger.info("Inside Skip Payment of applicationId==>{} with SkipType==>{}", gatewayRequest.getApplicationId(), gatewayRequest.getSkipType());
 			gatewayRequest.setStatus(paymentStatus);
 			String cases = null;
@@ -805,8 +796,6 @@ public class PaymentServiceImplLoans implements PaymentServiceLoans{
 					} catch (NotificationException e1) {
 						logger.error("Error/Exception while Sending Inprinciple And Send sms And System Notification in skip Payment for ApplicationId==>{} Error==>{}",gatewayRequest.getApplicationId(),e1);
 					}
-					
-					
 					
 					//send mail to fp
 					try {
@@ -1119,9 +1108,6 @@ public class PaymentServiceImplLoans implements PaymentServiceLoans{
 	                inPrincipleDetailMap.put(CommonUtils.LOAN_TYPE_ID, productId);
 					
 	                Integer businessTypeId = gatewayRequest.getBusinessTypeId();
-	                if(businessTypeId != null && (CommonUtils.BusinessType.RETAIL_HOME_LOAN.getId().equals(businessTypeId) || CommonUtils.BusinessType.RETAIL_AUTO_LOAN.getId().equals(businessTypeId))) {
-	    				businessTypeId = CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId();
-	    			}
 	                
 					//*******************get FS name for HL,PL,Existing,NTB *************
 					Map<String , Object> fsNameAndAddress = getFSNameAndAddressOnBusinessTypeId(applicationId , businessTypeId , productId );
@@ -1219,18 +1205,10 @@ public class PaymentServiceImplLoans implements PaymentServiceLoans{
 						
 						if(brObj != null) {
 							branchMaster =	MultipleJSONObjectHelper.getObjectFromMap((Map) brObj, BranchBasicDetailsRequest.class);
-//							prepare for cc email 
-							String[] ccEmail = new String[5];
-							ccEmail[0] = !CommonUtils.isObjectNullOrEmpty(branchMaster.getContactPersonEmail()) ? branchMaster.getContactPersonEmail().replace("\\s+", "").trim() : "";
-							if(16 == orgId && branchMaster.getSmecEmail()!=null) {
-								ccEmail[1] = branchMaster.getSmecEmail().replace("\\s+", "").trim();
-							}
-							
-							inPrincipleDetailMap.put(CommonUtils.CC_EMAIL_LIST, ccEmail);
 						}
 					}
 					
-							
+					inPrincipleDetailMap.put(CommonUtils.CC_EMAIL_LIST, getCCMailId(orgId, proposalDetails.getBranchId()));
 					
 //					if(branchList != null && !branchList.isEmpty()) {
 //					  branchMaster = branchList.get(0);
@@ -1404,6 +1382,37 @@ public class PaymentServiceImplLoans implements PaymentServiceLoans{
 		}
 		return inPrincipleDetailMap; 	
 	}
+	
+	public String[] getCCMailId( Long orgId , Long branchId) {	
+		logger.info("--------------get CCMailId------------With  OrgId==>{} , BranchId==>{}",orgId , branchId);
+		String [] ccList= null;
+		try {
+			BranchBasicDetailsRequest branchMaster = null; 
+			List<?> data = userClient.getBranchDataBasedOnOrgAndBranchId(orgId, branchId).getListData();
+			if(!data.isEmpty()) {
+				Object brObj = data.stream().findFirst().orElse(null);
+				if(brObj != null) {
+					branchMaster =	MultipleJSONObjectHelper.getObjectFromMap((Map) brObj, BranchBasicDetailsRequest.class);
+	//				prepare for cc email 
+					List<String> list = new ArrayList<String>();
+					
+					if(branchMaster.getContactPersonEmail() !=null ) {
+						list.add(branchMaster.getContactPersonEmail().replace("\\s+", "").trim());
+					}
+					if(16 == orgId && branchMaster.getSmecEmail()!=null) {
+						list.add(branchMaster.getSmecEmail().replace("\\s+", "").trim());
+					}
+					
+					if(!list.isEmpty()) {
+						ccList = list.toArray(new String[list.size()]);
+					}	
+				}
+			}
+		}catch (Exception e) {
+			logger.error("Error/Exception while fetching ccList for OrgId and branchId==>{}" ,orgId  ,branchId);
+		}
+		return ccList;
+	}
 
 	public Map<String , Object> getFSNameAndAddressOnBusinessTypeId(Long applicationId , Integer businessTypeId , Integer productId ) {
 		logger.info("-----------get FSName And FSAddress On BusinessTypeId==>{} and ProductId==>{}--------------------ApplicationId==>{}",businessTypeId , productId ,applicationId);
@@ -1450,7 +1459,7 @@ public class PaymentServiceImplLoans implements PaymentServiceLoans{
 	public Boolean sendInprincipleLetterAndSmsToFS(Map<String, Object> mailParameters , GatewayRequest gatewayRequest , Long proposalId) throws NotificationException {
 		logger.info("----------Send Mail Sms Sys To Fs-----------ApplicationId==>{}",gatewayRequest.getApplicationId());
 		boolean mailStatus = false;
-		if (gatewayRequest.getPaymentStatus() != null && CommonUtils.PaymentStatus.SUCCESS.equals(gatewayRequest.getPaymentStatus()) || CommonUtils.PaymentStatus.BYPASS.equals(gatewayRequest.getPaymentStatus())){
+		if (gatewayRequest.getPaymentStatus() != null && CommonUtils.PaymentStatus.BYPASS.equals(gatewayRequest.getPaymentStatus())){
 			
 			Long domainId = null;
 			String to = null;
@@ -2043,22 +2052,7 @@ public class PaymentServiceImplLoans implements PaymentServiceLoans{
 		
 		gatewayRequest.setUserId(loanApplicationMaster.getUserId());
 		
-		Boolean updatePayment = false;
 		Map<String, Object> map = new HashMap<>();
-		try {
-			
-			String paymentStatus = commonRepository.getPaymentStatus(gatewayRequest.getApplicationId());
-			
-			gatewayRequest.setPaymentStatus(paymentStatus);
-			if(paymentStatus.equals(CommonUtils.SUCCESS)) {
-				updatePayment = true;
-			}
-			logger.info("Update payment Status===>{}", updatePayment);
-		} catch (Exception e) {
-			logger.error("THROW EXCEPTION WHILE UPDATE PAYMENT DETAIL ON GATEWAY  ...Error==>{}",e);
-			map.put("Error", e.getMessage());
-			return map;
-		}
 		
 		// check payment
 		if(gatewayRequest.getPaymentTypeId() == null || gatewayRequest.getSkipPayment() == null ) {
@@ -2070,67 +2064,60 @@ public class PaymentServiceImplLoans implements PaymentServiceLoans{
 			gatewayRequest.setSkipPayment((Boolean) checkTypeOfSkipPayment.get(SKIP_PAYMENT) );
 		}
 		
-		if (CommonUtils.PaymentStatus.SUCCESS.equals(gatewayRequest.getPaymentStatus()) && updatePayment) {
+		if (gatewayRequest.getSkipPayment() != null && gatewayRequest.getSkipPayment()) {
 			
 			ProposalDetails proposalDetails = null;
 			if(proposalId == null) {
-			proposalDetails = proposalDetailsRepository.findFirstByApplicationIdAndIsActiveOrderByIdDesc(gatewayRequest.getApplicationId(), true );
+				proposalDetails = proposalDetailsRepository.findFirstByApplicationIdAndIsActiveOrderByIdDesc(gatewayRequest.getApplicationId(), true );
 			}else {
 				proposalDetails = proposalDetailsRepository.findByProposalIdAndApplicationIdAndIsActiveTrue(proposalId, gatewayRequest.getApplicationId());	
 			}
 			
-			
-			ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findByProposalIdAndIsActive(proposalDetails.getId(), true);
-			
-			//get Inprinciple Detail
-			try {
-				map = getInPrincipleDetail(gatewayRequest.getApplicationId() ,null ,null);
-			}catch (Exception e) {
-				logger.error("Error/Exception while gettting inprinciple detail --------------applicationId==>{} ...Error=>{} ",gatewayRequest.getApplicationId() ,e);
-			}
-			
-			if(gatewayRequest.getPaymentTypeId().equals(CommonUtils.PaymentTypeMaster.ONLINE_PAYMENT.getId())) {
-				Map<String, Object> invoiceDetailByApplicationId;
-				// invoice
-				try {
-					invoiceDetailByApplicationId = gatewayClient.getInvoiceDetailByApplicationId(gatewayRequest.getApplicationId());
-					if(invoiceDetailByApplicationId != null && !invoiceDetailByApplicationId.isEmpty()) {
-						map.put(INVOICE_DATA, invoiceDetailByApplicationId);
-					}
-				} catch (GatewayException e1) {
-					logger.error("Error/Exception while getting invoice and send invoice to FS of applicationId==>{} ...Error==>{}",gatewayRequest.getApplicationId() ,e1);
-				}
-			}
-			
-			Boolean inpStatus = false;
-			if(forFs == null || forFs) {
-				//send invoice and inprinciple to fs
-				try {
-					logger.info("Calling invoice for applicationId :[{}]",gatewayRequest.getApplicationId());
-					inpStatus = sendInprincipleLetterAndSmsToFS(map, gatewayRequest, null);
-					logger.info("Inprinciple Email Send status [{}] for applicationId : [{}]",inpStatus,gatewayRequest.getApplicationId());
-				}
-				catch (Exception e) {
-					logger.error("Error/Exception while getting invoice and send invoice to FS of applicationId==>{} ...Error==>{}",gatewayRequest.getApplicationId() ,e);
-				}
+			if(proposalDetails != null) {
+				gatewayRequest.setPaymentStatus(CommonUtils.PaymentStatus.BYPASS);
+				gatewayRequest.setSkipType(CommonUtils.SkipType.MUDRA_LOAN);
 				
-			}
-			if(forFp == null || forFp) {			
-				/** send mail to fp with cam */
+				ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findByProposalIdAndIsActive(proposalDetails.getId(), true);
+				
+				//get Inprinciple Detail
 				try {
-					inpStatus = sendmailToAllFundProvider(map, applicationProposalMapping , gatewayRequest);
-					logger.info("CAM Email Send status [{}] for applicationId : [{}]",inpStatus,gatewayRequest.getApplicationId());
+					map = getInPrincipleDetail(gatewayRequest.getApplicationId() ,null ,null);
 				}catch (Exception e) {
-					logger.error("--------------Error/Exception in sending mail to fund provider-----------{}",e);
-				}						
+					logger.error("Error/Exception while gettting inprinciple detail --------------applicationId==>{} ...Error=>{} ",gatewayRequest.getApplicationId() ,e);
+				}
 				
+				Boolean inpStatus = false;
+				if(forFs == null || forFs) {
+					//send invoice and inprinciple to fs
+					try {
+						logger.info("Calling sendInprincipleLetterAndSmsToFS for applicationId :[{}]",gatewayRequest.getApplicationId());
+						inpStatus = sendInprincipleLetterAndSmsToFS(map, gatewayRequest, null);
+						logger.info("Inprinciple Email Send status [{}] for applicationId : [{}]",inpStatus,gatewayRequest.getApplicationId());
+					}
+					catch (Exception e) {
+						logger.error("Error/Exception while getting invoice and send invoice to FS of applicationId==>{} ...Error==>{}",gatewayRequest.getApplicationId() ,e);
+					}
+					
+				}
+				if(forFp == null || forFp) {			
+					/** send mail to fp with cam */
+					try {
+						inpStatus = sendmailToAllFundProvider(map, applicationProposalMapping , gatewayRequest);
+						logger.info("CAM Email Send status [{}] for applicationId : [{}]",inpStatus,gatewayRequest.getApplicationId());
+					}catch (Exception e) {
+						logger.error("--------------Error/Exception in sending mail to fund provider-----------{}",e);
+					}						
+					
+				}
+				// =======================================================================================================================================
+				
+	//					callPushPullAPI(proposalDetails.getId() , proposalDetails.getApplicationId(), proposalDetails.getFpProductId(), proposalDetails.getUserOrgId(), gatewayRequest.getBusinessTypeId()); 		
+				
+				
+				logger.info("End of Congratulations");
+			}else {
+				logger.error("Proposal Details is missing or inActive for applicationId==>{} ",gatewayRequest.getApplicationId());
 			}
-			// =======================================================================================================================================
-			
-//					callPushPullAPI(proposalDetails.getId() , proposalDetails.getApplicationId(), proposalDetails.getFpProductId(), proposalDetails.getUserOrgId(), gatewayRequest.getBusinessTypeId()); 		
-			
-			
-			logger.info("End of Congratulations");
 			
 		}else {
 			logger.error("--------------Status is not Success---------------");

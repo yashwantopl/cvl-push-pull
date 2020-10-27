@@ -6361,7 +6361,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 		if(!CommonUtils.isObjectNullOrEmpty(productDetails)){
 			List<ApplicationProposalMapping> applicationProposalMappingList = applicationProposalMappingRepository.getListByApplicationIdAndOrgId(proposalDetails.getApplicationId(),loanApplicationRequest.getNpOrgId());
-			if(!CommonUtils.isObjectNullOrEmpty(applicationProposalMappingList) && CommonUtils.isObjectNullOrEmpty(proposalDetails.getNbfcFlow())){
+			if(!CommonUtils.isObjectListNull(applicationProposalMappingList) && CommonUtils.isObjectNullOrEmpty(proposalDetails.getNbfcFlow())){
 				Integer deleteApplicationData = applicationProposalMappingRepository.deleteByApplicationIdAndOrgId(proposalDetails.getApplicationId(),loanApplicationRequest.getNpOrgId());
 				if(!CommonUtils.isObjectNullOrEmpty(deleteApplicationData) && deleteApplicationData>0){
 					logger.info("Data deleted for applicationId:"+proposalDetails.getApplicationId()+" and for fpProductId:"+proposalDetails.getFpProductId()+" deleted data count:"+deleteApplicationData);
