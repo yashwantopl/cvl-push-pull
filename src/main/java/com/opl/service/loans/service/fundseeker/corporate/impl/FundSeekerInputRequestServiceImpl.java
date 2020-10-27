@@ -820,7 +820,12 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				reportRequest.setBsMasterId(fundSeekerInputRequest.getBsMasterId());
 				try {
 					String orgName = analyzerClient.getOrgNameByAppId(reportRequest);
-					fundSeekerInputResponse.setOrganisationName(orgName);
+					if(CommonUtils.isObjectNullOrEmpty(orgName)) {
+						fundSeekerInputResponse.setOrganisationName(corporateApplicantDetail.getOrganisationName());
+					}else {
+						fundSeekerInputResponse.setOrganisationName(orgName);
+					}
+					
 					logger.info("Fetched Organisation Name from Bank Statement ==>"+orgName);
 				} catch (Exception e) {
 					logger.error("Error while getting perfios data : ",e);
