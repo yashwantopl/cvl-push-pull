@@ -25,6 +25,10 @@ public class ITRConnectionResponse implements Serializable {
 	private Boolean isResFromScrap;
 	private List<byte[]> byteArray;
 	private Boolean isPanAlreadyFetched;
+	private Integer responseType;
+	private String sysMessage;
+	private Integer msgCode;
+	private Boolean isMsgDisp;
 	
 	public ITRConnectionResponse() {
 		super();
@@ -90,6 +94,12 @@ public class ITRConnectionResponse implements Serializable {
 		this.errorCode = errorCode;
 	}
 	
+	public void setErrorCode(ITRConnectionResponse res, String sysMessage, Integer responseType, Integer msgCode, Boolean isMsgDisp) {
+		res.setSysMessage(sysMessage);
+		res.setResponseType(responseType);
+		res.setMsgCode(msgCode);
+		res.setIsMsgDisp(isMsgDisp);
+	}
 	
 	//------------------------------------ START------------------------------------------------------------------------
 	
@@ -247,6 +257,38 @@ public class ITRConnectionResponse implements Serializable {
 		this.pan = pan;
 	}
 
+	public Integer getResponseType() {
+		return responseType;
+	}
+
+	public void setResponseType(Integer responseType) {
+		this.responseType = responseType;
+	}
+
+	public String getSysMessage() {
+		return sysMessage;
+	}
+
+	public void setSysMessage(String sysMessage) {
+		this.sysMessage = sysMessage;
+	}
+
+	public Integer getMsgCode() {
+		return msgCode;
+	}
+
+	public void setMsgCode(Integer msgCode) {
+		this.msgCode = msgCode;
+	}
+	
+	public Boolean getIsMsgDisp() {
+		return isMsgDisp;
+	}
+
+	public void setIsMsgDisp(Boolean isMsgDisp) {
+		this.isMsgDisp = isMsgDisp;
+	}
+	
 	@Override
 	public String toString() {
 		return "ITRConnectionResponse [transactionId=" + transactionId + ", url=" + url + ", message=" + message
