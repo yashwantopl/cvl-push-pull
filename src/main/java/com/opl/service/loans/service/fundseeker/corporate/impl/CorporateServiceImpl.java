@@ -438,7 +438,7 @@ public class CorporateServiceImpl implements CorporateService {
 			ProfileVerMapRequest profileVerMapReq = new ProfileVerMapRequest();
 			profileVerMapReq.setProfileId(profileId);
 			
-			boolean isUpdated = Boolean.FALSE;
+			boolean isGSTUpdated = Boolean.FALSE;
 			// GST DETAILS
 			GSTR1Request gstReq = new GSTR1Request();
 			gstReq.setProfileId(profileId);
@@ -454,7 +454,7 @@ public class CorporateServiceImpl implements CorporateService {
 					isDataUpdated = (Boolean)map.get("isDataUpdated");
 				}
 				if(isDataUpdated != null && isDataUpdated) {
-					isUpdated = Boolean.TRUE;
+					isGSTUpdated = Boolean.TRUE;
 				}
 				Long gstMasterId = Long.parseLong(map.get("masterId").toString());
 				profileVerMapReq.setGstId(gstMasterId);
@@ -462,11 +462,12 @@ public class CorporateServiceImpl implements CorporateService {
 				profileVerMapReq.setGstOrgName(companyName);
 			}
 			
+			boolean isITRUpdate = Boolean.FALSE;
 			CommonResponse itrRes = itrClient.checkIsITRUpdated(profileId, null);
 			if (itrRes != null && itrRes.getStatus() == 200) {
 				Boolean isITRUpdated =  itrRes.getFlag();
 				if(isITRUpdated != null && isITRUpdated) {
-					isUpdated = Boolean.TRUE;
+					isITRUpdate = Boolean.TRUE;
 				}
 				Map<String, Object> map = (Map<String, Object>) itrRes.getData();
 				Long itrMasterId = Long.parseLong(map.get("itrMasterId").toString());
@@ -477,7 +478,7 @@ public class CorporateServiceImpl implements CorporateService {
 				profileVerMapReq.setItrLastYear(lastYear);
 			}
 			
-			
+			boolean isBSUpdated = Boolean.FALSE;
 			AnalyzerResponse analyRes = analyzerClient.isBankStatementIsUpdated(profileId, null);
 			if (analyRes != null) {
 				Boolean isBsUpdated  = false;
@@ -487,7 +488,7 @@ public class CorporateServiceImpl implements CorporateService {
 					isBsUpdated = (Boolean) analyRes.getData();
 				}
 				if(isBsUpdated != null && isBsUpdated) {
-					isUpdated = Boolean.TRUE;
+					isBSUpdated = Boolean.TRUE;
 				}
 				Integer totalBankState = analyRes.getTotalBankStatement();
 				profileVerMapReq.setTotalBankStatement(totalBankState);
@@ -514,7 +515,7 @@ public class CorporateServiceImpl implements CorporateService {
 			com.opl.profile.api.model.CommonResponse proComRes = profileClient.updateProfileVerMapAndLoanMap(profileVerMapReq);
 			if(proComRes != null && proComRes.getFlag()) {
 				logger.info("Successfully Updated Data");
-				return new CommonResponse("Successfully Checked !!", proComRes.getData(), HttpStatus.OK.value(), isUpdated);
+				return new CommonResponse("Successfully Checked !!", proComRes.getData(), HttpStatus.OK.value(), (isGSTUpdated && isITRUpdate && isBSUpdated));
 			} else {
 				auditTableRepository.save(new CommonAuditTable(applicationId, profileId, CorporateServiceImpl.class.getName(), "isProfileUpdated", "Profile Version Details Not Saved " + proComRes.getMessage()));
 				return new CommonResponse("Not updated profile version details !!", HttpStatus.OK.value(), Boolean.FALSE);				
