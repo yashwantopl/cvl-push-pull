@@ -43,6 +43,7 @@ public class ITRManualFormRequest implements Serializable {
 	private Integer establishmentMonth;
 	private Integer establishmentYear;
 	private Map<String, Object> incomeDetails;
+	private Boolean isProjectedFilled;
 	
 	
 	public String getFirstName() {
@@ -241,6 +242,12 @@ public class ITRManualFormRequest implements Serializable {
 	}
 	public void setIsITRUploaded(Boolean isITRUploaded) {
 		this.isITRUploaded = isITRUploaded;
+	}
+	public Boolean getIsProjectedFilled() {
+		return isProjectedFilled;
+	}
+	public void setIsProjectedFilled(Boolean isProjectedFilled) {
+		this.isProjectedFilled = isProjectedFilled;
 	}
 	@Override
 	public String toString() {
