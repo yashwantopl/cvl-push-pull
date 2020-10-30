@@ -760,6 +760,7 @@ public class ScoringServiceImpl implements ScoringService {
         // GET SCORE CORPORATE LOAN PARAMETERS
         
         int currentYear = getFinYear(itrId);
+        logger.info("Current Year : [{}] for ITR Id : [{}]",currentYear,itrId);
         if (CommonUtils.isObjectNullOrEmpty(currentYear)) {
             logger.error("error while getting current year from itr");
             LoansResponse loansResponse = new LoansResponse("error while getting current year from itr.", HttpStatus.INTERNAL_SERVER_ERROR.value());
