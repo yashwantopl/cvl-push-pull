@@ -22,6 +22,12 @@ public class CibilResponse implements Serializable {
 	private List<?> listData = Collections.emptyList();
 	
 	private Integer provider;
+	
+	private Integer responseType;
+	
+	private String sysMessage;
+	
+	private Integer msgCode; 
 
 	public CibilResponse() {
 		super();
@@ -93,10 +99,35 @@ public class CibilResponse implements Serializable {
 		this.provider = provider;
 	}
 
+	public Integer getResponseType() {
+		return responseType;
+	}
+
+	public void setResponseType(Integer responseType) {
+		this.responseType = responseType;
+	}
+
+	public String getSysMessage() {
+		return sysMessage;
+	}
+
+	public void setSysMessage(String sysMessage) {
+		this.sysMessage = sysMessage;
+	}
+
+	public Integer getMsgCode() {
+		return msgCode;
+	}
+
+	public void setMsgCode(Integer msgCode) {
+		this.msgCode = msgCode;
+	}
+
 	@Override
 	public String toString() {
 		return "CibilResponse [id=" + id + ", status=" + status + ", message=" + message + ", data=" + (data != null ? data.toString() : null)
-				+ ", listData=" + (listData != null ? listData.toString() : null) + "]";
+				+ ", listData=" + (listData != null ? listData.toString() : null) + ", responseType=" + responseType
+				+ ", sysMessage=" + sysMessage + ", msgCode=" + msgCode + "]";
 	}
 
 }
