@@ -69,6 +69,9 @@ public class GstResponse implements Serializable{
 	
 	private Object compData;
 	
+	private Integer msgCode;
+	private String sysMessage;
+	
 	/**
 	 * @return the currentStep
 	 */
@@ -412,5 +415,22 @@ public class GstResponse implements Serializable{
 	public void setImGstin(String imGstin) {
 		this.imGstin = imGstin;
 	}
+
+	public Integer getMsgCode() {
+		return msgCode;
+	}
+
+	public void setMsgCode(Integer msgCode) {
+		this.msgCode = msgCode;
+	}
+
+	public String getSysMessage() {
+		return sysMessage;
+	}
+
+	public void setSysMessage(String sysMessage) {
+		this.sysMessage = sysMessage;
+	}
+
 	
 }
