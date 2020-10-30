@@ -132,7 +132,7 @@ public class CommonUtils {
 	
 	public enum ITRType {
 		AUDITED(1),
-		NO_AUDITED(1);
+		NO_AUDITED(2);
 		private int value;
 
 		private ITRType(int value) {
