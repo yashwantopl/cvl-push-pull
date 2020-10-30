@@ -27,7 +27,7 @@ public interface LiabilitiesDetailsRepository  extends JpaRepository<Liabilities
 	@Query("update LiabilitiesDetails l set l.isActive = false where l.fsLoanApplicationMaster.id = :applicationId and l.isActive = true and l.applicationProposalMapping.proposalId IS NULL")
 	public void inActiveByAppId(@Param("applicationId") Long applicationId);
 	
-	@Query("from LiabilitiesDetails l where l.fsLoanApplicationMaster.id = :appId and l.year = :yr and l.isActive = true")
+	@Query("from LiabilitiesDetails l where l.fsLoanApplicationMaster.id = :appId and l.year = :yr and l.isActive = true and l.applicationProposalMapping IS NULL")
 	public LiabilitiesDetails getLiabilitiesDetails(@Param("appId") Long applicationId, @Param("yr") String year);
 
 	@Query("from LiabilitiesDetails l where l.fsLoanApplicationMaster.id = :appId and l.year = :yr and l.isActive = true and l.applicationProposalMapping.proposalId IS NULL")
@@ -89,6 +89,8 @@ public interface LiabilitiesDetailsRepository  extends JpaRepository<Liabilities
 	public int inActiveByAppIdAndProposalIdAndFinancialYearlyStatementAndIsActive(@Param("applicationId") Long applicationId , @Param("proposalId") Long  proposalId);
 	
 	public List<LiabilitiesDetails> findByFsLoanApplicationMasterIdAndYearAndIsActive(Long applicationId , String year , Boolean isActive);
+	
+	public LiabilitiesDetails findByFsLoanApplicationMasterIdAndYearAndIsActiveAndApplicationProposalMappingIsNull(Long applicationId , String year , Boolean isActive);
 	
 	/**
 	 * get total_liability 

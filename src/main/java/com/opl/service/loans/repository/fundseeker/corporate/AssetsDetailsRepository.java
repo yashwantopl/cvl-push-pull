@@ -88,6 +88,9 @@ public interface AssetsDetailsRepository extends JpaRepository<AssetsDetails, Lo
 	
 	public List<AssetsDetails> findByLoanApplicationMasterIdAndYearAndIsActive(Long applicationId , String year , Boolean isActive);
 	
+	public AssetsDetails findByLoanApplicationMasterIdAndYearAndIsActiveAndApplicationProposalMappingIsNull(Long applicationId , String year , Boolean isActive);
+	
+	
 	/**
 	 * get total_assets 
 	 * @param applicationId
