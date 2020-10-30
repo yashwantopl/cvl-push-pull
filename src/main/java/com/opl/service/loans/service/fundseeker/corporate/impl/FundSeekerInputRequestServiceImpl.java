@@ -814,21 +814,26 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			fundSeekerInputResponse.setSinceYear(corporateApplicantDetail.getBusinessSinceYear());
 			copyAddressFromDomainToRequest(corporateApplicantDetail, fundSeekerInputResponse);
 			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getConstitutionId()) && (Constitution.SOLE_PROPRIETORSHIP.getId().equals(corporateApplicantDetail.getConstitutionId()))){
-				ReportRequest reportRequest = new ReportRequest();
-//				reportRequest.setApplicationId(fundSeekerInputRequest.getApplicationId());
-//				reportRequest.setAppId(fundSeekerInputRequest.getApplicationId());
-				reportRequest.setBsMasterId(fundSeekerInputRequest.getBsMasterId());
-				try {
-					String orgName = analyzerClient.getOrgNameByAppId(reportRequest);
-					if(CommonUtils.isObjectNullOrEmpty(orgName)) {
-						fundSeekerInputResponse.setOrganisationName(corporateApplicantDetail.getOrganisationName());
-					}else {
-						fundSeekerInputResponse.setOrganisationName(orgName);
+				if(fundSeekerInputRequest != null && fundSeekerInputRequest.getBsMasterId() != null) {
+					ReportRequest reportRequest = new ReportRequest();
+//					reportRequest.setApplicationId(fundSeekerInputRequest.getApplicationId());
+//					reportRequest.setAppId(fundSeekerInputRequest.getApplicationId());
+					reportRequest.setBsMasterId(fundSeekerInputRequest.getBsMasterId());
+					try {
+						String orgName = analyzerClient.getOrgNameByAppId(reportRequest);
+						if(CommonUtils.isObjectNullOrEmpty(orgName)) {
+							fundSeekerInputResponse.setOrganisationName(corporateApplicantDetail.getOrganisationName());
+						}else {
+							fundSeekerInputResponse.setOrganisationName(orgName);
+						}
+						
+						logger.info("Fetched Organisation Name from Bank Statement ==>"+orgName);
+					} catch (Exception e) {
+						logger.error("Error while getting perfios data : ",e);
 					}
-					
-					logger.info("Fetched Organisation Name from Bank Statement ==>"+orgName);
-				} catch (Exception e) {
-					logger.error("Error while getting perfios data : ",e);
+				}else {
+					fundSeekerInputResponse.setOrganisationName(corporateApplicantDetail.getOrganisationName());
+					logger.info("Fetched Organisation Name from applicantDetails ==>"+fundSeekerInputRequest.getApplicationId());
 				}
 			}
 			// === Director
