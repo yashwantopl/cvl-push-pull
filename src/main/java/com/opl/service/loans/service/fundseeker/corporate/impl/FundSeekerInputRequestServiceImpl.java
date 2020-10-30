@@ -814,7 +814,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			fundSeekerInputResponse.setSinceYear(corporateApplicantDetail.getBusinessSinceYear());
 			copyAddressFromDomainToRequest(corporateApplicantDetail, fundSeekerInputResponse);
 			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getConstitutionId()) && (Constitution.SOLE_PROPRIETORSHIP.getId().equals(corporateApplicantDetail.getConstitutionId()))){
-				if(fundSeekerInputRequest != null && fundSeekerInputRequest.getBsMasterId() != null) {
+				if(fundSeekerInputRequest.getBsMasterId() != null) {
 					ReportRequest reportRequest = new ReportRequest();
 //					reportRequest.setApplicationId(fundSeekerInputRequest.getApplicationId());
 //					reportRequest.setAppId(fundSeekerInputRequest.getApplicationId());
