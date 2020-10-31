@@ -46,6 +46,14 @@ public class AnalyzerResponse implements Serializable{
 	private Boolean isManualUpload;
 
 	private String failureReason;
+
+	private String success;
+
+	private String sysMessage;
+
+	private Integer responseType;
+
+	private Integer msgCode;
 	
 	public byte[] getContentInBytes() {
 		return contentInBytes;
@@ -108,6 +116,16 @@ public class AnalyzerResponse implements Serializable{
 		this.missingMonth=missingMonth;
 	}
 
+	public AnalyzerResponse(String message, Integer status, Object data, String success, String sysMessage, Integer responseType, Integer msgCode) {
+		super();
+		this.status = status;
+		this.message = message;
+		this.data = data;
+		this.success = success;
+		this.sysMessage = sysMessage;
+		this.responseType = responseType;
+		this.msgCode = msgCode;
+	}
 
 
 	public Long getId() {
@@ -221,5 +239,37 @@ public class AnalyzerResponse implements Serializable{
 
 	public void setFailureReason(String failureReason) {
 		this.failureReason = failureReason;
+	}
+
+	public String getSysMessage() {
+		return sysMessage;
+	}
+
+	public void setSysMessage(String sysMessage) {
+		this.sysMessage = sysMessage;
+	}
+
+	public Integer getResponseType() {
+		return responseType;
+	}
+
+	public void setResponseType(Integer responseType) {
+		this.responseType = responseType;
+	}
+
+	public Integer getMsgCode() {
+		return msgCode;
+	}
+
+	public void setMsgCode(Integer msgCode) {
+		this.msgCode = msgCode;
+	}
+
+	public String getSuccess() {
+		return success;
+	}
+
+	public void setSuccess(String success) {
+		this.success = success;
 	}
 }
