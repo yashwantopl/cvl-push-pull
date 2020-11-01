@@ -459,4 +459,7 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	@Query(value = "UPDATE fs_loan_application_master lm SET lm.data_copied_for=:copyId WHERE lm.application_id=:applicationId",nativeQuery = true)
 	public int updateCopyId(@Param("applicationId") Long applicationId, @Param("copyId") Long copyId);
 	
+	@Query(value = "SELECT storage_id FROM `itr_api_msme`.`itr_profile_company_mapping` WHERE master_id=:itrMasterId AND is_active = TRUE ORDER BY YEAR DESC LIMIT 3",nativeQuery = true)
+   	public List<BigInteger> getItrStorageIds(@Param("itrMasterId") Long itrMasterId);
+	
 }

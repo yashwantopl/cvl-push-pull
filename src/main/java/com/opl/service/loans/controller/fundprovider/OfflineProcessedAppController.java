@@ -19,6 +19,7 @@ import com.opl.mudra.api.loans.model.LoansResponse;
 import com.opl.mudra.api.loans.model.common.ReportRequest;
 import com.opl.mudra.api.loans.utils.CommonUtils;
 import com.opl.service.loans.service.fundprovider.OfflineProcessedAppService;
+import com.opl.service.loans.service.teaser.primaryview.CorporatePrimaryViewService;
 
 
 @RestController
@@ -30,6 +31,9 @@ public class OfflineProcessedAppController {
 	
 	@Autowired
 	private OfflineProcessedAppService offlineProcessedApplicationService;
+	
+	@Autowired
+	private CorporatePrimaryViewService corporatePrimaryViewService;
 	
 	@RequestMapping(value="/applicationList", method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getApplicationList(@RequestBody ReportRequest reportRequest, HttpServletRequest request)  {
@@ -152,6 +156,18 @@ public class OfflineProcessedAppController {
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully fetched Other Loans List", HttpStatus.OK.value(),offlineProcessedApplicationService.getUniformOtherProposalList(userId)), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Exception while get Other offline proposal list : ",e);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+		}
+
+	}
+	
+	@RequestMapping(value="/getAllStorageIds", method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getAllStorageIds(@RequestBody ReportRequest reportRequest, HttpServletRequest request)  {
+		//GET USER ID AND USER TYPE
+		try {
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully fetched StorageIds", HttpStatus.OK.value(),corporatePrimaryViewService.getAllStorageIds(reportRequest.getProfileId(), reportRequest.getApplicationId())), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Exception while get pending offline proposal list : ",e);
 			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 		}
 
