@@ -13,7 +13,7 @@ public interface AdminDetailRepository extends JpaRepository<BankCWAuditTrailDom
     @Query(value = "SELECT usr.user_id,usr.email,usr.sign_up_date,usr.last_access_id FROM `users`.`users` usr WHERE usr.user_type_id = 1 ORDER BY usr.sign_up_date DESC \n#pageable\n",nativeQuery = true)
     public List<Object[]> usersList(Pageable pageable);
 
-    @Query(value = "SELECT con.application_id,con.stage_id,con.modified_date,con.status,con.message FROM `connect`.`connect_log` con WHERE con.application_id=:applicationId",nativeQuery = true)
+    @Query(value = "SELECT con.application_id,con.stage_id,con.modified_date,con.status,con.message FROM `connect_mudra`.`connect_log` con WHERE con.application_id=:applicationId",nativeQuery = true)
     public Object[] connectList(@Param("applicationId")Long applicationId);
 
     @Query(value = "SELECT prop.fp_product_id,prop.user_org_id,prop.branch_id,prop.el_amount,prop.el_tenure,prop.el_roi,prop.application_id FROM ``proposal_details` prop WHERE prop.is_active = TRUE AND prop.application_id=:applicationId",nativeQuery = true)
