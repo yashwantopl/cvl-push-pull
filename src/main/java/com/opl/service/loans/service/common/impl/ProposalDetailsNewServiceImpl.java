@@ -18,8 +18,6 @@ import com.opl.mudra.api.matchengine.model.ProposalMappingRequest;
 import com.opl.mudra.api.matchengine.utils.CommonUtils;
 import com.opl.mudra.api.matchengine.utils.MatchConstant;
 import com.opl.mudra.api.user.model.UserResponse;
-import com.opl.mudra.client.notification.NotificationClient;
-import com.opl.mudra.client.oneform.OneFormClient;
 import com.opl.mudra.client.users.UsersClient;
 import com.opl.service.loans.domain.fundprovider.ProposalDetails;
 import com.opl.service.loans.domain.fundprovider.ProposalStatusMaster;
@@ -62,13 +60,6 @@ public class ProposalDetailsNewServiceImpl implements ProposalDetailsNewService 
 
     @Autowired
     NbfcRatioMappingRepository nbfcRatioMappingRepository;
-
-    @Autowired
-    private NotificationClient notificationClient;
-
-
-    @Autowired
-    private OneFormClient oneFormClient;
 
     @Override
     public ProposalDetails saveEligibleProposal(ProposalDetails proposalDetail) {
@@ -385,7 +376,6 @@ public class ProposalDetailsNewServiceImpl implements ProposalDetailsNewService 
             if (CommonUtils.isObjectNullOrEmpty(proposalDetails)) {
                 return false;
             }
-            Long branchId = proposalDetails.getBranchId();
             proposalDetails.setBranchId(inEliProReq.getBranchId());
             proposalDetails.setModifiedBy(inEliProReq.getUserId());
             proposalDetails.setModifiedDate(new Date());
