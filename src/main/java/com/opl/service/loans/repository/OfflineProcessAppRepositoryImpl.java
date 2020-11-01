@@ -11,7 +11,6 @@ import javax.persistence.StoredProcedureQuery;
 import org.springframework.stereotype.Repository;
 
 import com.opl.mudra.api.loans.utils.CommonUtils;
-import com.opl.service.loans.domain.fundseeker.IneligibleProposalDetails;
 
 
 @Repository
@@ -22,37 +21,35 @@ public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepos
 	private static final String ORG_ID = "orgId";
 	private static final String FROM_DATE = "fromDate";
 	private static final String TO_DATE = "toDate";
-	private static final String CONNECT_FLOW_TYPE_ID = "connectFlowTypeId";
 
 	@PersistenceContext
 	private EntityManager entityManager;
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public String getInEligibleRecordList(Long userId,Date fromDate,Date toDate) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchOfflinePendingProposal");
 		storedProcedureQuery.registerStoredProcedureParameter(CommonUtils.USER_ID,Long.class, ParameterMode.IN);
 		storedProcedureQuery.registerStoredProcedureParameter(FROM_DATE,Date.class, ParameterMode.IN);
 		storedProcedureQuery.registerStoredProcedureParameter(TO_DATE,Date.class, ParameterMode.IN);
-		storedProcedureQuery.registerStoredProcedureParameter(CONNECT_FLOW_TYPE_ID,Integer.class,ParameterMode.IN);
+//		storedProcedureQuery.registerStoredProcedureParameter(CONNECT_FLOW_TYPE_ID,Integer.class,ParameterMode.IN);
 		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
 		storedProcedureQuery.setParameter(FROM_DATE,fromDate);
 		storedProcedureQuery.setParameter(TO_DATE,toDate);
-		storedProcedureQuery.setParameter(CONNECT_FLOW_TYPE_ID,-1);
+//		storedProcedureQuery.setParameter(CONNECT_FLOW_TYPE_ID,-1);
 		return (String) storedProcedureQuery.getSingleResult();
 	}
 	
-	@Override
-	public IneligibleProposalDetails findByAppliationId(Long applicationId,Long orgId) {
-		List<IneligibleProposalDetails> data = entityManager.createQuery("SELECT ipd FROM IneligibleProposalDetails ipd where ipd.applicationId =:applicationId and ipd.userOrgId =:orgId and ipd.isActive = true",IneligibleProposalDetails.class)
-				.setParameter("applicationId", applicationId)
-				.setParameter(ORG_ID, orgId)
-				.getResultList();
-		if(data != null && !data.isEmpty()) {
-			return data.get(0);
-		}
-		return null;
-	}
+//	@Override
+//	public IneligibleProposalDetails findByAppliationId(Long applicationId,Long orgId) {
+//		List<IneligibleProposalDetails> data = entityManager.createQuery("SELECT ipd FROM IneligibleProposalDetails ipd where ipd.applicationId =:applicationId and ipd.userOrgId =:orgId and ipd.isActive = true",IneligibleProposalDetails.class)
+//				.setParameter("applicationId", applicationId)
+//				.setParameter(ORG_ID, orgId)
+//				.getResultList();
+//		if(data != null && !data.isEmpty()) {
+//			return data.get(0);
+//		}
+//		return null;
+//	}
 
 	public boolean updateSanctionedFlag(Long appId,Long orgId,Long branchId,Long userId) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spUpdateOfflineSanctionedFlag");
@@ -78,52 +75,48 @@ public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepos
 		return (Integer) storedProcedureQuery.getOutputParameterValue(RESULT);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public String getSanctionedApplicationList(Long userId,Date fromDate,Date toDate) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchOfflineSanctionedProposal");
 		storedProcedureQuery.registerStoredProcedureParameter(CommonUtils.USER_ID,Long.class, ParameterMode.IN);
 		storedProcedureQuery.registerStoredProcedureParameter(FROM_DATE,Date.class, ParameterMode.IN);
 		storedProcedureQuery.registerStoredProcedureParameter(TO_DATE,Date.class, ParameterMode.IN);
-		storedProcedureQuery.registerStoredProcedureParameter(CONNECT_FLOW_TYPE_ID,Integer.class,ParameterMode.IN);
+//		storedProcedureQuery.registerStoredProcedureParameter(CONNECT_FLOW_TYPE_ID,Integer.class,ParameterMode.IN);
 		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
 		storedProcedureQuery.setParameter(FROM_DATE,fromDate);
 		storedProcedureQuery.setParameter(TO_DATE,toDate);
-		storedProcedureQuery.setParameter(CONNECT_FLOW_TYPE_ID,-1);
+//		storedProcedureQuery.setParameter(CONNECT_FLOW_TYPE_ID,-1);
 		return (String) storedProcedureQuery.getSingleResult();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public String getDisbursedApplicationList(Long userId,Date fromDate,Date toDate) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchOfflineDisbursedProposal");
 		storedProcedureQuery.registerStoredProcedureParameter(CommonUtils.USER_ID,Long.class, ParameterMode.IN);
 		storedProcedureQuery.registerStoredProcedureParameter(FROM_DATE,Date.class, ParameterMode.IN);
 		storedProcedureQuery.registerStoredProcedureParameter(TO_DATE,Date.class, ParameterMode.IN);
-		storedProcedureQuery.registerStoredProcedureParameter(CONNECT_FLOW_TYPE_ID,Integer.class,ParameterMode.IN);
+//		storedProcedureQuery.registerStoredProcedureParameter(CONNECT_FLOW_TYPE_ID,Integer.class,ParameterMode.IN);
 		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
 		storedProcedureQuery.setParameter(FROM_DATE,fromDate);
 		storedProcedureQuery.setParameter(TO_DATE,toDate);
-		storedProcedureQuery.setParameter(CONNECT_FLOW_TYPE_ID,-1);
+//		storedProcedureQuery.setParameter(CONNECT_FLOW_TYPE_ID,-1);
 		return (String) storedProcedureQuery.getSingleResult();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public String getRejectProposalsList(Long userId,Date fromDate,Date toDate) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchOfflineRejectProposal");
 		storedProcedureQuery.registerStoredProcedureParameter(CommonUtils.USER_ID,Long.class, ParameterMode.IN);
 		storedProcedureQuery.registerStoredProcedureParameter(FROM_DATE,Date.class, ParameterMode.IN);
 		storedProcedureQuery.registerStoredProcedureParameter(TO_DATE,Date.class, ParameterMode.IN);
-		storedProcedureQuery.registerStoredProcedureParameter(CONNECT_FLOW_TYPE_ID,Integer.class,ParameterMode.IN);
+//		storedProcedureQuery.registerStoredProcedureParameter(CONNECT_FLOW_TYPE_ID,Integer.class,ParameterMode.IN);
 		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
 		storedProcedureQuery.setParameter(FROM_DATE,fromDate);
 		storedProcedureQuery.setParameter(TO_DATE,toDate);
-		storedProcedureQuery.setParameter(CONNECT_FLOW_TYPE_ID,-1);
+//		storedProcedureQuery.setParameter(CONNECT_FLOW_TYPE_ID,-1);
 		return (String) storedProcedureQuery.getSingleResult();
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public String getOtherProposalsList(Long userId) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchOfflineOtherProposal");
@@ -140,7 +133,6 @@ public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepos
 		return  (List<Object[]>) storedProcedureQuery.getResultList() ;
 	 }
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public String getUniformApplications(Long userId) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchUniformPendingProposal");
@@ -149,7 +141,6 @@ public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepos
 		return (String) storedProcedureQuery.getSingleResult();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public String getUniformSanctionedApplicationList(Long userId) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchUniformSanctionedProposal");
@@ -158,7 +149,6 @@ public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepos
 		return (String) storedProcedureQuery.getSingleResult();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public String getUniformDisbursedApplicationList(Long userId) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchUniformDisbursedProposal");
