@@ -76,8 +76,6 @@ import com.opl.mudra.client.fraudanalytics.FraudAnalyticsClient;
 import com.opl.mudra.client.gst.GstClient;
 import com.opl.mudra.client.oneform.OneFormClient;
 import com.opl.mudra.client.users.UsersClient;
-import com.opl.profile.api.model.ProfileVerMapRequest;
-import com.opl.profile.client.ProfileClient;
 import com.opl.service.loans.config.AsyncComponent;
 import com.opl.service.loans.domain.CommonAuditTable;
 import com.opl.service.loans.domain.fundseeker.LoanApplicationMaster;
@@ -174,9 +172,6 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
 	@Autowired
 	private DMSClient dMSClient;
-	
-	@Autowired
-	private ProfileClient profileClient;
 	
 	@Autowired
 	private AsyncComponent asyncComp;

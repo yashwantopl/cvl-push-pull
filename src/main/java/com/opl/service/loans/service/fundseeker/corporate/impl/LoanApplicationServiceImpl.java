@@ -8884,25 +8884,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				logger.info("Bank Statement data copied successfully.");
 			}
 			
-			// COPY ELIGIBILITY DATA
-			/*
-			 * try { EligibilityResponse elgRes =
-			 * eligibilityClient.saveGstCalculation(profileVerMapRequest.getGstId(),
-			 * applicationId); if(elgRes != null && elgRes.getData() != null && ((Boolean)
-			 * elgRes.getData())) { logger.info("Successfully Copy Eligiblity GST DATaa"); }
-			 * else { auditTableRepository.save(new CommonAuditTable(applicationId,
-			 * profileVerMapRequest.getProfileId(),
-			 * LoanApplicationServiceImpl.class.getName(), "copyDataForOneForm",
-			 * "Response Null Or Empty While Copy GST Data In to Eligiblity Table")); return
-			 * false; } } catch (Exception e) {
-			 * logger.error("Exception while Copy GST Data To Eligiblity ==>" , e);
-			 * auditTableRepository.save(new CommonAuditTable(applicationId,
-			 * profileVerMapRequest.getProfileId(),
-			 * LoanApplicationServiceImpl.class.getName(), "copyDataForOneForm",
-			 * "Exception while Copy GST data into Eligiblity :-" + e.getMessage())); return
-			 * false; }
-			 */
-			
 			boolean isItrDataCopied = copyItrDataForOneForm(applicationId, profileVerMapRequest, userId);
 			if (!isItrDataCopied) {
 				logger.error("Failed to copy ITR data.");
@@ -8910,17 +8891,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			} else {
 				logger.info("ITR data copied successfully.");
 			}
-//			boolean isGstDataCopied = copyGstDataForOneForm(applicationId, profileVerMapRequest);
-//			if (!isGstDataCopied) {
-//				logger.error("Failed to copy GST data.");
-//				return false;
-//			} else {
-//				logger.info("GST data copied successfully.");
-//			}
-//			LoanApplicationRequest loanApplicationRequest = new LoanApplicationRequest();
-//			loanApplicationRequest.setId(applicationId);
-//			loanApplicationRequest.setProfileId(profileVerMapRequest.getId());
-//			updateProfileId(loanApplicationRequest);
 			logger.info("Data copied successfully...");
 		} catch (Exception e) {
 			logger.error("Failed to copy data profileId: " + profileVerMapRequest.getProfileId() + ",profileVersionId: " + profileVerMapRequest.getId() + ",applicationId:" + applicationId + " ", e);
