@@ -593,7 +593,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	public Object [] getBureauVersionIdById(Long scoringModelId) {
 		Object [] object = null;
 		try {
-			object = (Object[]) entityManager.createNativeQuery("select md.cibil_bureau_version_concession,md.cibil_bureau_grad_version FROM scoring_sidbi.scoring_model md where md.id =:id")
+			object = (Object[]) entityManager.createNativeQuery("select md.cibil_bureau_version_concession,md.cibil_bureau_grad_version FROM scoring_mudra.scoring_model md where md.id =:id")
 					.setParameter("id", scoringModelId)
 					.getSingleResult();	
 		}catch(Exception e) {
@@ -632,8 +632,8 @@ public class LoanRepositoryImpl implements LoanRepository {
 	public String getScoringMinAndMaxRangeValue(List<Long> scoreModelId,List<Long> fieldMasterId) {
 		try {
 			return (String) entityManager.createNativeQuery("SELECT CAST(JSON_ARRAYAGG(JSON_OBJECT('scoreModelId',mp.scoring_model_id,'minRange',md.min_range,'maxRange',md.max_range,'score',md.score,'description',md.description,'fieldMasterId',mp.`field_master_id`)) AS CHAR) "
-					+ "FROM `scoring_sidbi`.`model_parameter_option` md "
-					+ "INNER JOIN `scoring_sidbi`.`model_parameter` mp ON mp.`id` = md.`model_parameter_id` "
+					+ "FROM `scoring_mudra`.`model_parameter_option` md "
+					+ "INNER JOIN `scoring_mudra`.`model_parameter` mp ON mp.`id` = md.`model_parameter_id` "
 					+ "WHERE mp.scoring_model_id IN (:scoreModelId) AND mp.`field_master_id` IN (:fieldMasterId) AND md.is_active = TRUE")
 					.setParameter("scoreModelId",scoreModelId)
 					.setParameter("fieldMasterId", fieldMasterId)
