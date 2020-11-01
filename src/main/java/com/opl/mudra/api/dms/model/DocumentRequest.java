@@ -32,7 +32,9 @@ public class DocumentRequest implements Serializable{
     private List<Long> proMapIds;
     private Long profileId;
     private Long moduleMasterId;
-
+    private List<String> bsStorageIds;
+    private List<Long> storageIds;
+    
     public Long getApplicationId() {
         return applicationId;
     }
@@ -166,4 +168,20 @@ public class DocumentRequest implements Serializable{
     public void setModuleMasterId(Long moduleMasterId) {
         this.moduleMasterId = moduleMasterId;
     }
+
+	public List<String> getBsStorageIds() {
+		return bsStorageIds;
+	}
+
+	public void setBsStorageIds(List<String> bsStorageIds) {
+		this.bsStorageIds = bsStorageIds;
+	}
+
+	public List<Long> getStorageIds() {
+		return storageIds;
+	}
+
+	public void setStorageIds(List<Long> storageIds) {
+		this.storageIds = storageIds;
+	}
 }
