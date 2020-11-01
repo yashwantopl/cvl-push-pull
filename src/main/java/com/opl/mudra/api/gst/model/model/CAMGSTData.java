@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.opl.mudra.api.gst.model.Gstr4TeaserCamDataResponse;
 import com.opl.mudra.api.gst.model.MomSales;
 
@@ -15,6 +16,7 @@ import com.opl.mudra.api.gst.model.MomSales;
  * @author sanket
  *
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CAMGSTData {
 	
 	private String gstin;
