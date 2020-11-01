@@ -325,7 +325,7 @@ public class ProposalDetailsNewServiceImpl implements ProposalDetailsNewService 
             }
             // update proposal id in connect
             proposalDetailsRepository.updateProposalId(inlPropReq.getApplicationId(), inlProposalDetails.getId());
-            //proposalDetailsRepository.updateProposalIdInProfile(inlPropReq.getApplicationId(), inlProposalDetails.getId());
+            proposalDetailsRepository.updateProposalIdInProfile(inlPropReq.getApplicationId(), inlProposalDetails.getId());
             return inlProposalDetails.getId();
         } catch (Exception e) {
             logger.error("error while saving in eligible proposal : ", e);
