@@ -17,11 +17,12 @@ import org.springframework.stereotype.Service;
 import com.opl.mudra.api.loans.exception.LoansException;
 import com.opl.mudra.api.loans.model.LoanDisbursementRequest;
 import com.opl.mudra.api.loans.utils.CommonUtils;
+import com.opl.mudra.api.matchengine.utils.MatchConstant;
 import com.opl.mudra.api.oneform.enums.SanctionedStatusMaster;
-import com.opl.service.loans.domain.fundseeker.IneligibleProposalDetails;
+import com.opl.service.loans.domain.fundprovider.ProposalDetails;
+import com.opl.service.loans.domain.fundprovider.ProposalStatusMaster;
 import com.opl.service.loans.domain.sanction.LoanDisbursementDomain;
 import com.opl.service.loans.domain.sanction.LoanSanctionDomain;
-import com.opl.service.loans.repository.OfflineProcessedAppRepository;
 import com.opl.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.opl.service.loans.repository.sanction.LoanDisbursementRepository;
 import com.opl.service.loans.repository.sanction.LoanSanctionRepository;
@@ -52,8 +53,6 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 	@Autowired
 	private LoanSanctionRepository loanSanctionRepository;
 	
-	@Autowired
-	private OfflineProcessedAppRepository offlineProcessedAppRepository;
 	@Override
 	public Boolean saveLoanDisbursementDetail(LoanDisbursementRequest loanDisbursementRequest) throws IOException {
 		logger.info("Enter in saveLoanDisbursementDetail() ----------------------->  LoanDisbursementRequest "+ loanDisbursementRequest);
@@ -146,8 +145,8 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 						return loanDisbursementRequest;
 					} else {
 						logger.info(EXIT_SAVE_LOAN_DISBURSEMENT_DETAIL_MSG+ "Total Disbursement Amount EXCEED Sanction Amount");
-						//loanDisbursementRequest.setReason("Total Disbursement Amount EXCEED Sanction Amount{} sanctionAmount ==>"+loanSanctionDomain.getSanctionAmount()+" ,  ( oldDisbursedAmount ==> "+oldDisbursedAmount+" +  newDisbursedAmount==>" +loanDisbursementRequest.getDisbursedAmount()+" ) = totalDisbursedAmount==>"+totalDisbursedAmount);
-						loanDisbursementRequest.setReason("lastAmount");
+						loanDisbursementRequest.setReason("Total Disbursement Amount EXCEED Sanction Amount{} sanctionAmount ==>"+loanSanctionDomain.getSanctionAmount()+" ,  ( oldDisbursedAmount ==> "+oldDisbursedAmount+" +  newDisbursedAmount==>" +loanDisbursementRequest.getDisbursedAmount()+" ) = totalDisbursedAmount==>"+totalDisbursedAmount);
+//						loanDisbursementRequest.setReason("lastAmount");
 						loanDisbursementRequest.setIsSaved(false);
 						loanDisbursementRequest.setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.DISBURSEMENT_AMOUNT_EXCEED_SANCTION_AMOUNT);
 						if(loanDisbursementRequest.getIsIneligibleProposal()!= null &&  loanDisbursementRequest.getIsIneligibleProposal()) {
@@ -165,13 +164,13 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 
 						loanDisbursementRequest.setIsDisbursedFrom(2L);
 						loanDisbursementRequest.setOrgId(orgId);
-						IneligibleProposalDetails ineligibleProposalDetails = (IneligibleProposalDetails) offlineProcessedAppRepository.findByAppliationId(loanDisbursementRequest.getApplicationId(),orgId);
+						ProposalDetails ineligibleProposalDetails = proposalDetailsRepository.findByAppliationIdAndOrgId(loanDisbursementRequest.getApplicationId(),orgId);
 						ineligibleProposalDetails.setIsDisbursed(true);
 						ineligibleProposalDetails.setModifiedDate(new Date());
 						if(!CommonUtils.isObjectNullOrEmpty(loanDisbursementRequest.getActionBy())) {
 							ineligibleProposalDetails.setModifiedBy(Long.valueOf(loanDisbursementRequest.getActionBy()));
 						}
-						ineligibleProposalDetails.setStatus(CommonUtils.InEligibleProposalStatus.DISBURED);
+						ineligibleProposalDetails.setProposalStatusId(new ProposalStatusMaster(MatchConstant.ProposalStatus.DISBURSED));
 						LoanSanctionDomain loanSanctionDomainOld =loanSanctionRepository.findByAppliationId(loanDisbursementRequest.getApplicationId());
 						loanSanctionDomainOld.setIsPartiallyDisbursedOffline(true);
 					}
