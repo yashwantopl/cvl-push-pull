@@ -1,12 +1,14 @@
 package com.opl.service.loans.service.teaser.primaryview.impl;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -119,6 +121,8 @@ import com.opl.mudra.client.oneform.OneFormClient;
 import com.opl.mudra.client.scoring.ScoringClient;
 import com.opl.mudra.client.thirdparty.ThirdPartyClient;
 import com.opl.mudra.client.users.UsersClient;
+import com.opl.profile.api.model.ProfileVerMapRequest;
+import com.opl.profile.client.ProfileClient;
 import com.opl.service.loans.domain.fundprovider.TermLoanParameter;
 import com.opl.service.loans.domain.fundprovider.WcTlParameter;
 import com.opl.service.loans.domain.fundprovider.WorkingCapitalParameter;
@@ -278,6 +282,9 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 	
 	@Autowired
 	private LoanRepository loanRepository;
+	
+	@Autowired
+	private ProfileClient profileClient;
 	
 	DecimalFormat decim = new DecimalFormat("#,###.00");
 
@@ -1937,4 +1944,122 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		}
 		asso.setAddress(address);
 	}	
+	
+	@Override
+	public List<Long> getAllStorageIds(Long profileId, Long applicationId) {
+	
+	Long profileMappingId = loanApplicationRepository.getProfileMappingId(applicationId);
+	List<Long> comibinedStorageIds = new ArrayList<>();
+	com.opl.profile.api.model.ProfileVerMapRequest profileObj = new com.opl.profile.api.model.ProfileVerMapRequest();
+	if (!CommonUtils.isObjectNullOrEmpty(profileMappingId)) {
+		logger.info("Inside CommonUtils.isObjectNullOrEmpty(profileMappingId)");
+		com.opl.profile.api.model.CommonResponse profileRequest = profileClient.getProfileVersionDetailsByPrimaryId(profileMappingId);
+		try {
+			profileObj = MultipleJSONObjectHelper.getObjectFromMap(((Map)profileRequest.getData()), ProfileVerMapRequest.class) ;
+			
+			ReportRequest reportRequest = new ReportRequest();
+			reportRequest.setBsMasterId(profileObj.getBsId());
+			AnalyzerResponse bsStoarageIdsanalyzerResponse = analyzerClient.getBsStorageIds(reportRequest);
+			List<HashMap<Object, Object>> bsStorageIdsMap = (List<HashMap<Object, Object>>) bsStoarageIdsanalyzerResponse.getData();
+			List<Long> idsList = new ArrayList<>(); 
+			if (!CommonUtils.isListNullOrEmpty(bsStorageIdsMap)) {
+				String[] finalBsIds = null;
+				for (Object bsIds : bsStorageIdsMap) {
+					String ids = bsIds.toString().replaceAll(" ", "");
+					String[] idsArray = ids.split(",");
+					finalBsIds = idsArray;
+					for (String id :  finalBsIds) { 
+			            // Add each Storage ID of bs into the list 
+						idsList.add(Long.parseLong(id)); 
+			        }
+			}
+			}
+			comibinedStorageIds.addAll(idsList);
+			
+			//CIBIL MASTER ID
+			try {
+			List<Long> proMapIds=new ArrayList<Long>();
+			proMapIds.add(DocumentAlias.CORPORATE_ITR_PDF);
+			List<BigInteger> itrStorageIds =  loanApplicationRepository.getItrStorageIds(profileObj.getItrId());
+			if(itrStorageIds.contains(null) || itrStorageIds.contains("")) {
+				comibinedStorageIds.addAll(Collections.EMPTY_LIST);
+			}else {
+				List<Long> newLongItrIds = new ArrayList<>(itrStorageIds.size());
+				for (BigInteger bigInteger : itrStorageIds) {
+					 newLongItrIds.add(bigInteger.longValue());
+				}
+				comibinedStorageIds.addAll(newLongItrIds);
+			}
+			} catch (Exception e) {
+				logger.error(CommonUtils.EXCEPTION,e);
+			}	
+			
+			DocumentRequest documentRequest = new DocumentRequest();
+			documentRequest.setApplicationId(applicationId);
+			documentRequest.setProfileId(profileObj.getProfileId());
+			try {
+				documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
+				documentRequest.setProductDocumentMappingId(DocumentAlias.CIBIL_REPORT_MSME_COMPANY);
+				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+				List<HashMap<String, Object>> hashMap = (List<HashMap<String, Object>>) documentResponse.getDataList();
+				for (HashMap<String, Object> rec : hashMap) {
+					DocumentResponse data;
+					try {
+						data = MultipleJSONObjectHelper.getObjectFromMap(rec, DocumentResponse.class);
+						System.out.println(data);
+						comibinedStorageIds.add(data.getId().longValue());
+					} catch (IOException e) {
+						logger.error("Error While adding cibil storage idto combined storage id list");
+					}
+				}
+			} catch (DocumentException e) {
+				logger.error(CommonUtils.EXCEPTION,e);
+			}
+
+			try {
+				documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
+				documentRequest.setProductDocumentMappingId(DocumentAlias.CIBIL_REPORT_HUF_COMMERCIAL);
+				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+				List<HashMap<String, Object>> hashMap = (List<HashMap<String, Object>>) documentResponse.getDataList();
+				for (HashMap<String, Object> rec : hashMap) {
+					DocumentResponse data;
+					try {
+						data = MultipleJSONObjectHelper.getObjectFromMap(rec, DocumentResponse.class);
+						comibinedStorageIds.add(data.getId().longValue());
+					} catch (IOException e) {
+						logger.error("Error While adding cibil storage idto combined storage id list");
+					}
+				}
+			} catch (DocumentException e) {
+				logger.error(CommonUtils.EXCEPTION,e);
+			}
+			
+			try {
+				documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
+				documentRequest.setProductDocumentMappingId(DocumentAlias.CIBIL_REPORT_MSME_CONSUMER);
+				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+				List<HashMap<String, Object>> hashMap = (List<HashMap<String, Object>>) documentResponse.getDataList();
+				for (HashMap<String, Object> rec : hashMap) {
+					DocumentResponse data;
+					try {
+						data = MultipleJSONObjectHelper.getObjectFromMap(rec, DocumentResponse.class);
+						comibinedStorageIds.add(data.getId().longValue());
+					} catch (IOException e) {
+						logger.error("Error While adding cibil storage idto combined storage id list");
+					}
+				}
+			} catch (DocumentException e) {
+				logger.error(CommonUtils.EXCEPTION,e);
+			}
+			
+			
+			
+		} catch (Exception e) {
+			logger.error("Error while Getting Storage Ids ::",e);
+		}
+
+		}
+		
+		return  comibinedStorageIds;
+	}
 }
