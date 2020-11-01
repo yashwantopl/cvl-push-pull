@@ -1434,7 +1434,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 						* denomination);
 		financialInputRequestString.setOtheNonCurruntAsset(
 				CommonUtils.convertValueIndianCurrency(financialInputRequestDbl.getOtheNonCurruntAsset()).toString());
-		financialInputRequestDbl.setInventories(assetsDetails.getInventory() * denomination);
+		financialInputRequestDbl.setInventories(assetsDetails.getInventory() != null ? assetsDetails.getInventory() * denomination : null);
 		financialInputRequestString.setInventories(
 				CommonUtils.convertValueIndianCurrency(financialInputRequestDbl.getInventories()).toString());
 

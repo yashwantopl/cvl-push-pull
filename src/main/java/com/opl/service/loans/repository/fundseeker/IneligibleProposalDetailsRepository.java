@@ -32,7 +32,7 @@ public interface IneligibleProposalDetailsRepository extends JpaRepository<Ineli
     
     public IneligibleProposalDetails findFirstByApplicationIdAndIsActiveOrderByIdDesc(Long applicationId,Boolean isActive);
     
-    @Query(value = "SELECT inl.user_org_id FROM `ineligible_proposal_details` inl WHERE inl.application_id =:applicationId", nativeQuery = true)
+    @Query(value = "SELECT inl.user_org_id FROM `ineligible_proposal_details` inl WHERE inl.application_id =:applicationId and inl.is_active=true", nativeQuery = true)
     public Long getOrgId(@Param("applicationId") Long applicationId);
 
     public IneligibleProposalDetails findByApplicationIdAndUserOrgIdAndIsActive(Long applicationId,Long userOrgId,Boolean isActive);
