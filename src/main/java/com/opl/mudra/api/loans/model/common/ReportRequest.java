@@ -16,6 +16,9 @@ public class ReportRequest implements Serializable {
 	private Integer number;
 	private String value;
 	private Long businessTypeId;
+	private Integer connectFlowTypeId;
+	private Long profileId;
+	private Long applicationId;
 	
 	public Date getFromDate() {
 		return fromDate;
@@ -58,6 +61,24 @@ public class ReportRequest implements Serializable {
 	 */
 	public void setBusinessTypeId(Long businessTypeId) {
 		this.businessTypeId = businessTypeId;
+	}
+	public Integer getConnectFlowTypeId() {
+		return connectFlowTypeId;
+	}
+	public void setConnectFlowTypeId(Integer connectFlowTypeId) {
+		this.connectFlowTypeId = connectFlowTypeId;
+	}
+	public Long getProfileId() {
+		return profileId;
+	}
+	public void setProfileId(Long profileId) {
+		this.profileId = profileId;
+	}
+	public Long getApplicationId() {
+		return applicationId;
+	}
+	public void setApplicationId(Long applicationId) {
+		this.applicationId = applicationId;
 	}
 	
 
