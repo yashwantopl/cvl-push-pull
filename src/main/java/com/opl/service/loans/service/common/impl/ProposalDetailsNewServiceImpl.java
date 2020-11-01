@@ -113,11 +113,11 @@ public class ProposalDetailsNewServiceImpl implements ProposalDetailsNewService 
         Long userOrgId = productDetailsRepository.getOrgIdFromFpMappingId(proposalMappingRequest.getFpProductId());
         if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
             proposalDetail.setUserOrgId(userOrgId.longValue());
-            try {
-                proposalDetail.setVersion(loanRepository.getVersionFromOrgId(userOrgId.longValue()));
-            } catch (Exception e) {
-                logger.error("Exception in Getting Version For ORGId=====>{}=====>{}", userOrgId, e);
-            }
+//            try {
+//                proposalDetail.setVersion(loanRepository.getVersionFromOrgId(userOrgId.longValue()));
+//            } catch (Exception e) {
+//                logger.error("Exception in Getting Version For ORGId=====>{}=====>{}", userOrgId, e);
+//            }
         }
         proposalDetail.setIsActive(false);
         proposalDetail.setCreatedDate(new Date());
