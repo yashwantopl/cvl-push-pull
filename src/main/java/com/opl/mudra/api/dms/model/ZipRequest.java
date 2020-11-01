@@ -25,6 +25,7 @@ public class ZipRequest implements Serializable {
 	    private List<Long> coAppId;
 	    private String userType;
 	    private Long profileId;
+	    private List<Long> storageIds;
 	    
 		/**
 		 * @return the applicationId
@@ -86,5 +87,11 @@ public class ZipRequest implements Serializable {
 		}
 		public void setProfileId(Long profileId) {
 			this.profileId = profileId;
+		}
+		public List<Long> getStorageIds() {
+			return storageIds;
+		}
+		public void setStorageIds(List<Long> storageIds) {
+			this.storageIds = storageIds;
 		}
 }
