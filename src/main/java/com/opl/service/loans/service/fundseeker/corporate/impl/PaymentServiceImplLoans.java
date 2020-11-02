@@ -1764,7 +1764,7 @@ public class PaymentServiceImplLoans implements PaymentServiceLoans{
 //			subject = "ODOP - Intimation : New In-Principle Approved Proposal";
 //			loanTypeId = CommonUtils.LoanType.ODOP_LOAN.getValue();
 //		}else {
-			businessTypeId = CommonUtils.BusinessType.EXISTING_BUSINESS.getId();
+			businessTypeId = CommonUtils.BusinessType.MUDRA_LOAN.getId();
 			subject = "MSME Intimation : New In-Principle Approved Proposal";
 //		}
 		map.put("maker_name", fullName);
