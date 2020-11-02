@@ -1764,9 +1764,12 @@ public class PaymentServiceImplLoans implements PaymentServiceLoans{
 //			subject = "ODOP - Intimation : New In-Principle Approved Proposal";
 //			loanTypeId = CommonUtils.LoanType.ODOP_LOAN.getValue();
 //		}else {
-			businessTypeId = CommonUtils.BusinessType.MUDRA_LOAN.getId();
-			subject = "MSME Intimation : New In-Principle Approved Proposal";
 //		}
+		
+		businessTypeId = CommonUtils.BusinessType.MUDRA_LOAN.getId();
+		subject = "MUDRA Loan - Intimation : New In-Principle Approved Proposal";
+		loanTypeId = 100;
+		
 		map.put("maker_name", fullName);
 		
 		List<Long> roleTypeList = new ArrayList<Long>();
