@@ -1256,7 +1256,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			case 1:
 
 				WorkingCapitalParameter workingCapitalPara = workingCapitalRepository.getByID(fpProductMappingId);
-				if (workingCapitalPara.getAssessmentMethodId() != null) {
+				if (workingCapitalPara != null && workingCapitalPara.getAssessmentMethodId() != null) {
 					Long assessmentId = workingCapitalPara.getAssessmentMethodId().longValue();
 					corporatePrimaryViewResponse.setAssesmentId(assessmentId);
 				} else {
@@ -1266,7 +1266,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			case 2:
 
 				TermLoanParameter termLoanParameter = termLoanParameterRepository.getById(fpProductMappingId);
-				if (termLoanParameter.getAssessmentMethodId() != null) {
+				if (termLoanParameter != null && termLoanParameter.getAssessmentMethodId() != null) {
 					Long assessmentId = termLoanParameter.getAssessmentMethodId().longValue();
 					corporatePrimaryViewResponse.setAssesmentId(assessmentId);
 				} else {
@@ -1277,7 +1277,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			case 16:
 
 				WcTlParameter wctlPara = wctlrepo.getById(fpProductMappingId);
-				if (wctlPara.getAssessmentMethodId() != null) {
+				if (wctlPara !=null  && wctlPara.getAssessmentMethodId() != null) {
 					Long assessmentId = wctlPara.getAssessmentMethodId().longValue();
 					corporatePrimaryViewResponse.setAssesmentId(assessmentId);
 				} else {
