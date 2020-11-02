@@ -421,7 +421,7 @@ public class ProposalDetailsNewServiceImpl implements ProposalDetailsNewService 
     public boolean updateStatus(InEligibleProposalDetailsRequest inEliProReq) {
         ProposalDetails ineligibleProposalDetails = null;
         try {
-            ineligibleProposalDetails = proposalDetailsRepository.findByApplicationIdAndUserOrgIdAndIsActive(inEliProReq.getApplicationId(), inEliProReq.getUserOrgId(), true);
+            ineligibleProposalDetails = proposalDetailsRepository.findFirstByApplicationIdAndUserOrgIdAndIsActiveOrderByIdDesc(inEliProReq.getApplicationId(), inEliProReq.getUserOrgId(), true);
         } catch (Exception e) {
             logger.error(CommonUtils.EXCEPTION, e);
             return false;
