@@ -3255,12 +3255,12 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			com.opl.mudra.api.reports.ReportRequest reportRequest = null;
 			
 			if(loanTypeId == LoanType.WORKING_CAPITAL.getValue() || loanTypeId == LoanType.TERM_LOAN.getValue() || loanTypeId == LoanType.WCTL_LOAN.getValue()) {
-				logger.info("Fetching Cam Data of MSME from Payment Gateway by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}" ,applicationId ,productId, proposalId);
+				logger.info("Fetching Cam Data of Mudra Loan by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}" ,applicationId ,productId, proposalId);
 				response = getCamReportPrimaryDetails(applicationId,productId,proposalId,false);
 				reportRequest = new com.opl.mudra.api.reports.ReportRequest();
 				reportRequest.setParams(response);
-				reportRequest.setTemplate("CAMREPORTPRIMARYSIDBI");
-				reportRequest.setType("CAMREPORTPRIMARYSIDBI");
+				reportRequest.setTemplate("MUDRALOANPRIMARYCAM");
+				reportRequest.setType("MUDRALOANPRIMARYCAM");
 			}
 			
 			if(reportRequest != null && !response.isEmpty()) {
@@ -3271,9 +3271,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 							MultipartFile multipartFile = new DDRMultipart(byteArr);			  
 							JSONObject jsonObj = new JSONObject();
 							jsonObj.put(CommonUtils.APPLICATION_ID, applicationId);
-							jsonObj.put(PRODUCT_DOCUMENT_MAPPING_ID, 594L);
-							jsonObj.put(USER_TYPE, DocumentAlias.UERT_TYPE_APPLICANT);
-							jsonObj.put(ORIGINAL_FILE_NAME, "INPRINCIPLECAM"+proposalId+".pdf");
+							jsonObj.put(PRODUCT_DOCUMENT_MAPPING_ID, 355L);
+							jsonObj.put(USER_TYPE, CommonUtils.UploadUserType.UERT_TYPE_APPLICANT);
+							jsonObj.put(ORIGINAL_FILE_NAME, "MUDRALOANPRIMARYCAM"+proposalId +".pdf");
 							
 							dmsClient.uploadFile(jsonObj.toString(), multipartFile);
 							logger.info("InPrinciple CAM Uploaded for ==>"+applicationId);
@@ -3285,7 +3285,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					return byteArr;
 				}
 			}else {
-				logger.error("Error/Excpetion while fetching Cam Report called from Payment Gateway with ApplicationId==>{} ,ProductId==>{} and ProposalId==>{} with LoanTypeId==>{}" , applicationId ,productId ,proposalId ,loanTypeId);
+				logger.error("Error/Excpetion while fetching Cam Report with ApplicationId==>{} ,ProductId==>{} and ProposalId==>{} with LoanTypeId==>{}" , applicationId ,productId ,proposalId ,loanTypeId);
 			}
 		}catch (Exception e) {
 			logger.error(ERROR_WHILE_GETTING_MAP_DETAILS, e);
@@ -3306,12 +3306,12 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			com.opl.mudra.api.reports.ReportRequest reportRequest = null;
 			
 			if(loanTypeId == LoanType.WORKING_CAPITAL.getValue() || loanTypeId == LoanType.TERM_LOAN.getValue() || loanTypeId == LoanType.WCTL_LOAN.getValue()) {
-				logger.info("Fetching Data of Personal Loan by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}" ,applicationId ,productId, proposalId);
+				logger.info("Fetching Data of Mudra Loan by ApplicationId==>{} ProductMappingId==>{} ProposalId==>{}" ,applicationId ,productId, proposalId);
 				response = getDetailsForApplicationForm(applicationId, productId, proposalId);
 				reportRequest = new com.opl.mudra.api.reports.ReportRequest();
 				reportRequest.setParams(response);
-				reportRequest.setTemplate("MSMEAPPLICATIONFORM");
-				reportRequest.setType("MSMEAPPLICATIONFORM");
+				reportRequest.setTemplate("MUDRALOANAPPLICATIONFORM");
+				reportRequest.setType("MUDRALOANAPPLICATIONFORM");
 			}
 			
 			if(reportRequest != null && !response.isEmpty()) {
@@ -3320,7 +3320,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					return byteArr;
 				}
 			}else {
-				logger.error("Error/Excpetion while fetching data for report for ApplicationId==>{} ,ProductId==>{} and ProposalId==>{} with LoanTypeId==>{}" , applicationId ,productId ,proposalId ,loanTypeId);
+				logger.error("Error/Excpetion while fetching data for Application Form for ApplicationId==>{} ,ProductId==>{} and ProposalId==>{} with LoanTypeId==>{}" , applicationId ,productId ,proposalId ,loanTypeId);
 			}
 		}catch (Exception e) {
 			logger.error(ERROR_WHILE_GETTING_MAP_DETAILS, e);
