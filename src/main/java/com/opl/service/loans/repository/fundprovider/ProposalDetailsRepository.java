@@ -340,7 +340,7 @@ public interface ProposalDetailsRepository extends JpaRepository<ProposalDetails
             "			(ipd.created_date BETWEEN :fromDate and :toDate) AND ipd.is_offline = true GROUP BY ipd.application_id ORDER BY ipd.id DESC", nativeQuery = true)
     public List<Object[]> getOfflineProposalDetailsByOrgId(@Param("userOrgId")Long userOrgId, @Param("fromDate") Date fromDate, @Param("toDate") Date toDate);
 
-    public ProposalDetails findByApplicationIdAndUserOrgIdAndIsActive(Long applicationId,Long userOrgId,Boolean isActive);
+    public ProposalDetails findFirstByApplicationIdAndUserOrgIdAndIsActiveOrderByIdDesc(Long applicationId,Long userOrgId,Boolean isActive);
 
     @Query("select pd from ProposalDetails pd where pd.applicationId=:applicationId and pd.isActive = true and pd.isOffline = true")
     public List<ProposalDetails> getOfflineProposalByApplicationId(@Param("applicationId") Long applicationId);
