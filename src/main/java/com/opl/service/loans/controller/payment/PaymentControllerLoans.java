@@ -267,7 +267,7 @@ public class PaymentControllerLoans {
 				gatewayRequest.setApplicationId(applicationId);
 				gatewayRequest.setStatus(CommonUtils.PaymentStatus.SUCCESS);
 				
-				
+				gatewayResponse = new GatewayResponse();
 				gatewayResponse.setData(paymentService.sendAllMailToFSAndFP(gatewayRequest, proposalId, forFs, forFp) );
 				gatewayResponse.setStatus(HttpStatus.OK.value());
 				return new ResponseEntity<GatewayResponse>(gatewayResponse, HttpStatus.OK);
