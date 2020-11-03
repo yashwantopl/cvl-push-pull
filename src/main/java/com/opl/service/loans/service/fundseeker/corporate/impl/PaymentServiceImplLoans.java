@@ -1015,10 +1015,15 @@ public class PaymentServiceImplLoans implements PaymentServiceLoans{
 					}
 					
 					if(gatewayRequest.getSkipType() == null) {
-						checkTypeOfSkipPayment(gatewayRequest);
-						if(gatewayRequest.getSkipType() != null) {
-							inPrincipleDetailMap.put(CommonUtils.SKIP_TYPE, gatewayRequest.getSkipType() != null ? gatewayRequest.getSkipType().trim() : null);
-						}
+						Map<String, Object> checkTypeOfSkipPayment = checkTypeOfSkipPayment(gatewayRequest);
+						gatewayRequest.setPaymentTypeId( (Integer) checkTypeOfSkipPayment.get(PAYMENT_TYPE_ID));
+						if(checkTypeOfSkipPayment.containsKey(SKIP_TYPE))
+							gatewayRequest.setSkipType(checkTypeOfSkipPayment.get(SKIP_TYPE).toString());
+						gatewayRequest.setSkipPayment((Boolean) checkTypeOfSkipPayment.get(SKIP_PAYMENT) );
+					}
+					
+					if(gatewayRequest.getSkipType() != null) {
+						inPrincipleDetailMap.put(CommonUtils.SKIP_TYPE, gatewayRequest.getSkipType() != null ? gatewayRequest.getSkipType().trim() : null);
 					}
 					
 					inPrincipleDetailMap.put(CommonUtils.USER_ID, loanApplicationMaster.getUserId());
@@ -1466,7 +1471,7 @@ public class PaymentServiceImplLoans implements PaymentServiceLoans{
 			
 			Long applicationId = gatewayRequest.getApplicationId();
 			if(mailParameters == null ) {
-				mailParameters = getInPrincipleDetail(applicationId ,proposalId ,null);
+				mailParameters = getInPrincipleDetail(applicationId ,proposalId ,gatewayRequest.getSkipType());
 			}
 			
 			if(mailParameters != null && !mailParameters.isEmpty()) {
