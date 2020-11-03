@@ -29,7 +29,7 @@ public class CommonRepositoryImpl  implements CommonRepository {
 	
 	@Override
 	public Object[] getUserCampainCodeByApplicationId(Long applicationId) {
-		Query camp = manager.createNativeQuery("SELECT cm.code,cl.`wc_renewal_status` FROM connect.`connect_log` cl\r\n" + 
+		Query camp = manager.createNativeQuery("SELECT cm.code,cl.`wc_renewal_status` FROM connect_mudra.`connect_log` cl\r\n" + 
 				"LEFT JOIN users.`campaign_details` cm ON cm.user_id=cl.`user_id`\r\n" + 
 				"WHERE application_id =:applicationId AND cm.is_active=TRUE");
 		camp.setParameter("applicationId",applicationId);
@@ -415,7 +415,7 @@ public class CommonRepositoryImpl  implements CommonRepository {
 	@Override
 	public Object getInprincipleDate(Long applicationId) {
 		try {
-			return manager.createNativeQuery("SELECT c.In_principle_date FROM connect.connect_log c WHERE c.stage_id in (7,9,210,211,1008,1009) AND c.application_id="+applicationId+" ORDER by c.id desc limit 1").getSingleResult();
+			return manager.createNativeQuery("SELECT c.In_principle_date FROM connect_mudra.connect_log c WHERE c.stage_id in (7,9,210,211,1008,1009) AND c.application_id="+applicationId+" ORDER by c.id desc limit 1").getSingleResult();
 		}catch (Exception e) {
 			return null;  
 		}
