@@ -59,6 +59,7 @@ import com.opl.mudra.api.fraudanalytics.model.AnalyticsResponse;
 import com.opl.mudra.api.gst.model.GstCalculation;
 import com.opl.mudra.api.gst.model.GstResponse;
 import com.opl.mudra.api.gst.model.MomSales;
+import com.opl.mudra.api.gst.model.MonthListSales;
 import com.opl.mudra.api.gst.model.model.CAMGSTData;
 import com.opl.mudra.api.gst.model.yuva.request.GSTR1Request;
 import com.opl.mudra.api.itr.model.ITRConnectionResponse;
@@ -2323,7 +2324,19 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			private Map<String,Object> convertExpVal(CAMGSTData dataMapList) {
 				LinkedHashMap<String, Object> momSalesmodified = new LinkedHashMap<>();
 				
-					Map<Integer, Map<String, Double>> momSales = dataMapList.getGstNotApplicable().getMomSales();
+					Map<Integer, Map<String, Double>> momSales = new HashMap<>();
+				
+					if(dataMapList.getGstNotApplicable().getMonthSalesDetails() != null && dataMapList.getGstNotApplicable().getMonthSalesDetails().size() > 0) {
+						List<MonthListSales> listData = dataMapList.getGstNotApplicable().getMonthSalesDetails();
+						Map<String, Double> mapData = new HashMap<>();
+						for(MonthListSales data : listData) {
+							mapData.put(data.getKey(), Double.valueOf(data.getValue()));
+						}
+						momSales.put(1 , mapData);
+					}else {
+						momSales = dataMapList.getGstNotApplicable().getMomSales();
+					}
+					
 					for (Map<String,Double> momSalesMapValuesMap : momSales.values()) {
 						for (Entry<String,Double> entry : momSalesMapValuesMap.entrySet()) {
 							Double value = (Double) entry.getValue();
@@ -2779,7 +2792,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				try{
 					ITRConnectionResponse itrResponse = itrClient.getITRBasicDetails(itrMasterId);
 					logger.info("ITR RESPONSE===========>{}",itrResponse);
-					map.put("nameAsPerItr", CommonUtils.printFields(itrResponse.getData(),null));
+					map.put("nameAsPerItr", itrResponse != null && itrResponse.getData() != null ? CommonUtils.printFields(itrResponse.getData(),null) : null);
 				}catch(Exception e) {
 					logger.error(CommonUtils.EXCEPTION,e);
 				}
