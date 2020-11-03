@@ -1147,24 +1147,6 @@ public class PaymentServiceImplLoans implements PaymentServiceLoans{
 							loanType = "Working Capital Term Loan";
 							inPrincipleDetailMap.put(CommonUtils.TENURE,tenure != null ? tenure +CommonUtils.YEARS:"NA");
 							processingFees = proposalDetails.getProcessingFee() + " %";
-	//					} else if (productId == CommonUtils.LoanType.PERSONAL_LOAN.getValue()) { //7
-	//						loanType = "Personal Loan";
-	//						inPrincipleDetailMap.put(CommonUtils.TENURE,tenure != null ? tenure +CommonUtils.YEARS:"NA");
-	//						processingFees = proposalDetails.getProcessingFee() + " %";
-	//						inPrincipleDetailMap.put(CommonUtils.MINPF, proposalDetails.getMinPf() != null ? CommonUtils.convertValueWithoutDecimal(proposalDetails.getMinPf()) : null);
-	//						inPrincipleDetailMap.put(CommonUtils.MAXPF, proposalDetails.getMaxPf() != null ? CommonUtils.convertValueWithoutDecimal(proposalDetails.getMaxPf()) : null);
-	//					} else if (productId == CommonUtils.LoanType.HOME_LOAN.getValue()) { //3
-	//						loanType = "Home Loan";
-	//						inPrincipleDetailMap.put(CommonUtils.TENURE,tenure != null ? tenure +CommonUtils.YEARS:"NA");
-	//						processingFees = proposalDetails.getProcessingFee() + " %";
-	//						inPrincipleDetailMap.put(CommonUtils.MINPF, proposalDetails.getMinPf() != null ? CommonUtils.convertValueWithoutDecimal(proposalDetails.getMinPf()) : null);
-	//						inPrincipleDetailMap.put(CommonUtils.MAXPF, proposalDetails.getMaxPf() != null ? CommonUtils.convertValueWithoutDecimal(proposalDetails.getMaxPf()) : null);
-	//					} else if (productId == CommonUtils.LoanType.AUTO_LOAN.getValue()) { //12
-	//						loanType = "Auto Loan";
-	//						inPrincipleDetailMap.put(CommonUtils.TENURE,tenure != null ? tenure +CommonUtils.YEARS:"NA");
-	//						processingFees = proposalDetails.getProcessingFee() + " %";
-	//						inPrincipleDetailMap.put(CommonUtils.MINPF, proposalDetails.getMinPf() != null ? CommonUtils.convertValueWithoutDecimal(proposalDetails.getMinPf()) : null);
-	//						inPrincipleDetailMap.put(CommonUtils.MAXPF, proposalDetails.getMaxPf() != null ? CommonUtils.convertValueWithoutDecimal(proposalDetails.getMaxPf()) : null);
 						} else {
 							loanType = "Term Loan";
 							inPrincipleDetailMap.put(CommonUtils.TENURE,tenure != null ? tenure +CommonUtils.YEARS:"NA");
@@ -1213,11 +1195,7 @@ public class PaymentServiceImplLoans implements PaymentServiceLoans{
 						}
 					}
 					
-					inPrincipleDetailMap.put(CommonUtils.CC_EMAIL_LIST, getCCMailId(orgId, proposalDetails.getBranchId()));
-					
-//					if(branchList != null && !branchList.isEmpty()) {
-//					  branchMaster = branchList.get(0);
-//					}
+					inPrincipleDetailMap.put(CommonUtils.CC_EMAIL_LIST, getCCMailId(orgId, proposalDetails.getBranchId() , branchMaster));
 					 
 					String branchName = "-" ;
 					String branchCode = "-" ;
@@ -1388,30 +1366,32 @@ public class PaymentServiceImplLoans implements PaymentServiceLoans{
 		return inPrincipleDetailMap; 	
 	}
 	
-	public String[] getCCMailId( Long orgId , Long branchId) {	
+	public String[] getCCMailId( Long orgId , Long branchId , BranchBasicDetailsRequest branchMaster) {	
 		logger.info("--------------get CCMailId------------With  OrgId==>{} , BranchId==>{}",orgId , branchId);
 		String [] ccList= null;
 		try {
-			BranchBasicDetailsRequest branchMaster = null; 
-			List<?> data = userClient.getBranchDataBasedOnOrgAndBranchId(orgId, branchId).getListData();
-			if(!data.isEmpty()) {
+			if(branchMaster == null) {
+				List<?> data = userClient.getBranchDataBasedOnOrgAndBranchId(orgId, branchId).getListData();
 				Object brObj = data.stream().findFirst().orElse(null);
 				if(brObj != null) {
-					branchMaster =	MultipleJSONObjectHelper.getObjectFromMap((Map) brObj, BranchBasicDetailsRequest.class);
-	//				prepare for cc email 
-					List<String> list = new ArrayList<String>();
-					
-					if(branchMaster.getContactPersonEmail() !=null ) {
-						list.add(branchMaster.getContactPersonEmail().replace("\\s+", "").trim());
-					}
-					if(16 == orgId && branchMaster.getSmecEmail()!=null) {
-						list.add(branchMaster.getSmecEmail().replace("\\s+", "").trim());
-					}
-					
-					if(!list.isEmpty()) {
-						ccList = list.toArray(new String[list.size()]);
-					}	
+					branchMaster = MultipleJSONObjectHelper.getObjectFromMap((Map) brObj, BranchBasicDetailsRequest.class);
 				}
+			}
+		
+			if(!CommonUtils.isObjectNullOrEmpty(branchMaster)) {
+//				prepare for cc email 
+				List<String> list = new ArrayList<String>();
+				
+				if(branchMaster.getContactPersonEmail() !=null ) {
+					list.add(branchMaster.getContactPersonEmail().replace("\\s+", "").trim());
+				}
+				if(16 == orgId && branchMaster.getSmecEmail()!=null) {
+					list.add(branchMaster.getSmecEmail().replace("\\s+", "").trim());
+				}
+				
+				if(!list.isEmpty()) {
+					ccList = list.toArray(new String[list.size()]);
+				}	
 			}
 		}catch (Exception e) {
 			logger.error("Error/Exception while fetching ccList for OrgId and branchId==>{}" ,orgId  ,branchId);
