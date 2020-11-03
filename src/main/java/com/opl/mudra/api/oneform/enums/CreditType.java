@@ -109,7 +109,22 @@ public enum CreditType {
 	SECURED_CREDIT_CARD(100,"Secured Credit Card"),
 	TRACTOR_LOAN(101,"Tractor Loan"),
 	TWO_WHEELER_LOAN(102,"Two wheeler Loan"),
-	USED_CAR_LOAN(103,"Used Car Loan"); 
+	USED_CAR_LOAN(103,"Used Car Loan"),
+	CREDIT_OPEN_LINE_UN_SECURED(104,"Credit Open Line Un-Secured"),
+	CREDIT_LINE_TRUST(104,"Credit Line - Trust"),
+	OTHER(105,"Other"),
+	CREDIT_OPEN_LINE_SECURED(106,"Credit Open Line Secured"),
+	CREDIT_LINE_OPEN(107,"Credit Line - Open"),
+	CREDIT_LINE_REAL_ESTATE_EQUITY(108,"Credit Line - Real Estate Equity"),
+	CREDIT_SECURED_CARD(109,"Credit Secured Card"),
+	CREDIT_FACILITY_NON_FUNDED(110,"Credit Facility - Non-Funded"),
+	CREDIT_SINGLE_LIMITED_PURPOSE_CARD(111,"Credit Single - Limited Purpose Card"),
+	CREDIT_CARD_FLEET(112,"Credit Card - Fleet"),
+	LOAN_ON_CREDIT_CARD(113,"Loan on Credit Card"),
+	CREDIT_STORED_VALUE_SMART_CARD(114,"Credit Stored-Value Smart Card"),
+	CREDIT_CO_BRANDED_CREDIT_CARD(115,"Credit Co-Branded Credit Card"),
+	CREDIT_GENERAL_PURPOSE_CARD(116,"Credit General Purpose Card"),
+	CREDIT_LINE_REVOLVING(117,"Credit Line Revolving");
 
 	private Integer id;
 	private String value;
