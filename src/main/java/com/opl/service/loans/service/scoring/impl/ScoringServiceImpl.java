@@ -1124,7 +1124,7 @@ public class ScoringServiceImpl implements ScoringService {
                             	logger.info("corporateApplicantDetail.getCastCategory():::::::"+ corporateApplicantDetail.getCastCategory());
                         	
                             	scoringParameterRequest.setCastCategory_p(true);
-                        		if (mainDirectorBackgroundDetail.getGender() != null && Gender.FEMALE.getId().equals(mainDirectorBackgroundDetail.getGender())) {
+                        		if (mainDirectorBackgroundDetail != null && Gender.FEMALE.getId().equals(mainDirectorBackgroundDetail.getGender())) {
                             		scoringParameterRequest.setCastCategory(5l);
 								} else if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getCastCategory())) {
 									scoringParameterRequest.setCastCategory(Long.valueOf(Arrays.asList(MudraCastCategory.getAll()).stream().filter(x -> x.getValue().equals(corporateApplicantDetail.getCastCategory())).findAny().get().getId()));										
