@@ -320,13 +320,69 @@ public class LoanSanctionDomain implements Serializable {
 		this.status = status;
 	}
 
+	public Boolean getIsKycVerified() {
+		return isKycVerified;
+	}
+
+	public void setIsKycVerified(Boolean isKycVerified) {
+		this.isKycVerified = isKycVerified;
+	}
+
+	public Integer getBranchType() {
+		return branchType;
+	}
+
+	public void setBranchType(Integer branchType) {
+		this.branchType = branchType;
+	}
+
+	public String getPfId() {
+		return pfId;
+	}
+
+	public void setPfId(String pfId) {
+		this.pfId = pfId;
+	}
+
+	public String getPersonName() {
+		return personName;
+	}
+
+	public void setPersonName(String personName) {
+		this.personName = personName;
+	}
+
+	public String getCpcId() {
+		return cpcId;
+	}
+
+	public void setCpcId(String cpcId) {
+		this.cpcId = cpcId;
+	}
+
+	public String getEmpBranchId() {
+		return empBranchId;
+	}
+
+	public void setEmpBranchId(String empBranchId) {
+		this.empBranchId = empBranchId;
+	}
+
 	@Override
 	public String toString() {
-		return "LoanSanctionDomain [id=" + id + ", branch=" + branch + ", applicationId=" + applicationId + ", tenure="
-				+ tenure + ", remark=" + remark + ", createdBy=" + createdBy + ", createdDate=" + createdDate
-				+ ", modifiedBy=" + modifiedBy + ", modifiedDate=" + modifiedDate + ", isActive=" + isActive
-				+ ", bankSanctionPrimaryKey=" + bankSanctionPrimaryKey + ", isSanctionedFrom=" + isSanctionedFrom
-				+ ", orgId=" + orgId + ", isPartiallyDisbursedOffline=" + isPartiallyDisbursedOffline + "]";
+		return "LoanSanctionDomain [id=" + id + ", accountNo=" + accountNo + ", sanctionAmount=" + sanctionAmount
+				+ ", roi=" + roi + ", transactionNo=" + transactionNo + ", sanctionDate=" + sanctionDate + ", branch="
+				+ branch + ", applicationId=" + applicationId + ", referenceNo=" + referenceNo + ", tenure=" + tenure
+				+ ", sanctionAuthority=" + sanctionAuthority + ", remark=" + remark + ", createdBy=" + createdBy
+				+ ", createdDate=" + createdDate + ", modifiedBy=" + modifiedBy + ", modifiedDate=" + modifiedDate
+				+ ", isActive=" + isActive + ", processingFee=" + processingFee + ", bankSanctionPrimaryKey="
+				+ bankSanctionPrimaryKey + ", isSanctionedFrom=" + isSanctionedFrom + ", orgId=" + orgId
+				+ ", isPartiallyDisbursedOffline=" + isPartiallyDisbursedOffline + ", nbfcFlow=" + nbfcFlow
+				+ ", cifNumber=" + cifNumber + ", isKycVerified=" + isKycVerified + ", status=" + status
+				+ ", branchType=" + branchType + ", pfId=" + pfId + ", personName=" + personName + ", cpcId=" + cpcId
+				+ ", empBranchId=" + empBranchId + "]";
 	}
+
+
 
 }
