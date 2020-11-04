@@ -53,6 +53,12 @@ public class LoanSanctionRequest extends AuditActivityRequest implements Seriali
 	private String cifNumber;
 	private Boolean kycVerified;
 
+	private Integer branchType;
+	private String pfId;
+	private String personName;
+	private String cpcId;
+	private String empBranchId;
+
 	public Boolean getFlag() {
 		return flag;
 	}
@@ -309,6 +315,46 @@ public class LoanSanctionRequest extends AuditActivityRequest implements Seriali
 
 	public void setKycVerified(Boolean kycVerified) {
 		this.kycVerified = kycVerified;
+	}
+
+	public Integer getBranchType() {
+		return branchType;
+	}
+
+	public void setBranchType(Integer branchType) {
+		this.branchType = branchType;
+	}
+
+	public String getPfId() {
+		return pfId;
+	}
+
+	public void setPfId(String pfId) {
+		this.pfId = pfId;
+	}
+
+	public String getPersonName() {
+		return personName;
+	}
+
+	public void setPersonName(String personName) {
+		this.personName = personName;
+	}
+
+	public String getCpcId() {
+		return cpcId;
+	}
+
+	public void setCpcId(String cpcId) {
+		this.cpcId = cpcId;
+	}
+
+	public String getEmpBranchId() {
+		return empBranchId;
+	}
+
+	public void setEmpBranchId(String empBranchId) {
+		this.empBranchId = empBranchId;
 	}
 
 	@Override
