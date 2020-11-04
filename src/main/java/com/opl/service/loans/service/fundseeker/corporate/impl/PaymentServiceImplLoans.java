@@ -761,7 +761,7 @@ public class PaymentServiceImplLoans implements PaymentServiceLoans{
 					proposalDetails = proposalDetailsRepository.findFirstByApplicationIdAndIsActiveOrderByIdDesc(gatewayRequest.getApplicationId(), true);
 				}
 				
-				if(proposalDetails != null ) {
+				if(proposalDetails != null && rowUpdate > 0) {
 					
 					// think this step -- check if its inprinciple sent or not? // need to discuss
 					
