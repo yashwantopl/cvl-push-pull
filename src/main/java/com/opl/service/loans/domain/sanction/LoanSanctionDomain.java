@@ -98,6 +98,21 @@ public class LoanSanctionDomain implements Serializable {
 	@Column(name="status")
     private Integer status;
 
+	@Column(name="branch_type")
+	private Integer branchType;
+
+	@Column(name="pf_id")
+	private String pfId;
+
+	@Column(name="person_name")
+	private String personName;
+
+	@Column(name="cpc_id")
+	private String cpcId;
+
+	@Column(name="emp_branch_id")
+	private String empBranchId;
+
 	public Long getId() {
 		return id;
 	}

@@ -170,6 +170,21 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			loanSanctionDomainOld.setModifiedDate(new Date());
 			loanSanctionDomainOld.setStatus(SanctionedStatusMaster.IN_PROGRES.getId());
 			/*loanSanctionDomainOld.setIsSanctionedFrom(1l);*/
+
+			if (loanSanctionRequest.getOrgId() == 16 && (loanSanctionRequest.getBusinessTypeId() == 1 || loanSanctionRequest.getBusinessTypeId() == 10)) {
+				loanSanctionDomainOld.setBranchType(loanSanctionRequest.getBranchType());
+				loanSanctionDomainOld.setPfId(loanSanctionRequest.getPfId());
+				loanSanctionDomainOld.setPersonName(loanSanctionRequest.getPersonName());
+				if (!CommonUtils.isObjectNullOrEmpty(loanSanctionRequest.getBranchType())){
+					if (loanSanctionRequest.getBranchType() == 1) {
+						loanSanctionDomainOld.setCpcId(null);
+						loanSanctionDomainOld.setEmpBranchId(loanSanctionRequest.getEmpBranchId());
+					}else if (loanSanctionRequest.getBranchType() == 2){
+						loanSanctionDomainOld.setEmpBranchId(null);
+						loanSanctionDomainOld.setCpcId(loanSanctionRequest.getCpcId());
+					}
+				}
+			}
 		}
 			//==================Sending Mail notification to Maker=============================
 			try{
