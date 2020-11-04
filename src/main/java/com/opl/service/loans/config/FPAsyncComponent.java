@@ -66,6 +66,7 @@ import com.opl.service.loans.service.fundseeker.corporate.CorporateApplicantServ
 import com.opl.service.loans.service.fundseeker.corporate.CorporateFinalInfoService;
 import com.opl.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.opl.service.loans.service.fundseeker.corporate.LoanApplicationService;
+import com.opl.service.loans.service.fundseeker.corporate.PaymentServiceLoans;
 
 @SuppressWarnings("unchecked")
 @Component
@@ -175,6 +176,9 @@ public class FPAsyncComponent {
 	
 	@Autowired
 	private CommonRepository commonRepo;
+	
+	@Autowired
+	PaymentServiceLoans paymentService;
 	
 //	@Autowired
 //	private Environment environment;
@@ -2197,8 +2201,7 @@ public class FPAsyncComponent {
 			Map<String, Object> proposalresp = null;
 			try {
 				logger.info("Calling Proposal details client {}" , loanSanctionDomainOld.getApplicationId());
-				GatewayResponse inpData = gatewayClient.getInPrincipleByApplicationId(loanSanctionDomainOld.getApplicationId());
-				proposalresp=(Map<String, Object>) inpData.getData();
+				proposalresp = paymentService.getInPrincipleDetail(loanSanctionDomainOld.getApplicationId(), null, null);
 			} catch (Exception e) {
 				logger.info("Error calling Proposal Details Client {}" , loanSanctionDomainOld.getApplicationId());
 				logger.error(CommonUtils.EXCEPTION,e);
