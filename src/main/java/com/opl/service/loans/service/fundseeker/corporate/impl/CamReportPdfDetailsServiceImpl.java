@@ -531,7 +531,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
      // MUDRA LOAN DETAILS
         try {
-			PrimaryCorporateDetailMudraLoan mlDetail = 	mudraLoanRepo.findFirstByApplicationIdAndApplicationProposalMappingProposalIdIsNullOrderByIdDesc(applicationId); 
+			PrimaryCorporateDetailMudraLoan mlDetail = 	mudraLoanRepo.findFirstByApplicationIdAndApplicationProposalMappingProposalIdOrderByIdDesc(applicationId, proposalId); 
 			if (!CommonUtils.isObjectNullOrEmpty(mlDetail)) {			
 				PrimaryCorporateDetailMudraLoanReqRes mlDetailsRes = new PrimaryCorporateDetailMudraLoanReqRes();
 				BeanUtils.copyProperties(mlDetail, mlDetailsRes);
