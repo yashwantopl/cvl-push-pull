@@ -785,25 +785,25 @@ public class PaymentServiceImplLoans implements PaymentServiceLoans{
 					}
 					
 					//get Inprinciple Details - 2
-					try {
-						mailParameter = getInPrincipleDetail(gatewayRequest.getApplicationId() , proposalDetails.getId(),gatewayRequest.getSkipType());	
-					} catch (Exception e) {
-						logger.error("Error/Exception while getting inprinciple Details in skip Payment==>{} Error==>{}",gatewayRequest.getApplicationId(),e);
-					}
-					
-					try {
-						sendInprincipleLetterAndSmsToFS(mailParameter, gatewayRequest, proposalDetails.getId());
-					} catch (NotificationException e1) {
-						logger.error("Error/Exception while Sending Inprinciple And Send sms And System Notification in skip Payment for ApplicationId==>{} Error==>{}",gatewayRequest.getApplicationId(),e1);
-					}
-					
-					//send mail to fp
-					try {
-						sendmailToAllFundProvider(mailParameter,applicationProposalMapping, gatewayRequest);
-						logger.info("Sended skip payment Mail to fp of inprinciple for ApplicationId==>{}",gatewayRequest.getApplicationId());
-					}catch (Exception e) {
-						logger.error("--------------Error/Exception in sending skip payment mail to fund provider-----------Error==>{}",e);
-					}
+//					try {
+//						mailParameter = getInPrincipleDetail(gatewayRequest.getApplicationId() , proposalDetails.getId(),gatewayRequest.getSkipType());	
+//					} catch (Exception e) {
+//						logger.error("Error/Exception while getting inprinciple Details in skip Payment==>{} Error==>{}",gatewayRequest.getApplicationId(),e);
+//					}
+//					
+//					try {
+//						sendInprincipleLetterAndSmsToFS(mailParameter, gatewayRequest, proposalDetails.getId());
+//					} catch (NotificationException e1) {
+//						logger.error("Error/Exception while Sending Inprinciple And Send sms And System Notification in skip Payment for ApplicationId==>{} Error==>{}",gatewayRequest.getApplicationId(),e1);
+//					}
+//					
+//					//send mail to fp
+//					try {
+//						sendmailToAllFundProvider(mailParameter,applicationProposalMapping, gatewayRequest);
+//						logger.info("Sended skip payment Mail to fp of inprinciple for ApplicationId==>{}",gatewayRequest.getApplicationId());
+//					}catch (Exception e) {
+//						logger.error("--------------Error/Exception in sending skip payment mail to fund provider-----------Error==>{}",e);
+//					}
 					
 					
 
