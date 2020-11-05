@@ -293,7 +293,7 @@ public class ScoringServiceImpl implements ScoringService {
     }
 
     
-	private void setBureauScore(List<ScoringRequestLoans> scorReqLoansList, Long orgId) throws Exception {
+	private void setBureauScore(List<ScoringRequestLoans> scorReqLoansList, Long orgId, Object [] bankBureauFlags) throws Exception {
     	logger.info("Enter setBureauScore --------------------------------->");
     	//put SET
     	Set<Long> scoreModelIdList = new HashSet<Long>(); 
@@ -320,8 +320,28 @@ public class ScoringServiceImpl implements ScoringService {
         		return;
         		//throw new Exception("Score model range is not found from database");
         	
+        	
+        	Boolean totalEmiOfCompanyEnable = false;
+        	Boolean existingLoanCollateralAmountEnable = false;
+        	Boolean totalExistingLimitEnable = false;
+        	Boolean totalExistingLimitByLoanTypeEnable = false;
+        	Boolean totalEmiOfDirectorEnable = false;
+			if(bankBureauFlags != null) {
+				totalEmiOfCompanyEnable = (!CommonUtils.isObjectNullOrEmpty(bankBureauFlags[5]) && Boolean.valueOf(bankBureauFlags[5].toString()));
+				existingLoanCollateralAmountEnable = (!CommonUtils.isObjectNullOrEmpty(bankBureauFlags[6]) && Boolean.valueOf(bankBureauFlags[6].toString()));
+				totalExistingLimitEnable = (!CommonUtils.isObjectNullOrEmpty(bankBureauFlags[7]) && Boolean.valueOf(bankBureauFlags[7].toString()));
+				totalExistingLimitByLoanTypeEnable = (!CommonUtils.isObjectNullOrEmpty(bankBureauFlags[8]) && Boolean.valueOf(bankBureauFlags[8].toString()));
+				totalEmiOfDirectorEnable = (!CommonUtils.isObjectNullOrEmpty(bankBureauFlags[9]) && Boolean.valueOf(bankBureauFlags[9].toString()));
+			}
+        	
         	Map<String, Object> map = new HashMap<String, Object>();
         	map.put("applicationId", applicationId);
+        	map.put("totalEmiOfCompanyEnable", totalEmiOfCompanyEnable);
+        	map.put("existingLoanCollateralAmountEnable", existingLoanCollateralAmountEnable);
+        	map.put("totalExistingLimitEnable", totalExistingLimitEnable);
+        	map.put("totalExistingLimitByLoanTypeEnable", totalExistingLimitByLoanTypeEnable);
+        	map.put("totalEmiOfDirectorEnable", totalEmiOfDirectorEnable);
+        	
             List<ScoringCibilRequest> minAndMaxRanges = Arrays.asList(new ObjectMapper().readValue(value, ScoringCibilRequest[].class));
             
             for(Long modelId : scoreModelIdList) {
@@ -464,7 +484,7 @@ public class ScoringServiceImpl implements ScoringService {
         		logger.info("Found Result For CIBIL API ----->" + result + " For Org ID ----" + orgId + "  And check API --- >" + checkAPI);
         		if(result && "true".equals(checkAPI)) {
         			isCibilCheck = true;
-        			setBureauScore(scoringRequestLoansList,orgId);	
+        			setBureauScore(scoringRequestLoansList,orgId,bankBureauFlags);	
         		}
         	}
 		} catch (Exception e) {

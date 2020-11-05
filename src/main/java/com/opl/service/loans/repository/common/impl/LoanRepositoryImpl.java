@@ -661,7 +661,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	public Object[] getBankBureauFlags(Long orgId){
 		try{
 			Object [] count = (Object [])entityManager
-					.createNativeQuery("SELECT org.is_msme_api_active,org.is_score_enable,org.is_cmr_enable,org.is_main_dir_score_enable,org.is_loans_enable FROM cibil_mudra.`organisation_master` org WHERE org.id =:orgId")
+					.createNativeQuery("SELECT org.is_msme_api_active,org.is_score_enable,org.is_cmr_enable,org.is_main_dir_score_enable,org.is_loans_enable,org.total_emi_of_company_enable,org.existing_loan_collateral_amount_enable,org.total_existing_limit_enable,org.total_existing_limit_by_loan_type_enable,org.total_emi_of_director FROM cibil_mudra.`organisation_master` org WHERE org.id =:orgId")
 					.setParameter("orgId", orgId).getSingleResult();
 			return count;
 		}catch (Exception e) {
