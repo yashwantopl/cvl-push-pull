@@ -73,7 +73,7 @@ import com.opl.mudra.api.oneform.enums.CompetitionMst_SBI;
 import com.opl.mudra.api.oneform.enums.Constitution;
 import com.opl.mudra.api.oneform.enums.Denomination;
 import com.opl.mudra.api.oneform.enums.DirectorRelationshipType;
-import com.opl.mudra.api.oneform.enums.EducationalStatusMst;
+import com.opl.mudra.api.oneform.enums.EducationalStatusMudraMst;
 import com.opl.mudra.api.oneform.enums.EstablishmentMonths;
 import com.opl.mudra.api.oneform.enums.FSParameterMst;
 import com.opl.mudra.api.oneform.enums.FactoryPremiseMst;
@@ -708,7 +708,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 					directorBackgroundDetailResponse.setIsMainDirector(directorBackgroundDetailRequest.getIsMainDirector());
 					directorBackgroundDetailResponse.setAadhar(directorBackgroundDetailRequest.getAadhar());
 					directorBackgroundDetailResponse.setFatherName(directorBackgroundDetailRequest.getFatherName());
-					directorBackgroundDetailResponse.setEducationalStatus(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getEducationalStatus()) ? StringEscapeUtils.escapeXml(EducationalStatusMst.getById(directorBackgroundDetailRequest.getEducationalStatus()).getValue().toString()) : "-");
+					directorBackgroundDetailResponse.setEducationalStatus(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getEducationalStatus()) ? StringEscapeUtils.escapeXml(EducationalStatusMudraMst.getById(directorBackgroundDetailRequest.getEducationalStatus()).getValue().toString()) : "-");
 					directorBackgroundDetailResponse.setVisuallyImpaired(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getVisuallyImpaired()) ? StringEscapeUtils.escapeXml(VisuallyImpairedMst.getById(directorBackgroundDetailRequest.getVisuallyImpaired()).getValue().toString()) : "-");
 					directorBackgroundDetailResponse.setResidentStatus(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getResidentStatus()) ? StringEscapeUtils.escapeXml(ResidentStatusMst.getById(directorBackgroundDetailRequest.getResidentStatus()).getValue().toString()) : "-");
 					directorBackgroundDetailResponse.setDirectorPersonalInfo(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest()) ? directorBackgroundDetailRequest.getDirectorPersonalDetailRequest() : " " );
