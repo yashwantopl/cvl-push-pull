@@ -6,6 +6,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import com.opl.mudra.api.common.CommonUtils;
@@ -57,8 +58,12 @@ public class MailComponent {
 	@Autowired
 	UsersClient userClient;
 	
-	@Autowired
 	AsyncComponent asyncComp;
+	
+	@Lazy
+	MailComponent(AsyncComponent asyncComp){
+		this.asyncComp = asyncComp;
+	}
 	
 	@Autowired
 	GatewayClient gatewayClient;
