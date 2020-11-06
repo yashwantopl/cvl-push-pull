@@ -380,6 +380,14 @@ public class CommonUtils {
 		public static final String REGULAR = "Regular";
 		public static final String COMPOSITION = "Composition";
 	}
+	
+	public static final class STS {
+		private STS() {
+			
+		}
+		public static final String ACTIVE = "Active";
+		public static final String CANCELLED = "Cancelled";
+	}
 
 	public static final class RequestType {
 
