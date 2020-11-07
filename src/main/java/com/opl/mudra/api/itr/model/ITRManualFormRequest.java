@@ -44,7 +44,7 @@ public class ITRManualFormRequest implements Serializable {
 	private Integer establishmentYear;
 	private Map<String, Object> incomeDetails;
 	private Boolean isProjectedFilled;
-	
+	private Boolean isMandatoryCheck;
 	
 	public String getFirstName() {
 		return firstName;
@@ -248,6 +248,12 @@ public class ITRManualFormRequest implements Serializable {
 	}
 	public void setIsProjectedFilled(Boolean isProjectedFilled) {
 		this.isProjectedFilled = isProjectedFilled;
+	}
+	public Boolean getIsMandatoryCheck() {
+		return isMandatoryCheck;
+	}
+	public void setIsMandatoryCheck(Boolean isMandatoryCheck) {
+		this.isMandatoryCheck = isMandatoryCheck;
 	}
 	@Override
 	public String toString() {
