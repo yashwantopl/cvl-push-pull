@@ -20,6 +20,9 @@ public interface BankingRelationlRepository extends JpaRepository<BankingRelatio
 
     @Query("select o from BankingRelation o where o.applicationId = :id and o.isActive = true and o.coApplicantId =:coAppId")
     public List<BankingRelation> listBankRelationAppId(@Param("id")Long id,@Param("coAppId") Long coApplicantId);
+    
+    public BankingRelation findFirstByApplicationIdAndIsActiveTrueAndAccountNoOrderByIdDesc(Long applicationId, String accountNumber);
+    
 	@Modifying
 	@Query("update BankingRelation pm set pm.isActive = false,pm.modifiedDate = NOW(),pm.modifiedBy =:userId where pm.applicationId =:applicationId and pm.isActive = true")
 	public int inActive(@Param("userId") Long userId,@Param("applicationId") Long applicationId);
