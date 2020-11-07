@@ -55,6 +55,7 @@ import com.opl.mudra.api.gst.model.model.DataMappingProjectedSales;
 import com.opl.mudra.api.gst.model.model.GstCalcMappingTable;
 import com.opl.mudra.api.gst.model.model.ProjectedSalesCalcResponse;
 import com.opl.mudra.api.gst.model.model.SummOfHsn;
+import com.opl.mudra.api.gst.model.util.CommonUtils.STS;
 import com.opl.mudra.api.gst.model.yuva.request.GSTR1Request;
 import com.opl.mudra.api.gst.model.yuva.response.gstr1cdnrinvoices.Cdnr;
 import com.opl.mudra.api.gst.model.yuva.response.gstr1cdnrinvoices.GSTR1CDNRInvoicesResponse;
@@ -77,6 +78,8 @@ import com.opl.mudra.api.gst.model.yuva.response.gstr3bsummary.GSTR3BSummary;
 import com.opl.mudra.api.gst.model.yuva.response.gstr3bsummary.PdCash;
 import com.opl.mudra.api.gst.model.yuva.response.gstr3bsummary.TxPmt;
 import com.opl.mudra.api.gst.model.yuva.response.gstr3bsummary.TxPy;
+import com.opl.mudra.api.gst.model.yuva.response.publicapi.addon.GstAddOnApiResponse;
+import com.opl.mudra.api.gst.model.yuva.response.publicapi.addon.TaxPayersByPanResponse;
 
 /**
  * @author sanket
@@ -199,6 +202,7 @@ public class CommonUtils {
 	public static final Long GSTR4_SUMMARY_DATA_RETURN = 918l;
 	public static final String GSTR4_DATA_CALCULATION = "Gstr4Calculation";
 	public static final String GSTR4_CALL_FOR_GSTR4_POPUP_DATA = "Gstr4PopupData";
+	public static final String NO_ACTIVE_GSTIN_FOUND = "Not an any Active gstin found.";
 
 	public static final Long CLEAR = 200L;
 	
@@ -4243,5 +4247,8 @@ public class CommonUtils {
         return "Gst Since " + yearDiff + " Year , " + monthDiff + " Months";
 	}
 	
-	
+	public static Boolean checkIsAnyGstInAcive(GstAddOnApiResponse response) {
+		List<TaxPayersByPanResponse> gstInsActiveList = response.getData().stream().filter(check->check.getSts() != null && !check.getSts().equalsIgnoreCase("") && check.getSts().equalsIgnoreCase(STS.ACTIVE)).collect(Collectors.toList());
+		return gstInsActiveList != null && !gstInsActiveList.isEmpty() ? true : false;
+	}
 }
