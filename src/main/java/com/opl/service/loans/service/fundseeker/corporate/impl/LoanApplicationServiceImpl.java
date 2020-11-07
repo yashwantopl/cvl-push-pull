@@ -8828,7 +8828,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				List<?> list = ((List<?>) analyzerResponse.getData());
 				for (Object o : list) {
 					BankStatementResponse bankingRelationRes = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) o, BankStatementResponse.class);
-					BankingRelation bankingRelation = new BankingRelation();
+					BankingRelation bankingRelation = bankingRelationRepository.findFirstByApplicationIdAndIsActiveTrueAndAccountNoOrderByIdDesc(applicationId, bankingRelationRes.getBankAccountNo());
+					if(bankingRelation == null) {
+						bankingRelation = new BankingRelation();
+					}
 					bankingRelation.setAccountNo(bankingRelationRes.getBankAccountNo());
 					bankingRelation.setBank(bankingRelationRes.getBankName());
 					bankingRelation.setSinceMonth(bankingRelationRes.getSinceMonth());
