@@ -42,6 +42,8 @@ private Boolean isFromMonitoring;
 
 private List<Long> applicationid;
 
+private Long perfiousId;
+
 public List<Long> getApplicationid() {
 	return applicationid;
 }
@@ -218,6 +220,14 @@ public void setStageId(Integer stageId) {
 	}
 	public void setIsFromMonitoring(Boolean isFromMonitoring) {
 		this.isFromMonitoring = isFromMonitoring;
+	}
+
+	public Long getPerfiousId() {
+		return perfiousId;
+	}
+
+	public void setPerfiousId(Long perfiousId) {
+		this.perfiousId = perfiousId;
 	}
 }
 
