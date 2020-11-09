@@ -564,32 +564,31 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		}
 		
 		//get NO BS+ DATA
-				CommonResponse verificationrequestResponse = null;
-				//VerificationRequestResponse verificationResponse = null;
-				try {
-					if(!CommonUtils.isObjectNullOrEmpty(applicationId)) {
-						verificationrequestResponse =  pennyDropClient.getAccountDetails(applicationId);
-						LinkedHashMap<String, Object> noBs = (LinkedHashMap<String, Object>) verificationrequestResponse.getData();	
-						String year = (String) noBs.get("sinceYear");
-						String months = (String) noBs.get("sinceMonth");
-						if (!CommonUtils.isObjectNullOrEmpty(year) || !CommonUtils.isObjectNullOrEmpty(months)) {
-							LocalDate today = LocalDate.now();
-							LocalDate since = LocalDate.of(Integer.parseInt(year), Integer.parseInt(months),1);
-							Period age = Period.between(since, today);
-							map.put("noBsSinceYear", age.getYears());
-							map.put("noBsSinceMonths", age.getMonths());
-							map.put("noBsSinceWhen", (!CommonUtils.isObjectNullOrEmpty(age.getYears()) ? age.getYears() +" year " : "") + " " +(!CommonUtils.isObjectNullOrEmpty(age.getMonths()) ? age.getMonths()+" months" :  "" ));
-
-						}
-
-						map.put("noBsData", verificationrequestResponse);
-					}
-					
-				} catch (Exception e) {
-					logger.error("Error while fetching Account data : ",e);			
-				}
+//		CommonResponse verificationrequestResponse = null;
+//		try {
+//			if(!CommonUtils.isObjectNullOrEmpty(applicationId)) {
+//				verificationrequestResponse =  pennyDropClient.getAccountDetails(applicationId);
+//				LinkedHashMap<String, Object> noBs = (LinkedHashMap<String, Object>) verificationrequestResponse.getData();	
+//				String year = (String) noBs.get("sinceYear");
+//				String months = (String) noBs.get("sinceMonth");
+//				if (!CommonUtils.isObjectNullOrEmpty(year) || !CommonUtils.isObjectNullOrEmpty(months)) {
+//					LocalDate today = LocalDate.now();
+//					LocalDate since = LocalDate.of(Integer.parseInt(year), Integer.parseInt(months),1);
+//					Period age = Period.between(since, today);
+//					map.put("noBsSinceYear", age.getYears());
+//					map.put("noBsSinceMonths", age.getMonths());
+//					map.put("noBsSinceWhen", (!CommonUtils.isObjectNullOrEmpty(age.getYears()) ? age.getYears() +" year " : "") + " " +(!CommonUtils.isObjectNullOrEmpty(age.getMonths()) ? age.getMonths()+" months" :  "" ));
+//
+//				}
+//
+//				map.put("noBsData", verificationrequestResponse);
+//			}
+//			
+//		} catch (Exception e) {
+//			logger.error("Error while fetching Account data : ",e);			
+//		}
 				
-		
+		map.putAll(camReportPdfDetailsService.getManualBankStatementData(applicationId, bsId));
 
 
 		// ONE-FORM DATA

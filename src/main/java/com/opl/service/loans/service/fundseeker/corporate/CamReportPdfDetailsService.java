@@ -23,4 +23,6 @@ public interface CamReportPdfDetailsService {
 	public String getCamVersionForBSStandalone(String type);
 	public byte[] getCamReportPrimaryDetailsByteArray(Long applicationId, Long productId,Long proposalId, boolean isFinalView,Integer loanTypeId );
 	public byte[] getApplicationForm(Long applicationId, Long productId,Long proposalId,Integer loanTypeId);
+	
+	public Map<String , Object> getManualBankStatementData(Long applicationId , Long bsMasterId);
 }
