@@ -44,6 +44,7 @@ public class BankStatementResponse implements Serializable {
     private String lastMonth;
     private String lastYear;
     private Boolean isManualUpload;
+    private Boolean isInvalidBS;
 
     public Long getUserId() {
         return userId;
@@ -308,5 +309,13 @@ public class BankStatementResponse implements Serializable {
 	public void setIsManualUpload(Boolean isManualUpload) {
 		this.isManualUpload = isManualUpload;
 	}
+
+    public Boolean getIsInvalidBS() {
+        return isInvalidBS;
+    }
+
+    public void setIsInvalidBS(Boolean invalidBS) {
+        isInvalidBS = invalidBS;
+    }
 }
 
