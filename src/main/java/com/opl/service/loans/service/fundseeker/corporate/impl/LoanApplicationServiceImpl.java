@@ -8875,9 +8875,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				logger.info("Already copied.");
 				return true;
 			}
-			loanApplicationMaster.setDataCopiedFor(DataCopiedForEnum.COPIED_DATA_FOR_ONE_FORM.getId());
-			loanApplicationMaster.setProfileMappingId(profileVerMapRequest.getId());
-			loanApplicationRepository.save(loanApplicationMaster);
 			
 			boolean isBsDataCopied = copyBankStatementData(applicationId, profileVerMapRequest);
 			if (!isBsDataCopied) {
@@ -8895,6 +8892,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				logger.info("ITR data copied successfully.");
 			}
 			logger.info("Data copied successfully...");
+			if(isBsDataCopied && isItrDataCopied) {
+				loanApplicationMaster.setDataCopiedFor(DataCopiedForEnum.COPIED_DATA_FOR_ONE_FORM.getId());				
+			}
+			loanApplicationMaster.setProfileMappingId(profileVerMapRequest.getId());
+			loanApplicationRepository.save(loanApplicationMaster);
 		} catch (Exception e) {
 			logger.error("Failed to copy data profileId: " + profileVerMapRequest.getProfileId() + ",profileVersionId: " + profileVerMapRequest.getId() + ",applicationId:" + applicationId + " ", e);
 			auditTableRepository.save(new CommonAuditTable(applicationId, profileId, LoanApplicationServiceImpl.class.getName(), "copyDataForOneForm", "Exception while Copy Data After Submit Form : " + e.getMessage()));
@@ -8922,8 +8924,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				logger.info("Already copied.");
 				return true;
 			}
-			loanApplicationMaster.setDataCopiedFor(DataCopiedForEnum.COPIED_DATA_FOR_KPD.getId());
-			loanApplicationRepository.save(loanApplicationMaster);
 
 			boolean isItrDataCopied = copyItrDataForKeyPerson(applicationId, profileVerMapRequest, userId);
 			if (!isItrDataCopied) {
@@ -8944,6 +8944,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			loanApplicationRequest.setId(applicationId);
 			loanApplicationRequest.setProfileId(profileVerMapRequest.getId());
 			updateProfileId(loanApplicationRequest);
+			if(isItrDataCopied && isGstDataCopied) {
+				loanApplicationMaster.setDataCopiedFor(DataCopiedForEnum.COPIED_DATA_FOR_KPD.getId());				
+			}
+			loanApplicationRepository.save(loanApplicationMaster);
 			logger.info("Data copied successfully...");
 		} catch (Exception e) {
 			logger.error("Failed to copy data profileId: " + profileVerMapRequest.getProfileId() + ",profileVersionId: " + profileVerMapRequest.getId() + ",applicationId:" + applicationId + " ", e);
