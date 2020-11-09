@@ -498,7 +498,7 @@ public class DocumentAlias {
 	public static final Long CIBIL_REPORT_MSME_COMPANY = 631l;
 	public static final Long CIBIL_REPORT_MSME_CONSUMER = 632l;
 	public static final Long CIBIL_SOFTPING_CONSUMER = 592l;
-	/*public static final Long CIBIL_REPORT_HUF_COMMERCIAL = 530l;*/
+	public static final Long CIBIL_REPORT_HUF_COMMERCIAL = 530l;
 	public static final Long GST_RECEIPT = 571l;
 
 
