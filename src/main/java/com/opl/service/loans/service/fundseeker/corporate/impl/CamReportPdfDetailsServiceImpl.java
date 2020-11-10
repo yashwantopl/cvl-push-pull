@@ -121,6 +121,7 @@ import com.opl.mudra.api.oneform.enums.LCBG_Status_SBI;
 import com.opl.mudra.api.oneform.enums.MaritalStatusMst;
 import com.opl.mudra.api.oneform.enums.MrktArrFinishedGoodsList;
 import com.opl.mudra.api.oneform.enums.MudraOwningHouseMst;
+import com.opl.mudra.api.oneform.enums.NoOfEmployees;
 import com.opl.mudra.api.oneform.enums.OngoingMudraLoan;
 import com.opl.mudra.api.oneform.enums.Particular;
 import com.opl.mudra.api.oneform.enums.PurposeOfLoan;
@@ -1063,10 +1064,10 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			VerifyAPIRequest verifyAPIRequest = new VerifyAPIRequest();
 			verifyAPIRequest.setApplicationId(applicationId);
 			McaResponse mcaResponse = mcaClient.getVerifyApiData(verifyAPIRequest);
-			
 			map.put("verifyApiData", !CommonUtils.isObjectNullOrEmpty(mcaResponse) && !CommonUtils.isObjectNullOrEmpty(mcaResponse.getData()) ? CommonUtils.printFields(mcaResponse.getData() ,null) : null);
 		}catch (Exception e) {
-			logger.error("Error/Exception while getting Verify API Data of ApplicationId==>{}",applicationId);
+			map.put("verifyApiData", null);
+			logger.error("Error/Exception while getting Verify API Data of ApplicationId==>{} , e==>{}",applicationId ,e);
 		}
 		
 		//CGTMSE DATA
@@ -2883,9 +2884,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					try {
 						CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.getByApplicationAndProposalIdAndUserId(userId, applicationId,applicationProposalMapping.getProposalId());
 						if(corporateApplicantDetail != null) {
-							map.put("castCategory", corporateApplicantDetail.getCastCategory());
+							map.put("castCategory", corporateApplicantDetail.getCastCategory() != null ? corporateApplicantDetail.getCastCategory() : "-");
 							map.put("minorityCastCategory", corporateApplicantDetail.getMinorCastCategory());
-							map.put("noOfWorker", corporateApplicantDetail.getEmploymentGeneration() != null ? corporateApplicantDetail.getEmploymentGeneration() : "-");
+							map.put("noOfWorker", corporateApplicantDetail.getEmploymentGeneration() != null ? NoOfEmployees.getById(corporateApplicantDetail.getEmploymentGeneration()).getValue() : "-");
 							map.put("nameAsperGST", corporateApplicantDetail.getOrganisationName() != null ? StringEscapeUtils.escapeXml(corporateApplicantDetail.getOrganisationName()) : "-");
 						}
 					}catch (Exception e) {
@@ -2913,8 +2914,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				data.put("accountNumber", bankStatementResponse.get("bankAccountNo"));
 				data.put("ifsc", bankStatementResponse.get("ifscCode"));
 				data.put("status", 1); // show as account verified
-				String year = (String) bankStatementResponse.get("sinceYear");
-				String months = (String) bankStatementResponse.get("sinceMonth");
+				String year = bankStatementResponse.get("sinceYear") != null ? String.valueOf(bankStatementResponse.get("sinceYear")) : null;
+				String months = bankStatementResponse.get("sinceMonth") != null ? String.valueOf(bankStatementResponse.get("sinceMonth")) : null;
 				if (!CommonUtils.isObjectNullOrEmpty(year) || !CommonUtils.isObjectNullOrEmpty(months)) {
 					LocalDate today = LocalDate.now();
 					LocalDate since = LocalDate.of(Integer.parseInt(year), Integer.parseInt(months),1);
