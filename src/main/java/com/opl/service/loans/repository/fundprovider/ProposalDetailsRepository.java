@@ -302,7 +302,7 @@ public interface ProposalDetailsRepository extends JpaRepository<ProposalDetails
     public Integer updateProposalId(@Param("applicationId")Long applicationId,@Param("proposalId")Long proposalId);
 
     @Modifying //  For In-eligible proposals
-    @Query(value="update user_profile.profile_loan_mapping set proposal_id =:proposalId where application_id =:applicationId", nativeQuery = true)
+    @Query(value="update user_profile.profile_loan_mapping set proposal_id =:proposalId where application_id =:applicationId and business_type_id = 10", nativeQuery = true)
     public Integer updateProposalIdInProfile(@Param("applicationId")Long applicationId,@Param("proposalId")Long proposalId);
 
     @Query(value = "SELECT inl.user_org_id FROM `proposal_details` inl WHERE inl.application_id =:applicationId AND is_offline = true", nativeQuery = true)
