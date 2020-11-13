@@ -50,5 +50,87 @@ public class ScoringModelResponse extends TrackingManageFieldsProxy implements S
 		this.setModifiedDate(scoringModelRequest.getModifiedDate());
 		this.setJobId(scoringModelRequest.getJobId()) ;
 	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public String getScoringType() {
+		return scoringType;
+	}
+
+	public void setScoringType(String scoringType) {
+		this.scoringType = scoringType;
+	}
+
+	public String getRequestType() {
+		return requestType;
+	}
+
+	public void setRequestType(String requestType) {
+		this.requestType = requestType;
+	}
+
+	public String getCheckerDecision() {
+		return checkerDecision;
+	}
+
+	public void setCheckerDecision(String checkerDecision) {
+		this.checkerDecision = checkerDecision;
+	}
+
+	public String getModifiedDateStr() {
+		return modifiedDateStr;
+	}
+
+	public void setModifiedDateStr(String modifiedDateStr) {
+		this.modifiedDateStr = modifiedDateStr;
+	}
+
+	public List<ItrTypeMsmeRequest> getItrTypeMsmeRequestList() {
+		return itrTypeMsmeRequestList;
+	}
+
+	public void setItrTypeMsmeRequestList(List<ItrTypeMsmeRequest> itrTypeMsmeRequestList) {
+		this.itrTypeMsmeRequestList = itrTypeMsmeRequestList;
+	}
+
+	public List<ScoringVersionWithProduct> getScoringVersionWithProducts() {
+		return scoringVersionWithProducts;
+	}
+
+	public void setScoringVersionWithProducts(List<ScoringVersionWithProduct> scoringVersionWithProducts) {
+		this.scoringVersionWithProducts = scoringVersionWithProducts;
+	}
+
+	public Boolean getIsEditable() {
+		return isEditable;
+	}
+
+	public void setIsEditable(Boolean isEditable) {
+		this.isEditable = isEditable;
+	}
+
+	public String getAction() {
+		return action;
+	}
+
+	public void setAction(String action) {
+		this.action = action;
+	}
+	
+	
 		
 }
