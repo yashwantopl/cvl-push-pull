@@ -1,110 +1,108 @@
 package com.opl.mudra.api.scoring.model.v4;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+public class ScoringModelResponse implements Serializable{
 
-@Data
-@EqualsAndHashCode(callSuper = true)
-@AllArgsConstructor
-@NoArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class ScoringModelResponse extends TrackingManageFieldsProxy implements Serializable {
+	private static final long serialVersionUID = 1L;
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -4828821746448403764L;
+	private Long id;
 
-	private String name;
+	private Integer status;
+
+	private String message;
 	
-	private String code;
+	private Object data;
 	
-	private String scoringType;
+	private List<?> dataList = Collections.emptyList();
 	
-	private String requestType;
-	
-	private String checkerDecision;
-	
-	private String modifiedDateStr;
-	
-	private List<ItrTypeMsmeRequest> itrTypeMsmeRequestList;
+	private Map<String, Object> map;
 	
 	private List<ScoringVersionWithProduct> scoringVersionWithProducts;
+
+
+	public ScoringModelResponse() {
+		
+	}
+
+	public ScoringModelResponse(Integer status, String message) {
+		super();
+		this.status = status;
+		this.message = message;
+	}
 	
-	private Boolean isEditable;
+	public ScoringModelResponse(Integer status, String message, Object data) {
+		super();
+		this.status = status;
+		this.message = message;
+		this.data = data;
+	}
 	
-	private String action;
+	public ScoringModelResponse(Integer status, String message, Object data, Map<String, Object> map) {
+		super();
+		this.status = status;
+		this.message = message;
+		this.data = data;
+		this.map = map;
+	}
 	
-	public ScoringModelResponse(ScoringModelRequest scoringModelRequest) {
-		this.setId(scoringModelRequest.getId());
-		this.name = scoringModelRequest.getName();
-		this.code = scoringModelRequest.getCode();
-		this.setVersion( scoringModelRequest.getVersion());
-		this.setModifiedDate(scoringModelRequest.getModifiedDate());
-		this.setJobId(scoringModelRequest.getJobId()) ;
+	public ScoringModelResponse(Integer status, String message, List dataList) {
+		super();
+		this.status = status;
+		this.message = message;
+		this.data = dataList;
 	}
 
-	public String getName() {
-		return name;
+	public Long getId() {
+		return id;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setId(Long id) {
+		this.id = id;
 	}
 
-	public String getCode() {
-		return code;
+	public Integer getStatus() {
+		return status;
 	}
 
-	public void setCode(String code) {
-		this.code = code;
+	public void setStatus(Integer status) {
+		this.status = status;
 	}
 
-	public String getScoringType() {
-		return scoringType;
+	public String getMessage() {
+		return message;
 	}
 
-	public void setScoringType(String scoringType) {
-		this.scoringType = scoringType;
+	public void setMessage(String message) {
+		this.message = message;
 	}
 
-	public String getRequestType() {
-		return requestType;
+	public Object getData() {
+		return data;
 	}
 
-	public void setRequestType(String requestType) {
-		this.requestType = requestType;
+	public void setData(Object data) {
+		this.data = data;
 	}
 
-	public String getCheckerDecision() {
-		return checkerDecision;
+	public List<?> getDataList() {
+		return dataList;
 	}
 
-	public void setCheckerDecision(String checkerDecision) {
-		this.checkerDecision = checkerDecision;
+	public void setDataList(List<?> dataList) {
+		this.dataList = dataList;
 	}
 
-	public String getModifiedDateStr() {
-		return modifiedDateStr;
+	public Map<String, Object> getMap() {
+		return map;
 	}
 
-	public void setModifiedDateStr(String modifiedDateStr) {
-		this.modifiedDateStr = modifiedDateStr;
-	}
-
-	public List<ItrTypeMsmeRequest> getItrTypeMsmeRequestList() {
-		return itrTypeMsmeRequestList;
-	}
-
-	public void setItrTypeMsmeRequestList(List<ItrTypeMsmeRequest> itrTypeMsmeRequestList) {
-		this.itrTypeMsmeRequestList = itrTypeMsmeRequestList;
+	public void setMap(Map<String, Object> map) {
+		this.map = map;
 	}
 
 	public List<ScoringVersionWithProduct> getScoringVersionWithProducts() {
@@ -114,23 +112,8 @@ public class ScoringModelResponse extends TrackingManageFieldsProxy implements S
 	public void setScoringVersionWithProducts(List<ScoringVersionWithProduct> scoringVersionWithProducts) {
 		this.scoringVersionWithProducts = scoringVersionWithProducts;
 	}
-
-	public Boolean getIsEditable() {
-		return isEditable;
-	}
-
-	public void setIsEditable(Boolean isEditable) {
-		this.isEditable = isEditable;
-	}
-
-	public String getAction() {
-		return action;
-	}
-
-	public void setAction(String action) {
-		this.action = action;
-	}
 	
 	
-		
+
+	
 }
