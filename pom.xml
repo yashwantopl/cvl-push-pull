@@ -20,11 +20,6 @@
 
 	<dependencies>
 		<dependency>
-            <groupId>com.opl.mudra.v4.client</groupId>
-            <artifactId>client-mudra</artifactId>
-            <version>4.0.0</version>
-        </dependency>
-		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
@@ -149,7 +144,11 @@
     		<groupId>net.java.dev.jna</groupId>
     		<artifactId>jna</artifactId>
 		</dependency>
-		
+		<dependency>
+			<groupId>com.opl.cvl.mudra.client</groupId>
+			<artifactId>client-cvl-mudra</artifactId>
+			<version>17.0.0</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
