@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.opl.mudra.v4.loans</groupId>
 	<artifactId>service-loans-mudra</artifactId>
-	<version>4.0.0</version>
+	<version>17.0.0</version>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
