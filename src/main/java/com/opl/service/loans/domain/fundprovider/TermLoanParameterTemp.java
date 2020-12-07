@@ -620,7 +620,201 @@ public class TermLoanParameterTemp extends ProductMasterTemp implements Serializ
 	@Column(name = "is_cgtmse_coverage_perc_mandatory")
 	private Boolean isCgtmseCoveragePercMandatory =false;
 	
+	@Column(name = "is_vehicle_cur_have_mandatory")
+	private Boolean isVehicleCurHaveMandatory = false;
 	
+	@Column(name = "is_vehicle_cur_have_display")
+	private Boolean isVehicleCurHaveDisplay =false;
+	
+	@Column(name = "min_vehicle_cur_have")
+	private BigDecimal minVehicleCurHave;
+	
+	@Column(name = "max_vehicle_cur_have")
+	private BigDecimal maxVehicleCurHave;
+	
+	
+	@Column(name = "is_req_vehicle_have_mandatory")
+	private Boolean isReqOfVehicleMandatory = false;
+	
+	@Column(name = "is_req_vehicle_have_display")
+	private Boolean isReqOfVehicleDisplay =false;
+	
+	@Column(name = "max_req_vehicle")
+	private BigDecimal maxReqOfVehicle;
+	
+	@Column(name = "min_req_vehicle")
+	private BigDecimal minReqOfVehicle;
+	
+	
+	@Column(name = "is_satisfactory_record_mandatory")
+	private Boolean isSatisfactoryRecordMandatory = false;
+	
+	@Column(name = "is_satisfactory_record_display")
+	private Boolean isSatisfactoryRecordDisplay =false;
+	
+	@Column(name = "max_satisfactory_record")
+	private BigDecimal maxSatisfactoryRecord;
+	
+	@Column(name = "min_satisfactory_record")
+	private BigDecimal minSatisfactoryRecord;
+
+
+	
+	@Column(name = "is_min_exp_in_operating_fleet_display")
+	private Boolean isMinExpInOperatingFleetDisplay = false;
+	
+	@Column(name = "is_min_exp_in_operating_fleet_mandatory")
+	private Boolean isMinExpInOperatingFleetMandatory =false;
+	
+	@Column(name = "min_exp_in_operating_fleet")
+	private BigDecimal minMinExpInOperatingFleet;
+	
+	@Column(name = "max_exp_in_operating_fleet")
+	private BigDecimal maxMinExpInOperatingFleet;
+	
+	
+	@Column(name = "is_operational_licence_display")
+	private Boolean isOperationalLicenceDisplay = false;
+	
+	@Column(name = "is_operational_licence_mandatory")
+	private Boolean isOperationalLicenceMandatory =false;
+	
+	@Column(name = "operational_licence")
+	private Integer operationalLicence;
+	
+	
+	
+	@Column(name = "is_director_assessed_income_tax_display")
+	private Boolean isDirectorAssessedIncomeTaxDisplay = false;
+	
+	@Column(name = "is_director_assessed_income_tax_mandatory")
+	private Boolean isDirectorAssessedIncomeTaxMandatory =false;
+	
+	@Column(name = "director_assessed_income_tax")
+	private Integer directorAssessedIncomeTax;
+	
+	
+	
+	@Column(name = "is_age_of_commercial_vehicle_display")
+	private Boolean isAgeOfCommercialVehicleDisplay = false;
+	
+	@Column(name = "is_age_of_commercial_vehicle_mandatory")
+	private Boolean isAgeOfCommercialVehicleMandatory =false;
+	
+	@Column(name = "min_age_of_commercial_vehicle")
+	private BigDecimal minAgeOfCommercialVehicle;
+	
+	@Column(name = "max_age_of_commercial_vehicle")
+	private BigDecimal maxAgeOfCommercialVehicle;
+	
+	
+	
+	@Column(name = "is_banking_relation_display")
+	private Boolean isBankingRelationDisplay = false;
+	
+	@Column(name = "is_banking_relation_mandatory")
+	private Boolean isBankingRelationMandatory =false;
+	
+	@Column(name = "min_banking_relation")
+	private BigDecimal minBankingRelation;
+	
+	@Column(name = "max_banking_relation")
+	private BigDecimal maxBankingRelation;
+	
+	
+	@Column(name = "is_owns_property_display")
+	private Boolean isOwnsPropertyDisplay = false;
+	
+	@Column(name = "is_owns_property_mandatory")
+	private Boolean isOwnsPropertyMandatory =false;
+	
+	@Column(name = "owns_property")
+	private Integer ownsProperty;
+	
+	
+	
+
+	
+	@Column(name = "is_age_of_borrower_display")
+	private Boolean isAgeOfBorrowerDisplay = false;
+	
+	@Column(name = "is_age_of_borrower_mandatory")
+	private Boolean isAgeOfBorrowerMandatory =false;
+	
+	@Column(name = "min_age_of_borrower")
+	private BigDecimal minAgeOfBorrower;
+	
+	@Column(name = "max_age_of_borrower")
+	private BigDecimal maxAgeOfBorrower;
+	
+	
+	
+	@Column(name = "is_residency_stability_display")
+	private Boolean isResidencyStabilityDisplay = false;
+	
+	@Column(name = "is_residency_stability_mandatory")
+	private Boolean isResidencyStabilityMandatory =false;
+	
+	
+	@Column(name = "is_debtors_days_display")
+	private Boolean isDebtorDaysDisplay = false;
+	
+	@Column(name = "is_debtors_days_mandatory")
+	private Boolean isDebtorDaysMandatory =false;
+	
+	@Column(name = "min_debtors_days")
+	private BigDecimal minDebtorDays;
+	
+	@Column(name = "max_debtors_days")
+	private BigDecimal maxDebtorDays;
+
+	
+	
+	@Column(name = "is_cash_profit_turnover_display")
+	private Boolean isCashProfitTurnoverDisplay = false;
+	
+	@Column(name = "is_cash_profit_turnover_mandatory")
+	private Boolean isCashProfitTurnoverMandatory =false;
+	
+	@Column(name = "min_cash_profit_turnover")
+	private BigDecimal minCashProfitTurnover;
+	
+	@Column(name = "max_cash_profit_turnover")
+	private BigDecimal maxCashProfitTurnover;
+	
+
+	
+	
+	
+	@Column(name = "is_vehicle_type_display")
+	private Boolean isVehicleTypeDisplay = false;
+	
+	@Column(name = "is_vehicle_type_mandatory")
+	private Boolean isVehicleTypeMandatory =false;
+	
+	
+	
+
+	@Column(name = "is_vehicle_segment_display")
+	private Boolean isVehicleSegmentDisplay = false;
+	
+	@Column(name = "is_vehicle_segment_mandatory")
+	private Boolean isVehicleSegmentMandatory =false;
+	
+	
+	
+
+	@Column(name = "is_max_permissible_display")
+	private Boolean isMaximumPermissibleDisplay = false;
+	
+	@Column(name = "is_max_permissible_mandatory")
+	private Boolean isMaximumPermissibleMandatory =false;
+	
+	@Column(name = "min_permissible")
+	private BigDecimal minMaximumPermissible;
+	
+	@Column(name = "max_permissible")
+	private BigDecimal maxMaximumPermissible;
 	
 	
 	
@@ -2168,6 +2362,448 @@ public class TermLoanParameterTemp extends ProductMasterTemp implements Serializ
 	public void setPcMinorityCommunity(BigDecimal pcMinorityCommunity) {
 		this.pcMinorityCommunity = pcMinorityCommunity;
 	}
+
+	public Boolean getIsVehicleCurHaveMandatory() {
+		return isVehicleCurHaveMandatory;
+	}
+
+	public void setIsVehicleCurHaveMandatory(Boolean isVehicleCurHaveMandatory) {
+		this.isVehicleCurHaveMandatory = isVehicleCurHaveMandatory;
+	}
+
+	public Boolean getIsVehicleCurHaveDisplay() {
+		return isVehicleCurHaveDisplay;
+	}
+
+	public void setIsVehicleCurHaveDisplay(Boolean isVehicleCurHaveDisplay) {
+		this.isVehicleCurHaveDisplay = isVehicleCurHaveDisplay;
+	}
+
+	public BigDecimal getMinVehicleCurHave() {
+		return minVehicleCurHave;
+	}
+
+	public void setMinVehicleCurHave(BigDecimal minVehicleCurHave) {
+		this.minVehicleCurHave = minVehicleCurHave;
+	}
+
+	public BigDecimal getMaxVehicleCurHave() {
+		return maxVehicleCurHave;
+	}
+
+	public void setMaxVehicleCurHave(BigDecimal maxVehicleCurHave) {
+		this.maxVehicleCurHave = maxVehicleCurHave;
+	}
+
+	public Boolean getIsReqOfVehicleMandatory() {
+		return isReqOfVehicleMandatory;
+	}
+
+	public void setIsReqOfVehicleMandatory(Boolean isReqOfVehicleMandatory) {
+		this.isReqOfVehicleMandatory = isReqOfVehicleMandatory;
+	}
+
+	public Boolean getIsReqOfVehicleDisplay() {
+		return isReqOfVehicleDisplay;
+	}
+
+	public void setIsReqOfVehicleDisplay(Boolean isReqOfVehicleDisplay) {
+		this.isReqOfVehicleDisplay = isReqOfVehicleDisplay;
+	}
+
+	public BigDecimal getMaxReqOfVehicle() {
+		return maxReqOfVehicle;
+	}
+
+	public void setMaxReqOfVehicle(BigDecimal maxReqOfVehicle) {
+		this.maxReqOfVehicle = maxReqOfVehicle;
+	}
+
+	public BigDecimal getMinReqOfVehicle() {
+		return minReqOfVehicle;
+	}
+
+	public void setMinReqOfVehicle(BigDecimal minReqOfVehicle) {
+		this.minReqOfVehicle = minReqOfVehicle;
+	}
+
+	public Boolean getIsSatisfactoryRecordMandatory() {
+		return isSatisfactoryRecordMandatory;
+	}
+
+	public void setIsSatisfactoryRecordMandatory(Boolean isSatisfactoryRecordMandatory) {
+		this.isSatisfactoryRecordMandatory = isSatisfactoryRecordMandatory;
+	}
+
+	public Boolean getIsSatisfactoryRecordDisplay() {
+		return isSatisfactoryRecordDisplay;
+	}
+
+	public void setIsSatisfactoryRecordDisplay(Boolean isSatisfactoryRecordDisplay) {
+		this.isSatisfactoryRecordDisplay = isSatisfactoryRecordDisplay;
+	}
+
+	public BigDecimal getMaxSatisfactoryRecord() {
+		return maxSatisfactoryRecord;
+	}
+
+	public void setMaxSatisfactoryRecord(BigDecimal maxSatisfactoryRecord) {
+		this.maxSatisfactoryRecord = maxSatisfactoryRecord;
+	}
+
+	public BigDecimal getMinSatisfactoryRecord() {
+		return minSatisfactoryRecord;
+	}
+
+	public void setMinSatisfactoryRecord(BigDecimal minSatisfactoryRecord) {
+		this.minSatisfactoryRecord = minSatisfactoryRecord;
+	}
+
+	public Boolean getIsMinExpInOperatingFleetDisplay() {
+		return isMinExpInOperatingFleetDisplay;
+	}
+
+	public void setIsMinExpInOperatingFleetDisplay(Boolean isMinExpInOperatingFleetDisplay) {
+		this.isMinExpInOperatingFleetDisplay = isMinExpInOperatingFleetDisplay;
+	}
+
+	public Boolean getIsMinExpInOperatingFleetMandatory() {
+		return isMinExpInOperatingFleetMandatory;
+	}
+
+	public void setIsMinExpInOperatingFleetMandatory(Boolean isMinExpInOperatingFleetMandatory) {
+		this.isMinExpInOperatingFleetMandatory = isMinExpInOperatingFleetMandatory;
+	}
+
+	public BigDecimal getMinMinExpInOperatingFleet() {
+		return minMinExpInOperatingFleet;
+	}
+
+	public void setMinMinExpInOperatingFleet(BigDecimal minMinExpInOperatingFleet) {
+		this.minMinExpInOperatingFleet = minMinExpInOperatingFleet;
+	}
+
+	public BigDecimal getMaxMinExpInOperatingFleet() {
+		return maxMinExpInOperatingFleet;
+	}
+
+	public void setMaxMinExpInOperatingFleet(BigDecimal maxMinExpInOperatingFleet) {
+		this.maxMinExpInOperatingFleet = maxMinExpInOperatingFleet;
+	}
+
+	public Boolean getIsOperationalLicenceDisplay() {
+		return isOperationalLicenceDisplay;
+	}
+
+	public void setIsOperationalLicenceDisplay(Boolean isOperationalLicenceDisplay) {
+		this.isOperationalLicenceDisplay = isOperationalLicenceDisplay;
+	}
+
+	public Boolean getIsOperationalLicenceMandatory() {
+		return isOperationalLicenceMandatory;
+	}
+
+	public void setIsOperationalLicenceMandatory(Boolean isOperationalLicenceMandatory) {
+		this.isOperationalLicenceMandatory = isOperationalLicenceMandatory;
+	}
+
+	public Integer getOperationalLicence() {
+		return operationalLicence;
+	}
+
+	public void setOperationalLicence(Integer operationalLicence) {
+		this.operationalLicence = operationalLicence;
+	}
+
+	public Boolean getIsDirectorAssessedIncomeTaxDisplay() {
+		return isDirectorAssessedIncomeTaxDisplay;
+	}
+
+	public void setIsDirectorAssessedIncomeTaxDisplay(Boolean isDirectorAssessedIncomeTaxDisplay) {
+		this.isDirectorAssessedIncomeTaxDisplay = isDirectorAssessedIncomeTaxDisplay;
+	}
+
+	public Boolean getIsDirectorAssessedIncomeTaxMandatory() {
+		return isDirectorAssessedIncomeTaxMandatory;
+	}
+
+	public void setIsDirectorAssessedIncomeTaxMandatory(Boolean isDirectorAssessedIncomeTaxMandatory) {
+		this.isDirectorAssessedIncomeTaxMandatory = isDirectorAssessedIncomeTaxMandatory;
+	}
+
+	public Integer getDirectorAssessedIncomeTax() {
+		return directorAssessedIncomeTax;
+	}
+
+	public void setDirectorAssessedIncomeTax(Integer directorAssessedIncomeTax) {
+		this.directorAssessedIncomeTax = directorAssessedIncomeTax;
+	}
+
+	public Boolean getIsAgeOfCommercialVehicleDisplay() {
+		return isAgeOfCommercialVehicleDisplay;
+	}
+
+	public void setIsAgeOfCommercialVehicleDisplay(Boolean isAgeOfCommercialVehicleDisplay) {
+		this.isAgeOfCommercialVehicleDisplay = isAgeOfCommercialVehicleDisplay;
+	}
+
+	public Boolean getIsAgeOfCommercialVehicleMandatory() {
+		return isAgeOfCommercialVehicleMandatory;
+	}
+
+	public void setIsAgeOfCommercialVehicleMandatory(Boolean isAgeOfCommercialVehicleMandatory) {
+		this.isAgeOfCommercialVehicleMandatory = isAgeOfCommercialVehicleMandatory;
+	}
+
+	public BigDecimal getMinAgeOfCommercialVehicle() {
+		return minAgeOfCommercialVehicle;
+	}
+
+	public void setMinAgeOfCommercialVehicle(BigDecimal minAgeOfCommercialVehicle) {
+		this.minAgeOfCommercialVehicle = minAgeOfCommercialVehicle;
+	}
+
+	public BigDecimal getMaxAgeOfCommercialVehicle() {
+		return maxAgeOfCommercialVehicle;
+	}
+
+	public void setMaxAgeOfCommercialVehicle(BigDecimal maxAgeOfCommercialVehicle) {
+		this.maxAgeOfCommercialVehicle = maxAgeOfCommercialVehicle;
+	}
+
+	public Boolean getIsBankingRelationDisplay() {
+		return isBankingRelationDisplay;
+	}
+
+	public void setIsBankingRelationDisplay(Boolean isBankingRelationDisplay) {
+		this.isBankingRelationDisplay = isBankingRelationDisplay;
+	}
+
+	public Boolean getIsBankingRelationMandatory() {
+		return isBankingRelationMandatory;
+	}
+
+	public void setIsBankingRelationMandatory(Boolean isBankingRelationMandatory) {
+		this.isBankingRelationMandatory = isBankingRelationMandatory;
+	}
+
+	public BigDecimal getMinBankingRelation() {
+		return minBankingRelation;
+	}
+
+	public void setMinBankingRelation(BigDecimal minBankingRelation) {
+		this.minBankingRelation = minBankingRelation;
+	}
+
+	public BigDecimal getMaxBankingRelation() {
+		return maxBankingRelation;
+	}
+
+	public void setMaxBankingRelation(BigDecimal maxBankingRelation) {
+		this.maxBankingRelation = maxBankingRelation;
+	}
+
+	public Boolean getIsOwnsPropertyDisplay() {
+		return isOwnsPropertyDisplay;
+	}
+
+	public void setIsOwnsPropertyDisplay(Boolean isOwnsPropertyDisplay) {
+		this.isOwnsPropertyDisplay = isOwnsPropertyDisplay;
+	}
+
+	public Boolean getIsOwnsPropertyMandatory() {
+		return isOwnsPropertyMandatory;
+	}
+
+	public void setIsOwnsPropertyMandatory(Boolean isOwnsPropertyMandatory) {
+		this.isOwnsPropertyMandatory = isOwnsPropertyMandatory;
+	}
+
+	public Integer getOwnsProperty() {
+		return ownsProperty;
+	}
+
+	public void setOwnsProperty(Integer ownsProperty) {
+		this.ownsProperty = ownsProperty;
+	}
+
+	public Boolean getIsAgeOfBorrowerDisplay() {
+		return isAgeOfBorrowerDisplay;
+	}
+
+	public void setIsAgeOfBorrowerDisplay(Boolean isAgeOfBorrowerDisplay) {
+		this.isAgeOfBorrowerDisplay = isAgeOfBorrowerDisplay;
+	}
+
+	public Boolean getIsAgeOfBorrowerMandatory() {
+		return isAgeOfBorrowerMandatory;
+	}
+
+	public void setIsAgeOfBorrowerMandatory(Boolean isAgeOfBorrowerMandatory) {
+		this.isAgeOfBorrowerMandatory = isAgeOfBorrowerMandatory;
+	}
+
+	public BigDecimal getMinAgeOfBorrower() {
+		return minAgeOfBorrower;
+	}
+
+	public void setMinAgeOfBorrower(BigDecimal minAgeOfBorrower) {
+		this.minAgeOfBorrower = minAgeOfBorrower;
+	}
+
+	public BigDecimal getMaxAgeOfBorrower() {
+		return maxAgeOfBorrower;
+	}
+
+	public void setMaxAgeOfBorrower(BigDecimal maxAgeOfBorrower) {
+		this.maxAgeOfBorrower = maxAgeOfBorrower;
+	}
+
+	public Boolean getIsResidencyStabilityDisplay() {
+		return isResidencyStabilityDisplay;
+	}
+
+	public void setIsResidencyStabilityDisplay(Boolean isResidencyStabilityDisplay) {
+		this.isResidencyStabilityDisplay = isResidencyStabilityDisplay;
+	}
+
+	public Boolean getIsResidencyStabilityMandatory() {
+		return isResidencyStabilityMandatory;
+	}
+
+	public void setIsResidencyStabilityMandatory(Boolean isResidencyStabilityMandatory) {
+		this.isResidencyStabilityMandatory = isResidencyStabilityMandatory;
+	}
+
+	public Boolean getIsDebtorDaysDisplay() {
+		return isDebtorDaysDisplay;
+	}
+
+	public void setIsDebtorDaysDisplay(Boolean isDebtorDaysDisplay) {
+		this.isDebtorDaysDisplay = isDebtorDaysDisplay;
+	}
+
+	public Boolean getIsDebtorDaysMandatory() {
+		return isDebtorDaysMandatory;
+	}
+
+	public void setIsDebtorDaysMandatory(Boolean isDebtorDaysMandatory) {
+		this.isDebtorDaysMandatory = isDebtorDaysMandatory;
+	}
+
+	public BigDecimal getMinDebtorDays() {
+		return minDebtorDays;
+	}
+
+	public void setMinDebtorDays(BigDecimal minDebtorDays) {
+		this.minDebtorDays = minDebtorDays;
+	}
+
+	public BigDecimal getMaxDebtorDays() {
+		return maxDebtorDays;
+	}
+
+	public void setMaxDebtorDays(BigDecimal maxDebtorDays) {
+		this.maxDebtorDays = maxDebtorDays;
+	}
+
+	public Boolean getIsCashProfitTurnoverDisplay() {
+		return isCashProfitTurnoverDisplay;
+	}
+
+	public void setIsCashProfitTurnoverDisplay(Boolean isCashProfitTurnoverDisplay) {
+		this.isCashProfitTurnoverDisplay = isCashProfitTurnoverDisplay;
+	}
+
+	public Boolean getIsCashProfitTurnoverMandatory() {
+		return isCashProfitTurnoverMandatory;
+	}
+
+	public void setIsCashProfitTurnoverMandatory(Boolean isCashProfitTurnoverMandatory) {
+		this.isCashProfitTurnoverMandatory = isCashProfitTurnoverMandatory;
+	}
+
+	public BigDecimal getMinCashProfitTurnover() {
+		return minCashProfitTurnover;
+	}
+
+	public void setMinCashProfitTurnover(BigDecimal minCashProfitTurnover) {
+		this.minCashProfitTurnover = minCashProfitTurnover;
+	}
+
+	public BigDecimal getMaxCashProfitTurnover() {
+		return maxCashProfitTurnover;
+	}
+
+	public void setMaxCashProfitTurnover(BigDecimal maxCashProfitTurnover) {
+		this.maxCashProfitTurnover = maxCashProfitTurnover;
+	}
+
+	public Boolean getIsVehicleTypeDisplay() {
+		return isVehicleTypeDisplay;
+	}
+
+	public void setIsVehicleTypeDisplay(Boolean isVehicleTypeDisplay) {
+		this.isVehicleTypeDisplay = isVehicleTypeDisplay;
+	}
+
+	public Boolean getIsVehicleTypeMandatory() {
+		return isVehicleTypeMandatory;
+	}
+
+	public void setIsVehicleTypeMandatory(Boolean isVehicleTypeMandatory) {
+		this.isVehicleTypeMandatory = isVehicleTypeMandatory;
+	}
+
+	public Boolean getIsVehicleSegmentDisplay() {
+		return isVehicleSegmentDisplay;
+	}
+
+	public void setIsVehicleSegmentDisplay(Boolean isVehicleSegmentDisplay) {
+		this.isVehicleSegmentDisplay = isVehicleSegmentDisplay;
+	}
+
+	public Boolean getIsVehicleSegmentMandatory() {
+		return isVehicleSegmentMandatory;
+	}
+
+	public void setIsVehicleSegmentMandatory(Boolean isVehicleSegmentMandatory) {
+		this.isVehicleSegmentMandatory = isVehicleSegmentMandatory;
+	}
+
+	public Boolean getIsMaximumPermissibleDisplay() {
+		return isMaximumPermissibleDisplay;
+	}
+
+	public void setIsMaximumPermissibleDisplay(Boolean isMaximumPermissibleDisplay) {
+		this.isMaximumPermissibleDisplay = isMaximumPermissibleDisplay;
+	}
+
+	public Boolean getIsMaximumPermissibleMandatory() {
+		return isMaximumPermissibleMandatory;
+	}
+
+	public void setIsMaximumPermissibleMandatory(Boolean isMaximumPermissibleMandatory) {
+		this.isMaximumPermissibleMandatory = isMaximumPermissibleMandatory;
+	}
+
+	public BigDecimal getMinMaximumPermissible() {
+		return minMaximumPermissible;
+	}
+
+	public void setMinMaximumPermissible(BigDecimal minMaximumPermissible) {
+		this.minMaximumPermissible = minMaximumPermissible;
+	}
+
+	public BigDecimal getMaxMaximumPermissible() {
+		return maxMaximumPermissible;
+	}
+
+	public void setMaxMaximumPermissible(BigDecimal maxMaximumPermissible) {
+		this.maxMaximumPermissible = maxMaximumPermissible;
+	}
+	
+	
 	
 }
 
