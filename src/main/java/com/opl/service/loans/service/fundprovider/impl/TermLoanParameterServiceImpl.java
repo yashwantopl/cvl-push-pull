@@ -32,6 +32,8 @@ import com.opl.service.loans.domain.IndustrySectorDetailTemp;
 import com.opl.service.loans.domain.fundprovider.CoLendingRatio;
 import com.opl.service.loans.domain.fundprovider.ConstitutionMapping;
 import com.opl.service.loans.domain.fundprovider.ConstitutionMappingTemp;
+import com.opl.service.loans.domain.fundprovider.CvlVehicleMultipleOption;
+import com.opl.service.loans.domain.fundprovider.CvlVehicleMultipleOptionTemp;
 import com.opl.service.loans.domain.fundprovider.FpGstTypeMapping;
 import com.opl.service.loans.domain.fundprovider.GeographicalCityDetail;
 import com.opl.service.loans.domain.fundprovider.GeographicalCityDetailTemp;
@@ -48,6 +50,8 @@ import com.opl.service.loans.domain.fundprovider.NtbTermLoanParameterTemp;
 import com.opl.service.loans.domain.fundprovider.TermLoanParameter;
 import com.opl.service.loans.domain.fundprovider.TermLoanParameterTemp;
 import com.opl.service.loans.repository.fundprovider.CoLendingRatioRepository;
+import com.opl.service.loans.repository.fundprovider.CvlVehicleMultipleOptionRepo;
+import com.opl.service.loans.repository.fundprovider.CvlVehicleMultipleOptionRepoTemp;
 import com.opl.service.loans.repository.fundprovider.FpConstitutionMappingRepository;
 import com.opl.service.loans.repository.fundprovider.FpConstitutionMappingTempRepository;
 import com.opl.service.loans.repository.fundprovider.FpGstTypeMappingRepository;
@@ -169,6 +173,13 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 	@Autowired
 	private FPParameterMappingService fPParameterMappingService;
 	
+	@Autowired
+	private CvlVehicleMultipleOptionRepoTemp cvlVehicleMultipleOptionRepoTemp;
+	
+	private CvlVehicleMultipleOptionRepo cvlVehicleMultipleOptionRepo;
+	
+	
+	
 
 	@Override
 	public boolean saveOrUpdate(TermLoanParameterRequest termLoanParameterRequest, Long mappingId, Integer roleId) {
@@ -242,6 +253,15 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		//save constitution mapping
 		fpConstitutionMappingRepository.inActiveMasterByFpProductId(termLoanParameterRequest.getId());
 		saveConstitutionType(termLoanParameterRequest);
+		
+		cvlVehicleMultipleOptionRepo.inActiveMasterByFpProductIdAndType(termLoanParameter.getId(), 1l);
+		saveResidenceStability(termLoanParameterRequest);
+		
+		cvlVehicleMultipleOptionRepo.inActiveMasterByFpProductIdAndType(termLoanParameter.getId(), 2l);
+		saveVehicleType(termLoanParameterRequest);
+		
+		cvlVehicleMultipleOptionRepo.inActiveMasterByFpProductIdAndType(termLoanParameter.getId(), 3l);
+		saveVehicleSegment(termLoanParameterRequest);
 
 		//save nbfc ratio mapping
 //		nbfcRatioMappingRepository.inActiveByFpProductId(termLoanParameterRequest.getId());
@@ -520,6 +540,10 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		termLoanParameterRequest.setNbfcRatioIds(nbfcRatioMappingRepository.getIdsByFpProductId(termLoanParameterRequest.getId()));
 		
 		termLoanParameterRequest.setConstitutionIds(fpConstitutionMappingRepository.getIdsByFpProductId(termLoanParameterRequest.getId()));
+		
+		termLoanParameterRequest.setResidencyStabilityIds(cvlVehicleMultipleOptionRepo.finMasterIddByFpProductIdAndIsActiveAndTypeId(termLoanParameterRequest.getId(), 1l));
+		termLoanParameterRequest.setVehicleTypeIds(cvlVehicleMultipleOptionRepo.finMasterIddByFpProductIdAndIsActiveAndTypeId(termLoanParameterRequest.getId(),2l));
+		termLoanParameterRequest.setVehicleSegmentIds(cvlVehicleMultipleOptionRepo.finMasterIddByFpProductIdAndIsActiveAndTypeId(termLoanParameterRequest.getId(),3l));
 		
 		termLoanParameterRequest.setBureauScoreIds(fPParameterMappingService.getParameters(termLoanParameterRequest.getId(), CommonUtils.ParameterTypes.BUREAU_SCORE));
 		termLoanParameterRequest.setMainDirBureauScoreIds(fPParameterMappingService.getParameters(termLoanParameterRequest.getId(), CommonUtils.ParameterTypes.BUREAU_SCORE_MAIN_DIR));
@@ -843,6 +867,10 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		}
 		
 		termLoanParameterRequest.setMsmeFundingIds(msmeValueMappingService.getDataListFromFpProductId(1, id, userId));
+		
+		termLoanParameterRequest.setResidencyStabilityIds(cvlVehicleMultipleOptionRepoTemp.finMasterIddByFpProductIdAndIsActiveAndTypeId(termLoanParameterRequest.getId(),1l));
+		termLoanParameterRequest.setVehicleTypeIds(cvlVehicleMultipleOptionRepoTemp.finMasterIddByFpProductIdAndIsActiveAndTypeId(termLoanParameterRequest.getId(),2l));
+		termLoanParameterRequest.setVehicleSegmentIds(cvlVehicleMultipleOptionRepoTemp.finMasterIddByFpProductIdAndIsActiveAndTypeId(termLoanParameterRequest.getId(),3l));
 		termLoanParameterRequest.setLoanArrangementIds(
 				loanArrangementMappingTempRepository.getIdsByFpProductId(termLoanParameterRequest.getId()));
 		termLoanParameterRequest.setGstType(fpGstTypeMappingTempRepository.getIdsByFpProductId(termLoanParameterRequest.getId()));
@@ -902,17 +930,17 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		termLoanParameter.setIsDeleted(false);
 		termLoanParameter.setIsCopied(false);
 		termLoanParameter.setApprovalDate(null);
-		if (CommonUtils.isObjectNullOrEmpty(termLoanParameter.getJobId())) {
-			WorkflowResponse workflowResponse = workflowClient.createJobForMasters(
-					WorkflowUtils.Workflow.MASTER_DATA_APPROVAL_PROCESS, WorkflowUtils.Action.SEND_FOR_APPROVAL,
-					termLoanParameterRequest.getUserId());
-			Long jobId = null;
-			if (!CommonUtils.isObjectNullOrEmpty(workflowResponse.getData())) {
-				jobId = Long.valueOf(workflowResponse.getData().toString());
-			}
-
-			termLoanParameter.setJobId(jobId);
-		}
+		/*
+		 * if (CommonUtils.isObjectNullOrEmpty(termLoanParameter.getJobId())) {
+		 * WorkflowResponse workflowResponse = workflowClient.createJobForMasters(
+		 * WorkflowUtils.Workflow.MASTER_DATA_APPROVAL_PROCESS,
+		 * WorkflowUtils.Action.SEND_FOR_APPROVAL,
+		 * termLoanParameterRequest.getUserId()); Long jobId = null; if
+		 * (!CommonUtils.isObjectNullOrEmpty(workflowResponse.getData())) { jobId =
+		 * Long.valueOf(workflowResponse.getData().toString()); }
+		 * 
+		 * termLoanParameter.setJobId(jobId); }
+		 */
 
 		termLoanParameter = termLoanParameterTempRepository.save(termLoanParameter);
 		termLoanParameterRequest.setId(termLoanParameter.getId());
@@ -934,7 +962,14 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		negativeIndustryTempRepository.inActiveMappingByFpProductMasterId(termLoanParameter.getId());
 		saveNegativeIndustryTemp(termLoanParameterRequest);
 		
+		cvlVehicleMultipleOptionRepoTemp.inActiveMasterByFpProductIdAndType(termLoanParameter.getId(), 1l);
+		saveResidenceStabilityTemp(termLoanParameterRequest);
 		
+		cvlVehicleMultipleOptionRepoTemp.inActiveMasterByFpProductIdAndType(termLoanParameter.getId(), 2l);
+		saveVehicleTypeTemp(termLoanParameterRequest);
+		
+		cvlVehicleMultipleOptionRepoTemp.inActiveMasterByFpProductIdAndType(termLoanParameter.getId(), 3l);
+		saveVehicleSegmentTemp(termLoanParameterRequest);
 
 		// loan arrangements
 		loanArrangementMappingTempRepository.inActiveMasterByFpProductId(termLoanParameterRequest.getId());
@@ -959,6 +994,143 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 
 	}
 
+
+	private void saveResidenceStabilityTemp(TermLoanParameterRequest termLoanParameterRequest) {
+		// TODO Auto-generated method stub
+		logger.info("start saveResidenceStabilityTemp");
+		CvlVehicleMultipleOptionTemp cvlVehicleMultipleOptionTemp= null;
+		if(!CommonUtils.isObjectNullOrEmpty(termLoanParameterRequest.getResidencyStabilityIds())) {
+		for (Long dataRequest : termLoanParameterRequest.getResidencyStabilityIds()) {
+			cvlVehicleMultipleOptionTemp = new CvlVehicleMultipleOptionTemp();
+			cvlVehicleMultipleOptionTemp.setFpProductId(termLoanParameterRequest.getId());
+			cvlVehicleMultipleOptionTemp.setMasterId(dataRequest);
+			cvlVehicleMultipleOptionTemp.setTypeId(1l);
+			cvlVehicleMultipleOptionTemp.setCreatedBy(termLoanParameterRequest.getUserId());
+			cvlVehicleMultipleOptionTemp.setModifiedBy(termLoanParameterRequest.getUserId());
+			cvlVehicleMultipleOptionTemp.setCreatedDate(new Date());
+			cvlVehicleMultipleOptionTemp.setModifiedDate(new Date());
+			cvlVehicleMultipleOptionTemp.setIsActive(true);
+			// create by and update
+			cvlVehicleMultipleOptionRepoTemp.save(cvlVehicleMultipleOptionTemp);
+		}}
+		logger.info("end saveResidenceStabilityTemp");
+		
+	}
+	private void saveVehicleTypeTemp(TermLoanParameterRequest termLoanParameterRequest) {
+		// TODO Auto-generated method stub
+		logger.info("start saveVehicleTypeTemp");
+		CvlVehicleMultipleOptionTemp cvlVehicleMultipleOptionTemp= null;
+		if(!CommonUtils.isObjectNullOrEmpty(termLoanParameterRequest.getVehicleTypeIds())) {
+		for (Long dataRequest : termLoanParameterRequest.getVehicleTypeIds()) {
+			cvlVehicleMultipleOptionTemp = new CvlVehicleMultipleOptionTemp();
+			cvlVehicleMultipleOptionTemp.setFpProductId(termLoanParameterRequest.getId());
+			cvlVehicleMultipleOptionTemp.setMasterId(dataRequest);
+			cvlVehicleMultipleOptionTemp.setTypeId(2l);
+			cvlVehicleMultipleOptionTemp.setCreatedBy(termLoanParameterRequest.getUserId());
+			cvlVehicleMultipleOptionTemp.setModifiedBy(termLoanParameterRequest.getUserId());
+			cvlVehicleMultipleOptionTemp.setCreatedDate(new Date());
+			cvlVehicleMultipleOptionTemp.setModifiedDate(new Date());
+			cvlVehicleMultipleOptionTemp.setIsActive(true);
+			// create by and update
+			cvlVehicleMultipleOptionRepoTemp.save(cvlVehicleMultipleOptionTemp);
+		}}
+		logger.info("end saveVehicleTypeTemp");
+		
+	}
+
+
+	private void saveVehicleSegmentTemp(TermLoanParameterRequest termLoanParameterRequest) {
+		// TODO Auto-generated method stub
+		logger.info("start saveVehicleSegmentTemp");
+		CvlVehicleMultipleOptionTemp cvlVehicleMultipleOptionTemp= null;
+		if(!CommonUtils.isObjectNullOrEmpty(termLoanParameterRequest.getVehicleSegmentIds())) {
+		for (Long dataRequest : termLoanParameterRequest.getVehicleSegmentIds()) {
+			cvlVehicleMultipleOptionTemp = new CvlVehicleMultipleOptionTemp();
+			cvlVehicleMultipleOptionTemp.setFpProductId(termLoanParameterRequest.getId());
+			cvlVehicleMultipleOptionTemp.setMasterId(dataRequest);
+			cvlVehicleMultipleOptionTemp.setTypeId(3l);
+			cvlVehicleMultipleOptionTemp.setCreatedBy(termLoanParameterRequest.getUserId());
+			cvlVehicleMultipleOptionTemp.setModifiedBy(termLoanParameterRequest.getUserId());
+			cvlVehicleMultipleOptionTemp.setCreatedDate(new Date());
+			cvlVehicleMultipleOptionTemp.setModifiedDate(new Date());
+			cvlVehicleMultipleOptionTemp.setIsActive(true);
+			// create by and update
+			cvlVehicleMultipleOptionRepoTemp.save(cvlVehicleMultipleOptionTemp);
+		}}
+		logger.info("end saveVehicleSegmentTemp");
+		
+	}
+	
+
+	
+	private void saveResidenceStability(TermLoanParameterRequest termLoanParameterRequest) {
+		// TODO Auto-generated method stub
+		logger.info("start saveResidenceStability");
+		CvlVehicleMultipleOption cvlVehicleMultipleOption= null;
+		
+		if(!CommonUtils.isObjectNullOrEmpty(termLoanParameterRequest.getVehicleSegmentIds())) {
+		for (Long dataRequest : termLoanParameterRequest.getResidencyStabilityIds()) {
+			cvlVehicleMultipleOption = new CvlVehicleMultipleOption();
+			cvlVehicleMultipleOption.setFpProductId(termLoanParameterRequest.getId());
+			cvlVehicleMultipleOption.setMasterId(dataRequest);
+			cvlVehicleMultipleOption.setTypeId(1l);
+			cvlVehicleMultipleOption.setCreatedBy(termLoanParameterRequest.getUserId());
+			cvlVehicleMultipleOption.setModifiedBy(termLoanParameterRequest.getUserId());
+			cvlVehicleMultipleOption.setCreatedDate(new Date());
+			cvlVehicleMultipleOption.setModifiedDate(new Date());
+			cvlVehicleMultipleOption.setIsActive(true);
+			// create by and update
+			cvlVehicleMultipleOptionRepo.save(cvlVehicleMultipleOption);
+		}}
+		logger.info("end saveResidenceStability");
+		
+	}
+	private void saveVehicleType(TermLoanParameterRequest termLoanParameterRequest) {
+		// TODO Auto-generated method stub
+		logger.info("start saveVehicleType");
+		CvlVehicleMultipleOption cvlVehicleMultipleOption= null;
+		if(!CommonUtils.isObjectNullOrEmpty(termLoanParameterRequest.getVehicleTypeIds())) {
+		for (Long dataRequest : termLoanParameterRequest.getVehicleTypeIds()) {
+			cvlVehicleMultipleOption = new CvlVehicleMultipleOption();
+			cvlVehicleMultipleOption.setFpProductId(termLoanParameterRequest.getId());
+			cvlVehicleMultipleOption.setMasterId(dataRequest);
+			cvlVehicleMultipleOption.setTypeId(2l);
+			cvlVehicleMultipleOption.setCreatedBy(termLoanParameterRequest.getUserId());
+			cvlVehicleMultipleOption.setModifiedBy(termLoanParameterRequest.getUserId());
+			cvlVehicleMultipleOption.setCreatedDate(new Date());
+			cvlVehicleMultipleOption.setModifiedDate(new Date());
+			cvlVehicleMultipleOption.setIsActive(true);
+			// create by and update
+			cvlVehicleMultipleOptionRepo.save(cvlVehicleMultipleOption);
+		}}
+		logger.info("end saveVehicleType");
+		
+	}
+
+
+	private void saveVehicleSegment(TermLoanParameterRequest termLoanParameterRequest) {
+		// TODO Auto-generated method stub
+		logger.info("start saveVehicleSegment");
+		
+		CvlVehicleMultipleOption cvlVehicleMultipleOption= null;
+		if(!CommonUtils.isObjectNullOrEmpty(termLoanParameterRequest.getVehicleSegmentIds())) {
+		for (Long dataRequest : termLoanParameterRequest.getVehicleSegmentIds()) {
+			cvlVehicleMultipleOption = new CvlVehicleMultipleOption();
+			cvlVehicleMultipleOption.setFpProductId(termLoanParameterRequest.getId());
+			cvlVehicleMultipleOption.setMasterId(dataRequest);
+			cvlVehicleMultipleOption.setTypeId(3l);
+			cvlVehicleMultipleOption.setCreatedBy(termLoanParameterRequest.getUserId());
+			cvlVehicleMultipleOption.setModifiedBy(termLoanParameterRequest.getUserId());
+			cvlVehicleMultipleOption.setCreatedDate(new Date());
+			cvlVehicleMultipleOption.setModifiedDate(new Date());
+			cvlVehicleMultipleOption.setIsActive(true);
+			// create by and update
+			cvlVehicleMultipleOptionRepo.save(cvlVehicleMultipleOption);
+		}}
+		logger.info("end saveVehicleSegment");
+		
+	}
+	
 	private void saveIndustryTemp(TermLoanParameterRequest workingCapitalParameterRequest) {
 		logger.info("start saveIndustryTemp");
 		IndustrySectorDetailTemp industrySectorDetail = null;

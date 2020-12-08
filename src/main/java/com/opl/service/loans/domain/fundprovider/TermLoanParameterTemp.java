@@ -816,6 +816,54 @@ public class TermLoanParameterTemp extends ProductMasterTemp implements Serializ
 	@Column(name = "max_permissible")
 	private BigDecimal maxMaximumPermissible;
 	
+
+	@Column(name = "cvl_eli_motor_tax")
+	private Integer cvlEliMotorTax;
+	
+
+	@Column(name = "cvl_eli_insurance_premium")
+	private Integer cvlEliInsurancePremium;
+	
+
+	@Column(name = "cvl_eli_garage_rent")
+	private Integer cvlEliGarageRent;
+	
+
+	@Column(name = "cvl_eli_depreciation")
+	private Integer cvlEliDepreciation;
+	
+
+	@Column(name = "cvl_eli_repair_exp")
+	private Integer cvlEliRepairExp;
+	
+
+	@Column(name = "cvl_eli_cost_oil")
+	private Integer cvlEliCostOil;
+	
+	
+
+	@Column(name = "cvl_eli_staff_sal")
+	private Integer cvlEliStaffSal;
+	
+	
+
+	@Column(name = "cvl_eli_drawing_exp")
+	private Integer cvlEliDrawingExp;
+	
+
+	@Column(name = "cvl_eli_unloading_charges")
+	private Integer cvlEliUnloadingCharges;
+	
+
+	@Column(name = "cvl_eli_int_on_borrowing")
+	private Integer cvlEliIntOnBorrowing;
+	
+
+	@Column(name = "cvl_eli_others")
+	private Integer cvlEliOthers;
+	
+
+
 	
 	
 
@@ -2802,6 +2850,95 @@ public class TermLoanParameterTemp extends ProductMasterTemp implements Serializ
 	public void setMaxMaximumPermissible(BigDecimal maxMaximumPermissible) {
 		this.maxMaximumPermissible = maxMaximumPermissible;
 	}
+
+	public Integer getCvlEliMotorTax() {
+		return cvlEliMotorTax;
+	}
+
+	public void setCvlEliMotorTax(Integer cvlEliMotorTax) {
+		this.cvlEliMotorTax = cvlEliMotorTax;
+	}
+
+	public Integer getCvlEliInsurancePremium() {
+		return cvlEliInsurancePremium;
+	}
+
+	public void setCvlEliInsurancePremium(Integer cvlEliInsurancePremium) {
+		this.cvlEliInsurancePremium = cvlEliInsurancePremium;
+	}
+
+	public Integer getCvlEliGarageRent() {
+		return cvlEliGarageRent;
+	}
+
+	public void setCvlEliGarageRent(Integer cvlEliGarageRent) {
+		this.cvlEliGarageRent = cvlEliGarageRent;
+	}
+
+	public Integer getCvlEliDepreciation() {
+		return cvlEliDepreciation;
+	}
+
+	public void setCvlEliDepreciation(Integer cvlEliDepreciation) {
+		this.cvlEliDepreciation = cvlEliDepreciation;
+	}
+
+	public Integer getCvlEliRepairExp() {
+		return cvlEliRepairExp;
+	}
+
+	public void setCvlEliRepairExp(Integer cvlEliRepairExp) {
+		this.cvlEliRepairExp = cvlEliRepairExp;
+	}
+
+	public Integer getCvlEliCostOil() {
+		return cvlEliCostOil;
+	}
+
+	public void setCvlEliCostOil(Integer cvlEliCostOil) {
+		this.cvlEliCostOil = cvlEliCostOil;
+	}
+
+	public Integer getCvlEliStaffSal() {
+		return cvlEliStaffSal;
+	}
+
+	public void setCvlEliStaffSal(Integer cvlEliStaffSal) {
+		this.cvlEliStaffSal = cvlEliStaffSal;
+	}
+
+	public Integer getCvlEliDrawingExp() {
+		return cvlEliDrawingExp;
+	}
+
+	public void setCvlEliDrawingExp(Integer cvlEliDrawingExp) {
+		this.cvlEliDrawingExp = cvlEliDrawingExp;
+	}
+
+	public Integer getCvlEliUnloadingCharges() {
+		return cvlEliUnloadingCharges;
+	}
+
+	public void setCvlEliUnloadingCharges(Integer cvlEliUnloadingCharges) {
+		this.cvlEliUnloadingCharges = cvlEliUnloadingCharges;
+	}
+
+	public Integer getCvlEliIntOnBorrowing() {
+		return cvlEliIntOnBorrowing;
+	}
+
+	public void setCvlEliIntOnBorrowing(Integer cvlEliIntOnBorrowing) {
+		this.cvlEliIntOnBorrowing = cvlEliIntOnBorrowing;
+	}
+
+	public Integer getCvlEliOthers() {
+		return cvlEliOthers;
+	}
+
+	public void setCvlEliOthers(Integer cvlEliOthers) {
+		this.cvlEliOthers = cvlEliOthers;
+	}
+
 	
 	
 	
