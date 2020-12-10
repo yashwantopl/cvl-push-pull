@@ -862,6 +862,24 @@ public class TermLoanParameterTemp extends ProductMasterTemp implements Serializ
 	@Column(name = "cvl_eli_others")
 	private Integer cvlEliOthers;
 	
+	
+	@Column(name = "cvl_cost_of_fully_build_model")
+	private Integer cvlCostOfFullyBuildModel;
+	
+	@Column(name = "cvl_cost_of_chasis")
+	private Integer cvlCostOfChasis;
+	
+	@Column(name = "cvl_cost_of_body")
+	private Integer cvlCostOfBody;
+	
+	@Column(name = "cvl_other_margine_exp")
+	private Integer cvlOtherMarginExp;
+	
+	@Column(name = "cvl_2nd_hand_vehicle")
+	private Integer cvl2ndHandVehicle;
+	
+
+	
 
 
 	
@@ -2938,6 +2956,48 @@ public class TermLoanParameterTemp extends ProductMasterTemp implements Serializ
 	public void setCvlEliOthers(Integer cvlEliOthers) {
 		this.cvlEliOthers = cvlEliOthers;
 	}
+
+	public Integer getCvlCostOfFullyBuildModel() {
+		return cvlCostOfFullyBuildModel;
+	}
+
+	public void setCvlCostOfFullyBuildModel(Integer cvlCostOfFullyBuildModel) {
+		this.cvlCostOfFullyBuildModel = cvlCostOfFullyBuildModel;
+	}
+
+	public Integer getCvlCostOfChasis() {
+		return cvlCostOfChasis;
+	}
+
+	public void setCvlCostOfChasis(Integer cvlCostOfChasis) {
+		this.cvlCostOfChasis = cvlCostOfChasis;
+	}
+
+	public Integer getCvlCostOfBody() {
+		return cvlCostOfBody;
+	}
+
+	public void setCvlCostOfBody(Integer cvlCostOfBody) {
+		this.cvlCostOfBody = cvlCostOfBody;
+	}
+
+	public Integer getCvlOtherMarginExp() {
+		return cvlOtherMarginExp;
+	}
+
+	public void setCvlOtherMarginExp(Integer cvlOtherMarginExp) {
+		this.cvlOtherMarginExp = cvlOtherMarginExp;
+	}
+
+	public Integer getCvl2ndHandVehicle() {
+		return cvl2ndHandVehicle;
+	}
+
+	public void setCvl2ndHandVehicle(Integer cvl2ndHandVehicle) {
+		this.cvl2ndHandVehicle = cvl2ndHandVehicle;
+	}
+	
+	
 
 	
 	
