@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+import javax.persistence.Column;
+
 /**
  * @author rahul.meena
  *
@@ -64,6 +66,43 @@ public class EligibililityRequest implements Serializable{
 	// For promoter contribution %
 	private String castCategory;
 	private Boolean mainDirectorIsWomen;
+
+
+	// FOR CVL Expences %
+
+	private Integer cvlEliMotorTax;
+
+	private Integer cvlEliInsurancePremium;
+
+	private Integer cvlEliGarageRent;
+
+	private Integer cvlEliDepreciation;
+
+	private Integer cvlEliRepairExp;
+
+	private Integer cvlEliCostOil;
+
+	private Integer cvlEliStaffSal;
+
+	private Integer cvlEliDrawingExp;
+
+	private Integer cvlEliUnloadingCharges;
+
+	private Integer cvlEliIntOnBorrowing;
+
+	private Integer cvlEliOthers;
+
+	// FOR CVL MARGIN
+
+	private Integer cvlCostOfFullyBuildModel;
+
+	private Integer cvlCostOfChasis;
+
+	private Integer cvlCostOfBody;
+
+	private Integer cvlOtherMarginExp;
+
+	private Integer cvl2ndHandVehicle;
 	
 	public EligibililityRequest(){
 		
@@ -76,6 +115,134 @@ public class EligibililityRequest implements Serializable{
 		this.fpProductId = fpProuctId;
 	}
 
+
+	public Integer getCvlEliMotorTax() {
+		return cvlEliMotorTax;
+	}
+
+	public void setCvlEliMotorTax(Integer cvlEliMotorTax) {
+		this.cvlEliMotorTax = cvlEliMotorTax;
+	}
+
+	public Integer getCvlEliInsurancePremium() {
+		return cvlEliInsurancePremium;
+	}
+
+	public void setCvlEliInsurancePremium(Integer cvlEliInsurancePremium) {
+		this.cvlEliInsurancePremium = cvlEliInsurancePremium;
+	}
+
+	public Integer getCvlEliGarageRent() {
+		return cvlEliGarageRent;
+	}
+
+	public void setCvlEliGarageRent(Integer cvlEliGarageRent) {
+		this.cvlEliGarageRent = cvlEliGarageRent;
+	}
+
+	public Integer getCvlEliDepreciation() {
+		return cvlEliDepreciation;
+	}
+
+	public void setCvlEliDepreciation(Integer cvlEliDepreciation) {
+		this.cvlEliDepreciation = cvlEliDepreciation;
+	}
+
+	public Integer getCvlEliRepairExp() {
+		return cvlEliRepairExp;
+	}
+
+	public void setCvlEliRepairExp(Integer cvlEliRepairExp) {
+		this.cvlEliRepairExp = cvlEliRepairExp;
+	}
+
+	public Integer getCvlEliCostOil() {
+		return cvlEliCostOil;
+	}
+
+	public void setCvlEliCostOil(Integer cvlEliCostOil) {
+		this.cvlEliCostOil = cvlEliCostOil;
+	}
+
+	public Integer getCvlEliStaffSal() {
+		return cvlEliStaffSal;
+	}
+
+	public void setCvlEliStaffSal(Integer cvlEliStaffSal) {
+		this.cvlEliStaffSal = cvlEliStaffSal;
+	}
+
+	public Integer getCvlEliDrawingExp() {
+		return cvlEliDrawingExp;
+	}
+
+	public void setCvlEliDrawingExp(Integer cvlEliDrawingExp) {
+		this.cvlEliDrawingExp = cvlEliDrawingExp;
+	}
+
+	public Integer getCvlEliUnloadingCharges() {
+		return cvlEliUnloadingCharges;
+	}
+
+	public void setCvlEliUnloadingCharges(Integer cvlEliUnloadingCharges) {
+		this.cvlEliUnloadingCharges = cvlEliUnloadingCharges;
+	}
+
+	public Integer getCvlEliIntOnBorrowing() {
+		return cvlEliIntOnBorrowing;
+	}
+
+	public void setCvlEliIntOnBorrowing(Integer cvlEliIntOnBorrowing) {
+		this.cvlEliIntOnBorrowing = cvlEliIntOnBorrowing;
+	}
+
+	public Integer getCvlEliOthers() {
+		return cvlEliOthers;
+	}
+
+	public void setCvlEliOthers(Integer cvlEliOthers) {
+		this.cvlEliOthers = cvlEliOthers;
+	}
+
+	public Integer getCvlCostOfFullyBuildModel() {
+		return cvlCostOfFullyBuildModel;
+	}
+
+	public void setCvlCostOfFullyBuildModel(Integer cvlCostOfFullyBuildModel) {
+		this.cvlCostOfFullyBuildModel = cvlCostOfFullyBuildModel;
+	}
+
+	public Integer getCvlCostOfChasis() {
+		return cvlCostOfChasis;
+	}
+
+	public void setCvlCostOfChasis(Integer cvlCostOfChasis) {
+		this.cvlCostOfChasis = cvlCostOfChasis;
+	}
+
+	public Integer getCvlCostOfBody() {
+		return cvlCostOfBody;
+	}
+
+	public void setCvlCostOfBody(Integer cvlCostOfBody) {
+		this.cvlCostOfBody = cvlCostOfBody;
+	}
+
+	public Integer getCvlOtherMarginExp() {
+		return cvlOtherMarginExp;
+	}
+
+	public void setCvlOtherMarginExp(Integer cvlOtherMarginExp) {
+		this.cvlOtherMarginExp = cvlOtherMarginExp;
+	}
+
+	public Integer getCvl2ndHandVehicle() {
+		return cvl2ndHandVehicle;
+	}
+
+	public void setCvl2ndHandVehicle(Integer cvl2ndHandVehicle) {
+		this.cvl2ndHandVehicle = cvl2ndHandVehicle;
+	}
 
 	public Long getApplicationId() {
 		return applicationId;
