@@ -501,7 +501,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	public String getApplicationCampaignCode(Long applicationId) {
 		try {
 			return (String) entityManager
-					.createNativeQuery("SELECT fs.`loan_campaign_code` FROM `loan_application_mudra`.`fs_loan_application_master` fs WHERE fs.`application_id` =:applicationId")
+					.createNativeQuery("SELECT fs.`loan_campaign_code` FROM `loan_application_cvl_mudra`.`fs_loan_application_master` fs WHERE fs.`application_id` =:applicationId")
 							.setParameter("applicationId", applicationId).getSingleResult();
 		} catch (Exception e) {
 			LOGGER.error("Exception while getApplicationCampaignCode  ----->" ,e);
@@ -856,7 +856,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	
 	@Override
 	public Long getProfileMappingIdByApplicationId(Long applicationId) {
-		List<BigInteger> result = entityManager.createNativeQuery("SELECT profile_mapping_id FROM `loan_application_mudra`.`fs_loan_application_master` WHERE application_id =:applicationId")
+		List<BigInteger> result = entityManager.createNativeQuery("SELECT profile_mapping_id FROM `loan_application_cvl_mudra`.`fs_loan_application_master` WHERE application_id =:applicationId")
 				 .setParameter("applicationId",applicationId)
 				 .getResultList();
 		 return !CommonUtils.isListNullOrEmpty(result) ? result.get(0).longValue() : null; 
@@ -873,7 +873,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 
 	@Override
 	public Object[] getProfileVersionDetailsByApplicationId(Long applicationId) {
-		List<Object[]> result = entityManager.createNativeQuery("SELECT itr_id,gst_id,bs_id,id FROM `user_profile`.`profile_version_mapping` WHERE id = (SELECT profile_mapping_id FROM `loan_application_mudra`.`fs_loan_application_master` WHERE application_id =:applicationId) AND is_active = TRUE ORDER BY `version` DESC limit 1")
+		List<Object[]> result = entityManager.createNativeQuery("SELECT itr_id,gst_id,bs_id,id FROM `user_profile`.`profile_version_mapping` WHERE id = (SELECT profile_mapping_id FROM `loan_application_cvl_mudra`.`fs_loan_application_master` WHERE application_id =:applicationId) AND is_active = TRUE ORDER BY `version` DESC limit 1")
 				 .setParameter("applicationId",applicationId)
 				 .getResultList();
 		 return !CommonUtils.isListNullOrEmpty(result) ? result.get(0) : null;

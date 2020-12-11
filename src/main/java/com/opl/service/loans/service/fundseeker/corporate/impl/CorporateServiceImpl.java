@@ -34,6 +34,8 @@ import com.opl.profile.api.model.ProfileVerMapRequest;
 import com.opl.profile.api.utils.ProfileUtils.ProfileModuleType;
 import com.opl.profile.client.ProfileClient;
 import com.opl.service.loans.domain.CommonAuditTable;
+import com.opl.service.loans.domain.ProposedVehicleIncomeExpenseDetail;
+import com.opl.service.loans.domain.VehicleOperatorDetail;
 import com.opl.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.opl.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.opl.service.loans.domain.fundseeker.corporate.AssetsDetails;
@@ -42,6 +44,8 @@ import com.opl.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetai
 import com.opl.service.loans.domain.fundseeker.corporate.LiabilitiesDetails;
 import com.opl.service.loans.domain.fundseeker.corporate.OperatingStatementDetails;
 import com.opl.service.loans.repository.CommonAuditTableRepository;
+import com.opl.service.loans.repository.ProposedVehicleIncomeExpenseDetailRepository;
+import com.opl.service.loans.repository.VehicleOperatorDetailRepository;
 import com.opl.service.loans.service.fundseeker.corporate.CorporateService;
 
 
@@ -68,6 +72,7 @@ public class CorporateServiceImpl implements CorporateService {
 	public static final String MANUAL_BS_DATA = "manualBSData";
 	public static final String BS_MANUAL_FILL = "isManualUpload";
 	private static final String ITR_FILL_TYPE = "itrFillType";
+	public static final String TOTAL_COST = "totalCost";
 
 	@Autowired
 	private CorporateApplicantDetailRepository corpApplicantDetailRepo;
@@ -116,6 +121,12 @@ public class CorporateServiceImpl implements CorporateService {
 
 	@Autowired
 	private AssociatedConcernDetailService associatedConcernDetailService;
+	
+	@Autowired
+	private VehicleOperatorDetailRepository vehicleOperatorDetailRepository;
+	
+	@Autowired
+    ProposedVehicleIncomeExpenseDetailRepository incomeExpenseDetailRepository;
 	
 	/**
 	 * CHECK ALL DATA ENTERY IN DATABASE IS CORRECT OR WRONG AND
@@ -253,6 +264,44 @@ public class CorporateServiceImpl implements CorporateService {
 		} else {
 			profileRes = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) commRes.getData(), ProfileVerMapRequest.class);
 		}
+		
+		// SET VEHICLE & OPERATOR DETAILS
+		Map<String, Object> vehicleDetailMap = new HashMap<String, Object>();
+		List<Map<String, Object>> vehicleSubTabs = new ArrayList<Map<String,Object>>();
+		
+		VehicleOperatorDetail vehicleOperatorDetail = vehicleOperatorDetailRepository.findByApplicationIdAndIsActive(applicationId,true);
+		Double totalCost = !CommonUtils.isObjectNullOrEmpty(vehicleOperatorDetail) ? vehicleOperatorDetail.getTotalCostOfProposedVehicle() : 0.0;
+		// SET VEHICLE & OPERATOR DETAILS
+		Map<String, Object> vehicleOperatorMap = new HashMap<String, Object>();
+		vehicleOperatorMap.put(MODULE_TYPE, 7);
+		vehicleOperatorMap.put(MODULE_NAME, "Vehicle & Operator Details");
+		vehicleOperatorMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/gst-icon-gray.svg");
+		vehicleOperatorMap.put(TOTAL_COST, totalCost);
+		vehicleOperatorMap.put(DESCRIPTION, "Total cost of the proposed vehicle");
+		vehicleOperatorMap.put(COMPLETED, vehicleOperatorDetail != null ? true : false);
+		vehicleOperatorMap.put(ACTIVAE, Boolean.TRUE);
+		vehicleSubTabs.add(vehicleOperatorMap);
+		
+		// SET VEHICLE INCOME & EXPENSE DETAILS
+		ProposedVehicleIncomeExpenseDetail incomeExpenseDetail = incomeExpenseDetailRepository.findByApplicationIdAndIsActiveIsTrue(applicationId);
+		Map<String, Object> incomeExpenseMap = new HashMap<String, Object>();
+		incomeExpenseMap.put(MODULE_TYPE, 8);
+		incomeExpenseMap.put(MODULE_NAME, "Income & Expanse Detail");
+		incomeExpenseMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/gst-icon-gray.svg");
+		incomeExpenseMap.put(COMPLETED, incomeExpenseDetail != null ? true : false);
+		incomeExpenseMap.put(ACTIVAE, true);  // (boolean)vehicleOperatorMap.get(COMPLETED) 
+		vehicleSubTabs.add(incomeExpenseMap);
+		
+		vehicleDetailMap.put(MODULE_TYPE, 9);
+		vehicleDetailMap.put(MODULE_NAME, "Vehicle Details");
+		vehicleDetailMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/gst-icon-gray.svg");
+		vehicleDetailMap.put(COMPLETED, (incomeExpenseDetail != null && vehicleOperatorDetail != null) ? true : false);
+		vehicleDetailMap.put(ACTIVAE, Boolean.TRUE);
+		vehicleDetailMap.put(TITLE, "Total cost of the proposed vehicle");
+		vehicleDetailMap.put(TOTAL_COST, totalCost);
+		vehicleDetailMap.put("subTab", vehicleSubTabs);
+		
+		mapList.add(vehicleDetailMap);
 
 		// SET GST DATA
 		Map<String, Object> gstMap = new HashMap<String, Object>();
