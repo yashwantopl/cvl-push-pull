@@ -103,6 +103,10 @@ public class EligibililityRequest implements Serializable{
 	private Integer cvlOtherMarginExp;
 
 	private Integer cvl2ndHandVehicle;
+
+	// For CVL Fuel Price
+
+	private Double fuelCost;
 	
 	public EligibililityRequest(){
 		
@@ -115,6 +119,14 @@ public class EligibililityRequest implements Serializable{
 		this.fpProductId = fpProuctId;
 	}
 
+
+	public Double getFuelCost() {
+		return fuelCost;
+	}
+
+	public void setFuelCost(Double fuelCost) {
+		this.fuelCost = fuelCost;
+	}
 
 	public Integer getCvlEliMotorTax() {
 		return cvlEliMotorTax;
