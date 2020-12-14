@@ -2590,7 +2590,8 @@ public class CommonUtils {
 		MUDRA_LOAN(10, "Mudra Loan"),
 		DFS_LOAN(21, "Dfs Loan"),
 		ODOP_LOAN(22, "Odop Loan"),
-		VFS_LOAN(24, "VFS Loan");
+		VFS_LOAN(24, "VFS Loan"),
+		CVL_MUDRA_LOAN(26, "CVL Mudra Loan");
 
 		private Integer id;
 		private String value;
