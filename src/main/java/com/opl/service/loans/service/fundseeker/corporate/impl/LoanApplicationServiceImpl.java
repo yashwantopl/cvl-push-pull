@@ -36,7 +36,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opl.mudra.api.analyzer.exception.AnalyzerException;
 import com.opl.mudra.api.analyzer.model.common.AnalyzerResponse;
@@ -7784,6 +7786,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				fpProductList = loanApplicationRepository.getScoringIdListByApplicationIdAndStageId(applicationId, 105l);
 			} else if (CommonUtils.BusinessType.MUDRA_LOAN.getId() == businessTypeId) {
 				fpProductList = loanApplicationRepository.getScoringIdListByApplicationIdAndStageId(applicationId, 105l);
+			} else if (CommonUtils.BusinessType.CVL_MUDRA_LOAN.getId() == businessTypeId) {
+				fpProductList = loanApplicationRepository.getScoringIdListByApplicationIdAndStageId(applicationId, 1005l);
 			}
 
 			List<Long> scoringLongList = new ArrayList<Long>();
@@ -8825,9 +8829,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			reportRequest.setBsMasterId(profileVerMapRequest.getBsId());
 			AnalyzerResponse analyzerResponse = analyzerClient.getBankRelationData(reportRequest);
 			if (!CommonUtils.isObjectNullOrEmpty(analyzerResponse) && !CommonUtils.isObjectNullOrEmpty(analyzerResponse.getData())) {
-				List<?> list = ((List<?>) analyzerResponse.getData());
-				for (Object o : list) {
-					BankStatementResponse bankingRelationRes = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) o, BankStatementResponse.class);
+				System.out.println("-------------------------");
+//				Map<Object, Object> list = (Map<Object, Object>) analyzerResponse.getData();
+				LinkedHashMap<String, Object> test = (LinkedHashMap<String, Object>) analyzerResponse.getData();
+				List<Map.Entry<String, Object>> listEntries = new ArrayList<Map.Entry<String, Object>>(test.entrySet());
+				ObjectMapper om = new ObjectMapper();
+				for (Object o : listEntries) {
+					BankStatementResponse bankingRelationRes = om.convertValue(analyzerResponse.getData(), BankStatementResponse.class);
 					BankingRelation bankingRelation = bankingRelationRepository.findFirstByApplicationIdAndIsActiveTrueAndAccountNoOrderByIdDesc(applicationId, bankingRelationRes.getBankAccountNo());
 					if(bankingRelation == null) {
 						bankingRelation = new BankingRelation();
@@ -8846,7 +8854,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					}
 				}
 			}
-		} catch (AnalyzerException | IOException e) {
+		} catch (AnalyzerException e) {
 			suceess = false;
 			logger.error("Failed to copy bank statement data: ", e);
 			auditTableRepository.save(new CommonAuditTable(applicationId, profileVerMapRequest.getProfileId(), LoanApplicationServiceImpl.class.getName(), "copyBankStatementData", "Exception while Copy bank Statement Data : " + e.getMessage()));
