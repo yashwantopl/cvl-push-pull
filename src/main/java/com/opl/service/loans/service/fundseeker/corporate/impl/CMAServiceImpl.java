@@ -75,7 +75,7 @@ public class CMAServiceImpl implements CMAService {
 					logger.info("Current Object is null or Empty in FOR LOOP");
 					continue;
 				}
-				LiabilitiesDetails liabilitiesDetails = liabilitiesDetailsRepository.findByFsLoanApplicationMasterIdAndYearAndIsActiveAndApplicationProposalMappingIsNull(liabilitiesDetailsRequest.getApplicationId(), liabilitiesDetailsRequest.getYear(),true);
+				LiabilitiesDetails liabilitiesDetails = liabilitiesDetailsRepository.findByFsLoanApplicationMasterIdAndYearAndIsActiveAndApplicationProposalMappingIsNull(cmaRequest.getApplicationId(), liabilitiesDetailsRequest.getYear(),true);
 //				if(!CommonUtils.isObjectNullOrEmpty(liabilitiesDetailsRequest.getId())) {
 //					liabilitiesDetails = liabilitiesDetailsRepository.findByIdAndIsActive(liabilitiesDetailsRequest.getId(),true);	
 //				} else {
@@ -88,7 +88,7 @@ public class CMAServiceImpl implements CMAService {
 				} else {
 					liabilitiesDetails = new LiabilitiesDetails();
 					BeanUtils.copyProperties(liabilitiesDetailsRequest, liabilitiesDetails);
-					liabilitiesDetails.setFsLoanApplicationMaster(new LoanApplicationMaster(liabilitiesDetailsRequest.getApplicationId()));
+					liabilitiesDetails.setFsLoanApplicationMaster(new LoanApplicationMaster(cmaRequest.getApplicationId()));
 					liabilitiesDetails.setCreatedBy(cmaRequest.getUserId());
 					liabilitiesDetails.setCreatedDate(new Date());
 					liabilitiesDetails.setIsActive(true);
@@ -113,7 +113,7 @@ public class CMAServiceImpl implements CMAService {
 //				logger.error("Exception while inactive assets --->",e);
 //			}
 			for(AssetsDetailsRequest assetsDetailsRequest : cmaRequest.getAssetsRequestList()) {
-				AssetsDetails assetsDetails = assetsDetailsRepository.findByLoanApplicationMasterIdAndYearAndIsActiveAndApplicationProposalMappingIsNull(assetsDetailsRequest.getApplicationId(), assetsDetailsRequest.getYear(),true);
+				AssetsDetails assetsDetails = assetsDetailsRepository.findByLoanApplicationMasterIdAndYearAndIsActiveAndApplicationProposalMappingIsNull(cmaRequest.getApplicationId(), assetsDetailsRequest.getYear(),true);
 //				if(!CommonUtils.isObjectNullOrEmpty(assetsDetailsRequest.getId())) {
 //					assetsDetails = assetsDetailsRepository.findByIdAndIsActive(assetsDetailsRequest.getId(),true);	
 //				} else {
@@ -126,7 +126,7 @@ public class CMAServiceImpl implements CMAService {
 				} else {
 					assetsDetails = new AssetsDetails();
 					BeanUtils.copyProperties(assetsDetailsRequest, assetsDetails);
-					assetsDetails.setLoanApplicationMaster(new LoanApplicationMaster(assetsDetailsRequest.getApplicationId()));
+					assetsDetails.setLoanApplicationMaster(new LoanApplicationMaster(cmaRequest.getApplicationId()));
 					assetsDetails.setCreatedBy(cmaRequest.getUserId());
 					assetsDetails.setCreatedDate(new Date());
 					assetsDetails.setIsActive(true);
@@ -149,7 +149,7 @@ public class CMAServiceImpl implements CMAService {
 				logger.error("Exception while inactive operating statement --->",e);
 			}
 			for(OperatingStatementDetailsRequest operatingStatementDetailsRequest : cmaRequest.getOperatingStatementRequestList()) {
-				OperatingStatementDetails operatingStatementDetails = operatingStatementDetailsRepository.findByLoanApplicationMasterIdAndYearAndApplicationProposalMappingIsNullAndIsActiveIsTrue(operatingStatementDetailsRequest.getApplicationId(), operatingStatementDetailsRequest.getYear());
+				OperatingStatementDetails operatingStatementDetails = operatingStatementDetailsRepository.findByLoanApplicationMasterIdAndYearAndApplicationProposalMappingIsNullAndIsActiveIsTrue(cmaRequest.getApplicationId(), operatingStatementDetailsRequest.getYear());
 //				if(!CommonUtils.isObjectNullOrEmpty(operatingStatementDetailsRequest.getId())) {
 //					operatingStatementDetails = operatingStatementDetailsRepository.findByIdAndIsActive(operatingStatementDetailsRequest.getId(),true);	
 //				} else {
@@ -162,7 +162,7 @@ public class CMAServiceImpl implements CMAService {
 				} else {
 					operatingStatementDetails = new OperatingStatementDetails();
 					BeanUtils.copyProperties(operatingStatementDetailsRequest, operatingStatementDetails);
-					operatingStatementDetails.setLoanApplicationMaster(new LoanApplicationMaster(operatingStatementDetailsRequest.getApplicationId()));
+					operatingStatementDetails.setLoanApplicationMaster(new LoanApplicationMaster(cmaRequest.getApplicationId()));
 					operatingStatementDetails.setCreatedBy(cmaRequest.getUserId());
 					operatingStatementDetails.setCreatedDate(new Date());
 					operatingStatementDetails.setIsActive(true);
