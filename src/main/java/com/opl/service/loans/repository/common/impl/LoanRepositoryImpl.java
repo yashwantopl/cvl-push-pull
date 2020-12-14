@@ -203,7 +203,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 
 	public String getGSTINByAppId(Long applicationId) {
 		return  (String) entityManager
-				.createNativeQuery("SELECT gstin FROM connect_mudra.`connect_log` WHERE application_id =:applicationId order by id desc limit 1")
+				.createNativeQuery("SELECT gstin FROM connect_cvl_mudra.`connect_log` WHERE application_id =:applicationId order by id desc limit 1")
 						.setParameter("applicationId", applicationId).getSingleResult();
 	}
 
@@ -818,7 +818,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 	@Override
 	public boolean updateProfileVersIdInConnect(Long applicationId, Long profileVerMapId) {
 		try {
-			int update = entityManager.createNativeQuery("UPDATE `connect_mudra`.`connect_log` SET `profile_ver_map_id` =:profileVerMapId WHERE `application_id` =:applicationId")
+			int update = entityManager.createNativeQuery("UPDATE connect_cvl_mudra.connect_log c SET c.profile_ver_map_id=:profileVerMapId WHERE c.application_id=:applicationId")
 					.setParameter("applicationId", applicationId)
 					.setParameter("profileVerMapId", profileVerMapId)
 					.executeUpdate();
