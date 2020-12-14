@@ -77,6 +77,7 @@ public class MultipleJSONObjectHelper implements Serializable {
         final ObjectMapper mapper = new ObjectMapper(); // jackson's
         mapper.configure(Feature.AUTO_CLOSE_SOURCE, true);
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
         return (T) mapper.convertValue(map, clazz);
     }
 
