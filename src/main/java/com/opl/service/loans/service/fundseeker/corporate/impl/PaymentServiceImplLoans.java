@@ -582,6 +582,13 @@ public class PaymentServiceImplLoans implements PaymentServiceLoans{
 				response.put(PAYMENT_TYPE_ID, CommonUtils.PaymentTypeMaster.AUTO_LOAN_SKIP_PAYMENT.getId());
 				return response;
 			}
+			//set SkipType For CVL_Mudra
+			else if(gatewayRequest.getBusinessTypeId() != null && CommonUtils.BusinessType.CVL_MUDRA_LOAN.getId().equals(gatewayRequest.getBusinessTypeId())) {
+				response.put(SKIP_PAYMENT, true);
+				response.put(SKIP_TYPE, CommonUtils.SkipType.CVL_MUDRA_LOAN);
+				response.put(PAYMENT_TYPE_ID, CommonUtils.PaymentTypeMaster.CVL_MUDRA_LOAN_SKIP_PAYMENT.getId());
+				return response;
+			}
 			//set Skiptype for SameProductPan  need to check
 //			else if(gatewayRequest.getSameProductIdSamePan() != null && gatewayRequest.getSameProductIdSamePan()){
 //				gatewayRequest.setSkipPayment(true);
