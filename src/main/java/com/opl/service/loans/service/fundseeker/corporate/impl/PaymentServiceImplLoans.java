@@ -584,6 +584,7 @@ public class PaymentServiceImplLoans implements PaymentServiceLoans{
 			}
 			//set SkipType For CVL_Mudra
 			else if(gatewayRequest.getBusinessTypeId() != null && CommonUtils.BusinessType.CVL_MUDRA_LOAN.getId().equals(gatewayRequest.getBusinessTypeId())) {
+				logger.info("In CVL MUDRA Skip payment condition");
 				response.put(SKIP_PAYMENT, true);
 				response.put(SKIP_TYPE, CommonUtils.SkipType.CVL_MUDRA_LOAN);
 				response.put(PAYMENT_TYPE_ID, CommonUtils.PaymentTypeMaster.CVL_MUDRA_LOAN_SKIP_PAYMENT.getId());
