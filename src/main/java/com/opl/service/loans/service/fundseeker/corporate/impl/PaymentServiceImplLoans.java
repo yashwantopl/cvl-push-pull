@@ -1168,10 +1168,10 @@ public class PaymentServiceImplLoans implements PaymentServiceLoans{
 							} else {
 								processingFees = proposalDetails.getProcessingFee() + " %";
 							}
-							inPrincipleDetailMap.put(CommonUtils.BUSINESS_TYPE_ID, 1);
+							inPrincipleDetailMap.put(CommonUtils.BUSINESS_TYPE_ID, 26);
 						}
 						
-						if(gatewayRequest.getSkipType() != null && CommonUtils.SkipType.MUDRA_LOAN.equals(gatewayRequest.getSkipType())) {
+						if(gatewayRequest.getSkipType() != null && CommonUtils.SkipType.CVL_MUDRA_LOAN.equals(gatewayRequest.getSkipType())) {
 							inPrincipleDetailMap.put(CommonUtils.MINPF, proposalDetails.getMinPf() != null ? CommonUtils.convertValueWithoutDecimal(proposalDetails.getMinPf()) : null);
 							inPrincipleDetailMap.put(CommonUtils.MAXPF, proposalDetails.getMaxPf() != null ? CommonUtils.convertValueWithoutDecimal(proposalDetails.getMaxPf()) : null);
 						}
@@ -1332,7 +1332,7 @@ public class PaymentServiceImplLoans implements PaymentServiceLoans{
 					
 					inPrincipleDetailMap.put(CommonUtils.AMOUNT, loanAmount != null ? CommonUtils.convertValueWithoutDecimal(loanAmount.doubleValue()) : "NA");
 					
-					if(gatewayRequest.getSkipType() != null && CommonUtils.SkipType.MUDRA_LOAN.equals(gatewayRequest.getSkipType()) && loanAmount != null){
+					if(gatewayRequest.getSkipType() != null && CommonUtils.SkipType.CVL_MUDRA_LOAN.equals(gatewayRequest.getSkipType()) && loanAmount != null){
 						if(loanAmount <= 50000) {
 							inPrincipleDetailMap.put("category", "Shishu");
 						}else if(loanAmount > 50000 && loanAmount <= 500000) {
