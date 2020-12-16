@@ -22,7 +22,9 @@ public enum AssessmentMethods {
     PL_UNIVERSAL_ELIGIBILITY(18,"Universal Personal Loan Eligibility ", "Universal Personal Loan Eligibility", 7,3),
     PL_ELIGIBILITY_BASED_ON_NMI_(19,"Eligibility  Based on NMI", "Eligibility  Based on NMI", 7,3),
     WC_BASED_ON_PURCHASE(20,"Working Capital- Purchase Based Assessment", "Working Capital- Purchase Based Assessment", 1,21),
-	WC_BASED_ON_VFS(22,"Working Capital- WC Based Assessment", "Working Capital- WC Based Assessment", 1,24);
+	WC_BASED_ON_VFS(22,"Working Capital- WC Based Assessment", "Working Capital- WC Based Assessment", 1,24),
+    TL_MUDRA_CVL(30,"Term Loan - Mudra Loan", "Term Loan - Mudra Loan", 2,26),
+    TERM_LOAN_FINAL_CVL(31,"Term Loan - Commercial Vehicle Loan", "Term Loan - Commercial Vehicle Loan", 2,26);
 	
 	
 	
