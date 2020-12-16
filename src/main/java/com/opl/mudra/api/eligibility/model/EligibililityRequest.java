@@ -108,6 +108,9 @@ public class EligibililityRequest implements Serializable{
 
 	private Double fuelCost;
 	
+	private String loanType;
+	
+	
 	public EligibililityRequest(){
 		
 	}
@@ -540,6 +543,16 @@ public class EligibililityRequest implements Serializable{
 	public void setMainDirectorIsWomen(Boolean mainDirectorIsWomen) {
 		this.mainDirectorIsWomen = mainDirectorIsWomen;
 	}
+
+	public String getLoanType() {
+		return loanType;
+	}
+
+	public void setLoanType(String loanType) {
+		this.loanType = loanType;
+	}
+	
+	
 
 	
 }
