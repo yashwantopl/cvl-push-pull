@@ -2590,7 +2590,8 @@ public class CommonUtils {
 		MUDRA_LOAN(10, "Mudra Loan"),
 		DFS_LOAN(21, "Dfs Loan"),
 		ODOP_LOAN(22, "Odop Loan"),
-		VFS_LOAN(24, "VFS Loan");
+		VFS_LOAN(24, "VFS Loan"),
+		CVL_MUDRA_LOAN(26, "CVL Mudra Loan");
 
 		private Integer id;
 		private String value;
@@ -2698,6 +2699,7 @@ public class CommonUtils {
 		public static final String DFS_LOAN = "DFSLoan";
 		public static final String ODOP_LOAN = "ODOPLoan";
 		public static final String VFS_LOAN = "VFSLoan";
+		public static final String CVL_MUDRA_LOAN = "CVL Mudra Loan";
 	}
 	public static enum PaymentTypeMaster {
 		
@@ -2715,7 +2717,8 @@ public class CommonUtils {
 		VFS_LOAN_SKIP_PAYMENT(12),
 		CO_ORIGINATION_SKIP_PAYMENT(13),
 		ONE_PAGER_SKIP_PAYMENT(14),
-		BANK_SPECIFIC_SKIP_PAYMENT(15);
+		BANK_SPECIFIC_SKIP_PAYMENT(15),
+		CVL_MUDRA_LOAN_SKIP_PAYMENT(16);
 		
 		private Integer id;
 

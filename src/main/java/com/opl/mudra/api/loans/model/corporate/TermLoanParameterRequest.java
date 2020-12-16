@@ -223,6 +223,8 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	private Integer msmeRanking;
 	private Boolean isNoMsmeRanking = false;
 	private List<Integer> msmeFundingIds;
+	
+
 
 	private BigDecimal minTenureNtb;
 
@@ -580,6 +582,38 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 		
 		private Boolean isCgtmseCoveragePercMandatory =false;
 		
+
+		private Integer cvlEliMotorTax;
+
+		private Integer cvlEliInsurancePremium;
+		
+		private Integer cvlEliGarageRent;
+
+		private Integer cvlEliDepreciation;
+		
+		private Integer cvlEliRepairExp;
+
+		private Integer cvlEliCostOil;
+
+		private Integer cvlEliStaffSal;
+
+		private Integer cvlEliDrawingExp;
+		
+
+		private Integer cvlEliUnloadingCharges;
+		
+
+		private Integer cvlEliIntOnBorrowing;
+		
+
+		private Integer cvlEliOthers;
+		
+
+		private List<Long> residencyStabilityIds;
+		
+		private List<Long> vehicleTypeIds;
+		
+		private List<Long> vehicleSegmentIds;
 		
 		
 		
@@ -2913,6 +2947,123 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	public void setMaxMaximumPermissible(BigDecimal maxMaximumPermissible) {
 		this.maxMaximumPermissible = maxMaximumPermissible;
 	}
+
+	
+
+	public List<Long> getResidencyStabilityIds() {
+		return residencyStabilityIds;
+	}
+
+	public void setResidencyStabilityIds(List<Long> residencyStabilityIds) {
+		this.residencyStabilityIds = residencyStabilityIds;
+	}
+
+	public List<Long> getVehicleTypeIds() {
+		return vehicleTypeIds;
+	}
+
+	public void setVehicleTypeIds(List<Long> vehicleTypeIds) {
+		this.vehicleTypeIds = vehicleTypeIds;
+	}
+
+	public List<Long> getVehicleSegmentIds() {
+		return vehicleSegmentIds;
+	}
+
+	public void setVehicleSegmentIds(List<Long> vehicleSegmentIds) {
+		this.vehicleSegmentIds = vehicleSegmentIds;
+	}
+
+	public Integer getCvlEliMotorTax() {
+		return cvlEliMotorTax;
+	}
+
+	public void setCvlEliMotorTax(Integer cvlEliMotorTax) {
+		this.cvlEliMotorTax = cvlEliMotorTax;
+	}
+
+	public Integer getCvlEliInsurancePremium() {
+		return cvlEliInsurancePremium;
+	}
+
+	public void setCvlEliInsurancePremium(Integer cvlEliInsurancePremium) {
+		this.cvlEliInsurancePremium = cvlEliInsurancePremium;
+	}
+
+	public Integer getCvlEliGarageRent() {
+		return cvlEliGarageRent;
+	}
+
+	public void setCvlEliGarageRent(Integer cvlEliGarageRent) {
+		this.cvlEliGarageRent = cvlEliGarageRent;
+	}
+
+	public Integer getCvlEliDepreciation() {
+		return cvlEliDepreciation;
+	}
+
+	public void setCvlEliDepreciation(Integer cvlEliDepreciation) {
+		this.cvlEliDepreciation = cvlEliDepreciation;
+	}
+
+	public Integer getCvlEliRepairExp() {
+		return cvlEliRepairExp;
+	}
+
+	public void setCvlEliRepairExp(Integer cvlEliRepairExp) {
+		this.cvlEliRepairExp = cvlEliRepairExp;
+	}
+
+	public Integer getCvlEliCostOil() {
+		return cvlEliCostOil;
+	}
+
+	public void setCvlEliCostOil(Integer cvlEliCostOil) {
+		this.cvlEliCostOil = cvlEliCostOil;
+	}
+
+	public Integer getCvlEliStaffSal() {
+		return cvlEliStaffSal;
+	}
+
+	public void setCvlEliStaffSal(Integer cvlEliStaffSal) {
+		this.cvlEliStaffSal = cvlEliStaffSal;
+	}
+
+	public Integer getCvlEliDrawingExp() {
+		return cvlEliDrawingExp;
+	}
+
+	public void setCvlEliDrawingExp(Integer cvlEliDrawingExp) {
+		this.cvlEliDrawingExp = cvlEliDrawingExp;
+	}
+
+	public Integer getCvlEliUnloadingCharges() {
+		return cvlEliUnloadingCharges;
+	}
+
+	public void setCvlEliUnloadingCharges(Integer cvlEliUnloadingCharges) {
+		this.cvlEliUnloadingCharges = cvlEliUnloadingCharges;
+	}
+
+	public Integer getCvlEliIntOnBorrowing() {
+		return cvlEliIntOnBorrowing;
+	}
+
+	public void setCvlEliIntOnBorrowing(Integer cvlEliIntOnBorrowing) {
+		this.cvlEliIntOnBorrowing = cvlEliIntOnBorrowing;
+	}
+
+	public Integer getCvlEliOthers() {
+		return cvlEliOthers;
+	}
+
+	public void setCvlEliOthers(Integer cvlEliOthers) {
+		this.cvlEliOthers = cvlEliOthers;
+	}
+
+	
+	
 
 	
 	
