@@ -706,7 +706,7 @@ public class PaymentServiceImplLoans implements PaymentServiceLoans{
 		logger.info("Checking user for skip payment of White Label of ApplicationId==>{} and BusinessTypeId==>{} with LoanTypeId==>{}" , gatewayRequest.getApplicationId() , businessTypeId , gatewayRequest.getLoanTypeId());
 			
 		String paymentStatus = CommonUtils.PaymentStatus.BYPASS;
-		gatewayRequest.setSkipType(CommonUtils.SkipType.MUDRA_LOAN);
+		gatewayRequest.setSkipType(CommonUtils.SkipType.CVL_MUDRA_LOAN);
 		
 //		if (/* gatewayRequest.getSkipPayment() == null || */ !(gatewayRequest.getSkipPayment()) && (gatewayRequest.getSameProductIdSamePan() != null && !gatewayRequest.getSameProductIdSamePan())) {
 //			OnlinePaymentTransactionsAuditLog onlinePaymentTransactionsAuditLog=onlinePaymentTransactionAuditLogRepository.findFirstByApplicationIdAndIsActiveOrderByIdDesc(gatewayRequest.getApplicationId(), true);
@@ -947,7 +947,7 @@ public class PaymentServiceImplLoans implements PaymentServiceLoans{
 				}else if(CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId().equals(businessTypeId)){
 					stageId = 207;
 					previousStageId = 209;
-				}else if(CommonUtils.BusinessType.MUDRA_LOAN.getId().equals(businessTypeId)) {
+				}else if(CommonUtils.BusinessType.CVL_MUDRA_LOAN.getId().equals(businessTypeId)) {
 					stageId = 1005;
 					previousStageId = 1007;
 				}else if(CommonUtils.BusinessType.ODOP_LOAN.getId().equals(businessTypeId)) {
@@ -1148,19 +1148,19 @@ public class PaymentServiceImplLoans implements PaymentServiceLoans{
 						//get Bank URL
 						url = BanksEnum.getBankUrl(orgId);
 						
-						if (productId == CommonUtils.LoanType.WORKING_CAPITAL.getValue()) {  //1
-							loanType = "Working Capital";
-							inPrincipleDetailMap.put(CommonUtils.TENURE,"Renewable Annually");
-							if(BanksEnum.SBI_BANK.getOrgId().equals(orgId)) {
-								processingFees = "@0.35% of loan amount plus applicable GST";
-							} else {
-								processingFees = proposalDetails.getProcessingFee() + " %";
-							}
-						} else if (productId == CommonUtils.LoanType.WCTL_LOAN.getValue()) { //16
-							loanType = "Working Capital Term Loan";
-							inPrincipleDetailMap.put(CommonUtils.TENURE,tenure != null ? tenure +CommonUtils.YEARS:"NA");
-							processingFees = proposalDetails.getProcessingFee() + " %";
-						} else {
+//						if (productId == CommonUtils.LoanType.WORKING_CAPITAL.getValue()) {  //1
+//							loanType = "Working Capital";
+//							inPrincipleDetailMap.put(CommonUtils.TENURE,"Renewable Annually");
+//							if(BanksEnum.SBI_BANK.getOrgId().equals(orgId)) {
+//								processingFees = "@0.35% of loan amount plus applicable GST";
+//							} else {
+//								processingFees = proposalDetails.getProcessingFee() + " %";
+//							}
+//						} else if (productId == CommonUtils.LoanType.WCTL_LOAN.getValue()) { //16
+//							loanType = "Working Capital Term Loan";
+//							inPrincipleDetailMap.put(CommonUtils.TENURE,tenure != null ? tenure +CommonUtils.YEARS:"NA");
+//							processingFees = proposalDetails.getProcessingFee() + " %";
+//						} else {
 							loanType = "Term Loan";
 							inPrincipleDetailMap.put(CommonUtils.TENURE,tenure != null ? tenure +CommonUtils.YEARS:"NA");
 							if (16 == orgId) {
@@ -1169,7 +1169,7 @@ public class PaymentServiceImplLoans implements PaymentServiceLoans{
 								processingFees = proposalDetails.getProcessingFee() + " %";
 							}
 							inPrincipleDetailMap.put(CommonUtils.BUSINESS_TYPE_ID, 26);
-						}
+//						}
 						
 						if(gatewayRequest.getSkipType() != null && CommonUtils.SkipType.CVL_MUDRA_LOAN.equals(gatewayRequest.getSkipType())) {
 							inPrincipleDetailMap.put(CommonUtils.MINPF, proposalDetails.getMinPf() != null ? CommonUtils.convertValueWithoutDecimal(proposalDetails.getMinPf()) : null);
@@ -1503,11 +1503,11 @@ public class PaymentServiceImplLoans implements PaymentServiceLoans{
 					 * Not send on sidbi specific and sbi specific
 					 *  */
 					
-					if(CommonUtils.SkipType.MUDRA_LOAN.equals(gatewayRequest.getSkipType())){
+					if(CommonUtils.SkipType.CVL_MUDRA_LOAN.equals(gatewayRequest.getSkipType())){
 						List<ContentAttachment> contentAttachmentList =  new ArrayList<ContentAttachment>();
 						ContentAttachment contentAttachment = generateIndicativeDocument(mailParameters, gatewayRequest);
 						if(contentAttachment != null) {
-							logger.info("Attachment for Mudra Loan IndicativeDocumentList of ContentAttachment of ApplicationId==>{}" ,gatewayRequest.getApplicationId());
+							logger.info("Attachment for CVL Mudra Loan IndicativeDocumentList of ContentAttachment of ApplicationId==>{}" ,gatewayRequest.getApplicationId());
 							contentAttachmentList.add(contentAttachment);
 						}
 						
@@ -1590,7 +1590,7 @@ public class PaymentServiceImplLoans implements PaymentServiceLoans{
 	}
 	
 	public ContentAttachment generateIndicativeDocument(Map<String, Object> map , GatewayRequest gatewayRequest) {
-		byte[] contentAttachmentForInductiveDocument = callReportsToFetchDocuments(ReportsEnum.INDICATIVE_DOCUMENT_FOR_ML.getId(), null , CommonUtils.SkipType.MUDRA_LOAN);
+		byte[] contentAttachmentForInductiveDocument = callReportsToFetchDocuments(ReportsEnum.INDICATIVE_DOCUMENT_FOR_ML.getId(), null , CommonUtils.SkipType.CVL_MUDRA_LOAN);
 		try {
 			logger.info("Indicative Document Attachment pdf for Mail of ApplicationId==>{}",gatewayRequest.getApplicationId());
 			if(contentAttachmentForInductiveDocument != null) {
@@ -1606,7 +1606,7 @@ public class PaymentServiceImplLoans implements PaymentServiceLoans{
 	}
 	
 	public ContentAttachment generateInprincipleLetterPdf(Map<String, Object> map , GatewayRequest gatewayRequest) {
-		byte[] contentAttachmentForInductiveDocument = callReportsToFetchDocuments(ReportsEnum.INPRINCIPLE_LETTER_ML.getId(), map ,CommonUtils.SkipType.MUDRA_LOAN);
+		byte[] contentAttachmentForInductiveDocument = callReportsToFetchDocuments(ReportsEnum.INPRINCIPLE_LETTER_ML.getId(), map ,CommonUtils.SkipType.CVL_MUDRA_LOAN);
 		try {
 			logger.info("Inprinciple Letter in pdf for Mail of ApplicationId==>{}",gatewayRequest.getApplicationId());
 			if(contentAttachmentForInductiveDocument != null) {
@@ -1764,15 +1764,15 @@ public class PaymentServiceImplLoans implements PaymentServiceLoans{
 //		}else {
 //		}
 		
-		businessTypeId = CommonUtils.BusinessType.MUDRA_LOAN.getId();
-		subject = "MUDRA Loan - Intimation : New In-Principle Approved Proposal";
+		businessTypeId = CommonUtils.BusinessType.CVL_MUDRA_LOAN.getId();
+		subject = "CVL MUDRA Loan - Intimation : New In-Principle Approved Proposal";
 		loanTypeId = 100;
 		
 		map.put("maker_name", fullName);
 		
 		List<Long> roleTypeList = new ArrayList<Long>();
 		
-		if(CommonUtils.SkipType.MUDRA_LOAN.equals(gatewayRequest.getSkipType())) {
+		if(CommonUtils.SkipType.CVL_MUDRA_LOAN.equals(gatewayRequest.getSkipType())) {
 			roleTypeList.add(CommonUtils.UsersRoles.FP_MAKER);
 		}else {
 			roleTypeList.add(CommonUtils.UsersRoles.FP_MAKER);
@@ -2076,7 +2076,7 @@ public class PaymentServiceImplLoans implements PaymentServiceLoans{
 			
 			if(proposalDetails != null) {
 				gatewayRequest.setPaymentStatus(CommonUtils.PaymentStatus.BYPASS);
-				gatewayRequest.setSkipType(CommonUtils.SkipType.MUDRA_LOAN);
+				gatewayRequest.setSkipType(CommonUtils.SkipType.CVL_MUDRA_LOAN);
 				
 				ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findByProposalIdAndIsActive(proposalDetails.getId(), true);
 				
