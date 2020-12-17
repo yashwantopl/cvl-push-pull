@@ -15,6 +15,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.opl.mudra.api.loans.model.*;
+import com.opl.service.loans.repository.VehicleOperatorDetailRepository;
+import com.opl.service.loans.service.vehicledetails.VehicleOperatorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -42,13 +45,6 @@ import com.opl.mudra.api.gst.model.util.DateComparator2;
 import com.opl.mudra.api.gst.model.yuva.request.GSTR1Request;
 import com.opl.mudra.api.itr.model.ITRConnectionResponse;
 import com.opl.mudra.api.loans.exception.LoansException;
-import com.opl.mudra.api.loans.model.AssociatedConcernDetailRequest;
-import com.opl.mudra.api.loans.model.DirectorBackgroundDetailRequest;
-import com.opl.mudra.api.loans.model.DirectorBackgroundDetailResponse;
-import com.opl.mudra.api.loans.model.DirectorPersonalDetailResponse;
-import com.opl.mudra.api.loans.model.FinancialArrangementsDetailRequest;
-import com.opl.mudra.api.loans.model.FinancialArrangementsDetailResponse;
-import com.opl.mudra.api.loans.model.PincodeDataResponse;
 import com.opl.mudra.api.loans.model.corporate.CollateralSecurityDetailRequest;
 import com.opl.mudra.api.loans.model.corporate.CorporateFinalInfoRequest;
 import com.opl.mudra.api.loans.model.corporate.MachineDetailMudraLoanRequestResponse;
@@ -285,7 +281,13 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 	
 	@Autowired
 	private ProfileClient profileClient;
-	
+
+	@Autowired
+	VehicleOperatorDetailRepository vehicleOperatorDetailRepository;
+
+	@Autowired
+	VehicleOperatorService vehicleOperatorService;
+
 	DecimalFormat decim = new DecimalFormat("#,###.00");
 
 	@SuppressWarnings("unchecked")
@@ -293,6 +295,25 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 	public CorporatePrimaryViewResponse getCorporatePrimaryViewDetails(Long applicationId,Long proposalId, Integer userType, Long fundProviderUserId) {
 
 	CorporatePrimaryViewResponse corporatePrimaryViewResponse = new CorporatePrimaryViewResponse();
+
+		// Vehicle Operator Code starts here
+
+		VehicleOperatorRequest vehicleOperatorRequest = vehicleOperatorService.getByApplicationId(applicationId);
+
+		if (!CommonUtils.isObjectNullOrEmpty(vehicleOperatorRequest)){
+			List<Object[]> cityState = commonRepository.getStateAndCityNameById(vehicleOperatorRequest.getCity(), vehicleOperatorRequest.getState());
+			if(cityState != null) {
+				for (Object[] obj : cityState) {
+					vehicleOperatorRequest.setCityName(CommonUtils.convertString(obj[0]));
+					vehicleOperatorRequest.setStateName(CommonUtils.convertString(obj[1]));
+				}
+			}
+
+			corporatePrimaryViewResponse.setVehicleOperatorDetailsResponse(vehicleOperatorRequest);
+		}
+
+		// Vehicle Operator Code ends here
+
 	//for NBFC and Code
 		Object[] profileVersionDetails = loanRepository.getProfileVersionDetailsByApplicationId(applicationId);
 		if(CommonUtils.isObjectNullOrEmpty(profileVersionDetails)) {

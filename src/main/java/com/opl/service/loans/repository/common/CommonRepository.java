@@ -82,5 +82,6 @@ public interface CommonRepository {
 	public String getCamVersionForBSStandalone(String type);
 	
 	public String getGSTInFromConnectWithApplicationIdAndProposalId(Long applicationId);
+	public List<Object[]> getStateAndCityNameById(Long stateId, Long cityId);
 	
 }

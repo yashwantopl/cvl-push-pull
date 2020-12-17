@@ -536,4 +536,15 @@ public class CommonRepositoryImpl  implements CommonRepository {
 		}
 		return null;
 	}
+
+	@Override
+	public List<Object[]> getStateAndCityNameById(Long stateId, Long cityId) {
+		try {
+			List<Object[]> cityState = (List<Object[]>) manager.createNativeQuery("SELECT ct.city_name, st.state_name FROM one_form_cvl_mudra.city ct,one_form_cvl_mudra.state st WHERE ct.id = "+ cityId +" AND st.id = " + stateId).getResultList();
+			return cityState;
+		}catch (Exception e) {
+			logger.error("Error/Exception while fetching State and City names",e);
+		}
+		return null;
+	}
 }

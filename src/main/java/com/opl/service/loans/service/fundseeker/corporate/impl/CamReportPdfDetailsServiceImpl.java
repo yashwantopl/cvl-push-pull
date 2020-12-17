@@ -25,6 +25,9 @@ import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
+import com.opl.mudra.api.loans.model.*;
+import com.opl.service.loans.repository.VehicleOperatorDetailRepository;
+import com.opl.service.loans.service.vehicledetails.VehicleOperatorService;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.velocity.tools.generic.NumberTool;
 import org.json.simple.JSONObject;
@@ -64,20 +67,6 @@ import com.opl.mudra.api.gst.model.MonthListSales;
 import com.opl.mudra.api.gst.model.model.CAMGSTData;
 import com.opl.mudra.api.gst.model.yuva.request.GSTR1Request;
 import com.opl.mudra.api.itr.model.ITRConnectionResponse;
-import com.opl.mudra.api.loans.model.AssociatedConcernDetailRequest;
-import com.opl.mudra.api.loans.model.DirectorBackgroundDetailRequest;
-import com.opl.mudra.api.loans.model.DirectorBackgroundDetailResponseString;
-import com.opl.mudra.api.loans.model.DirectorPersonalDetailResponse;
-import com.opl.mudra.api.loans.model.FinanceMeansDetailRequest;
-import com.opl.mudra.api.loans.model.FinanceMeansDetailResponse;
-import com.opl.mudra.api.loans.model.FinancialArrangementDetailResponseString;
-import com.opl.mudra.api.loans.model.FinancialArrangementsDetailRequest;
-import com.opl.mudra.api.loans.model.LoansResponse;
-import com.opl.mudra.api.loans.model.OwnershipDetailRequest;
-import com.opl.mudra.api.loans.model.OwnershipDetailResponse;
-import com.opl.mudra.api.loans.model.PromotorBackgroundDetailRequest;
-import com.opl.mudra.api.loans.model.PromotorBackgroundDetailResponse;
-import com.opl.mudra.api.loans.model.TotalCostOfProjectResponse;
 import com.opl.mudra.api.loans.model.CAM.AssetDetailsString;
 import com.opl.mudra.api.loans.model.CAM.FinancialInputRequestDbl;
 import com.opl.mudra.api.loans.model.CAM.FinancialInputRequestString;
@@ -427,6 +416,12 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
     @Autowired
     private LoanRepository loanRepository;
 
+	@Autowired
+	VehicleOperatorDetailRepository vehicleOperatorDetailRepository;
+
+	@Autowired
+	VehicleOperatorService vehicleOperatorService;
+
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -471,6 +466,24 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 
         //Long userId = loanApplicationRepository.getUserIdByApplicationId(toApplicationId);  // PREVIOUS
         // ENDS HERE MULTIPLE BANK----->
+
+		// Vehicle Operator Code starts here
+
+		VehicleOperatorRequest vehicleOperatorRequest = vehicleOperatorService.getByApplicationId(applicationId);
+
+		if (!CommonUtils.isObjectNullOrEmpty(vehicleOperatorRequest)){
+			List<Object[]> cityState = commonRepository.getStateAndCityNameById(vehicleOperatorRequest.getCity(), vehicleOperatorRequest.getState());
+			if(cityState != null) {
+				for (Object[] obj : cityState) {
+					vehicleOperatorRequest.setCityName(CommonUtils.convertString(obj[0]));
+					vehicleOperatorRequest.setStateName(CommonUtils.convertString(obj[1]));
+				}
+			}
+
+			map.put("vehicleOperatorDetails", vehicleOperatorRequest);
+		}
+
+		// Vehicle Operator Code ends here
 
         //new loan type based on proposal mapping
         map.put("loanType", !CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getProductId()) ? CommonUtils.LoanType.getType(applicationProposalMapping.getProductId()).getName() : " ");

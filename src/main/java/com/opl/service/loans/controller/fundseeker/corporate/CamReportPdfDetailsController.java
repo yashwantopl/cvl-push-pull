@@ -67,7 +67,7 @@ public class CamReportPdfDetailsController {
 	private static final String ORIGINAL_FILE_NAME = "originalFileName";
 	private static final String ERROR_WHILE_GETTING_MAP_DETAILS = "Error while getting MAP Details==>";
 	private static final String INELIGIBLE_CAM_REPORT = "INELIGIBLECAMREPORT";
-	private static final String INELIGIBLE_CAM_REPORT_MUDRA = "MUDRALOANINELIGIBLECAM";
+	private static final String INELIGIBLE_CAM_REPORT_MUDRA = "CVLMUDRALOANINELIGIBLECAM";
 
 	
 	/* MUDRA LOAN PRIMARY CAM REPORT */
@@ -83,15 +83,15 @@ public class CamReportPdfDetailsController {
 			Map<String,Object> response = camReportPdfDetailsService.getCamReportPrimaryDetails(applicationId,productId,proposalId,false);
 			ReportRequest reportRequest = new ReportRequest();
 			reportRequest.setParams(response);
-			reportRequest.setTemplate("MUDRALOANPRIMARYCAM");
-			reportRequest.setType("MUDRALOANPRIMARYCAM");
+			reportRequest.setTemplate("CVLMUDRALOANPRIMARYCAM");
+			reportRequest.setType("CVLMUDRALOANPRIMARYCAM");
 			byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
 			MultipartFile multipartFile = new DDRMultipart(byteArr);			  
 			  JSONObject jsonObj = new JSONObject();
 				jsonObj.put(CommonUtils.APPLICATION_ID, applicationId);
 				jsonObj.put(PRODUCT_DOCUMENT_MAPPING_ID, 355L);
 				jsonObj.put(USER_TYPE, CommonUtils.UploadUserType.UERT_TYPE_APPLICANT);
-				jsonObj.put(ORIGINAL_FILE_NAME, "MUDRALOANPRIMARYCAM"+proposalId +".pdf");
+				jsonObj.put(ORIGINAL_FILE_NAME, "CVLMUDRALOANPRIMARYCAM"+proposalId +".pdf");
 				
 				DocumentResponse  documentResponse  =  dmsClient.uploadFile(jsonObj.toString(), multipartFile);
 				if(documentResponse.getStatus() == 200){
@@ -127,7 +127,7 @@ public class CamReportPdfDetailsController {
 			Map<String,Object> response = camReportPdfDetailsService.getCamReportPrimaryDetails(applicationId,productId,proposalId,false);
 			ReportRequest reportRequest = new ReportRequest();
 			reportRequest.setParams(response);
-			reportRequest.setTemplate("MUDRALOANPRIMARYCAM");
+			reportRequest.setTemplate("CVLMUDRALOANPRIMARYCAM");
 			reportRequest.setType("INPRINCIPLECAM");
 			byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
 			
@@ -255,8 +255,8 @@ public class CamReportPdfDetailsController {
 			Map<String,Object> response = inEligibleProposalCamReportService.getInEligibleCamReport(applicationId);
 			ReportRequest reportRequest = new ReportRequest();
 			reportRequest.setParams(response);
-			reportRequest.setTemplate("MUDRALOANINELIGIBLECAM");
-			reportRequest.setType("MUDRALOANINELIGIBLECAM");
+			reportRequest.setTemplate("CVLMUDRALOANINELIGIBLECAM");
+			reportRequest.setType("CVLMUDRALOANINELIGIBLECAM");
 			byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
 			MultipartFile multipartFile = new DDRMultipart(byteArr);
 			  JSONObject jsonObj = new JSONObject();
@@ -295,8 +295,8 @@ public class CamReportPdfDetailsController {
 			Map<String,Object> response = inEligibleProposalCamReportService.getInEligibleCamReport(applicationId);
 			ReportRequest reportRequest = new ReportRequest();
 			reportRequest.setParams(response);
-			reportRequest.setTemplate("MUDRALOANINELIGIBLECAM");
-			reportRequest.setType("MUDRALOANINELIGIBLECAM");
+			reportRequest.setTemplate("CVLMUDRALOANINELIGIBLECAM");
+			reportRequest.setType("CVLMUDRALOANINELIGIBLECAM");
 			byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
 			if(byteArr != null && byteArr.length > 0){
 				return byteArr;
