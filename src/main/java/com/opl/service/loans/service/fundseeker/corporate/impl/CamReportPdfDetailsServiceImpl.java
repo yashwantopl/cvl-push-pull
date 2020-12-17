@@ -1065,7 +1065,46 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			if(!CommonUtils.isListNullOrEmpty(collect)) {
 				mudraScoringMap.put("RELATIONSHIP_WITH_BANK_COMBINED_ML", CommonUtils.printFields(collect.get(0),null));
 			}
-			
+
+			// CVL Mudra Parameters
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("FLEET_STRENGTH_OWNED_BY_FLEET_OPERATOR")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("FLEET_STRENGTH_OWNED_BY_FLEET_OPERATOR", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("LOAN_FREE_VEHICLE")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("LOAN_FREE_VEHICLE", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("PROFITABILITY_HISTORY")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("PROFITABILITY_HISTORY", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("ASSURED_ORDER")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("ASSURED_ORDER", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("DEPOSIT_POSITION_POTENTIAL")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("DEPOSIT_POSITION_POTENTIAL", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("EXPERIENCE_IN_BUSINESS")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("EXPERIENCE_IN_BUSINESS", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("COLLATORAL_COVERAGE")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("COLLATORAL_COVERAGE", CommonUtils.printFields(collect.get(0),null));
+			}
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("CONSERVATIVE_DEBT_SERVICE_COVERAGE_RATIO")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("CONSERVATIVE_DEBT_SERVICE_COVERAGE_RATIO", CommonUtils.printFields(collect.get(0),null));
+			}
+
+			collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase("OPERATION_SUPPORTED_BY_FAMILY_MEMBERS_DIRECTLY")).collect(Collectors.toList());
+			if(!CommonUtils.isListNullOrEmpty(collect)) {
+				mudraScoringMap.put("OPERATION_SUPPORTED_BY_FAMILY_MEMBERS_DIRECTLY", CommonUtils.printFields(collect.get(0),null));
+			}
+
 			scoreResponse.add(mudraScoringMap);
 			map.put("mudraScoringResp", scoreResponse);
 		}
