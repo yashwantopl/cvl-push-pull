@@ -86,4 +86,8 @@ public interface ScoringService {
 
 	public ScoringResponse getFuelForChecker(FuelPriceReqRes fuelReqRes);
 
+	public ScoringResponse getREPOHistoryDetail(REPOReqRes repoReqRes);
+
+	public ScoringResponse createJobForREPO(REPOReqRes repoReqRes);
+
 }

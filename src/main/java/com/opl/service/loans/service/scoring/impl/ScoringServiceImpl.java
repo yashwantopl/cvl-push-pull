@@ -2535,5 +2535,25 @@ public class ScoringServiceImpl implements ScoringService {
 	        }
 	}
 
+	@Override
+	public com.opl.mudra.api.loans.model.score.ScoringResponse getREPOHistoryDetail(REPOReqRes repoReqRes) {
+		 try {
+	            return scoringClient.getREPOHistory(repoReqRes);
+	        } catch (Exception e) {
+	            logger.error("error while getting MCLR history detail : ", e);
+	            return new com.opl.mudra.api.loans.model.score.ScoringResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+	        }
+	}
+
+	@Override
+	public com.opl.mudra.api.loans.model.score.ScoringResponse createJobForREPO(REPOReqRes repoReqRes) {
+		  try {
+	            return scoringClient.createJobForRepo(repoReqRes);
+	        } catch (Exception e) {
+	            logger.error("error while creating job for MCLR: ", e);
+	            return new com.opl.mudra.api.loans.model.score.ScoringResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+	        }
+	}
+
 	
 }

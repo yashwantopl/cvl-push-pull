@@ -419,6 +419,30 @@ public class ScoringController {
             return new ResponseEntity<ScoringResponse>(res,HttpStatus.OK);
         }
     }
+    @RequestMapping(value = "/get_repo_history", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ScoringResponse> getRepoHistory(@RequestBody REPOReqRes repoReqRes, HttpServletRequest request) {
+        try {
+            ScoringResponse scoringResponse = scoringService.getREPOHistoryDetail(repoReqRes);
+            return new ResponseEntity<ScoringResponse>(scoringResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            ScoringResponse res = new ScoringResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+            logger.error("Error while getting get_repo_history", e);
+            return new ResponseEntity<ScoringResponse>(res, HttpStatus.OK);
+        }
+    }
+    @RequestMapping(value = "/create_job_for_repo", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ScoringResponse> createJobForREPO(@RequestBody REPOReqRes repoReqRes, HttpServletRequest httpRequest) {
+
+        try {
+            repoReqRes.setUserId((Long) httpRequest.getAttribute(CommonUtils.USER_ID));
+            ScoringResponse scoringResponse = scoringService.createJobForREPO(repoReqRes);
+            return new ResponseEntity<ScoringResponse>(scoringResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            ScoringResponse res = new ScoringResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+            logger.error("Error while create_job_for_repo", e);
+            return new ResponseEntity<ScoringResponse>(res, HttpStatus.OK);
+        }
+    }
     
     
     
