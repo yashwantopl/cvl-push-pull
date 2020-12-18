@@ -57,4 +57,6 @@ public interface ScoringService {
 
 	public ScoringResponse getMCLRHistoryDetail(MCLRReqRes mclrReqRes);
 
+	public ScoringResponse getLatestMCLRDetails(MCLRReqRes mclrReqRes);
+
 }

@@ -318,5 +318,17 @@ public class ScoringController {
         }
     }
     
+    @RequestMapping(value = "/getLatestMCLRDetails", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ScoringResponse> getLatestMCLRDetails(@RequestBody MCLRReqRes mclrReqRes,HttpServletRequest request) {
+        try {
+            ScoringResponse scoringResponse = scoringService.getLatestMCLRDetails(mclrReqRes);
+            return new ResponseEntity<ScoringResponse>(scoringResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            ScoringResponse res = new ScoringResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+            logger.error("Error while getting mclr history", e);
+            return new ResponseEntity<ScoringResponse>(res, HttpStatus.OK);
+        }
+    }
+    
 }
 
