@@ -186,6 +186,7 @@ public class CorporatePrimaryViewResponse {
 	private String finalRoi;
 	private String scoringBasedOn;
 	private Long profileId;
+    private Object vehicleOperatorDetailsResponse;
 	
 	
 	public CorporatePrimaryViewResponseNbfc getNbfcData() {
@@ -1479,8 +1480,13 @@ public class CorporatePrimaryViewResponse {
 	public void setProfileId(Long profileId) {
 		this.profileId = profileId;
 	}
-
-	/*
+    public Object getVehicleOperatorDetailsResponse() {
+        return vehicleOperatorDetailsResponse;
+    }
+    public void setVehicleOperatorDetailsResponse(Object vehicleOperatorDetailsResponse) {
+        this.vehicleOperatorDetailsResponse = vehicleOperatorDetailsResponse;
+    }
+/*
 	 * public List<CorporatePrimaryViewResponseNbfc> getNbfcListList() { return
 	 * nbfcListList; } public void
 	 * setNbfcListList(List<CorporatePrimaryViewResponseNbfc> nbfcListList) {

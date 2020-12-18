@@ -21,7 +21,9 @@ public class VehicleOperatorRequest implements Serializable {
     private String dealerAddress;
     private String pincode;
     private Long city;
+	private String cityName;
     private Long state;
+	private String stateName;
     private Integer vehicleCapacity;
     private Integer noOfPerson;
     private Integer loadInKg;
@@ -117,6 +119,18 @@ public class VehicleOperatorRequest implements Serializable {
 	}
 	public void setState(Long state) {
 		this.state = state;
+	}
+	public String getCityName() {
+		return cityName;
+	}
+	public void setCityName(String cityName) {
+		this.cityName = cityName;
+	}
+	public String getStateName() {
+		return stateName;
+	}
+	public void setStateName(String stateName) {
+		this.stateName = stateName;
 	}
 	public Integer getVehicleCapacity() {
 		return vehicleCapacity;

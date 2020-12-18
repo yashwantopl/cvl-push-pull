@@ -62,7 +62,18 @@ public class ScoreParameter {
     public static final String ISO_CERTIFICATION = "ISO_CERTIFICATION";
     public static final String TOTAL_NO_OF_INWARD_CHEQUE_BOUNCES_LAST_SIX_MONTHS = "TOTAL_NO_OF_INWARD_CHEQUE_BOUNCES_LAST_SIX_MONTHS";
     
-    
+    // For CVL Mudra
+    public static final String N0_OF_DEPENDENT = "N0_OF_DEPENDENT";
+    public static final String FLEET_STRENGTH_OWNED_BY_FLEET_OPERATOR = "FLEET_STRENGTH_OWNED_BY_FLEET_OPERATOR";
+    public static final String LOAN_FREE_VEHICLE = "LOAN_FREE_VEHICLE";
+    public static final String PROFITABILITY_HISTORY = "PROFITABILITY_HISTORY";
+    public static final String ASSURED_ORDER = "ASSURED_ORDER";
+    public static final String DEPOSIT_POSITION_POTENTIAL = "DEPOSIT_POSITION_POTENTIAL";
+    public static final String OPERATION_SUPPORTED_BY_FAMILY_MEMBERS_DIRECTLY = "OPERATION_SUPPORTED_BY_FAMILY_MEMBERS_DIRECTLY";
+    // For New CVL Mudra
+    public static final String EXPERIENCE_IN_BUSINESS = "EXPERIENCE_IN_BUSINESS";
+    public static final String COLLATORAL_COVERAGE = "COLLATORAL_COVERAGE";
+    public static final String CONSERVATIVE_DEBT_SERVICE_COVERAGE_RATIO = "CONSERVATIVE_DEBT_SERVICE_COVERAGE_RATIO";
 
     private static final List<String> SALARIED_IGNORELIST = Arrays.asList(new String [] {ScoreParameter.Retail.HomeLoan.EMPLOYMENT_CATEG_PROF_SELF_EMPLOYED});
     private static final List<String> SELFEMPLOYED_IGNORELIST = Arrays.asList(new String [] {ScoreParameter.Retail.HomeLoan.CURRENT_JOB_EXP,ScoreParameter.Retail.HomeLoan.EMPLOYMENT_CATEG_JOB});
