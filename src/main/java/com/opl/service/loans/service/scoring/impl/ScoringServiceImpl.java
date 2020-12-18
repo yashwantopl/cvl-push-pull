@@ -77,7 +77,9 @@ import com.opl.mudra.api.scoring.model.ScoringResponse;
 import com.opl.mudra.api.scoring.model.scoringmodel.ScoringModelReqRes;
 import com.opl.mudra.api.scoring.utils.ScoreParameter;
 import com.opl.mudra.api.user.model.UserResponse;
+import com.opl.mudra.api.utils.scoring.FuelPriceReqRes;
 import com.opl.mudra.api.utils.scoring.MCLRReqRes;
+import com.opl.mudra.api.utils.scoring.REPOReqRes;
 import com.opl.mudra.client.analyzer.AnalyzerClient;
 import com.opl.mudra.client.cibil.CIBILClient;
 import com.opl.mudra.client.gst.GstClient;
@@ -2409,6 +2411,124 @@ public class ScoringServiceImpl implements ScoringService {
 	public com.opl.mudra.api.loans.model.score.ScoringResponse getLatestMCLRDetails(MCLRReqRes mclrReqRes) {
 		 try {
 	            return scoringClient.getLatestMCLRDetails(mclrReqRes);
+	        } catch (Exception e) {
+	            logger.error("error while getting MCLR history detail : ", e);
+	            return new com.opl.mudra.api.loans.model.score.ScoringResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+	        }
+	}
+
+	@Override
+	public com.opl.mudra.api.loans.model.score.ScoringResponse createJob(MCLRReqRes mclrReqRes) {
+		try {
+            return scoringClient.createJob(mclrReqRes);
+        } catch (Exception e) {
+            logger.error("error while creating job for MCLR: ", e);
+            return new com.opl.mudra.api.loans.model.score.ScoringResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+        }
+	}
+
+	@Override
+	public com.opl.mudra.api.loans.model.score.ScoringResponse saveMCLRDetails(MCLRReqRes mclrReqRes) {
+		 try {
+	            return scoringClient.saveMCLR(mclrReqRes);
+	        } catch (Exception e) {
+	            logger.error("error while saving MCLR details : ", e);
+	            return new com.opl.mudra.api.loans.model.score.ScoringResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+	        }
+	}
+
+	@Override
+	public com.opl.mudra.api.loans.model.score.ScoringResponse saveREPODetails(REPOReqRes repoReqRes) {
+		 try {
+	            return scoringClient.saveREPO(repoReqRes);
+	        } catch (Exception e) {
+	            logger.error("error while saving MCLR details : ", e);
+	            return new com.opl.mudra.api.loans.model.score.ScoringResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+	        }
+	}
+
+	@Override
+	public com.opl.mudra.api.loans.model.score.ScoringResponse getMCLRForChecker(MCLRReqRes mclrReqRes) {
+		 try {
+	            return scoringClient.getMCLRForChecker(mclrReqRes);
+	        } catch (Exception e) {
+	            logger.error("error while getting MCLR history detail : ", e);
+	            return new com.opl.mudra.api.loans.model.score.ScoringResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+	        }
+	}
+
+	@Override
+	public com.opl.mudra.api.loans.model.score.ScoringResponse getREPOForChecker(REPOReqRes repoReqRes) {
+		try {
+            return scoringClient.getREPOForChecker(repoReqRes);
+        } catch (Exception e) {
+            logger.error("error while getting MCLR history detail : ", e);
+            return new com.opl.mudra.api.loans.model.score.ScoringResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+        }
+	}
+
+	@Override
+	public com.opl.mudra.api.loans.model.score.ScoringResponse getEffectiveMCLRDetails(MCLRReqRes mclrReqRes) {
+		 try {
+	            return scoringClient.getEffectiveMCLR(mclrReqRes);
+	        } catch (Exception e) {
+	            logger.error("error while getting effective MCLR details : ", e);
+	            return new com.opl.mudra.api.loans.model.score.ScoringResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+	        }
+
+	}
+
+	@Override
+	public com.opl.mudra.api.loans.model.score.ScoringResponse getLatestFuelPriceDetails(
+			FuelPriceReqRes fuelPriceReqRes) {
+		 try {
+	            return scoringClient.getLatestFuelPriceDetails(fuelPriceReqRes);
+	        } catch (Exception e) {
+	            logger.error("error while getting getLatestFuelPriceDetails : ", e);
+	            return new com.opl.mudra.api.loans.model.score.ScoringResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+	        }
+	}
+
+	@Override
+	public List<GenericCheckerReqRes> sendToCheckerFuelDetails(List<GenericCheckerReqRes> genericCheckerReqResList,
+			Long userId) throws ScoringException {
+		return scoringClient.sendToCheckerFuelDetails(genericCheckerReqResList, userId);
+	}
+
+	@Override
+	public com.opl.mudra.api.loans.model.score.ScoringResponse getFuelPriceHistory(FuelPriceReqRes fuelReqRes) {
+		 try {
+	            return scoringClient.getFuelPriceHistory(fuelReqRes);
+	        } catch (Exception e) {
+	            logger.error("error while getting MCLR history detail : ", e);
+	            return new com.opl.mudra.api.loans.model.score.ScoringResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+	        }
+	}
+
+	@Override
+	public com.opl.mudra.api.loans.model.score.ScoringResponse createJobFuel(FuelPriceReqRes fuelReqRes) {
+		 try {
+	            return scoringClient.createJobFuel(fuelReqRes);
+	        } catch (Exception e) {
+	            logger.error("error while creating job for MCLR: ", e);
+	            return new com.opl.mudra.api.loans.model.score.ScoringResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+	        }
+	}
+
+	@Override
+	public com.opl.mudra.api.loans.model.score.ScoringResponse saveFuelDetails(FuelPriceReqRes fuelReqRes) {
+		 try {
+	            return scoringClient.saveFuel(fuelReqRes);
+	        } catch (Exception e) {
+	            logger.error("error while saving MCLR details : ", e);
+	            return new com.opl.mudra.api.loans.model.score.ScoringResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+	        }
+	}
+
+	@Override
+	public com.opl.mudra.api.loans.model.score.ScoringResponse getFuelForChecker(FuelPriceReqRes fuelReqRes) {
+		 try {
+	            return scoringClient.getFuelForChecker(fuelReqRes);
 	        } catch (Exception e) {
 	            logger.error("error while getting MCLR history detail : ", e);
 	            return new com.opl.mudra.api.loans.model.score.ScoringResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());

@@ -23,16 +23,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
 import com.opl.mudra.api.loans.exception.LoansException;
 import com.opl.mudra.api.loans.model.LoansResponse;
 import com.opl.mudra.api.loans.model.score.ScoringRequestLoans;
+import com.opl.mudra.api.loans.model.score.ScoringResponse;
 import com.opl.mudra.api.loans.utils.CommonUtils;
 import com.opl.mudra.api.rating.exception.RatingException;
 import com.opl.mudra.api.scoring.model.GenericCheckerReqRes;
 import com.opl.mudra.api.scoring.model.scoringmodel.ScoringModelReqRes;
+import com.opl.mudra.api.utils.scoring.FuelPriceReqRes;
 import com.opl.mudra.api.utils.scoring.MCLRReqRes;
+import com.opl.mudra.api.utils.scoring.REPOReqRes;
 import com.opl.service.loans.service.scoring.ScoringService;
-import com.opl.mudra.api.loans.model.score.ScoringResponse;
 
 
 @RestController
@@ -326,6 +329,182 @@ public class ScoringController {
         } catch (Exception e) {
             ScoringResponse res = new ScoringResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
             logger.error("Error while getting mclr history", e);
+            return new ResponseEntity<ScoringResponse>(res, HttpStatus.OK);
+        }
+    }
+    
+    @RequestMapping(value = "/create_job", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ScoringResponse> createJob(@RequestBody MCLRReqRes mclrReqRes, HttpServletRequest httpRequest) {
+
+        try {
+            mclrReqRes.setUserId((Long) httpRequest.getAttribute(CommonUtils.USER_ID));
+            ScoringResponse scoringResponse = scoringService.createJob(mclrReqRes);
+            return new ResponseEntity<ScoringResponse>(scoringResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            ScoringResponse res = new ScoringResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+            logger.error("Error while create_job", e);
+            return new ResponseEntity<ScoringResponse>(res, HttpStatus.OK);
+        }
+    }
+    
+    @RequestMapping(value = "/save_mclr", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ScoringResponse> saveMCLR(@RequestBody MCLRReqRes mclrReqRes,
+                                                    HttpServletRequest request) throws RatingException {
+
+        try {
+            mclrReqRes.setUserId((Long) request.getAttribute(CommonUtils.USER_ID));
+            ScoringResponse scoringResponse = scoringService.saveMCLRDetails(mclrReqRes);
+            return new ResponseEntity<ScoringResponse>(scoringResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            ScoringResponse res = new ScoringResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+            logger.error("Error while save_mclr", e);
+            return new ResponseEntity<ScoringResponse>(res, HttpStatus.OK);
+        }
+    }
+    @RequestMapping(value = "/save_repo", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ScoringResponse> saveREPO(@RequestBody REPOReqRes repoReqRes,
+                                                    HttpServletRequest request) throws RatingException {
+
+        try {
+            repoReqRes.setUserId((Long) request.getAttribute(CommonUtils.USER_ID));
+            ScoringResponse scoringResponse = scoringService.saveREPODetails(repoReqRes);
+            return new ResponseEntity<ScoringResponse>(scoringResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            ScoringResponse res = new ScoringResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+            logger.error("Error while save_repo", e);
+            return new ResponseEntity<ScoringResponse>(res, HttpStatus.OK);
+        }
+    }
+
+    @RequestMapping(value = "/getMCLRForChecker", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ScoringResponse> getMCLRForChecker(@RequestBody MCLRReqRes mclrReqRes, HttpServletRequest request) {
+        try {
+            mclrReqRes.setUserId((Long) request.getAttribute(CommonUtils.USER_ID));
+            ScoringResponse scoringResponse = scoringService.getMCLRForChecker(mclrReqRes);
+            return new ResponseEntity<ScoringResponse>(scoringResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            ScoringResponse res = new ScoringResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+            logger.error("Error while getting mclr history", e);
+            return new ResponseEntity<ScoringResponse>(res, HttpStatus.OK);
+        }
+    }
+
+    @RequestMapping(value = "/getREPOForChecker", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ScoringResponse> getREPOForChecker(@RequestBody REPOReqRes repoReqRes, HttpServletRequest request) {
+        try {
+            repoReqRes.setUserId((Long) request.getAttribute(CommonUtils.USER_ID));
+            ScoringResponse scoringResponse = scoringService.getREPOForChecker(repoReqRes);
+            return new ResponseEntity<ScoringResponse>(scoringResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            ScoringResponse res = new ScoringResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+            logger.error("Error while getREPOForChecker", e);
+            return new ResponseEntity<ScoringResponse>(res, HttpStatus.OK);
+        }
+    }
+
+    @RequestMapping(value = "/getEffectiveMCLR", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ScoringResponse> getEffectiveMCLR(@RequestBody MCLRReqRes mclrReqRes) {
+
+        try {
+            if(CommonUtils.isObjectNullOrEmpty(mclrReqRes)){
+                ScoringResponse res=new ScoringResponse(CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
+                return new ResponseEntity<ScoringResponse>(res,HttpStatus.OK);
+            }
+            ScoringResponse scoringResponse= scoringService.getEffectiveMCLRDetails(mclrReqRes);
+            return new ResponseEntity<ScoringResponse>(scoringResponse,HttpStatus.OK);
+
+        } catch (Exception e) {
+            ScoringResponse res=new ScoringResponse(CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR.value());
+            logger.error("Error while getting effective mclr ", e);
+            return new ResponseEntity<ScoringResponse>(res,HttpStatus.OK);
+        }
+    }
+    
+    
+    
+    
+    
+    @RequestMapping(value = "/getLatestFuelPriceDetails", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ScoringResponse> getLatestFuelPriceDetails(@RequestBody FuelPriceReqRes fuelPriceReqRes,HttpServletRequest request) {
+        try {
+            ScoringResponse scoringResponse = scoringService.getLatestFuelPriceDetails(fuelPriceReqRes);
+            return new ResponseEntity<ScoringResponse>(scoringResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            ScoringResponse res = new ScoringResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+            logger.error("Error while getting getLatestFuelPriceDetails", e);
+            return new ResponseEntity<ScoringResponse>(res, HttpStatus.OK);
+        }
+    }
+    
+    @RequestMapping(value = "/sendToCheckerFuelDetails", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<GenericCheckerReqRes>> sendToCheckerFuelDetails(@RequestBody List<GenericCheckerReqRes> genericCheckerReqResList, HttpServletRequest httpRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
+        logger.info("==================Enter in sendToChecker(){} ================ genericCheckerReqResList size ==> ",genericCheckerReqResList.size());
+        try {
+            Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+
+            List<GenericCheckerReqRes> genericCheckerReqRes = scoringService.sendToCheckerFuelDetails(genericCheckerReqResList, userId);
+            logger.info("==================Exit from sendToChecker(){} ================ genericCheckerReqRes List  Size ==> ", genericCheckerReqRes.size());
+            return new ResponseEntity<List<GenericCheckerReqRes>>(genericCheckerReqRes, HttpStatus.OK);
+        } catch (Exception e) {
+            List<GenericCheckerReqRes> res = new ArrayList<GenericCheckerReqRes>();
+            GenericCheckerReqRes reqres = new GenericCheckerReqRes();
+            reqres.setActionFlag(false);
+            res.add(reqres);
+            logger.error("Error while saving scoring model detail : ", e);
+            return new ResponseEntity<List<GenericCheckerReqRes>>(res, HttpStatus.OK);
+        }
+    }
+    
+    @RequestMapping(value = "/getFuelPriceHistory", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ScoringResponse> getFuelPriceHistory(@RequestBody FuelPriceReqRes fuelReqRes, HttpServletRequest request) {
+        try {
+            ScoringResponse scoringResponse = scoringService.getFuelPriceHistory(fuelReqRes);
+            return new ResponseEntity<ScoringResponse>(scoringResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            ScoringResponse res = new ScoringResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+            logger.error("Error while getting getFuelPriceHistory", e);
+            return new ResponseEntity<ScoringResponse>(res, HttpStatus.OK);
+        }
+    }
+    
+    @RequestMapping(value = "/create_job_fuel", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ScoringResponse> createJobFuel(@RequestBody FuelPriceReqRes fuelReqRes, HttpServletRequest httpRequest) {
+
+        try {
+        	fuelReqRes.setUserId((Long) httpRequest.getAttribute(CommonUtils.USER_ID));
+            ScoringResponse scoringResponse = scoringService.createJobFuel(fuelReqRes);
+            return new ResponseEntity<ScoringResponse>(scoringResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            ScoringResponse res = new ScoringResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+            logger.error("Error while getting create_job_fuel", e);
+            return new ResponseEntity<ScoringResponse>(res, HttpStatus.OK);
+        }
+    }
+    
+    @RequestMapping(value = "/save_fuel", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ScoringResponse> saveFuel(@RequestBody FuelPriceReqRes fuelReqRes,
+                                                    HttpServletRequest request) throws RatingException {
+
+        try {
+        	fuelReqRes.setUserId((Long) request.getAttribute(CommonUtils.USER_ID));
+            ScoringResponse scoringResponse = scoringService.saveFuelDetails(fuelReqRes);
+            return new ResponseEntity<ScoringResponse>(scoringResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            ScoringResponse res = new ScoringResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+            logger.error("Error while save_fuel", e);
+            return new ResponseEntity<ScoringResponse>(res, HttpStatus.OK);
+        }
+    }
+    
+    @RequestMapping(value = "/getFuelForChecker", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ScoringResponse> getFuelForChecker(@RequestBody FuelPriceReqRes fuelReqRes, HttpServletRequest request) {
+        try {
+        	fuelReqRes.setUserId((Long) request.getAttribute(CommonUtils.USER_ID));
+            ScoringResponse scoringResponse = scoringService.getFuelForChecker(fuelReqRes);
+            return new ResponseEntity<ScoringResponse>(scoringResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            ScoringResponse res = new ScoringResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+            logger.error("Error while getting getFuelForChecker", e);
             return new ResponseEntity<ScoringResponse>(res, HttpStatus.OK);
         }
     }
