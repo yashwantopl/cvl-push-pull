@@ -25,6 +25,8 @@ public class Statement implements Serializable{
 	private List<String> passList;
 	
 	private Long existingReportId;
+	
+	private Long userId;
 
 	
 	public List<MultipartFile> getMultipartFiles() {
@@ -74,11 +76,13 @@ public class Statement implements Serializable{
 	public void setExistingReportId(Long existingReportId) {
 		this.existingReportId = existingReportId;
 	}
-	
-	
 
+	public Long getUserId() {
+		return userId;
+	}
 
-	
-	
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
 	
 }
