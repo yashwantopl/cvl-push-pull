@@ -12,9 +12,11 @@ import org.springframework.web.multipart.MultipartFile;
 import com.opl.mudra.api.loans.exception.LoansException;
 import com.opl.mudra.api.loans.model.LoansResponse;
 import com.opl.mudra.api.loans.model.score.ScoringRequestLoans;
+import com.opl.mudra.api.loans.model.score.ScoringResponse;
 import com.opl.mudra.api.scoring.exception.ScoringException;
 import com.opl.mudra.api.scoring.model.GenericCheckerReqRes;
 import com.opl.mudra.api.scoring.model.scoringmodel.ScoringModelReqRes;
+import com.opl.mudra.api.utils.scoring.MCLRReqRes;
 
 public interface ScoringService {
 
@@ -52,5 +54,7 @@ public interface ScoringService {
     public ScoringModelReqRes inactivateScoringDetails(ScoringModelReqRes scoringModelReqRes);
 
 	public ScoringModelReqRes getScoringHistoryDetails(ScoringModelReqRes scoringModelReqRes);
+
+	public ScoringResponse getMCLRHistoryDetail(MCLRReqRes mclrReqRes);
 
 }

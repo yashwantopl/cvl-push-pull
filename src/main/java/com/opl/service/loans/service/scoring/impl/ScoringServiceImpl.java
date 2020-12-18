@@ -77,6 +77,7 @@ import com.opl.mudra.api.scoring.model.ScoringResponse;
 import com.opl.mudra.api.scoring.model.scoringmodel.ScoringModelReqRes;
 import com.opl.mudra.api.scoring.utils.ScoreParameter;
 import com.opl.mudra.api.user.model.UserResponse;
+import com.opl.mudra.api.utils.scoring.MCLRReqRes;
 import com.opl.mudra.client.analyzer.AnalyzerClient;
 import com.opl.mudra.client.cibil.CIBILClient;
 import com.opl.mudra.client.gst.GstClient;
@@ -2393,5 +2394,16 @@ public class ScoringServiceImpl implements ScoringService {
         }
 	
 	}
+
+	@Override
+	public com.opl.mudra.api.loans.model.score.ScoringResponse getMCLRHistoryDetail(MCLRReqRes mclrReqRes) {
+		try {
+            return scoringClient.getMCLRHistory(mclrReqRes);
+        } catch (Exception e) {
+            logger.error("error while getting MCLR history detail : ", e);
+            return new com.opl.mudra.api.loans.model.score.ScoringResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+        }
+	}
+
 	
 }

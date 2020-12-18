@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.opl.mudra.api.loans.exception.LoansException;
 import com.opl.mudra.api.loans.model.LoansResponse;
 import com.opl.mudra.api.loans.model.score.ScoringRequestLoans;
@@ -31,7 +30,10 @@ import com.opl.mudra.api.loans.utils.CommonUtils;
 import com.opl.mudra.api.rating.exception.RatingException;
 import com.opl.mudra.api.scoring.model.GenericCheckerReqRes;
 import com.opl.mudra.api.scoring.model.scoringmodel.ScoringModelReqRes;
+import com.opl.mudra.api.utils.scoring.MCLRReqRes;
 import com.opl.service.loans.service.scoring.ScoringService;
+import com.opl.mudra.api.loans.model.score.ScoringResponse;
+
 
 @RestController
 @RequestMapping("/score")
@@ -301,6 +303,18 @@ public class ScoringController {
             ScoringModelReqRes res=new ScoringModelReqRes(com.opl.mudra.api.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
             logger.error("Error while inactivateScoringDetails : ",e);
             return new ResponseEntity<ScoringModelReqRes>(res,HttpStatus.OK);
+        }
+    }
+    
+    @RequestMapping(value = "/get_mclr_history", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ScoringResponse> getMclrHistory(@RequestBody MCLRReqRes mclrReqRes, HttpServletRequest request) {
+        try {
+            ScoringResponse scoringResponse = scoringService.getMCLRHistoryDetail(mclrReqRes);
+            return new ResponseEntity<ScoringResponse>(scoringResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            ScoringResponse res = new ScoringResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
+            logger.error("Error while getting mclr history", e);
+            return new ResponseEntity<ScoringResponse>(res, HttpStatus.OK);
         }
     }
     
