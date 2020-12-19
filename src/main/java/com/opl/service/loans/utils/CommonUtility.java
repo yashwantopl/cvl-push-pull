@@ -1,6 +1,9 @@
 package com.opl.service.loans.utils;
 
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collections;
+import java.util.List;
 
 import com.opl.mudra.api.cibil.utils.CibilUtils;
 
@@ -122,5 +125,19 @@ public class CommonUtility {
 			case 4 : return "Equal to";
 			default: return "No Condition";
 		}
+	}
+
+	public static Integer findMax(List<Integer> list) {
+		// check list is empty or not
+		if (list == null || list.size() == 0) {
+			return Integer.MIN_VALUE;
+		}
+		// create a new list to avoid modification
+		// in the original list
+		List<Integer> sortedlist = new ArrayList<>(list);
+		// sort list in natural order
+		Collections.sort(sortedlist);
+		// last element in the sorted list would be maximum
+		return sortedlist.get(sortedlist.size() - 1);
 	}
 }

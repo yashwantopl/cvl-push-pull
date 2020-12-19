@@ -19,6 +19,11 @@ import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
+import com.opl.service.loans.domain.VehicleOperatorDetail;
+import com.opl.service.loans.repository.CurrentOperatedVehicleDetailRepository;
+import com.opl.service.loans.repository.PastVehicleLoanDetailRepository;
+import com.opl.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
+import com.opl.service.loans.utils.CommonUtility;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -171,7 +176,9 @@ public class ScoringServiceImpl implements ScoringService {
     @Autowired
     private FinancialArrangementDetailsRepository financialArrangementDetailsRepository;
 
-    
+	@Autowired
+	private FinancialArrangementDetailsService financialArrangementDetailsService;
+
     @Autowired
     private ITRClient itrClient;
 
@@ -196,6 +203,15 @@ public class ScoringServiceImpl implements ScoringService {
     @Autowired
     private FSParameterMappingService fsParameterMappingService;
     
+    @Autowired
+    private VehicleOperatorDetail vehicleOperatorDetail;
+
+    @Autowired
+    private CurrentOperatedVehicleDetailRepository currentOperatedVehicleDetailRepository;
+
+    @Autowired
+    private PastVehicleLoanDetailRepository pastVehicleLoanDetailRepository;
+
     @Autowired
     private PrimaryCorporateDetailMudraLoanRepository primaryCorporateDetailMudraLoanRepository;
     
@@ -1532,7 +1548,193 @@ public class ScoringServiceImpl implements ScoringService {
                             	}
                                  break;
                              }
-                            
+                             // new parameter for CVL Mudra loan
+							case ScoreParameter.EXPERIENCE_IN_THE_BUSINESS: {
+								Double directorExperience = directorBackgroundDetailsRepository.getMaxOfDirectorsExperience(applicationId);
+
+								if (!CommonUtils.isObjectNullOrEmpty(directorExperience)) {
+									scoringParameterRequest.setExperienceInTheBusiness(directorExperience);
+									scoringParameterRequest.setExperienceInTheBusiness_p(true);
+								} else {
+									scoringParameterRequest.setExperienceInTheBusiness_p(false);
+								}
+
+								break;
+							}
+							case ScoreParameter.COLLATERAL_COVERAGE: {
+
+								try {
+
+									if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCollateralSecurityAmount()))
+										scoringParameterRequest.setAmountOfCollateral(primaryCorporateDetail.getCollateralSecurityAmount());
+									else
+										scoringParameterRequest.setAmountOfCollateral(0.0);
+
+
+									scoringParameterRequest.setCollateralCoverage_p(true);
+
+								} catch (Exception e) {
+									logger.error("error while getting COLLATERAL_COVERAGE parameter : ",e);
+									scoringParameterRequest.setCollateralCoverage_p(false);
+								}
+								break;
+							}
+							case ScoreParameter.DEBT_SERVICE_COVERAGE_RATIO: {
+
+								try {
+
+									scoringParameterRequest.setEbitdaFY(operatingStatementDetailsFY.getOpProfitBeforeIntrest() + operatingStatementDetailsFY.getDepreciation());
+									scoringParameterRequest.setEbitdaSY(operatingStatementDetailsSY.getOpProfitBeforeIntrest() + operatingStatementDetailsSY.getDepreciation());
+									scoringParameterRequest.setEbitdaTY(operatingStatementDetailsTY.getOpProfitBeforeIntrest() + operatingStatementDetailsTY.getDepreciation());
+
+									Double totalExistingLoanObligation=0.0;
+
+									Double individualLoanObligation = financialArrangementDetailsRepository.getTotalEmiByApplicationId(applicationId);
+									Double commercialLoanObligation = financialArrangementDetailsService.getTotalEmiOfAllDirByApplicationId(applicationId);
+									if(isCibilCheck && !isBureauExistingLoansDisplayActive) {
+										ScoringCibilRequest scoringCibilRequest = filterScore(scoringRequest.getMap(), null, modelParameterResponse.getFieldMasterId());
+										if(!CommonUtils.isObjectNullOrEmpty(scoringCibilRequest)) {
+											if(!CommonUtils.isObjectNullOrEmpty(scoringCibilRequest.getTotalEmiOfCompany())) {
+												if(!CommonUtils.isObjectNullOrEmpty(individualLoanObligation)) {
+													individualLoanObligation = individualLoanObligation + scoringCibilRequest.getTotalEmiOfCompany();
+												}else {
+													individualLoanObligation = scoringCibilRequest.getTotalEmiOfCompany();
+												}
+											}if(!CommonUtils.isObjectNullOrEmpty(scoringCibilRequest.getTotalEmiOfDirector())) {
+												if(!CommonUtils.isObjectNullOrEmpty(commercialLoanObligation)) {
+													commercialLoanObligation = commercialLoanObligation + scoringCibilRequest.getTotalEmiOfDirector();
+												}else {
+													commercialLoanObligation = scoringCibilRequest.getTotalEmiOfDirector();
+												}
+
+											}
+										}
+									}
+									if(!CommonUtils.isObjectNullOrEmpty(individualLoanObligation)){
+										totalExistingLoanObligation+=(individualLoanObligation*12);
+									}
+
+									if(!CommonUtils.isObjectNullOrEmpty(commercialLoanObligation)) {
+										totalExistingLoanObligation+=(commercialLoanObligation*12);
+									}
+									logger.info("totalExistingLoanObligation For DEBT_SERVICE_COVERAGE_RATIO ApplicationId ==>{}",applicationId,totalExistingLoanObligation);
+
+									scoringParameterRequest.setExistingLoanObligation(totalExistingLoanObligation);
+
+									if(primaryCorporateDetail.getPurposeOfLoanId() == 1) {
+										scoringParameterRequest.setLoanType(2);
+									}else {
+										scoringParameterRequest.setLoanType(1);
+									}
+
+
+									scoringParameterRequest.setDebtServiceCoverageRatio_p(true);
+
+								} catch (Exception e) {
+									logger.error("error while getting DEBT_SERVICE_COVERAGE_RATIO parameter : ",e);
+									scoringParameterRequest.setDebtServiceCoverageRatio_p(false);
+								}
+								break;
+							}
+							case ScoreParameter.FLEET_STRENGTH_OWNED_BY_FLEET_OPERATOR:{//Business Risk
+								try {
+									if (!CommonUtils.isObjectNullOrEmpty(vehicleOperatorDetail.getIsCurrentlyVehicleOperated()) && vehicleOperatorDetail.getIsCurrentlyVehicleOperated()) {
+										scoringParameterRequest.setNoOfVehicles(currentOperatedVehicleDetailRepository.findByApplicationIdAndIsActive(applicationId,true).size());
+										scoringParameterRequest.setFleetStrengthOwnedbyFleetOperator_p(true);
+									}else {
+										scoringParameterRequest.setNoOfVehicles(0);
+										scoringParameterRequest.setFleetStrengthOwnedbyFleetOperator_p(false);
+									}
+
+								} catch (Exception e) {
+									logger.error("error while getting FLEET_STRENGTH_OWNED_BY_FLEET_OPERATOR parameter : ",e);
+									scoringParameterRequest.setFleetStrengthOwnedbyFleetOperator_p(false);
+								}
+								break;
+
+							}
+							case ScoreParameter.LOAN_FREE_VEHICLE:{//Business Risk
+								try {
+									if (!CommonUtils.isObjectNullOrEmpty(vehicleOperatorDetail.getIsCurrentlyVehicleOperated()) &&
+											vehicleOperatorDetail.getIsCurrentlyVehicleOperated() &&
+											!CommonUtils.isObjectNullOrEmpty(vehicleOperatorDetail.getIsAnyVehicleLoan()) && vehicleOperatorDetail.getIsAnyVehicleLoan()) {
+										Double totalSanction=pastVehicleLoanDetailRepository.getTotalSanctionAmount(applicationId,true);
+										scoringParameterRequest.setTotalCostOfProposedVehicleVal(vehicleOperatorDetail.getTotalCostOfProposedVehicle()!=null?vehicleOperatorDetail.getTotalCostOfProposedVehicle():0.0);
+										scoringParameterRequest.setTotalSanctionVal(totalSanction!=null?totalSanction:0.0);
+										//Double result1=vehicleOperatorDetail.getTotalCostOfProposedVehicle()/totalSanction;
+										//scoringParameterRequest.setLoanFreeVehicleVal(result1);
+										scoringParameterRequest.setLoanFreeVehicle_p(true);
+										if ((CommonUtils.isObjectNullOrEmpty(totalSanction) || totalSanction <= 0.0)
+												&& (CommonUtils.isObjectNullOrEmpty(scoringParameterRequest.getTotalCostOfProposedVehicleVal()) || scoringParameterRequest.getTotalCostOfProposedVehicleVal() <= 0.0)) {
+											scoringParameterRequest.setLoanFreeVehicle_p(false);
+										}
+									}else {
+										scoringParameterRequest.setLoanFreeVehicle_p(false);
+									}
+
+								} catch (Exception e) {
+									logger.error("error while getting LOAN_FREE_VEHICLE parameter : ",e);
+									scoringParameterRequest.setLoanFreeVehicle_p(false);
+								}
+								break;
+
+							}
+							case ScoreParameter.ASSURED_ORDER:{//Business Risk
+								Boolean isanyHandOrder = vehicleOperatorDetail.getIsAnyOnHandOrder();
+								logger.info("ENTER HERE (ASSURED_ORDER)::::::::::{ASSURED_ORDER}======{}===>>>",isanyHandOrder);
+								if(!CommonUtils.isObjectNullOrEmpty(isanyHandOrder)){
+									scoringParameterRequest.setAssuredOrderVal(isanyHandOrder!=null?isanyHandOrder:false);
+									scoringParameterRequest.setAssuredOrder_p(true);
+								}else{
+									scoringParameterRequest.setAssuredOrder_p(false);
+								}
+								break;
+							}
+							case ScoreParameter.DEPOSIT_POSITION_POTENTIAL:{//Business Risk
+								logger.info("DEPOSIT_POSITION_POTENTIAL::::::::::");
+								try{
+									Double totalDebit = 0.0d;
+									List<Integer> list = new ArrayList<>();
+									//DEPOSIT_POSITION_POTENTIAL
+									ReportRequest reportRequest = new ReportRequest();
+									reportRequest.setBsMasterId(bsId);
+									AnalyzerResponse analyzerResponse1 = analyzerClient.getDetailsFromReportForCam(reportRequest);
+									if(!CommonUtils.isObjectNullOrEmpty(analyzerResponse1) && !CommonUtils.isObjectNullOrEmpty(analyzerResponse1.getData())){
+										for(Object object : (List)analyzerResponse1.getData()) {
+											try {
+												Data dataBs = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) object, Data.class);
+												// Total Debits //
+												totalDebit=totalDebit+Double.valueOf(dataBs.getSummaryInfo().getSummaryInfoTotalDetails().getTotalDebit());
+												list.add(dataBs.getMonthlyDetailList().getMonthlyDetails().size());
+												scoringParameterRequest.setDepositPositionPotential_p(true);
+											}catch(Exception e) {
+												logger.error("EXCEPTION IS GETTING WHILE CALCULATE DEPOSIT_POSITION_POTENTIAL/ ISSUE LOGIC=====>{}====>{}",totalDebit,list,e);
+												scoringParameterRequest.setDepositPositionPotential_p(false);
+											}
+										}
+										scoringParameterRequest.setTotalDebit(totalDebit);
+										scoringParameterRequest.setFullMonthCount(CommonUtility.findMax(list));
+									}else {
+										scoringParameterRequest.setDepositPositionPotential_p(false);
+									}
+
+								}catch (Exception e){
+									logger.error("error while getting DEPOSIT_POSITION_POTENTIAL parameter : ",e);
+									scoringParameterRequest.setDepositPositionPotential_p(false);
+								}
+							}
+							case ScoreParameter.OPERATION_SUPPORTED_BY_FAMILY_MEMBERS_DIRECTLY:{//Business Risk
+								Boolean isFamilyMemInvolved = vehicleOperatorDetail.getIsFamilyMemberInvolved();
+								logger.info("ENTER HERE (OPERATION_SUPPORTED_BY_FAMILY_MEMBERS_DIRECTLY)::::::::::{OPERATION_SUPPORTED_BY_FAMILY_MEMBERS_DIRECTLY}======{}===>>>",isFamilyMemInvolved);
+								if(!CommonUtils.isObjectNullOrEmpty(isFamilyMemInvolved)){
+									scoringParameterRequest.setFamilyMembersDirectlyVal(isFamilyMemInvolved!=null?isFamilyMemInvolved:false);
+									scoringParameterRequest.setFamilyMembersDirectlyVal_p(true);
+								}else{
+									scoringParameterRequest.setFamilyMembersDirectlyVal_p(false);
+								}
+								break;
+							}
+
                             default:
                             	break;
                         }
