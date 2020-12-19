@@ -12,9 +12,13 @@ import org.springframework.web.multipart.MultipartFile;
 import com.opl.mudra.api.loans.exception.LoansException;
 import com.opl.mudra.api.loans.model.LoansResponse;
 import com.opl.mudra.api.loans.model.score.ScoringRequestLoans;
+import com.opl.mudra.api.loans.model.score.ScoringResponse;
 import com.opl.mudra.api.scoring.exception.ScoringException;
 import com.opl.mudra.api.scoring.model.GenericCheckerReqRes;
 import com.opl.mudra.api.scoring.model.scoringmodel.ScoringModelReqRes;
+import com.opl.mudra.api.utils.scoring.FuelPriceReqRes;
+import com.opl.mudra.api.utils.scoring.MCLRReqRes;
+import com.opl.mudra.api.utils.scoring.REPOReqRes;
 
 public interface ScoringService {
 
@@ -52,5 +56,38 @@ public interface ScoringService {
     public ScoringModelReqRes inactivateScoringDetails(ScoringModelReqRes scoringModelReqRes);
 
 	public ScoringModelReqRes getScoringHistoryDetails(ScoringModelReqRes scoringModelReqRes);
+
+	public ScoringResponse getMCLRHistoryDetail(MCLRReqRes mclrReqRes);
+
+	public ScoringResponse getLatestMCLRDetails(MCLRReqRes mclrReqRes);
+
+	public ScoringResponse createJob(MCLRReqRes mclrReqRes);
+
+	public ScoringResponse saveMCLRDetails(MCLRReqRes mclrReqRes);
+
+	public ScoringResponse saveREPODetails(REPOReqRes repoReqRes);
+
+	public ScoringResponse getMCLRForChecker(MCLRReqRes mclrReqRes);
+
+	public ScoringResponse getREPOForChecker(REPOReqRes repoReqRes);
+
+	public ScoringResponse getEffectiveMCLRDetails(MCLRReqRes mclrReqRes);
+
+	public ScoringResponse getLatestFuelPriceDetails(FuelPriceReqRes fuelPriceReqRes);
+
+	public List<GenericCheckerReqRes> sendToCheckerFuelDetails(List<GenericCheckerReqRes> genericCheckerReqResList,
+			Long userId) throws ScoringException;
+
+	public ScoringResponse getFuelPriceHistory(FuelPriceReqRes fuelReqRes);
+
+	public ScoringResponse createJobFuel(FuelPriceReqRes fuelReqRes);
+
+	public ScoringResponse saveFuelDetails(FuelPriceReqRes fuelReqRes);
+
+	public ScoringResponse getFuelForChecker(FuelPriceReqRes fuelReqRes);
+
+	public ScoringResponse getREPOHistoryDetail(REPOReqRes repoReqRes);
+
+	public ScoringResponse createJobForREPO(REPOReqRes repoReqRes);
 
 }
