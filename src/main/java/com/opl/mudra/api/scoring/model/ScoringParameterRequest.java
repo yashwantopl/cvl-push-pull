@@ -525,7 +525,30 @@ public class ScoringParameterRequest {
     private Double promotersComtributionML;
     
     private Boolean promotersComtributionML_p = false;
-    
+
+    private Double experienceInBusinessVal;
+
+    private Boolean experienceInBusiness_p = false;
+
+    private Boolean fleetStrengthOwnedbyFleetOperator_p = false;
+    private Integer noOfVehicles;
+    private Boolean assuredOrder_p = false;
+    private Boolean assuredOrderVal = false;
+    private Boolean familyMembersDirectlyVal_p = false;
+    private Boolean familyMembersDirectlyVal = false;
+    private Boolean loanFreeVehicle_p = false;
+    private Double totalCostOfProposedVehicleVal;
+    private Double totalSanctionVal;
+    private Boolean depositPositionPotential_p = false;
+    private Double totalDebit;
+    private Integer fullMonthCount;
+    private Integer profitabilityHistoryVal;
+    private Boolean profitabilityHistory_p = false;
+    private Double collateralSecurityVal;
+    private Boolean collateralSecurity_p = false;
+    private Double conservativeDebtServiceCoverageVal;
+    private Boolean conservativeDebtServiceCoverage_p = false;
+
     
     public Boolean getTypeOfActivity_p() {
 		return typeOfActivity_p;
@@ -2674,119 +2697,450 @@ public class ScoringParameterRequest {
 		this.bankRelationCombined_p = bankRelationCombined_p;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return "ScoringParameterRequest [combinedNetworth_p=" + combinedNetworth_p + ", customerAsscociateConcern_p="
-				+ customerAsscociateConcern_p + ", cibilTransunionScore_p=" + cibilTransunionScore_p
-				+ ", debtEquityRatio_p=" + debtEquityRatio_p + ", tolTnw_p=" + tolTnw_p + ", avgCurrentRatio_p="
-				+ avgCurrentRatio_p + ", workingCapitalCycle_p=" + workingCapitalCycle_p
-				+ ", avgAnnualGrowthGrossCash_p=" + avgAnnualGrowthGrossCash_p + ", avgAnnualGrowthNetSale_p="
-				+ avgAnnualGrowthNetSale_p + ", avgEBIDTA_p=" + avgEBIDTA_p + ", avgAnnualGrossCashAccuruals_p="
-				+ avgAnnualGrossCashAccuruals_p + ", avgInterestCovRatio_p=" + avgInterestCovRatio_p
-				+ ", noOfCustomer_p=" + noOfCustomer_p + ", concentrationCustomer_p=" + concentrationCustomer_p
-				+ ", experienceInTheBusiness_p=" + experienceInTheBusiness_p + ", creditSummation_p="
-				+ creditSummation_p + ", age_p=" + age_p + ", noOfChildren_p=" + noOfChildren_p + ", owningHouse_p="
-				+ owningHouse_p + ", acadamicQualification_p=" + acadamicQualification_p + ", expLineOfTrade_p="
-				+ expLineOfTrade_p + ", spouseDetails_p=" + spouseDetails_p + ", assessedForIncomeTax_p="
-				+ assessedForIncomeTax_p + ", haveLifeIncPolicy_p=" + haveLifeIncPolicy_p + ", yearsInBusiness_p="
-				+ yearsInBusiness_p + ", repaymentPeriod_p=" + repaymentPeriod_p + ", continousNetProfit_p="
-				+ continousNetProfit_p + ", qualityOfReceivable_p=" + qualityOfReceivable_p
-				+ ", qualityOfFinishedGood_p=" + qualityOfFinishedGood_p + ", knowHow_p=" + knowHow_p
-				+ ", lineOfActivity_p=" + lineOfActivity_p + ", competition_p=" + competition_p + ", factoryPremises_p="
-				+ factoryPremises_p + ", salesShowArisingTrend_p=" + salesShowArisingTrend_p
-				+ ", utilisationPercentage_p=" + utilisationPercentage_p + ", turnOverToLimitRatio_p="
-				+ turnOverToLimitRatio_p + ", collateralCoverage_p=" + collateralCoverage_p
-				+ ", debtServiceCoverageRatio_p=" + debtServiceCoverageRatio_p + ", pastYearTurnover_p="
-				+ pastYearTurnover_p + ", debtEBITDA_p=" + debtEBITDA_p + ", turnoverATNW_p=" + turnoverATNW_p
-				+ ", chequesBouncedLastMonth_p=" + chequesBouncedLastMonth_p + ", chequesBouncedLastSixMonth_p="
-				+ chequesBouncedLastSixMonth_p + ", patNetSalesRatio_p=" + patNetSalesRatio_p
-				+ ", statutoryCompliance_p=" + statutoryCompliance_p + ", paymentRecordsWithLenders_p="
-				+ paymentRecordsWithLenders_p + ", cmrScoreMsmeRanking_p=" + cmrScoreMsmeRanking_p
-				+ ", cmrScoreMsmeRanking=" + cmrScoreMsmeRanking + ", isoCertification_p=" + isoCertification_p
-				+ ", isoCertificationVal=" + isoCertificationVal + ", totalNoOfChequeBounceLastSixMonths_p="
-				+ totalNoOfChequeBounceLastSixMonths_p + ", totalNoOfChequeBounceLastSixMonths="
-				+ totalNoOfChequeBounceLastSixMonths + ", otherRevenueIncomeFY=" + otherRevenueIncomeFY
-				+ ", otherRevenueIncomeSY=" + otherRevenueIncomeSY + ", otherRevenueIncomeTY=" + otherRevenueIncomeTY
-				+ ", statutoryComplianceType=" + statutoryComplianceType + ", dpd=" + dpd + ", ityYearType="
-				+ ityYearType + ", assertClassification=" + assertClassification + ", networthSum=" + networthSum
-				+ ", termLoanFy=" + termLoanFy + ", termLoanSy=" + termLoanSy + ", termLoanTy=" + termLoanTy
-				+ ", loanAmount=" + loanAmount + ", customerAssociateConcern=" + customerAssociateConcern
-				+ ", cibilTransuniunScore=" + cibilTransuniunScore + ", DebtFY=" + DebtFY + ", DebtSY=" + DebtSY
-				+ ", DebtTY=" + DebtTY + ", equityFY=" + equityFY + ", equitySY=" + equitySY + ", equityTY=" + equityTY
-				+ ", tolFY=" + tolFY + ", tolSY=" + tolSY + ", tolTY=" + tolTY + ", tnwFY=" + tnwFY + ", tnwSY=" + tnwSY
-				+ ", tnwTY=" + tnwTY + ", avgCurrentRatioFY=" + avgCurrentRatioFY + ", avgCurrentRatioSY="
-				+ avgCurrentRatioSY + ", avgCurrentRatioTY=" + avgCurrentRatioTY + ", debtorsDaysFY=" + debtorsDaysFY
-				+ ", debtorsDaysSY=" + debtorsDaysSY + ", debtorsDaysTY=" + debtorsDaysTY + ", avgInventoryFY="
-				+ avgInventoryFY + ", avgInventorySY=" + avgInventorySY + ", avgInventoryTY=" + avgInventoryTY
-				+ ", cogsFY=" + cogsFY + ", cogsSY=" + cogsSY + ", cogsTY=" + cogsTY + ", creditorsDaysFY="
-				+ creditorsDaysFY + ", creditorsDaysSY=" + creditorsDaysSY + ", creditorsDaysTY=" + creditorsDaysTY
-				+ ", netProfitOrLossFY=" + netProfitOrLossFY + ", netProfitOrLossSY=" + netProfitOrLossSY
-				+ ", netProfitOrLossTY=" + netProfitOrLossTY + ", depriciationFy=" + depriciationFy
-				+ ", depriciationSy=" + depriciationSy + ", depriciationTy=" + depriciationTy + ", interestFy="
-				+ interestFy + ", interestSy=" + interestSy + ", interestTy=" + interestTy + ", totalSaleFy="
-				+ totalSaleFy + ", totalSaleSy=" + totalSaleSy + ", totalSaleTy=" + totalSaleTy
-				+ ", profitBeforeTaxOrLossFy=" + profitBeforeTaxOrLossFy + ", profitBeforeTaxOrLossSy="
-				+ profitBeforeTaxOrLossSy + ", profitBeforeTaxOrLossTy=" + profitBeforeTaxOrLossTy + ", totalAssetFy="
-				+ totalAssetFy + ", totalAssetSy=" + totalAssetSy + ", totalAssetTy=" + totalAssetTy
-				+ ", opProfitBeforeInterestFy=" + opProfitBeforeInterestFy + ", opProfitBeforeInterestSy="
-				+ opProfitBeforeInterestSy + ", opProfitBeforeInterestTy=" + opProfitBeforeInterestTy
-				+ ", noOfCustomenr=" + noOfCustomenr + ", concentrationCustomer=" + concentrationCustomer
-				+ ", experienceInTheBusiness=" + experienceInTheBusiness + ", totalCredit=" + totalCredit
-				+ ", projectedSale=" + projectedSale + ", age=" + age + ", noOfChildren=" + noOfChildren
-				+ ", owningHouse=" + owningHouse + ", acadamicQualification=" + acadamicQualification
-				+ ", experienceInLineOfBusiness=" + experienceInLineOfBusiness + ", spouceDetails=" + spouceDetails
-				+ ", assessedFOrIT=" + assessedFOrIT + ", haveLIPolicy=" + haveLIPolicy + ", repaymentPeriod="
-				+ repaymentPeriod + ", knowHow=" + knowHow + ", lineOfActivity=" + lineOfActivity + ", competition="
-				+ competition + ", factoryPremises=" + factoryPremises + ", grossSaleTy=" + grossSaleTy
-				+ ", totalCostSaleTy=" + totalCostSaleTy + ", finishedGoodTy=" + finishedGoodTy
-				+ ", gstSaleCurrentYear=" + gstSaleCurrentYear + ", netSaleFy=" + netSaleFy + ", netSaleSy=" + netSaleSy
-				+ ", netSaleTy=" + netSaleTy + ", yearsInBusiness=" + yearsInBusiness + ", continuousNetProfitOrLossFY="
-				+ continuousNetProfitOrLossFY + ", continuousNetProfitOrLossSY=" + continuousNetProfitOrLossSY
-				+ ", continuousNetProfitOrLossTY=" + continuousNetProfitOrLossTY + ", noOfMonths=" + noOfMonths
-				+ ", averageDailyBalance=" + averageDailyBalance + ", limitsInAccount=" + limitsInAccount
-				+ ", turnOver=" + turnOver + ", eligibleLoanAmountCircular=" + eligibleLoanAmountCircular
-				+ ", amountOfCollateral=" + amountOfCollateral + ", ebitdaFY=" + ebitdaFY + ", ebitdaSY=" + ebitdaSY
-				+ ", ebitdaTY=" + ebitdaTY + ", existingLoanObligation=" + existingLoanObligation + ", loanType="
-				+ loanType + ", roi=" + roi + ", tenure=" + tenure + ", pastYearTurnover=" + pastYearTurnover
-				+ ", exportSalesFY=" + exportSalesFY + ", exportSalesSY=" + exportSalesSY + ", exportSalesTY="
-				+ exportSalesTY + ", domesticSalesFY=" + domesticSalesFY + ", domesticSalesSY=" + domesticSalesSY
-				+ ", domesticSalesTY=" + domesticSalesTY + ", totalTermLiabilitiesFY=" + totalTermLiabilitiesFY
-				+ ", totalTermLiabilitiesSY=" + totalTermLiabilitiesSY + ", totalTermLiabilitiesTY="
-				+ totalTermLiabilitiesTY + ", preferenceSharesFY=" + preferenceSharesFY + ", preferenceSharesSY="
-				+ preferenceSharesSY + ", preferenceSharesTY=" + preferenceSharesTY + ", unsecuredLoansFromOthersFY="
-				+ unsecuredLoansFromOthersFY + ", unsecuredLoansFromOthersSY=" + unsecuredLoansFromOthersSY
-				+ ", unsecuredLoansFromOthersTY=" + unsecuredLoansFromOthersTY + ", othersFY=" + othersFY
-				+ ", othersSY=" + othersSY + ", othersTY=" + othersTY + ", minorityInterestFY=" + minorityInterestFY
-				+ ", minorityInterestSY=" + minorityInterestSY + ", minorityInterestTY=" + minorityInterestTY
-				+ ", deferredTaxLiabilityFY=" + deferredTaxLiabilityFY + ", deferredTaxLiabilitySY="
-				+ deferredTaxLiabilitySY + ", deferredTaxLiabilityTY=" + deferredTaxLiabilityTY
-				+ ", deferredTaxAssetsFY=" + deferredTaxAssetsFY + ", deferredTaxAssetsSY=" + deferredTaxAssetsSY
-				+ ", deferredTaxAssetsTY=" + deferredTaxAssetsTY + ", profitBeforeInterestFY=" + profitBeforeInterestFY
-				+ ", profitBeforeInterestSY=" + profitBeforeInterestSY + ", profitBeforeInterestTY="
-				+ profitBeforeInterestTY + ", depreciationFY=" + depreciationFY + ", depreciationSY=" + depreciationSY
-				+ ", depreciationTY=" + depreciationTY + ", liabilitiesOrdinaryShareCapitalFY="
-				+ liabilitiesOrdinaryShareCapitalFY + ", liabilitiesOrdinaryShareCapitalSY="
-				+ liabilitiesOrdinaryShareCapitalSY + ", liabilitiesOrdinaryShareCapitalTY="
-				+ liabilitiesOrdinaryShareCapitalTY + ", liabilitiesGeneralReserveFY=" + liabilitiesGeneralReserveFY
-				+ ", liabilitiesGeneralReserveSY=" + liabilitiesGeneralReserveSY + ", liabilitiesGeneralReserveTY="
-				+ liabilitiesGeneralReserveTY + ", liabilitiesSurplus=" + liabilitiesSurplus
-				+ ", deficitInProfitANDLossAccountFY=" + deficitInProfitANDLossAccountFY
-				+ ", deficitInProfitANDLossAccountSY=" + deficitInProfitANDLossAccountSY
-				+ ", deficitInProfitANDLossAccountTY=" + deficitInProfitANDLossAccountTY
-				+ ", liabilitiesUnsecuredLoansFromPpromotersFY=" + liabilitiesUnsecuredLoansFromPpromotersFY
-				+ ", liabilitiesUnsecuredLoansFromPpromotersSY=" + liabilitiesUnsecuredLoansFromPpromotersSY
-				+ ", liabilitiesUnsecuredLoansFromPpromotersTY=" + liabilitiesUnsecuredLoansFromPpromotersTY
-				+ ", liabilitiesUnsecuredLoansFromOthersFY=" + liabilitiesUnsecuredLoansFromOthersFY
-				+ ", liabilitiesUnsecuredLoansFromOthersSY=" + liabilitiesUnsecuredLoansFromOthersSY
-				+ ", liabilitiesUnsecuredLoansFromOthersTY=" + liabilitiesUnsecuredLoansFromOthersTY
-				+ ", assetsInvestmentsInSubsidiaryCosaffiliatesFY=" + assetsInvestmentsInSubsidiaryCosaffiliatesFY
-				+ ", assetsInvestmentsInSubsidiaryCosaffiliatesSY=" + assetsInvestmentsInSubsidiaryCosaffiliatesSY
-				+ ", assetsInvestmentsInSubsidiaryCosaffiliatesTY=" + assetsInvestmentsInSubsidiaryCosaffiliatesTY
-				+ ", noOfChequesBouncedLastMonth=" + noOfChequesBouncedLastMonth + ", noOfChequesBouncedLastSixMonth="
-				+ noOfChequesBouncedLastSixMonth + ", totalNoOfInwardChequeBouncesLatSixMonths="
-				+ totalNoOfInwardChequeBouncesLatSixMonths + "]";
-	}
+    public Double getExperienceInBusinessVal() {
+        return experienceInBusinessVal;
+    }
+
+    public void setExperienceInBusinessVal(Double experienceInBusinessVal) {
+        this.experienceInBusinessVal = experienceInBusinessVal;
+    }
+
+    public Boolean getExperienceInBusiness_p() {
+        return experienceInBusiness_p;
+    }
+
+    public void setExperienceInBusiness_p(Boolean experienceInBusiness_p) {
+        this.experienceInBusiness_p = experienceInBusiness_p;
+    }
+
+    public Boolean getFleetStrengthOwnedbyFleetOperator_p() {
+        return fleetStrengthOwnedbyFleetOperator_p;
+    }
+
+    public void setFleetStrengthOwnedbyFleetOperator_p(Boolean fleetStrengthOwnedbyFleetOperator_p) {
+        this.fleetStrengthOwnedbyFleetOperator_p = fleetStrengthOwnedbyFleetOperator_p;
+    }
+
+    public Integer getNoOfVehicles() {
+        return noOfVehicles;
+    }
+
+    public void setNoOfVehicles(Integer noOfVehicles) {
+        this.noOfVehicles = noOfVehicles;
+    }
+
+    public Boolean getAssuredOrder_p() {
+        return assuredOrder_p;
+    }
+
+    public void setAssuredOrder_p(Boolean assuredOrder_p) {
+        this.assuredOrder_p = assuredOrder_p;
+    }
+
+    public Boolean getAssuredOrderVal() {
+        return assuredOrderVal;
+    }
+
+    public void setAssuredOrderVal(Boolean assuredOrderVal) {
+        this.assuredOrderVal = assuredOrderVal;
+    }
+
+    public Boolean getFamilyMembersDirectlyVal_p() {
+        return familyMembersDirectlyVal_p;
+    }
+
+    public void setFamilyMembersDirectlyVal_p(Boolean familyMembersDirectlyVal_p) {
+        this.familyMembersDirectlyVal_p = familyMembersDirectlyVal_p;
+    }
+
+    public Boolean getFamilyMembersDirectlyVal() {
+        return familyMembersDirectlyVal;
+    }
+
+    public void setFamilyMembersDirectlyVal(Boolean familyMembersDirectlyVal) {
+        this.familyMembersDirectlyVal = familyMembersDirectlyVal;
+    }
+
+    public Boolean getLoanFreeVehicle_p() {
+        return loanFreeVehicle_p;
+    }
+
+    public void setLoanFreeVehicle_p(Boolean loanFreeVehicle_p) {
+        this.loanFreeVehicle_p = loanFreeVehicle_p;
+    }
+
+    public Double getTotalCostOfProposedVehicleVal() {
+        return totalCostOfProposedVehicleVal;
+    }
+
+    public void setTotalCostOfProposedVehicleVal(Double totalCostOfProposedVehicleVal) {
+        this.totalCostOfProposedVehicleVal = totalCostOfProposedVehicleVal;
+    }
+
+    public Double getTotalSanctionVal() {
+        return totalSanctionVal;
+    }
+
+    public void setTotalSanctionVal(Double totalSanctionVal) {
+        this.totalSanctionVal = totalSanctionVal;
+    }
+
+    public Boolean getDepositPositionPotential_p() {
+        return depositPositionPotential_p;
+    }
+
+    public void setDepositPositionPotential_p(Boolean depositPositionPotential_p) {
+        this.depositPositionPotential_p = depositPositionPotential_p;
+    }
+
+    public Double getTotalDebit() {
+        return totalDebit;
+    }
+
+    public void setTotalDebit(Double totalDebit) {
+        this.totalDebit = totalDebit;
+    }
+
+    public Integer getFullMonthCount() {
+        return fullMonthCount;
+    }
+
+    public void setFullMonthCount(Integer fullMonthCount) {
+        this.fullMonthCount = fullMonthCount;
+    }
+
+    public Integer getProfitabilityHistoryVal() {
+        return profitabilityHistoryVal;
+    }
+
+    public void setProfitabilityHistoryVal(Integer profitabilityHistoryVal) {
+        this.profitabilityHistoryVal = profitabilityHistoryVal;
+    }
+
+    public Boolean getProfitabilityHistory_p() {
+        return profitabilityHistory_p;
+    }
+
+    public void setProfitabilityHistory_p(Boolean profitabilityHistory_p) {
+        this.profitabilityHistory_p = profitabilityHistory_p;
+    }
+
+    public Double getCollateralSecurityVal() {
+        return collateralSecurityVal;
+    }
+
+    public void setCollateralSecurityVal(Double collateralSecurityVal) {
+        this.collateralSecurityVal = collateralSecurityVal;
+    }
+
+    public Boolean getCollateralSecurity_p() {
+        return collateralSecurity_p;
+    }
+
+    public void setCollateralSecurity_p(Boolean collateralSecurity_p) {
+        this.collateralSecurity_p = collateralSecurity_p;
+    }
+
+    public Double getConservativeDebtServiceCoverageVal() {
+        return conservativeDebtServiceCoverageVal;
+    }
+
+    public void setConservativeDebtServiceCoverageVal(Double conservativeDebtServiceCoverageVal) {
+        this.conservativeDebtServiceCoverageVal = conservativeDebtServiceCoverageVal;
+    }
+
+    public Boolean getConservativeDebtServiceCoverage_p() {
+        return conservativeDebtServiceCoverage_p;
+    }
+
+    public void setConservativeDebtServiceCoverage_p(Boolean conservativeDebtServiceCoverage_p) {
+        this.conservativeDebtServiceCoverage_p = conservativeDebtServiceCoverage_p;
+    }
+
+    @Override
+    public String toString() {
+        return "ScoringParameterRequest{" +
+                "combinedNetworth_p=" + combinedNetworth_p +
+                ", customerAsscociateConcern_p=" + customerAsscociateConcern_p +
+                ", cibilTransunionScore_p=" + cibilTransunionScore_p +
+                ", debtEquityRatio_p=" + debtEquityRatio_p +
+                ", tolTnw_p=" + tolTnw_p +
+                ", avgCurrentRatio_p=" + avgCurrentRatio_p +
+                ", workingCapitalCycle_p=" + workingCapitalCycle_p +
+                ", avgAnnualGrowthGrossCash_p=" + avgAnnualGrowthGrossCash_p +
+                ", avgAnnualGrowthNetSale_p=" + avgAnnualGrowthNetSale_p +
+                ", avgEBIDTA_p=" + avgEBIDTA_p +
+                ", avgAnnualGrossCashAccuruals_p=" + avgAnnualGrossCashAccuruals_p +
+                ", avgInterestCovRatio_p=" + avgInterestCovRatio_p +
+                ", noOfCustomer_p=" + noOfCustomer_p +
+                ", concentrationCustomer_p=" + concentrationCustomer_p +
+                ", experienceInTheBusiness_p=" + experienceInTheBusiness_p +
+                ", creditSummation_p=" + creditSummation_p +
+                ", age_p=" + age_p +
+                ", noOfChildren_p=" + noOfChildren_p +
+                ", owningHouse_p=" + owningHouse_p +
+                ", acadamicQualification_p=" + acadamicQualification_p +
+                ", expLineOfTrade_p=" + expLineOfTrade_p +
+                ", spouseDetails_p=" + spouseDetails_p +
+                ", assessedForIncomeTax_p=" + assessedForIncomeTax_p +
+                ", haveLifeIncPolicy_p=" + haveLifeIncPolicy_p +
+                ", yearsInBusiness_p=" + yearsInBusiness_p +
+                ", repaymentPeriod_p=" + repaymentPeriod_p +
+                ", continousNetProfit_p=" + continousNetProfit_p +
+                ", qualityOfReceivable_p=" + qualityOfReceivable_p +
+                ", qualityOfFinishedGood_p=" + qualityOfFinishedGood_p +
+                ", knowHow_p=" + knowHow_p +
+                ", lineOfActivity_p=" + lineOfActivity_p +
+                ", competition_p=" + competition_p +
+                ", factoryPremises_p=" + factoryPremises_p +
+                ", salesShowArisingTrend_p=" + salesShowArisingTrend_p +
+                ", utilisationPercentage_p=" + utilisationPercentage_p +
+                ", turnOverToLimitRatio_p=" + turnOverToLimitRatio_p +
+                ", collateralCoverage_p=" + collateralCoverage_p +
+                ", debtServiceCoverageRatio_p=" + debtServiceCoverageRatio_p +
+                ", pastYearTurnover_p=" + pastYearTurnover_p +
+                ", debtEBITDA_p=" + debtEBITDA_p +
+                ", turnoverATNW_p=" + turnoverATNW_p +
+                ", chequesBouncedLastMonth_p=" + chequesBouncedLastMonth_p +
+                ", chequesBouncedLastSixMonth_p=" + chequesBouncedLastSixMonth_p +
+                ", patNetSalesRatio_p=" + patNetSalesRatio_p +
+                ", statutoryCompliance_p=" + statutoryCompliance_p +
+                ", paymentRecordsWithLenders_p=" + paymentRecordsWithLenders_p +
+                ", cmrScoreMsmeRanking_p=" + cmrScoreMsmeRanking_p +
+                ", cmrScoreMsmeRanking=" + cmrScoreMsmeRanking +
+                ", isoCertification_p=" + isoCertification_p +
+                ", isoCertificationVal=" + isoCertificationVal +
+                ", totalNoOfChequeBounceLastSixMonths_p=" + totalNoOfChequeBounceLastSixMonths_p +
+                ", totalNoOfChequeBounceLastSixMonths=" + totalNoOfChequeBounceLastSixMonths +
+                ", otherRevenueIncomeFY=" + otherRevenueIncomeFY +
+                ", otherRevenueIncomeSY=" + otherRevenueIncomeSY +
+                ", otherRevenueIncomeTY=" + otherRevenueIncomeTY +
+                ", statutoryComplianceType=" + statutoryComplianceType +
+                ", dpd=" + dpd +
+                ", ityYearType=" + ityYearType +
+                ", assertClassification=" + assertClassification +
+                ", networthSum=" + networthSum +
+                ", termLoanFy=" + termLoanFy +
+                ", termLoanSy=" + termLoanSy +
+                ", termLoanTy=" + termLoanTy +
+                ", loanAmount=" + loanAmount +
+                ", customerAssociateConcern=" + customerAssociateConcern +
+                ", cibilTransuniunScore=" + cibilTransuniunScore +
+                ", DebtFY=" + DebtFY +
+                ", DebtSY=" + DebtSY +
+                ", DebtTY=" + DebtTY +
+                ", equityFY=" + equityFY +
+                ", equitySY=" + equitySY +
+                ", equityTY=" + equityTY +
+                ", tolFY=" + tolFY +
+                ", tolSY=" + tolSY +
+                ", tolTY=" + tolTY +
+                ", tnwFY=" + tnwFY +
+                ", tnwSY=" + tnwSY +
+                ", tnwTY=" + tnwTY +
+                ", avgCurrentRatioFY=" + avgCurrentRatioFY +
+                ", avgCurrentRatioSY=" + avgCurrentRatioSY +
+                ", avgCurrentRatioTY=" + avgCurrentRatioTY +
+                ", debtorsDaysFY=" + debtorsDaysFY +
+                ", debtorsDaysSY=" + debtorsDaysSY +
+                ", debtorsDaysTY=" + debtorsDaysTY +
+                ", avgInventoryFY=" + avgInventoryFY +
+                ", avgInventorySY=" + avgInventorySY +
+                ", avgInventoryTY=" + avgInventoryTY +
+                ", cogsFY=" + cogsFY +
+                ", cogsSY=" + cogsSY +
+                ", cogsTY=" + cogsTY +
+                ", creditorsDaysFY=" + creditorsDaysFY +
+                ", creditorsDaysSY=" + creditorsDaysSY +
+                ", creditorsDaysTY=" + creditorsDaysTY +
+                ", netProfitOrLossFY=" + netProfitOrLossFY +
+                ", netProfitOrLossSY=" + netProfitOrLossSY +
+                ", netProfitOrLossTY=" + netProfitOrLossTY +
+                ", depriciationFy=" + depriciationFy +
+                ", depriciationSy=" + depriciationSy +
+                ", depriciationTy=" + depriciationTy +
+                ", interestFy=" + interestFy +
+                ", interestSy=" + interestSy +
+                ", interestTy=" + interestTy +
+                ", totalSaleFy=" + totalSaleFy +
+                ", totalSaleSy=" + totalSaleSy +
+                ", totalSaleTy=" + totalSaleTy +
+                ", profitBeforeTaxOrLossFy=" + profitBeforeTaxOrLossFy +
+                ", profitBeforeTaxOrLossSy=" + profitBeforeTaxOrLossSy +
+                ", profitBeforeTaxOrLossTy=" + profitBeforeTaxOrLossTy +
+                ", totalAssetFy=" + totalAssetFy +
+                ", totalAssetSy=" + totalAssetSy +
+                ", totalAssetTy=" + totalAssetTy +
+                ", opProfitBeforeInterestFy=" + opProfitBeforeInterestFy +
+                ", opProfitBeforeInterestSy=" + opProfitBeforeInterestSy +
+                ", opProfitBeforeInterestTy=" + opProfitBeforeInterestTy +
+                ", noOfCustomenr=" + noOfCustomenr +
+                ", concentrationCustomer=" + concentrationCustomer +
+                ", experienceInTheBusiness=" + experienceInTheBusiness +
+                ", totalCredit=" + totalCredit +
+                ", projectedSale=" + projectedSale +
+                ", creditSummation=" + creditSummation +
+                ", age=" + age +
+                ", noOfChildren=" + noOfChildren +
+                ", owningHouse=" + owningHouse +
+                ", acadamicQualification=" + acadamicQualification +
+                ", experienceInLineOfBusiness=" + experienceInLineOfBusiness +
+                ", spouceDetails=" + spouceDetails +
+                ", assessedFOrIT=" + assessedFOrIT +
+                ", haveLIPolicy=" + haveLIPolicy +
+                ", repaymentPeriod=" + repaymentPeriod +
+                ", knowHow=" + knowHow +
+                ", lineOfActivity=" + lineOfActivity +
+                ", competition=" + competition +
+                ", factoryPremises=" + factoryPremises +
+                ", grossSaleTy=" + grossSaleTy +
+                ", totalCostSaleTy=" + totalCostSaleTy +
+                ", finishedGoodTy=" + finishedGoodTy +
+                ", gstSaleCurrentYear=" + gstSaleCurrentYear +
+                ", netSaleFy=" + netSaleFy +
+                ", netSaleSy=" + netSaleSy +
+                ", netSaleTy=" + netSaleTy +
+                ", yearsInBusiness=" + yearsInBusiness +
+                ", continuousNetProfitOrLossFY=" + continuousNetProfitOrLossFY +
+                ", continuousNetProfitOrLossSY=" + continuousNetProfitOrLossSY +
+                ", continuousNetProfitOrLossTY=" + continuousNetProfitOrLossTY +
+                ", noOfMonths=" + noOfMonths +
+                ", averageDailyBalance=" + averageDailyBalance +
+                ", limitsInAccount=" + limitsInAccount +
+                ", turnOver=" + turnOver +
+                ", eligibleLoanAmountCircular=" + eligibleLoanAmountCircular +
+                ", amountOfCollateral=" + amountOfCollateral +
+                ", ebitdaFY=" + ebitdaFY +
+                ", ebitdaSY=" + ebitdaSY +
+                ", ebitdaTY=" + ebitdaTY +
+                ", existingLoanObligation=" + existingLoanObligation +
+                ", loanType=" + loanType +
+                ", roi=" + roi +
+                ", tenure=" + tenure +
+                ", tenureFs=" + tenureFs +
+                ", tenure_p=" + tenure_p +
+                ", pastYearTurnover=" + pastYearTurnover +
+                ", exportSalesFY=" + exportSalesFY +
+                ", exportSalesSY=" + exportSalesSY +
+                ", exportSalesTY=" + exportSalesTY +
+                ", domesticSalesFY=" + domesticSalesFY +
+                ", domesticSalesSY=" + domesticSalesSY +
+                ", domesticSalesTY=" + domesticSalesTY +
+                ", totalTermLiabilitiesFY=" + totalTermLiabilitiesFY +
+                ", totalTermLiabilitiesSY=" + totalTermLiabilitiesSY +
+                ", totalTermLiabilitiesTY=" + totalTermLiabilitiesTY +
+                ", preferenceSharesFY=" + preferenceSharesFY +
+                ", preferenceSharesSY=" + preferenceSharesSY +
+                ", preferenceSharesTY=" + preferenceSharesTY +
+                ", unsecuredLoansFromOthersFY=" + unsecuredLoansFromOthersFY +
+                ", unsecuredLoansFromOthersSY=" + unsecuredLoansFromOthersSY +
+                ", unsecuredLoansFromOthersTY=" + unsecuredLoansFromOthersTY +
+                ", othersFY=" + othersFY +
+                ", othersSY=" + othersSY +
+                ", othersTY=" + othersTY +
+                ", minorityInterestFY=" + minorityInterestFY +
+                ", minorityInterestSY=" + minorityInterestSY +
+                ", minorityInterestTY=" + minorityInterestTY +
+                ", deferredTaxLiabilityFY=" + deferredTaxLiabilityFY +
+                ", deferredTaxLiabilitySY=" + deferredTaxLiabilitySY +
+                ", deferredTaxLiabilityTY=" + deferredTaxLiabilityTY +
+                ", deferredTaxAssetsFY=" + deferredTaxAssetsFY +
+                ", deferredTaxAssetsSY=" + deferredTaxAssetsSY +
+                ", deferredTaxAssetsTY=" + deferredTaxAssetsTY +
+                ", profitBeforeInterestFY=" + profitBeforeInterestFY +
+                ", profitBeforeInterestSY=" + profitBeforeInterestSY +
+                ", profitBeforeInterestTY=" + profitBeforeInterestTY +
+                ", depreciationFY=" + depreciationFY +
+                ", depreciationSY=" + depreciationSY +
+                ", depreciationTY=" + depreciationTY +
+                ", liabilitiesOrdinaryShareCapitalFY=" + liabilitiesOrdinaryShareCapitalFY +
+                ", liabilitiesOrdinaryShareCapitalSY=" + liabilitiesOrdinaryShareCapitalSY +
+                ", liabilitiesOrdinaryShareCapitalTY=" + liabilitiesOrdinaryShareCapitalTY +
+                ", liabilitiesGeneralReserveFY=" + liabilitiesGeneralReserveFY +
+                ", liabilitiesGeneralReserveSY=" + liabilitiesGeneralReserveSY +
+                ", liabilitiesGeneralReserveTY=" + liabilitiesGeneralReserveTY +
+                ", liabilitiesSurplus=" + liabilitiesSurplus +
+                ", deficitInProfitANDLossAccountFY=" + deficitInProfitANDLossAccountFY +
+                ", deficitInProfitANDLossAccountSY=" + deficitInProfitANDLossAccountSY +
+                ", deficitInProfitANDLossAccountTY=" + deficitInProfitANDLossAccountTY +
+                ", liabilitiesUnsecuredLoansFromPpromotersFY=" + liabilitiesUnsecuredLoansFromPpromotersFY +
+                ", liabilitiesUnsecuredLoansFromPpromotersSY=" + liabilitiesUnsecuredLoansFromPpromotersSY +
+                ", liabilitiesUnsecuredLoansFromPpromotersTY=" + liabilitiesUnsecuredLoansFromPpromotersTY +
+                ", liabilitiesUnsecuredLoansFromOthersFY=" + liabilitiesUnsecuredLoansFromOthersFY +
+                ", liabilitiesUnsecuredLoansFromOthersSY=" + liabilitiesUnsecuredLoansFromOthersSY +
+                ", liabilitiesUnsecuredLoansFromOthersTY=" + liabilitiesUnsecuredLoansFromOthersTY +
+                ", assetsInvestmentsInSubsidiaryCosaffiliatesFY=" + assetsInvestmentsInSubsidiaryCosaffiliatesFY +
+                ", assetsInvestmentsInSubsidiaryCosaffiliatesSY=" + assetsInvestmentsInSubsidiaryCosaffiliatesSY +
+                ", assetsInvestmentsInSubsidiaryCosaffiliatesTY=" + assetsInvestmentsInSubsidiaryCosaffiliatesTY +
+                ", noOfChequesBouncedLastMonth=" + noOfChequesBouncedLastMonth +
+                ", noOfChequesBouncedLastSixMonth=" + noOfChequesBouncedLastSixMonth +
+                ", totalNoOfInwardChequeBouncesLatSixMonths=" + totalNoOfInwardChequeBouncesLatSixMonths +
+                ", idProof_p=" + idProof_p +
+                ", idProof=" + idProof +
+                ", noOfDependents_p=" + noOfDependents_p +
+                ", noOfDependents=" + noOfDependents +
+                ", addressYear=" + addressYear +
+                ", addressYear_p=" + addressYear_p +
+                ", certification_p=" + certification_p +
+                ", certification=" + certification +
+                ", mainDirectorCategory=" + mainDirectorCategory +
+                ", mainDirectorCategory_p=" + mainDirectorCategory_p +
+                ", castCategory=" + castCategory +
+                ", castCategory_p=" + castCategory_p +
+                ", otherSourceOfIncome=" + otherSourceOfIncome +
+                ", otherSourceOfIncome_p=" + otherSourceOfIncome_p +
+                ", parameters=" + parameters +
+                ", parameters_p=" + parameters_p +
+                ", sales_p=" + sales_p +
+                ", sales=" + sales +
+                ", pat_p=" + pat_p +
+                ", pat=" + pat +
+                ", aadhar=" + aadhar +
+                ", aadhar_p=" + aadhar_p +
+                ", marketingArrangmentForFinishedGoods=" + marketingArrangmentForFinishedGoods +
+                ", marketingArrangmentForFinishedGoods_p=" + marketingArrangmentForFinishedGoods_p +
+                ", registrationWithGovernmentAuthorities=" + registrationWithGovernmentAuthorities +
+                ", registrationWithGovernmentAuthoritiesCombined=" + registrationWithGovernmentAuthoritiesCombined +
+                ", registrationWithGovernmentAuthorities_p=" + registrationWithGovernmentAuthorities_p +
+                ", registrationWithGovernmentAuthoritiesCombined_p=" + registrationWithGovernmentAuthoritiesCombined_p +
+                ", businessProspects=" + businessProspects +
+                ", businessProspects_p=" + businessProspects_p +
+                ", accessInputs=" + accessInputs +
+                ", accessInputs_p=" + accessInputs_p +
+                ", itReturnFiledId=" + itReturnFiledId +
+                ", isItReturnFiled_p=" + isItReturnFiled_p +
+                ", bankRelation=" + bankRelation +
+                ", bankRelationCombined=" + bankRelationCombined +
+                ", bankRelation_p=" + bankRelation_p +
+                ", bankRelationCombined_p=" + bankRelationCombined_p +
+                ", typeOfActivity_p=" + typeOfActivity_p +
+                ", typeOfActivity=" + typeOfActivity +
+                ", distanceBtwWorkAndRes=" + distanceBtwWorkAndRes +
+                ", distanceBtwWorkAndRes_p=" + distanceBtwWorkAndRes_p +
+                ", employmentGeneration=" + employmentGeneration +
+                ", employmentGeneration_p=" + employmentGeneration_p +
+                ", promotersComtributionML=" + promotersComtributionML +
+                ", promotersComtributionML_p=" + promotersComtributionML_p +
+                ", experienceInBusinessVal=" + experienceInBusinessVal +
+                ", experienceInBusiness_p=" + experienceInBusiness_p +
+                ", fleetStrengthOwnedbyFleetOperator_p=" + fleetStrengthOwnedbyFleetOperator_p +
+                ", noOfVehicles=" + noOfVehicles +
+                ", assuredOrder_p=" + assuredOrder_p +
+                ", assuredOrderVal=" + assuredOrderVal +
+                ", familyMembersDirectlyVal_p=" + familyMembersDirectlyVal_p +
+                ", familyMembersDirectlyVal=" + familyMembersDirectlyVal +
+                ", loanFreeVehicle_p=" + loanFreeVehicle_p +
+                ", totalCostOfProposedVehicleVal=" + totalCostOfProposedVehicleVal +
+                ", totalSanctionVal=" + totalSanctionVal +
+                ", depositPositionPotential_p=" + depositPositionPotential_p +
+                ", totalDebit=" + totalDebit +
+                ", fullMonthCount=" + fullMonthCount +
+                ", profitabilityHistoryVal=" + profitabilityHistoryVal +
+                ", profitabilityHistory_p=" + profitabilityHistory_p +
+                ", collateralSecurityVal=" + collateralSecurityVal +
+                ", collateralSecurity_p=" + collateralSecurity_p +
+                ", conservativeDebtServiceCoverageVal=" + conservativeDebtServiceCoverageVal +
+                ", conservativeDebtServiceCoverage_p=" + conservativeDebtServiceCoverage_p +
+                '}';
+    }
 }

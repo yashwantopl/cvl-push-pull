@@ -233,6 +233,38 @@ public class ScoreParameterResult {
     private Double payment_records_with_lenders_max_score;
 
 
+    private String experience_in_business_text;
+    private String experience_in_business_code;
+    private Double experience_in_business_score;
+    private Double experience_in_business_max_score;
+
+    private String fleet_strength_ownedby_fleet_operator_text;
+    private String fleet_strength_ownedby_fleet_operator_code;
+    private Double fleet_strength_ownedby_fleet_operator_score;
+    private Double fleet_strength_ownedby_fleet_operator_max_score;
+
+    private String loan_free_vehicle_text;
+    private String loan_free_vehicle_code;
+    private Double loan_free_vehicle_score;
+    private Double loan_free_vehicle_max_score;
+
+    private String assured_order_text;
+    private String assured_order_code;
+    private Double assured_order_obtained_score;
+    private Double assured_order_max_score;
+
+    private String deposit_position_potential_text;
+    private String deposit_position_potential_code;
+    private Double deposit_position_potential_obtained_score;
+    private Double deposit_position_potential_max_score;
+
+    private String operation_supported_by_family_members_directly_text;
+    private String operation_supported_by_family_members_directly_code;
+    private Double operation_supported_by_family_members_directly_obtained_score;
+    private Double operation_supported_by_family_members_directly_max_score;
+
+
+
 
     public String getCombinedNetworth_code() {
         return combinedNetworth_code;
@@ -1808,5 +1840,197 @@ public class ScoreParameterResult {
 
     public void setPayment_records_with_lenders_max_score(Double payment_records_with_lenders_max_score) {
         this.payment_records_with_lenders_max_score = payment_records_with_lenders_max_score;
+    }
+
+    public String getFleet_strength_ownedby_fleet_operator_text() {
+        return fleet_strength_ownedby_fleet_operator_text;
+    }
+
+    public void setFleet_strength_ownedby_fleet_operator_text(String fleet_strength_ownedby_fleet_operator_text) {
+        this.fleet_strength_ownedby_fleet_operator_text = fleet_strength_ownedby_fleet_operator_text;
+    }
+
+    public String getFleet_strength_ownedby_fleet_operator_code() {
+        return fleet_strength_ownedby_fleet_operator_code;
+    }
+
+    public void setFleet_strength_ownedby_fleet_operator_code(String fleet_strength_ownedby_fleet_operator_code) {
+        this.fleet_strength_ownedby_fleet_operator_code = fleet_strength_ownedby_fleet_operator_code;
+    }
+
+    public Double getFleet_strength_ownedby_fleet_operator_score() {
+        return fleet_strength_ownedby_fleet_operator_score;
+    }
+
+    public void setFleet_strength_ownedby_fleet_operator_score(Double fleet_strength_ownedby_fleet_operator_score) {
+        this.fleet_strength_ownedby_fleet_operator_score = fleet_strength_ownedby_fleet_operator_score;
+    }
+
+    public Double getFleet_strength_ownedby_fleet_operator_max_score() {
+        return fleet_strength_ownedby_fleet_operator_max_score;
+    }
+
+    public void setFleet_strength_ownedby_fleet_operator_max_score(Double fleet_strength_ownedby_fleet_operator_max_score) {
+        this.fleet_strength_ownedby_fleet_operator_max_score = fleet_strength_ownedby_fleet_operator_max_score;
+    }
+
+    public String getLoan_free_vehicle_text() {
+        return loan_free_vehicle_text;
+    }
+
+    public void setLoan_free_vehicle_text(String loan_free_vehicle_text) {
+        this.loan_free_vehicle_text = loan_free_vehicle_text;
+    }
+
+    public String getLoan_free_vehicle_code() {
+        return loan_free_vehicle_code;
+    }
+
+    public void setLoan_free_vehicle_code(String loan_free_vehicle_code) {
+        this.loan_free_vehicle_code = loan_free_vehicle_code;
+    }
+
+    public Double getLoan_free_vehicle_score() {
+        return loan_free_vehicle_score;
+    }
+
+    public void setLoan_free_vehicle_score(Double loan_free_vehicle_score) {
+        this.loan_free_vehicle_score = loan_free_vehicle_score;
+    }
+
+    public Double getLoan_free_vehicle_max_score() {
+        return loan_free_vehicle_max_score;
+    }
+
+    public void setLoan_free_vehicle_max_score(Double loan_free_vehicle_max_score) {
+        this.loan_free_vehicle_max_score = loan_free_vehicle_max_score;
+    }
+
+    public String getAssured_order_text() {
+        return assured_order_text;
+    }
+
+    public void setAssured_order_text(String assured_order_text) {
+        this.assured_order_text = assured_order_text;
+    }
+
+    public String getAssured_order_code() {
+        return assured_order_code;
+    }
+
+    public void setAssured_order_code(String assured_order_code) {
+        this.assured_order_code = assured_order_code;
+    }
+
+    public Double getAssured_order_obtained_score() {
+        return assured_order_obtained_score;
+    }
+
+    public void setAssured_order_obtained_score(Double assured_order_obtained_score) {
+        this.assured_order_obtained_score = assured_order_obtained_score;
+    }
+
+    public Double getAssured_order_max_score() {
+        return assured_order_max_score;
+    }
+
+    public void setAssured_order_max_score(Double assured_order_max_score) {
+        this.assured_order_max_score = assured_order_max_score;
+    }
+
+    public String getDeposit_position_potential_text() {
+        return deposit_position_potential_text;
+    }
+
+    public void setDeposit_position_potential_text(String deposit_position_potential_text) {
+        this.deposit_position_potential_text = deposit_position_potential_text;
+    }
+
+    public String getDeposit_position_potential_code() {
+        return deposit_position_potential_code;
+    }
+
+    public void setDeposit_position_potential_code(String deposit_position_potential_code) {
+        this.deposit_position_potential_code = deposit_position_potential_code;
+    }
+
+    public Double getDeposit_position_potential_obtained_score() {
+        return deposit_position_potential_obtained_score;
+    }
+
+    public void setDeposit_position_potential_obtained_score(Double deposit_position_potential_obtained_score) {
+        this.deposit_position_potential_obtained_score = deposit_position_potential_obtained_score;
+    }
+
+    public Double getDeposit_position_potential_max_score() {
+        return deposit_position_potential_max_score;
+    }
+
+    public void setDeposit_position_potential_max_score(Double deposit_position_potential_max_score) {
+        this.deposit_position_potential_max_score = deposit_position_potential_max_score;
+    }
+
+    public String getOperation_supported_by_family_members_directly_text() {
+        return operation_supported_by_family_members_directly_text;
+    }
+
+    public void setOperation_supported_by_family_members_directly_text(String operation_supported_by_family_members_directly_text) {
+        this.operation_supported_by_family_members_directly_text = operation_supported_by_family_members_directly_text;
+    }
+
+    public String getOperation_supported_by_family_members_directly_code() {
+        return operation_supported_by_family_members_directly_code;
+    }
+
+    public void setOperation_supported_by_family_members_directly_code(String operation_supported_by_family_members_directly_code) {
+        this.operation_supported_by_family_members_directly_code = operation_supported_by_family_members_directly_code;
+    }
+
+    public Double getOperation_supported_by_family_members_directly_obtained_score() {
+        return operation_supported_by_family_members_directly_obtained_score;
+    }
+
+    public void setOperation_supported_by_family_members_directly_obtained_score(Double operation_supported_by_family_members_directly_obtained_score) {
+        this.operation_supported_by_family_members_directly_obtained_score = operation_supported_by_family_members_directly_obtained_score;
+    }
+
+    public Double getOperation_supported_by_family_members_directly_max_score() {
+        return operation_supported_by_family_members_directly_max_score;
+    }
+
+    public void setOperation_supported_by_family_members_directly_max_score(Double operation_supported_by_family_members_directly_max_score) {
+        this.operation_supported_by_family_members_directly_max_score = operation_supported_by_family_members_directly_max_score;
+    }
+
+    public String getExperience_in_business_text() {
+        return experience_in_business_text;
+    }
+
+    public void setExperience_in_business_text(String experience_in_business_text) {
+        this.experience_in_business_text = experience_in_business_text;
+    }
+
+    public String getExperience_in_business_code() {
+        return experience_in_business_code;
+    }
+
+    public void setExperience_in_business_code(String experience_in_business_code) {
+        this.experience_in_business_code = experience_in_business_code;
+    }
+
+    public Double getExperience_in_business_score() {
+        return experience_in_business_score;
+    }
+
+    public void setExperience_in_business_score(Double experience_in_business_score) {
+        this.experience_in_business_score = experience_in_business_score;
+    }
+
+    public Double getExperience_in_business_max_score() {
+        return experience_in_business_max_score;
+    }
+
+    public void setExperience_in_business_max_score(Double experience_in_business_max_score) {
+        this.experience_in_business_max_score = experience_in_business_max_score;
     }
 }
