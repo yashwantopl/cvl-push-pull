@@ -299,7 +299,6 @@ public class ScoringParameterRequest {
     private Double limitsInAccount;
     private Double turnOver;
     private Double eligibleLoanAmountCircular;
-    private Double amountOfCollateral;
 
     private Double ebitdaFY;
 
@@ -544,7 +543,7 @@ public class ScoringParameterRequest {
     private Integer fullMonthCount;
     private Integer profitabilityHistoryVal;
     private Boolean profitabilityHistory_p = false;
-    private Double collateralSecurityVal;
+    private Double amountOfCollateral;
     private Boolean collateralSecurity_p = false;
     private Double conservativeDebtServiceCoverageVal;
     private Boolean conservativeDebtServiceCoverage_p = false;
@@ -2825,14 +2824,6 @@ public class ScoringParameterRequest {
         this.profitabilityHistory_p = profitabilityHistory_p;
     }
 
-    public Double getCollateralSecurityVal() {
-        return collateralSecurityVal;
-    }
-
-    public void setCollateralSecurityVal(Double collateralSecurityVal) {
-        this.collateralSecurityVal = collateralSecurityVal;
-    }
-
     public Boolean getCollateralSecurity_p() {
         return collateralSecurity_p;
     }
@@ -3137,7 +3128,6 @@ public class ScoringParameterRequest {
                 ", fullMonthCount=" + fullMonthCount +
                 ", profitabilityHistoryVal=" + profitabilityHistoryVal +
                 ", profitabilityHistory_p=" + profitabilityHistory_p +
-                ", collateralSecurityVal=" + collateralSecurityVal +
                 ", collateralSecurity_p=" + collateralSecurity_p +
                 ", conservativeDebtServiceCoverageVal=" + conservativeDebtServiceCoverageVal +
                 ", conservativeDebtServiceCoverage_p=" + conservativeDebtServiceCoverage_p +

@@ -71,10 +71,6 @@ public class ScoreParameter {
     public static final String DEPOSIT_POSITION_POTENTIAL = "DEPOSIT_POSITION_POTENTIAL";
     public static final String OPERATION_SUPPORTED_BY_FAMILY_MEMBERS_DIRECTLY = "OPERATION_SUPPORTED_BY_FAMILY_MEMBERS_DIRECTLY";
     // For New CVL Mudra
-    public static final String EXPERIENCE_IN_BUSINESS = "EXPERIENCE_IN_BUSINESS";
-    public static final String COLLATORAL_COVERAGE = "COLLATORAL_COVERAGE";
-    public static final String CONSERVATIVE_DEBT_SERVICE_COVERAGE_RATIO = "CONSERVATIVE_DEBT_SERVICE_COVERAGE_RATIO";
-
     private static final List<String> SALARIED_IGNORELIST = Arrays.asList(new String [] {ScoreParameter.Retail.HomeLoan.EMPLOYMENT_CATEG_PROF_SELF_EMPLOYED});
     private static final List<String> SELFEMPLOYED_IGNORELIST = Arrays.asList(new String [] {ScoreParameter.Retail.HomeLoan.CURRENT_JOB_EXP,ScoreParameter.Retail.HomeLoan.EMPLOYMENT_CATEG_JOB});
     
