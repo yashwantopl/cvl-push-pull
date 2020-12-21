@@ -64,6 +64,9 @@ public class DirectorPersonalDetail extends AuditActivity implements Serializabl
     @Column(name="is_workand_residence_sameplace")
     private Integer isWorkAndResidenceSamePlace;
     
+    @Column(name="have_own_commercial_property")
+    private Boolean haveOwnCommercialProperty;
+    
     public DirectorPersonalDetail(){
         // Do nothing because of X and Y.
     }
@@ -197,4 +200,11 @@ public class DirectorPersonalDetail extends AuditActivity implements Serializabl
 		this.isWorkAndResidenceSamePlace = isWorkAndResidenceSamePlace;
 	}
 
+	public Boolean getHaveOwnCommercialProperty() {
+		return haveOwnCommercialProperty;
+	}
+
+	public void setHaveOwnCommercialProperty(Boolean haveOwnCommercialProperty) {
+		this.haveOwnCommercialProperty = haveOwnCommercialProperty;
+	}
 }
