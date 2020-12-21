@@ -30,6 +30,7 @@ public class DirectorPersonalDetailRequest implements Serializable {
     private Integer certificationCourse;
     private Integer ongoingMudraLoan;
     private Integer isWorkAndResidenceSamePlace;
+    private Boolean haveOwnCommercialProperty;
     
     
     public Long getId() {
@@ -160,6 +161,13 @@ public class DirectorPersonalDetailRequest implements Serializable {
 	public void setIsWorkAndResidenceSamePlace(Integer isWorkAndResidenceSamePlace) {
 		this.isWorkAndResidenceSamePlace = isWorkAndResidenceSamePlace;
 	}
-	
+
+	public Boolean getHaveOwnCommercialProperty() {
+		return haveOwnCommercialProperty;
+	}
+
+	public void setHaveOwnCommercialProperty(Boolean haveOwnCommercialProperty) {
+		this.haveOwnCommercialProperty = haveOwnCommercialProperty;
+	}
 		
 }
