@@ -13,12 +13,12 @@ import com.opl.mudra.api.loans.exception.LoansException;
 import com.opl.mudra.api.loans.model.LoansResponse;
 import com.opl.mudra.api.loans.model.score.ScoringRequestLoans;
 import com.opl.mudra.api.loans.model.score.ScoringResponse;
+import com.opl.mudra.api.scoring.REPOReqRes;
 import com.opl.mudra.api.scoring.exception.ScoringException;
 import com.opl.mudra.api.scoring.model.GenericCheckerReqRes;
 import com.opl.mudra.api.scoring.model.scoringmodel.ScoringModelReqRes;
 import com.opl.mudra.api.utils.scoring.FuelPriceReqRes;
 import com.opl.mudra.api.utils.scoring.MCLRReqRes;
-import com.opl.mudra.api.utils.scoring.REPOReqRes;
 
 public interface ScoringService {
 

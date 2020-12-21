@@ -19,11 +19,6 @@ import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
-import com.opl.service.loans.domain.VehicleOperatorDetail;
-import com.opl.service.loans.repository.CurrentOperatedVehicleDetailRepository;
-import com.opl.service.loans.repository.PastVehicleLoanDetailRepository;
-import com.opl.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
-import com.opl.service.loans.utils.CommonUtility;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -72,6 +67,7 @@ import com.opl.mudra.api.oneform.model.IrrBySectorAndSubSector;
 import com.opl.mudra.api.rating.exception.RatingException;
 import com.opl.mudra.api.rating.model.IndustryResponse;
 import com.opl.mudra.api.rating.model.IrrRequest;
+import com.opl.mudra.api.scoring.REPOReqRes;
 import com.opl.mudra.api.scoring.exception.ScoringException;
 import com.opl.mudra.api.scoring.model.FundSeekerInputRequest;
 import com.opl.mudra.api.scoring.model.GenericCheckerReqRes;
@@ -84,7 +80,6 @@ import com.opl.mudra.api.scoring.utils.ScoreParameter;
 import com.opl.mudra.api.user.model.UserResponse;
 import com.opl.mudra.api.utils.scoring.FuelPriceReqRes;
 import com.opl.mudra.api.utils.scoring.MCLRReqRes;
-import com.opl.mudra.api.utils.scoring.REPOReqRes;
 import com.opl.mudra.client.analyzer.AnalyzerClient;
 import com.opl.mudra.client.cibil.CIBILClient;
 import com.opl.mudra.client.gst.GstClient;
@@ -94,6 +89,7 @@ import com.opl.mudra.client.rating.RatingClient;
 import com.opl.mudra.client.scoring.ScoringClient;
 import com.opl.mudra.client.users.UsersClient;
 import com.opl.service.loans.domain.ScoringRequestDetail;
+import com.opl.service.loans.domain.VehicleOperatorDetail;
 import com.opl.service.loans.domain.fundseeker.corporate.AssetsDetails;
 import com.opl.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.opl.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
@@ -102,6 +98,8 @@ import com.opl.service.loans.domain.fundseeker.corporate.OperatingStatementDetai
 import com.opl.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import com.opl.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetailMudraLoan;
 import com.opl.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
+import com.opl.service.loans.repository.CurrentOperatedVehicleDetailRepository;
+import com.opl.service.loans.repository.PastVehicleLoanDetailRepository;
 import com.opl.service.loans.repository.common.LoanRepository;
 import com.opl.service.loans.repository.fundseeker.ScoringRequestDetailRepository;
 import com.opl.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
@@ -117,7 +115,9 @@ import com.opl.service.loans.repository.fundseeker.retail.BankingRelationlReposi
 import com.opl.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.opl.service.loans.service.common.BankBureauResponseService;
 import com.opl.service.loans.service.fundprovider.FSParameterMappingService;
+import com.opl.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.opl.service.loans.service.scoring.ScoringService;
+import com.opl.service.loans.utils.CommonUtility;
 import com.opl.service.loans.utils.scoreexcel.ScoreExcelFileGenerator;
 import com.opl.service.loans.utils.scoreexcel.ScoreExcelReader;
 
