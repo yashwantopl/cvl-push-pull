@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
+import com.opl.service.loans.domain.VehicleOperatorDetail;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -89,7 +90,6 @@ import com.opl.mudra.client.rating.RatingClient;
 import com.opl.mudra.client.scoring.ScoringClient;
 import com.opl.mudra.client.users.UsersClient;
 import com.opl.service.loans.domain.ScoringRequestDetail;
-import com.opl.service.loans.domain.VehicleOperatorDetail;
 import com.opl.service.loans.domain.fundseeker.corporate.AssetsDetails;
 import com.opl.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.opl.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
@@ -202,9 +202,6 @@ public class ScoringServiceImpl implements ScoringService {
     
     @Autowired
     private FSParameterMappingService fsParameterMappingService;
-    
-    @Autowired
-    private VehicleOperatorDetail vehicleOperatorDetail;
 
     @Autowired
     private CurrentOperatedVehicleDetailRepository currentOperatedVehicleDetailRepository;
@@ -469,6 +466,7 @@ public class ScoringServiceImpl implements ScoringService {
     @Override
     public ResponseEntity<LoansResponse> calculateMudraScoringList(List<ScoringRequestLoans> scoringRequestLoansList) {
 
+    	VehicleOperatorDetail vehicleOperatorDetail = new VehicleOperatorDetail();
     	Object[] profileVersionDetails = loanRepository.getProfileVersionDetailsByApplicationId(scoringRequestLoansList.get(0).getApplicationId());
 		if(CommonUtils.isObjectNullOrEmpty(profileVersionDetails)) {
 			logger.error("Profile not found for applicationId =======>" + scoringRequestLoansList.get(0).getApplicationId());

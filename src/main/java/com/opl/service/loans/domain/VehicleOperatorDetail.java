@@ -1,6 +1,7 @@
 package com.opl.service.loans.domain;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -8,7 +9,8 @@ import java.util.Date;
  */
 @Entity
 @Table(name="vehicle_operator_detail")
-public class VehicleOperatorDetail {
+public class VehicleOperatorDetail implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
