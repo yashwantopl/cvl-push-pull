@@ -90,4 +90,10 @@ public interface ScoringService {
 
 	public ScoringResponse createJobForREPO(REPOReqRes repoReqRes);
 
+	public List<GenericCheckerReqRes> sendToCheckerMCLR(List<GenericCheckerReqRes> genericCheckerReqResList,
+			Long userId) throws ScoringException ;;
+
+	public List<GenericCheckerReqRes> sendToCheckerREPO(List<GenericCheckerReqRes> genericCheckerReqResList,
+			Long userId) throws ScoringException ;;
+
 }

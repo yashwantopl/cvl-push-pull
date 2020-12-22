@@ -2755,5 +2755,17 @@ public class ScoringServiceImpl implements ScoringService {
 	        }
 	}
 
+	@Override
+	public List<GenericCheckerReqRes> sendToCheckerMCLR(List<GenericCheckerReqRes> genericCheckerReqResList,
+			Long userId) throws ScoringException {
+		 return scoringClient.sendToCheckerMCLR(genericCheckerReqResList, userId);
+	}
+
+	@Override
+	public List<GenericCheckerReqRes> sendToCheckerREPO(List<GenericCheckerReqRes> genericCheckerReqResList,
+			Long userId) throws ScoringException {
+		return scoringClient.sendToCheckerREPO(genericCheckerReqResList, userId);
+	}
+
 	
 }

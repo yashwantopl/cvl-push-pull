@@ -533,5 +533,44 @@ public class ScoringController {
         }
     }
     
+    @RequestMapping(value = "/sendToCheckerMCLR", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<GenericCheckerReqRes>> sendToCheckerMCLR(@RequestBody List<GenericCheckerReqRes> genericCheckerReqResList, HttpServletRequest httpRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
+        logger.info("==================Enter in sendToChecker(){} ================ genericCheckerReqResList size ==> ",genericCheckerReqResList.size());
+        try {
+            Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+
+            List<GenericCheckerReqRes> genericCheckerReqRes = scoringService.sendToCheckerMCLR(genericCheckerReqResList, userId);
+            logger.info("==================Exit from sendToChecker(){} ================ genericCheckerReqRes List  Size ==> ", genericCheckerReqRes.size());
+            return new ResponseEntity<List<GenericCheckerReqRes>>(genericCheckerReqRes, HttpStatus.OK);
+        } catch (Exception e) {
+            List<GenericCheckerReqRes> res = new ArrayList<GenericCheckerReqRes>();
+            GenericCheckerReqRes reqres = new GenericCheckerReqRes();
+            reqres.setActionFlag(false);
+            res.add(reqres);
+            logger.error("Error while saving scoring model detail : ", e);
+            return new ResponseEntity<List<GenericCheckerReqRes>>(res, HttpStatus.OK);
+        }
+    }
+
+    @RequestMapping(value = "/sendToCheckerREPO", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<GenericCheckerReqRes>> sendToCheckerREPO(@RequestBody List<GenericCheckerReqRes> genericCheckerReqResList, HttpServletRequest httpRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
+        logger.info("==================Enter in sendToChecker(){} ================ genericCheckerReqResList size ==> ",genericCheckerReqResList.size());
+        try {
+            Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+
+            List<GenericCheckerReqRes> genericCheckerReqRes = scoringService.sendToCheckerREPO(genericCheckerReqResList, userId);
+            logger.info("==================Exit from sendToChecker(){} ================ genericCheckerReqRes List  Size ==> ", genericCheckerReqRes.size());
+            return new ResponseEntity<List<GenericCheckerReqRes>>(genericCheckerReqRes, HttpStatus.OK);
+        } catch (Exception e) {
+            List<GenericCheckerReqRes> res = new ArrayList<GenericCheckerReqRes>();
+            GenericCheckerReqRes reqres = new GenericCheckerReqRes();
+            reqres.setActionFlag(false);
+            res.add(reqres);
+            logger.error("Error while saving scoring model detail : ", e);
+            return new ResponseEntity<List<GenericCheckerReqRes>>(res, HttpStatus.OK);
+        }
+    }
+
+    
 }
 
