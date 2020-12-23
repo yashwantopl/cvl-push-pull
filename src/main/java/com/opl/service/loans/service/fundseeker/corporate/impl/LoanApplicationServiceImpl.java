@@ -7787,7 +7787,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			} else if (CommonUtils.BusinessType.MUDRA_LOAN.getId() == businessTypeId) {
 				fpProductList = loanApplicationRepository.getScoringIdListByApplicationIdAndStageId(applicationId, 105l);
 			} else if (CommonUtils.BusinessType.CVL_MUDRA_LOAN.getId() == businessTypeId) {
-				fpProductList = loanApplicationRepository.getScoringIdListByApplicationIdAndStageId(applicationId, 1005l);
+				fpProductList = loanApplicationRepository.getScoringIdListByApplicationIdAndStageId(applicationId, 4l);
 			}
 
 			List<Long> scoringLongList = new ArrayList<Long>();
