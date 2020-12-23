@@ -284,6 +284,7 @@ public class ScoreParameter {
         public static final Long MFI_LOAN = 6l;
         public static final Long RETAIL_AUTO_LOAN = 8l;
         public static final Long MUDRA_LOAN = 10l;
+        public static final Long MUDRA_LOAN_cvl = 26l;
     }
 
     public static final class Status {

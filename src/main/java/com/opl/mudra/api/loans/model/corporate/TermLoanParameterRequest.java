@@ -615,6 +615,16 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 		
 		private List<Long> vehicleSegmentIds;
 		
+		private Integer cvlCostOfFullyBuildModel;
+		
+		private Integer cvlCostOfChasis;
+		
+		private Integer cvlCostOfBody;
+		
+		private Integer cvlOtherMarginExp;
+		
+		private Integer cvl2ndHandVehicle;
+		
 		
 		
 		public BigDecimal getMinCgtmseCoveragePerc() {
@@ -3061,6 +3071,47 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	public void setCvlEliOthers(Integer cvlEliOthers) {
 		this.cvlEliOthers = cvlEliOthers;
 	}
+
+	public Integer getCvlCostOfFullyBuildModel() {
+		return cvlCostOfFullyBuildModel;
+	}
+
+	public void setCvlCostOfFullyBuildModel(Integer cvlCostOfFullyBuildModel) {
+		this.cvlCostOfFullyBuildModel = cvlCostOfFullyBuildModel;
+	}
+
+	public Integer getCvlCostOfChasis() {
+		return cvlCostOfChasis;
+	}
+
+	public void setCvlCostOfChasis(Integer cvlCostOfChasis) {
+		this.cvlCostOfChasis = cvlCostOfChasis;
+	}
+
+	public Integer getCvlCostOfBody() {
+		return cvlCostOfBody;
+	}
+
+	public void setCvlCostOfBody(Integer cvlCostOfBody) {
+		this.cvlCostOfBody = cvlCostOfBody;
+	}
+
+	public Integer getCvlOtherMarginExp() {
+		return cvlOtherMarginExp;
+	}
+
+	public void setCvlOtherMarginExp(Integer cvlOtherMarginExp) {
+		this.cvlOtherMarginExp = cvlOtherMarginExp;
+	}
+
+	public Integer getCvl2ndHandVehicle() {
+		return cvl2ndHandVehicle;
+	}
+
+	public void setCvl2ndHandVehicle(Integer cvl2ndHandVehicle) {
+		this.cvl2ndHandVehicle = cvl2ndHandVehicle;
+	}
+
 
 	
 	
