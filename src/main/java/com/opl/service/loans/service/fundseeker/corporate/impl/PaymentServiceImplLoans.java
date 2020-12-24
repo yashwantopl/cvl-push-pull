@@ -529,10 +529,10 @@ public class PaymentServiceImplLoans implements PaymentServiceLoans{
 				return response;
 			}
 			//set SkipType for Mudra Loan
-			else if(gatewayRequest.getBusinessTypeId() != null && CommonUtils.BusinessType.MUDRA_LOAN.getId().equals(gatewayRequest.getBusinessTypeId())) {
+			else if(gatewayRequest.getBusinessTypeId() != null && CommonUtils.BusinessType.CVL_MUDRA_LOAN.getId().equals(gatewayRequest.getBusinessTypeId())) {
 				response.put(SKIP_PAYMENT, true);
-				response.put(SKIP_TYPE, CommonUtils.SkipType.MUDRA_LOAN);
-				response.put(PAYMENT_TYPE_ID, CommonUtils.PaymentTypeMaster.MUDRA_LOAN_SKIP_PAYMENT.getId());
+				response.put(SKIP_TYPE, CommonUtils.SkipType.CVL_MUDRA_LOAN);
+				response.put(PAYMENT_TYPE_ID, PaymentTypeMaster.CVL_MUDRA_LOAN_SKIP_PAYMENT.getId());
 				/** put this for future reference */
 //				skipPayment = loanApplicationMasterRepository.isFromBankSpecificOrMarketPalce(gatewayRequest.getApplicationId(), true);
 //				if(skipPayment != null) {

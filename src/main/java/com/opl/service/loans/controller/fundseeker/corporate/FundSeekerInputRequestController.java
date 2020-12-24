@@ -284,7 +284,7 @@ public class FundSeekerInputRequestController {
         	}
         		try {
         			ConnectResponse postOneForm = null;
-        			if(!CommonUtils.BusinessType.MUDRA_LOAN.getId().equals(fundSeekerInputRequestResponse.getBusinessTypeId())) {
+        			if(!CommonUtils.BusinessType.CVL_MUDRA_LOAN.getId().equals(fundSeekerInputRequestResponse.getBusinessTypeId())) {
         				postOneForm = connectClient.postOneForm(fundSeekerInputRequestResponse.getApplicationId(), userId, CommonUtils.BusinessType.ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS.getId(),false);
         			}
         			if (postOneForm != null) {

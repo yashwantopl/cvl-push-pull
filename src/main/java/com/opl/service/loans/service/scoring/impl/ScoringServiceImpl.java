@@ -921,7 +921,7 @@ public class ScoringServiceImpl implements ScoringService {
             scoringRequest.setFpProductId(fpProductId);
             scoringRequest.setApplicationId(applicationId);
             scoringRequest.setUserId(scoringRequestLoans.getUserId());
-            scoringRequest.setBusinessTypeId(ScoreParameter.BusinessType.MUDRA_LOAN);
+            scoringRequest.setBusinessTypeId(ScoreParameter.BusinessType.MUDRA_LOAN_cvl);
             scoringRequest.setEligibleLoanAmountCircular(scoringRequestLoans.getEligibleLoanAmountCircular());
             scoringRequest.setMap(scoringRequestLoans.getMapList());
 			
