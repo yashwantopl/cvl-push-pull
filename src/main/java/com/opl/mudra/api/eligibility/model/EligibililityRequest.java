@@ -6,8 +6,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-import javax.persistence.Column;
-
 /**
  * @author rahul.meena
  *
@@ -70,45 +68,47 @@ public class EligibililityRequest implements Serializable{
 
 	// FOR CVL Expences %
 
-	private Integer cvlEliMotorTax;
+	private Double cvlEliMotorTax;
 
-	private Integer cvlEliInsurancePremium;
+	private Double cvlEliInsurancePremium;
 
-	private Integer cvlEliGarageRent;
+	private Double cvlEliGarageRent;
 
-	private Integer cvlEliDepreciation;
+	private Double cvlEliDepreciation;
 
-	private Integer cvlEliRepairExp;
+	private Double cvlEliRepairExp;
 
-	private Integer cvlEliCostOil;
+	private Double cvlEliCostOil;
 
-	private Integer cvlEliStaffSal;
+	private Double cvlEliStaffSal;
 
-	private Integer cvlEliDrawingExp;
+	private Double cvlEliDrawingExp;
 
-	private Integer cvlEliUnloadingCharges;
+	private Double cvlEliUnloadingCharges;
 
-	private Integer cvlEliIntOnBorrowing;
+	private Double cvlEliIntOnBorrowing;
 
-	private Integer cvlEliOthers;
+	private Double cvlEliOthers;
 
 	// FOR CVL MARGIN
 
-	private Integer cvlCostOfFullyBuildModel;
+	private Double cvlCostOfFullyBuildModel;
 
-	private Integer cvlCostOfChasis;
+	private Double cvlCostOfChasis;
 
-	private Integer cvlCostOfBody;
+	private Double cvlCostOfBody;
 
-	private Integer cvlOtherMarginExp;
+	private Double cvlOtherMarginExp;
 
-	private Integer cvl2ndHandVehicle;
+	private Double cvl2ndHandVehicle;
 
 	// For CVL Fuel Price
 
 	private Double fuelCost;
 	
 	private String loanType;
+	
+	private Double monthlyLoanObligation;
 	
 	
 	public EligibililityRequest(){
@@ -122,210 +122,44 @@ public class EligibililityRequest implements Serializable{
 		this.fpProductId = fpProuctId;
 	}
 
-
-	public Double getFuelCost() {
-		return fuelCost;
-	}
-
-	public void setFuelCost(Double fuelCost) {
-		this.fuelCost = fuelCost;
-	}
-
-	public Integer getCvlEliMotorTax() {
-		return cvlEliMotorTax;
-	}
-
-	public void setCvlEliMotorTax(Integer cvlEliMotorTax) {
-		this.cvlEliMotorTax = cvlEliMotorTax;
-	}
-
-	public Integer getCvlEliInsurancePremium() {
-		return cvlEliInsurancePremium;
-	}
-
-	public void setCvlEliInsurancePremium(Integer cvlEliInsurancePremium) {
-		this.cvlEliInsurancePremium = cvlEliInsurancePremium;
-	}
-
-	public Integer getCvlEliGarageRent() {
-		return cvlEliGarageRent;
-	}
-
-	public void setCvlEliGarageRent(Integer cvlEliGarageRent) {
-		this.cvlEliGarageRent = cvlEliGarageRent;
-	}
-
-	public Integer getCvlEliDepreciation() {
-		return cvlEliDepreciation;
-	}
-
-	public void setCvlEliDepreciation(Integer cvlEliDepreciation) {
-		this.cvlEliDepreciation = cvlEliDepreciation;
-	}
-
-	public Integer getCvlEliRepairExp() {
-		return cvlEliRepairExp;
-	}
-
-	public void setCvlEliRepairExp(Integer cvlEliRepairExp) {
-		this.cvlEliRepairExp = cvlEliRepairExp;
-	}
-
-	public Integer getCvlEliCostOil() {
-		return cvlEliCostOil;
-	}
-
-	public void setCvlEliCostOil(Integer cvlEliCostOil) {
-		this.cvlEliCostOil = cvlEliCostOil;
-	}
-
-	public Integer getCvlEliStaffSal() {
-		return cvlEliStaffSal;
-	}
-
-	public void setCvlEliStaffSal(Integer cvlEliStaffSal) {
-		this.cvlEliStaffSal = cvlEliStaffSal;
-	}
-
-	public Integer getCvlEliDrawingExp() {
-		return cvlEliDrawingExp;
-	}
-
-	public void setCvlEliDrawingExp(Integer cvlEliDrawingExp) {
-		this.cvlEliDrawingExp = cvlEliDrawingExp;
-	}
-
-	public Integer getCvlEliUnloadingCharges() {
-		return cvlEliUnloadingCharges;
-	}
-
-	public void setCvlEliUnloadingCharges(Integer cvlEliUnloadingCharges) {
-		this.cvlEliUnloadingCharges = cvlEliUnloadingCharges;
-	}
-
-	public Integer getCvlEliIntOnBorrowing() {
-		return cvlEliIntOnBorrowing;
-	}
-
-	public void setCvlEliIntOnBorrowing(Integer cvlEliIntOnBorrowing) {
-		this.cvlEliIntOnBorrowing = cvlEliIntOnBorrowing;
-	}
-
-	public Integer getCvlEliOthers() {
-		return cvlEliOthers;
-	}
-
-	public void setCvlEliOthers(Integer cvlEliOthers) {
-		this.cvlEliOthers = cvlEliOthers;
-	}
-
-	public Integer getCvlCostOfFullyBuildModel() {
-		return cvlCostOfFullyBuildModel;
-	}
-
-	public void setCvlCostOfFullyBuildModel(Integer cvlCostOfFullyBuildModel) {
-		this.cvlCostOfFullyBuildModel = cvlCostOfFullyBuildModel;
-	}
-
-	public Integer getCvlCostOfChasis() {
-		return cvlCostOfChasis;
-	}
-
-	public void setCvlCostOfChasis(Integer cvlCostOfChasis) {
-		this.cvlCostOfChasis = cvlCostOfChasis;
-	}
-
-	public Integer getCvlCostOfBody() {
-		return cvlCostOfBody;
-	}
-
-	public void setCvlCostOfBody(Integer cvlCostOfBody) {
-		this.cvlCostOfBody = cvlCostOfBody;
-	}
-
-	public Integer getCvlOtherMarginExp() {
-		return cvlOtherMarginExp;
-	}
-
-	public void setCvlOtherMarginExp(Integer cvlOtherMarginExp) {
-		this.cvlOtherMarginExp = cvlOtherMarginExp;
-	}
-
-	public Integer getCvl2ndHandVehicle() {
-		return cvl2ndHandVehicle;
-	}
-
-	public void setCvl2ndHandVehicle(Integer cvl2ndHandVehicle) {
-		this.cvl2ndHandVehicle = cvl2ndHandVehicle;
-	}
-
 	public Long getApplicationId() {
 		return applicationId;
 	}
+
 	public void setApplicationId(Long applicationId) {
 		this.applicationId = applicationId;
 	}
+
 	public Long getDirectorId() {
 		return directorId;
 	}
+
 	public void setDirectorId(Long directorId) {
 		this.directorId = directorId;
-	}
-	public Long getProductId() {
-		return productId;
-	}
-	public void setProductId(Long productId) {
-		this.productId = productId;
-	}
-	public Long getUserId() {
-		return userId;
-	}
-	public void setUserId(Long userId) {
-		this.userId = userId;
-	}
-	public Double getEstSales12Months() {
-		return estSales12Months;
-	}
-	public void setEstSales12Months(Double estSales12Months) {
-		this.estSales12Months = estSales12Months;
-	}
-	public Double getWcRequired() {
-		return wcRequired;
-	}
-	public void setWcRequired(Double wcRequired) {
-		this.wcRequired = wcRequired;
-	}
-	public Double getExistingLimit() {
-		return existingLimit;
-	}
-	public void setExistingLimit(Double existingLimit) {
-		this.existingLimit = existingLimit;
-	}
-	public Double getProposedLoanAmount() {
-		return proposedLoanAmount;
-	}
-	public void setProposedLoanAmount(Double proposedLoanAmount) {
-		this.proposedLoanAmount = proposedLoanAmount;
-	}
-	public Double getFpLoanAmount() {
-		return fpLoanAmount;
-	}
-	public void setFpLoanAmount(Double fpLoanAmount) {
-		this.fpLoanAmount = fpLoanAmount;
-	}
-	public Double getResult() {
-		return result;
-	}
-	public void setResult(Double result) {
-		this.result = result;
 	}
 
 	public Long getFpProductId() {
 		return fpProductId;
 	}
 
-	public void setFpProductId(Long fpProuctId) {
-		this.fpProductId = fpProuctId;
+	public void setFpProductId(Long fpProductId) {
+		this.fpProductId = fpProductId;
+	}
+
+	public Long getProductId() {
+		return productId;
+	}
+
+	public void setProductId(Long productId) {
+		this.productId = productId;
+	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
 
 	public Integer getAssessmentId() {
@@ -336,12 +170,92 @@ public class EligibililityRequest implements Serializable{
 		this.assessmentId = assessmentId;
 	}
 
+	public Double getEstSales12Months() {
+		return estSales12Months;
+	}
+
+	public void setEstSales12Months(Double estSales12Months) {
+		this.estSales12Months = estSales12Months;
+	}
+
+	public Double getWcRequired() {
+		return wcRequired;
+	}
+
+	public void setWcRequired(Double wcRequired) {
+		this.wcRequired = wcRequired;
+	}
+
 	public Double getTotalRequirement() {
 		return totalRequirement;
 	}
 
 	public void setTotalRequirement(Double totalRequirement) {
 		this.totalRequirement = totalRequirement;
+	}
+
+	public Double getShishuPromotorContribution() {
+		return shishuPromotorContribution;
+	}
+
+	public void setShishuPromotorContribution(Double shishuPromotorContribution) {
+		this.shishuPromotorContribution = shishuPromotorContribution;
+	}
+
+	public Double getKishorPromotorContribution() {
+		return kishorPromotorContribution;
+	}
+
+	public void setKishorPromotorContribution(Double kishorPromotorContribution) {
+		this.kishorPromotorContribution = kishorPromotorContribution;
+	}
+
+	public Double getTarunPromotorContribution() {
+		return tarunPromotorContribution;
+	}
+
+	public void setTarunPromotorContribution(Double tarunPromotorContribution) {
+		this.tarunPromotorContribution = tarunPromotorContribution;
+	}
+
+	public Double getWomenPromotorContribution() {
+		return womenPromotorContribution;
+	}
+
+	public void setWomenPromotorContribution(Double womenPromotorContribution) {
+		this.womenPromotorContribution = womenPromotorContribution;
+	}
+
+	public Double getMinorityCommunityPromotorContribution() {
+		return minorityCommunityPromotorContribution;
+	}
+
+	public void setMinorityCommunityPromotorContribution(Double minorityCommunityPromotorContribution) {
+		this.minorityCommunityPromotorContribution = minorityCommunityPromotorContribution;
+	}
+
+	public Double getExistingLimit() {
+		return existingLimit;
+	}
+
+	public void setExistingLimit(Double existingLimit) {
+		this.existingLimit = existingLimit;
+	}
+
+	public Double getFpLoanAmount() {
+		return fpLoanAmount;
+	}
+
+	public void setFpLoanAmount(Double fpLoanAmount) {
+		this.fpLoanAmount = fpLoanAmount;
+	}
+
+	public Double getResult() {
+		return result;
+	}
+
+	public void setResult(Double result) {
+		this.result = result;
 	}
 
 	public Double getBankBureauEmi() {
@@ -384,6 +298,14 @@ public class EligibililityRequest implements Serializable{
 		this.tenure = tenure;
 	}
 
+	public Double getTenureReq() {
+		return tenureReq;
+	}
+
+	public void setTenureReq(Double tenureReq) {
+		this.tenureReq = tenureReq;
+	}
+
 	public Double getRoi() {
 		return roi;
 	}
@@ -392,6 +314,13 @@ public class EligibililityRequest implements Serializable{
 		this.roi = roi;
 	}
 
+	public Double getCircularLoanAmount() {
+		return circularLoanAmount;
+	}
+
+	public void setCircularLoanAmount(Double circularLoanAmount) {
+		this.circularLoanAmount = circularLoanAmount;
+	}
 
 	public Double getEmi() {
 		return emi;
@@ -424,12 +353,21 @@ public class EligibililityRequest implements Serializable{
 	public void setTrading(Double trading) {
 		this.trading = trading;
 	}
+
 	public Double getFoir() {
 		return foir;
 	}
 
 	public void setFoir(Double foir) {
 		this.foir = foir;
+	}
+
+	public Double getProposedLoanAmount() {
+		return proposedLoanAmount;
+	}
+
+	public void setProposedLoanAmount(Double proposedLoanAmount) {
+		this.proposedLoanAmount = proposedLoanAmount;
 	}
 
 	public Boolean getCollateralSecurity() {
@@ -472,62 +410,6 @@ public class EligibililityRequest implements Serializable{
 		this.wcRenewalStatus = wcRenewalStatus;
 	}
 
-	public Double getShishuPromotorContribution() {
-		return shishuPromotorContribution;
-	}
-
-	public void setShishuPromotorContribution(Double shishuPromotorContribution) {
-		this.shishuPromotorContribution = shishuPromotorContribution;
-	}
-
-	public Double getKishorPromotorContribution() {
-		return kishorPromotorContribution;
-	}
-
-	public void setKishorPromotorContribution(Double kishorPromotorContribution) {
-		this.kishorPromotorContribution = kishorPromotorContribution;
-	}
-
-	public Double getTarunPromotorContribution() {
-		return tarunPromotorContribution;
-	}
-
-	public void setTarunPromotorContribution(Double tarunPromotorContribution) {
-		this.tarunPromotorContribution = tarunPromotorContribution;
-	}
-
-	public Double getCircularLoanAmount() {
-		return circularLoanAmount;
-	}
-
-	public void setCircularLoanAmount(Double circularLoanAmount) {
-		this.circularLoanAmount = circularLoanAmount;
-	}
-
-	public Double getTenureReq() {
-		return tenureReq;
-	}
-
-	public void setTenureReq(Double tenureReq) {
-		this.tenureReq = tenureReq;
-	}
-
-	public Double getWomenPromotorContribution() {
-		return womenPromotorContribution;
-	}
-
-	public void setWomenPromotorContribution(Double womenPromotorContribution) {
-		this.womenPromotorContribution = womenPromotorContribution;
-	}
-
-	public Double getMinorityCommunityPromotorContribution() {
-		return minorityCommunityPromotorContribution;
-	}
-
-	public void setMinorityCommunityPromotorContribution(Double minorityCommunityPromotorContribution) {
-		this.minorityCommunityPromotorContribution = minorityCommunityPromotorContribution;
-	}
-
 	public String getCastCategory() {
 		return castCategory;
 	}
@@ -544,6 +426,142 @@ public class EligibililityRequest implements Serializable{
 		this.mainDirectorIsWomen = mainDirectorIsWomen;
 	}
 
+	public Double getCvlEliMotorTax() {
+		return cvlEliMotorTax;
+	}
+
+	public void setCvlEliMotorTax(Double cvlEliMotorTax) {
+		this.cvlEliMotorTax = cvlEliMotorTax;
+	}
+
+	public Double getCvlEliInsurancePremium() {
+		return cvlEliInsurancePremium;
+	}
+
+	public void setCvlEliInsurancePremium(Double cvlEliInsurancePremium) {
+		this.cvlEliInsurancePremium = cvlEliInsurancePremium;
+	}
+
+	public Double getCvlEliGarageRent() {
+		return cvlEliGarageRent;
+	}
+
+	public void setCvlEliGarageRent(Double cvlEliGarageRent) {
+		this.cvlEliGarageRent = cvlEliGarageRent;
+	}
+
+	public Double getCvlEliDepreciation() {
+		return cvlEliDepreciation;
+	}
+
+	public void setCvlEliDepreciation(Double cvlEliDepreciation) {
+		this.cvlEliDepreciation = cvlEliDepreciation;
+	}
+
+	public Double getCvlEliRepairExp() {
+		return cvlEliRepairExp;
+	}
+
+	public void setCvlEliRepairExp(Double cvlEliRepairExp) {
+		this.cvlEliRepairExp = cvlEliRepairExp;
+	}
+
+	public Double getCvlEliCostOil() {
+		return cvlEliCostOil;
+	}
+
+	public void setCvlEliCostOil(Double cvlEliCostOil) {
+		this.cvlEliCostOil = cvlEliCostOil;
+	}
+
+	public Double getCvlEliStaffSal() {
+		return cvlEliStaffSal;
+	}
+
+	public void setCvlEliStaffSal(Double cvlEliStaffSal) {
+		this.cvlEliStaffSal = cvlEliStaffSal;
+	}
+
+	public Double getCvlEliDrawingExp() {
+		return cvlEliDrawingExp;
+	}
+
+	public void setCvlEliDrawingExp(Double cvlEliDrawingExp) {
+		this.cvlEliDrawingExp = cvlEliDrawingExp;
+	}
+
+	public Double getCvlEliUnloadingCharges() {
+		return cvlEliUnloadingCharges;
+	}
+
+	public void setCvlEliUnloadingCharges(Double cvlEliUnloadingCharges) {
+		this.cvlEliUnloadingCharges = cvlEliUnloadingCharges;
+	}
+
+	public Double getCvlEliIntOnBorrowing() {
+		return cvlEliIntOnBorrowing;
+	}
+
+	public void setCvlEliIntOnBorrowing(Double cvlEliIntOnBorrowing) {
+		this.cvlEliIntOnBorrowing = cvlEliIntOnBorrowing;
+	}
+
+	public Double getCvlEliOthers() {
+		return cvlEliOthers;
+	}
+
+	public void setCvlEliOthers(Double cvlEliOthers) {
+		this.cvlEliOthers = cvlEliOthers;
+	}
+
+	public Double getCvlCostOfFullyBuildModel() {
+		return cvlCostOfFullyBuildModel;
+	}
+
+	public void setCvlCostOfFullyBuildModel(Double cvlCostOfFullyBuildModel) {
+		this.cvlCostOfFullyBuildModel = cvlCostOfFullyBuildModel;
+	}
+
+	public Double getCvlCostOfChasis() {
+		return cvlCostOfChasis;
+	}
+
+	public void setCvlCostOfChasis(Double cvlCostOfChasis) {
+		this.cvlCostOfChasis = cvlCostOfChasis;
+	}
+
+	public Double getCvlCostOfBody() {
+		return cvlCostOfBody;
+	}
+
+	public void setCvlCostOfBody(Double cvlCostOfBody) {
+		this.cvlCostOfBody = cvlCostOfBody;
+	}
+
+	public Double getCvlOtherMarginExp() {
+		return cvlOtherMarginExp;
+	}
+
+	public void setCvlOtherMarginExp(Double cvlOtherMarginExp) {
+		this.cvlOtherMarginExp = cvlOtherMarginExp;
+	}
+
+	public Double getCvl2ndHandVehicle() {
+		return cvl2ndHandVehicle;
+	}
+
+	public void setCvl2ndHandVehicle(Double cvl2ndHandVehicle) {
+		this.cvl2ndHandVehicle = cvl2ndHandVehicle;
+	}
+
+	public Double getFuelCost() {
+		return fuelCost;
+	}
+
+	public void setFuelCost(Double fuelCost) {
+		this.fuelCost = fuelCost;
+	}
+
 	public String getLoanType() {
 		return loanType;
 	}
@@ -551,6 +569,16 @@ public class EligibililityRequest implements Serializable{
 	public void setLoanType(String loanType) {
 		this.loanType = loanType;
 	}
+
+	public Double getMonthlyLoanObligation() {
+		return monthlyLoanObligation;
+	}
+
+	public void setMonthlyLoanObligation(Double monthlyLoanObligation) {
+		this.monthlyLoanObligation = monthlyLoanObligation;
+	}
+
+
 	
 	
 
