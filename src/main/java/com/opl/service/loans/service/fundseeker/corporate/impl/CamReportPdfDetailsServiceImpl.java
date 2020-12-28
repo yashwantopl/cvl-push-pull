@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
+import com.opl.mudra.api.eligibility.model.CVLEligibilityRequest;
 import com.opl.mudra.api.loans.model.*;
 import com.opl.service.loans.repository.VehicleOperatorDetailRepository;
 import com.opl.service.loans.service.vehicledetails.VehicleOperatorService;
@@ -1192,24 +1193,65 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			logger.error(CommonUtils.EXCEPTION,e2);
 		}
 		
-		/*
-		 * try{ EligibililityRequest eligibilityReq=new EligibililityRequest();
-		 * eligibilityReq.setApplicationId(toApplicationId);
-		 * eligibilityReq.setFpProductId(productId); EligibilityResponse
-		 * eligibilityResp= eligibilityClient.corporateEligibilityData(eligibilityReq);
-		 * 
-		 * if(!CommonUtils.isObjectListNull(eligibilityResp.getData())){ CalculationJSON
-		 * req= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,
-		 * Object>)eligibilityResp.getData(), CalculationJSON.class);
-		 * 
-		 * // map.put("elProSales", req.getProjectedSales() != null ?
-		 * CommonUtils.convertValueIndianCurrency(req.getProjectedSales()) : "-"); //
-		 * map.put("defaultHisSales", req.getDefaultHistoricSales() != null ?
-		 * CommonUtils.convertValueIndianCurrency(req.getDefaultHistoricSales()) : "-");
-		 * map.put("assLimits",CommonUtils.convertToDoubleForXmlIndianCurr(req, new
-		 * HashMap<>())); } }catch (Exception e) {
-		 * logger.error("Error while getting Eligibility data : ",e); }
-		 */
+		try{
+			EligibililityRequest eligibilityReq=new EligibililityRequest();
+			eligibilityReq.setApplicationId(toApplicationId);
+			eligibilityReq.setFpProductId(productId);
+			EligibilityResponse eligibilityResp= eligibilityClient.corporateEligibilityData(eligibilityReq);
+
+			if(!CommonUtils.isObjectListNull(eligibilityResp.getData())){
+				CVLEligibilityRequest req= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)eligibilityResp.getData(), CVLEligibilityRequest.class);
+				DecimalFormat df = new DecimalFormat(".##");
+				req.setAgreedPurchasePrice(!CommonUtils.isObjectNullOrEmpty(req.getAgreedPurchasePrice()) ? Double.valueOf(df.format(req.getAgreedPurchasePrice()).toString()) : 0.0);
+				req.setOtherCost(!CommonUtils.isObjectNullOrEmpty(req.getOtherCost()) ? Double.valueOf(df.format(req.getOtherCost()).toString()) : 0.0);
+				req.setFullyBuiltCost(!CommonUtils.isObjectNullOrEmpty(req.getFullyBuiltCost()) ? Double.valueOf(df.format(req.getFullyBuiltCost()).toString()) : 0.0);
+				req.setChassisCost(!CommonUtils.isObjectNullOrEmpty(req.getChassisCost()) ? Double.valueOf(df.format(req.getChassisCost()).toString()) : 0.0);
+				req.setBodyBuildingCost(!CommonUtils.isObjectNullOrEmpty(req.getBodyBuildingCost()) ? Double.valueOf(df.format(req.getBodyBuildingCost()).toString()) : 0.0);
+				req.setTotalCostOfProposedVehicle(!CommonUtils.isObjectNullOrEmpty(req.getTotalCostOfProposedVehicle()) ? Double.valueOf(df.format(req.getTotalCostOfProposedVehicle()).toString()) : 0.0);
+				req.setRatePerKm(!CommonUtils.isObjectNullOrEmpty(req.getRatePerKm()) ? Double.valueOf(df.format(req.getRatePerKm()).toString()) : 0.0);
+				req.setOtherMonthlyIncome(!CommonUtils.isObjectNullOrEmpty(req.getOtherMonthlyIncome()) ? Double.valueOf(df.format(req.getOtherMonthlyIncome()).toString()) : 0.0);
+				req.setAvgKmsPerLtr(!CommonUtils.isObjectNullOrEmpty(req.getAvgKmsPerLtr()) ? Double.valueOf(df.format(req.getAvgKmsPerLtr()).toString()) : 0.0);
+				req.setIncomeTaxPaid(!CommonUtils.isObjectNullOrEmpty(req.getIncomeTaxPaid()) ? Double.valueOf(df.format(req.getIncomeTaxPaid()).toString()) : 0.0);
+				req.setEligibleProjectCost(!CommonUtils.isObjectNullOrEmpty(req.getEligibleProjectCost()) ? Double.valueOf(df.format(req.getEligibleProjectCost()).toString()) : 0.0);
+				req.setAvgMonthlyIncome(!CommonUtils.isObjectNullOrEmpty(req.getAvgMonthlyIncome()) ? Double.valueOf(df.format(req.getAvgMonthlyIncome()).toString()) : 0.0);
+				req.setTotalMonthlyIncome(!CommonUtils.isObjectNullOrEmpty(req.getTotalMonthlyIncome()) ? Double.valueOf(df.format(req.getTotalMonthlyIncome()).toString()) : 0.0);
+				req.setFuelCostPerMonth(!CommonUtils.isObjectNullOrEmpty(req.getFuelCostPerMonth()) ? Double.valueOf(df.format(req.getFuelCostPerMonth()).toString()) : 0.0);
+				req.setTotalMonthlyExp(!CommonUtils.isObjectNullOrEmpty(req.getTotalMonthlyExp()) ? Double.valueOf(df.format(req.getTotalMonthlyExp()).toString()) : 0.0);
+				req.setSurplusAmt(!CommonUtils.isObjectNullOrEmpty(req.getSurplusAmt()) ? Double.valueOf(df.format(req.getSurplusAmt()).toString()) : 0.0);
+				req.setNetSurplusAmt(!CommonUtils.isObjectNullOrEmpty(req.getNetSurplusAmt()) ? Double.valueOf(df.format(req.getNetSurplusAmt()).toString()) : 0.0);
+				req.setNetCashAccruals(!CommonUtils.isObjectNullOrEmpty(req.getNetCashAccruals()) ? Double.valueOf(df.format(req.getNetCashAccruals()).toString()) : 0.0);
+				req.setMonthlyCashAccruals(!CommonUtils.isObjectNullOrEmpty(req.getMonthlyCashAccruals()) ? Double.valueOf(df.format(req.getMonthlyCashAccruals()).toString()) : 0.0);
+				req.setPerLakhEmi(!CommonUtils.isObjectNullOrEmpty(req.getPerLakhEmi()) ? Double.valueOf(df.format(req.getPerLakhEmi()).toString()) : 0.0);
+				req.setTermLoanCashFlow(!CommonUtils.isObjectNullOrEmpty(req.getTermLoanCashFlow()) ? Double.valueOf(df.format(req.getTermLoanCashFlow()).toString()) : 0.0);
+				req.setNetEligibleTermLoan(!CommonUtils.isObjectNullOrEmpty(req.getNetEligibleTermLoan()) ? Double.valueOf(df.format(req.getNetEligibleTermLoan()).toString()) : 0.0);
+				req.setEligibleLoanAmt(!CommonUtils.isObjectNullOrEmpty(req.getEligibleLoanAmt()) ? Double.valueOf(df.format(req.getEligibleLoanAmt()).toString()) : 0.0);
+				req.setEligibleLoanEmi(!CommonUtils.isObjectNullOrEmpty(req.getEligibleLoanEmi()) ? Double.valueOf(df.format(req.getEligibleLoanEmi()).toString()) : 0.0);
+				req.setDscr(!CommonUtils.isObjectNullOrEmpty(req.getDscr()) ? Double.valueOf(df.format(req.getDscr()).toString()) : 0.0);
+				req.setCvlEliMotorTax(!CommonUtils.isObjectNullOrEmpty(req.getCvlEliMotorTax()) ? Double.valueOf(df.format(req.getCvlEliMotorTax()).toString()) : 0.0);
+				req.setCvlEliInsurancePremium(!CommonUtils.isObjectNullOrEmpty(req.getCvlEliInsurancePremium()) ? Double.valueOf(df.format(req.getCvlEliInsurancePremium()).toString()) : 0.0);
+				req.setCvlEliGarageRent(!CommonUtils.isObjectNullOrEmpty(req.getCvlEliGarageRent()) ? Double.valueOf(df.format(req.getCvlEliGarageRent()).toString()) : 0.0);
+				req.setCvlEliDepreciation(!CommonUtils.isObjectNullOrEmpty(req.getCvlEliDepreciation()) ? Double.valueOf(df.format(req.getCvlEliDepreciation()).toString()) : 0.0);
+				req.setCvlEliRepairExp(!CommonUtils.isObjectNullOrEmpty(req.getCvlEliRepairExp()) ? Double.valueOf(df.format(req.getCvlEliRepairExp()).toString()) : 0.0);
+				req.setCvlEliCostOil(!CommonUtils.isObjectNullOrEmpty(req.getCvlEliCostOil()) ? Double.valueOf(df.format(req.getCvlEliCostOil()).toString()) : 0.0);
+				req.setCvlEliStaffSal(!CommonUtils.isObjectNullOrEmpty(req.getCvlEliStaffSal()) ? Double.valueOf(df.format(req.getCvlEliStaffSal()).toString()) : 0.0);
+				req.setCvlEliDrawingExp(!CommonUtils.isObjectNullOrEmpty(req.getCvlEliDrawingExp()) ? Double.valueOf(df.format(req.getCvlEliDrawingExp()).toString()) : 0.0);
+				req.setCvlEliUnloadingCharges(!CommonUtils.isObjectNullOrEmpty(req.getCvlEliUnloadingCharges()) ? Double.valueOf(df.format(req.getCvlEliUnloadingCharges()).toString()) : 0.0);
+				req.setCvlEliIntOnBorrowing(!CommonUtils.isObjectNullOrEmpty(req.getCvlEliIntOnBorrowing()) ? Double.valueOf(df.format(req.getCvlEliIntOnBorrowing()).toString()) : 0.0);
+				req.setCvlEliOthers(!CommonUtils.isObjectNullOrEmpty(req.getCvlEliOthers()) ? Double.valueOf(df.format(req.getCvlEliOthers()).toString()) : 0.0);
+				req.setCvlCostOfFullyBuildModel(!CommonUtils.isObjectNullOrEmpty(req.getCvlCostOfFullyBuildModel()) ? Double.valueOf(df.format(req.getCvlCostOfFullyBuildModel()).toString()) : 0.0);
+				req.setCvlCostOfChasis(!CommonUtils.isObjectNullOrEmpty(req.getCvlCostOfChasis()) ? Double.valueOf(df.format(req.getCvlCostOfChasis()).toString()) : 0.0);
+				req.setCvlCostOfBody(!CommonUtils.isObjectNullOrEmpty(req.getCvlCostOfBody()) ? Double.valueOf(df.format(req.getCvlCostOfBody()).toString()) : 0.0);
+				req.setCvlOtherMarginExp(!CommonUtils.isObjectNullOrEmpty(req.getCvlOtherMarginExp()) ? Double.valueOf(df.format(req.getCvlOtherMarginExp()).toString()) : 0.0);
+				req.setCvl2ndHandVehicle(!CommonUtils.isObjectNullOrEmpty(req.getCvl2ndHandVehicle()) ? Double.valueOf(df.format(req.getCvl2ndHandVehicle()).toString()) : 0.0);
+				req.setExistingLimit(!CommonUtils.isObjectNullOrEmpty(req.getExistingLimit()) ? Double.valueOf(df.format(req.getExistingLimit()).toString()) : 0.0);
+				req.setMonthlyLoanObligation(!CommonUtils.isObjectNullOrEmpty(req.getMonthlyLoanObligation()) ? Double.valueOf(df.format(req.getMonthlyLoanObligation()).toString()) : 0.0);
+
+
+				map.put("assLimits",req);
+			}
+		}catch (Exception e) {
+			logger.error("Error while getting Eligibility data : ",e);
+		}
 
 		/* eligibility financialCalculation year */
 		map.put("eligibilityFinancialYear",CommonUtils.getFinancialYear());		
