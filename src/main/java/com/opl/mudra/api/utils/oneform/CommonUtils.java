@@ -296,6 +296,11 @@ public class CommonUtils {
 		ITRType,
 		ITRRequestType,
 		SourceMasterMsme,
-		NumberofYear
+		NumberofYear,
+		VehicleTypeCvl,
+		VehicleModelType,
+		VehicleSegmentCvl,
+		VehicleBuildType,
+		VehicleCarryType
 	}
 }
