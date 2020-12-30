@@ -547,4 +547,15 @@ public class CommonRepositoryImpl  implements CommonRepository {
 		}
 		return null;
 	}
+
+	@Override
+	public String getAutoManufacturer(Integer manufacturer) {
+		try {
+			String name = (String) manager.createNativeQuery("SELECT `manufacturer_name` FROM `one_form_cvl`.`auto_manufacturer` WHERE id = " + manufacturer).getSingleResult();
+			return name;
+		}catch (Exception e) {
+			logger.error("Error/Exception while fetching State and City names",e);
+		}
+		return null;
+	}
 }

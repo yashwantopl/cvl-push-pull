@@ -83,5 +83,6 @@ public interface CommonRepository {
 	
 	public String getGSTInFromConnectWithApplicationIdAndProposalId(Long applicationId);
 	public List<Object[]> getStateAndCityNameById(Long stateId, Long cityId);
+	public String getAutoManufacturer(Integer manufacturer);
 	
 }

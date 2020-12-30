@@ -25,6 +25,10 @@ import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
+import com.opl.cvl.enums.cvl.VehicleBuildType;
+import com.opl.cvl.enums.cvl.VehicleModelType;
+import com.opl.cvl.enums.cvl.VehicleSegment;
+import com.opl.cvl.enums.cvl.VehicleType;
 import com.opl.mudra.api.eligibility.model.CVLEligibilityRequest;
 import com.opl.mudra.api.loans.model.*;
 import com.opl.service.loans.repository.VehicleOperatorDetailRepository;
@@ -478,6 +482,24 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				for (Object[] obj : cityState) {
 					vehicleOperatorRequest.setCityName(CommonUtils.convertString(obj[0]));
 					vehicleOperatorRequest.setStateName(CommonUtils.convertString(obj[1]));
+				}
+			}
+
+			if (!CommonUtils.isListNullOrEmpty(vehicleOperatorRequest.getCurrentOperatedVehicleDetails())){
+				for (CurrentOperatedVehicleRequest currentOperatedVehicleRequest : vehicleOperatorRequest.getCurrentOperatedVehicleDetails()){
+					currentOperatedVehicleRequest.setTypeOfVehicle(!CommonUtils.isObjectNullOrEmpty(currentOperatedVehicleRequest.getVehicleType()) ? VehicleModelType.getById(currentOperatedVehicleRequest.getVehicleType()).getValue() : "-");
+				}
+			}
+
+			if (!CommonUtils.isListNullOrEmpty(vehicleOperatorRequest.getProposedVehicleDetails())){
+				for (ProposedVehicleRequest proposedVehicleRequest : vehicleOperatorRequest.getProposedVehicleDetails()){
+					proposedVehicleRequest.setTypeOfVehicleObt(!CommonUtils.isObjectNullOrEmpty(proposedVehicleRequest.getVehicleType()) ? VehicleType.getById(proposedVehicleRequest.getVehicleType()).getValue() : "-");
+					proposedVehicleRequest.setVehicleSeg(!CommonUtils.isObjectNullOrEmpty(proposedVehicleRequest.getVehicleSegment()) ? VehicleSegment.getById(proposedVehicleRequest.getVehicleSegment()).getValue() : "-");
+					proposedVehicleRequest.setVehicleBuild(!CommonUtils.isObjectNullOrEmpty(proposedVehicleRequest.getVehicleIs()) ? VehicleBuildType.getById(proposedVehicleRequest.getVehicleIs()).getValue() : "-");
+					if (!CommonUtils.isObjectNullOrEmpty(proposedVehicleRequest.getManufacturer())) {
+						String manufacturer = commonRepository.getAutoManufacturer(proposedVehicleRequest.getManufacturer());
+						proposedVehicleRequest.setVehicleMake(manufacturer);
+					}
 				}
 			}
 
