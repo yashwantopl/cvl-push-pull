@@ -20,6 +20,19 @@ public enum VehicleModelType {
 	public String getValue() {
 		return value;
 	}
+
+	public static VehicleModelType getById(Integer id) {
+		switch (id) {
+			case 1:
+				return HATCHBACK;
+
+			case 2:
+				return SEDAN;
+
+			default:
+				return null;
+		}
+	}
 	
 	public static VehicleModelType[] getAll() {
 		return VehicleModelType.values();

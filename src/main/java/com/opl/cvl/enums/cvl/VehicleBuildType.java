@@ -19,6 +19,19 @@ public enum VehicleBuildType {
 	public String getValue() {
 		return value;
 	}
+
+	public static VehicleBuildType getById(Integer id) {
+		switch (id) {
+			case 1:
+				return FULLY;
+
+			case 2:
+				return ASSEMBLED;
+
+			default:
+				return null;
+		}
+	}
 	
 	public static VehicleBuildType[] getAll() {
 		return VehicleBuildType.values();

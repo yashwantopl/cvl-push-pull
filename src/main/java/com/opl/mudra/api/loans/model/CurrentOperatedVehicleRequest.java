@@ -18,6 +18,7 @@ public class CurrentOperatedVehicleRequest implements Serializable {
     private Integer mfgYear;
     private Double vehicleCost;
     private Double vehicleIncome;
+    private String typeOfVehicle;
     
 
     public Long getId() {
@@ -68,5 +69,11 @@ public class CurrentOperatedVehicleRequest implements Serializable {
         this.vehicleIncome = vehicleIncome;
     }
 
-    
+    public String getTypeOfVehicle() {
+        return typeOfVehicle;
+    }
+
+    public void setTypeOfVehicle(String typeOfVehicle) {
+        this.typeOfVehicle = typeOfVehicle;
+    }
 }

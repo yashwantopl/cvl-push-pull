@@ -16,6 +16,10 @@ public class ProposedVehicleRequest implements Serializable {
     private Integer manufacturingYear;
     private Integer vehicleIs;
     private Integer vehicleAge;
+    private String typeOfVehicleObt;
+    private String vehicleSeg;
+    private String vehicleMake;
+    private String vehicleBuild;
     
     public Long getId() {
         return id;
@@ -80,8 +84,36 @@ public class ProposedVehicleRequest implements Serializable {
 	public void setVehicleAge(Integer vehicleAge) {
 		this.vehicleAge = vehicleAge;
 	}
-    
-    
 
-    
+    public String getTypeOfVehicleObt() {
+        return typeOfVehicleObt;
+    }
+
+    public void setTypeOfVehicleObt(String typeOfVehicleObt) {
+        this.typeOfVehicleObt = typeOfVehicleObt;
+    }
+
+    public String getVehicleSeg() {
+        return vehicleSeg;
+    }
+
+    public void setVehicleSeg(String vehicleSeg) {
+        this.vehicleSeg = vehicleSeg;
+    }
+
+    public String getVehicleMake() {
+        return vehicleMake;
+    }
+
+    public void setVehicleMake(String vehicleMake) {
+        this.vehicleMake = vehicleMake;
+    }
+
+    public String getVehicleBuild() {
+        return vehicleBuild;
+    }
+
+    public void setVehicleBuild(String vehicleBuild) {
+        this.vehicleBuild = vehicleBuild;
+    }
 }
