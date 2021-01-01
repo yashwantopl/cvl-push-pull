@@ -45,6 +45,7 @@ public class CVLEligibilityRequest extends EligibililityRequest implements Seria
     private Double eligibleLoanAmt;
     private Double eligibleLoanEmi;
     private Double dscr;
+	private Integer typeOfFuel;
     
 	public Double getAgreedPurchasePrice() {
 		return agreedPurchasePrice;
@@ -218,7 +219,12 @@ public class CVLEligibilityRequest extends EligibililityRequest implements Seria
 	public void setSurplusAmt(Double surplusAmt) {
 		this.surplusAmt = surplusAmt;
 	}
-    
-    
 
+	public Integer getTypeOfFuel() {
+		return typeOfFuel;
+	}
+
+	public void setTypeOfFuel(Integer typeOfFuel) {
+		this.typeOfFuel = typeOfFuel;
+	}
 }
