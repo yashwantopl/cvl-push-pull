@@ -286,7 +286,7 @@ public class CorporateServiceImpl implements CorporateService {
 		ProposedVehicleIncomeExpenseDetail incomeExpenseDetail = incomeExpenseDetailRepository.findByApplicationIdAndIsActiveIsTrue(applicationId);
 		Map<String, Object> incomeExpenseMap = new HashMap<String, Object>();
 		incomeExpenseMap.put(MODULE_TYPE, 8);
-		incomeExpenseMap.put(MODULE_NAME, "Income & Expanse Detail");
+		incomeExpenseMap.put(MODULE_NAME, "Income & Expense Detail");
 		incomeExpenseMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/gst-icon-gray.svg");
 		incomeExpenseMap.put(COMPLETED, incomeExpenseDetail != null ? true : false);
 		incomeExpenseMap.put(ACTIVAE, true);  // (boolean)vehicleOperatorMap.get(COMPLETED) 
