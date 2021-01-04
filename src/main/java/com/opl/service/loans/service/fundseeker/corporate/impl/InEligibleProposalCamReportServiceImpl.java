@@ -22,6 +22,13 @@ import java.util.TreeMap;
 
 import javax.transaction.Transactional;
 
+import com.opl.cvl.enums.cvl.VehicleBuildType;
+import com.opl.cvl.enums.cvl.VehicleModelType;
+import com.opl.cvl.enums.cvl.VehicleSegment;
+import com.opl.cvl.enums.cvl.VehicleType;
+import com.opl.mudra.api.loans.model.*;
+import com.opl.service.loans.repository.VehicleOperatorDetailRepository;
+import com.opl.service.loans.service.vehicledetails.VehicleOperatorService;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,13 +49,6 @@ import com.opl.mudra.api.gst.model.GstCalculation;
 import com.opl.mudra.api.gst.model.GstResponse;
 import com.opl.mudra.api.gst.model.yuva.request.GSTR1Request;
 import com.opl.mudra.api.itr.model.ITRConnectionResponse;
-import com.opl.mudra.api.loans.model.AssociatedConcernDetailRequest;
-import com.opl.mudra.api.loans.model.DirectorBackgroundDetailRequest;
-import com.opl.mudra.api.loans.model.DirectorBackgroundDetailResponseString;
-import com.opl.mudra.api.loans.model.DirectorPersonalDetailResponse;
-import com.opl.mudra.api.loans.model.FinancialArrangementDetailResponseString;
-import com.opl.mudra.api.loans.model.FinancialArrangementsDetailRequest;
-import com.opl.mudra.api.loans.model.LoansResponse;
 import com.opl.mudra.api.loans.model.CAM.AssetDetailsString;
 import com.opl.mudra.api.loans.model.CAM.FinancialInputRequestDbl;
 import com.opl.mudra.api.loans.model.CAM.FinancialInputRequestString;
@@ -277,6 +277,9 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
     @Autowired
     private LoanRepository loanRepository;
 
+	@Autowired
+	VehicleOperatorService vehicleOperatorService;
+
 	private static final Logger logger = LoggerFactory.getLogger(InEligibleProposalCamReportServiceImpl.class);
 	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -353,6 +356,43 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		} catch (Exception e1) {
 			logger.error(CommonUtils.EXCEPTION, e1);
 		}
+
+		// Vehicle Operator Code starts here
+
+		VehicleOperatorRequest vehicleOperatorRequest = vehicleOperatorService.getByApplicationId(applicationId);
+
+		if (!CommonUtils.isObjectNullOrEmpty(vehicleOperatorRequest)){
+			List<Object[]> cityState = commonRepository.getStateAndCityNameById(vehicleOperatorRequest.getCity(), vehicleOperatorRequest.getState());
+			if(cityState != null) {
+				for (Object[] obj : cityState) {
+					vehicleOperatorRequest.setCityName(CommonUtils.convertString(obj[0]));
+					vehicleOperatorRequest.setStateName(CommonUtils.convertString(obj[1]));
+				}
+			}
+
+			if (!CommonUtils.isListNullOrEmpty(vehicleOperatorRequest.getCurrentOperatedVehicleDetails())){
+				for (CurrentOperatedVehicleRequest currentOperatedVehicleRequest : vehicleOperatorRequest.getCurrentOperatedVehicleDetails()){
+					currentOperatedVehicleRequest.setTypeOfVehicle(!CommonUtils.isObjectNullOrEmpty(currentOperatedVehicleRequest.getVehicleType()) ? VehicleModelType.getById(currentOperatedVehicleRequest.getVehicleType()).getValue() : "-");
+				}
+			}
+
+			if (!CommonUtils.isListNullOrEmpty(vehicleOperatorRequest.getProposedVehicleDetails())){
+				for (ProposedVehicleRequest proposedVehicleRequest : vehicleOperatorRequest.getProposedVehicleDetails()){
+					proposedVehicleRequest.setTypeOfVehicleObt(!CommonUtils.isObjectNullOrEmpty(proposedVehicleRequest.getVehicleType()) ? VehicleType.getById(proposedVehicleRequest.getVehicleType()).getValue() : "-");
+					proposedVehicleRequest.setVehicleSeg(!CommonUtils.isObjectNullOrEmpty(proposedVehicleRequest.getVehicleSegment()) ? VehicleSegment.getById(proposedVehicleRequest.getVehicleSegment()).getValue() : "-");
+					proposedVehicleRequest.setVehicleBuild(!CommonUtils.isObjectNullOrEmpty(proposedVehicleRequest.getVehicleIs()) ? VehicleBuildType.getById(proposedVehicleRequest.getVehicleIs()).getValue() : "-");
+					if (!CommonUtils.isObjectNullOrEmpty(proposedVehicleRequest.getManufacturer())) {
+						String manufacturer = commonRepository.getAutoManufacturer(proposedVehicleRequest.getManufacturer());
+						proposedVehicleRequest.setVehicleMake(manufacturer);
+					}
+				}
+			}
+
+			map.put("vehicleOperatorDetails", vehicleOperatorRequest);
+		}
+
+		// Vehicle Operator Code ends here
+
 
 		// TIMELINE DATES
 		// date of is now change again it is consider at the time of mcq page selection
