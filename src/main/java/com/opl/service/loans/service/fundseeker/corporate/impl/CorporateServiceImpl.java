@@ -437,7 +437,7 @@ public class CorporateServiceImpl implements CorporateService {
             keyPerMap.put(MODULE_NAME, "Key Person Details");
             keyPerMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/key-person-gray.svg");
             keyPerMap.put(COMPLETED, Boolean.FALSE);
-            keyPerMap.put(ACTIVAE, ((boolean) itrMap.get(COMPLETED) && (boolean) gstMap.get(COMPLETED)&& (boolean) bsMap.get(COMPLETED)));
+            keyPerMap.put(ACTIVAE, ((boolean) itrMap.get(COMPLETED) && (boolean) gstMap.get(COMPLETED)&& (boolean) bsMap.get(COMPLETED)) && (boolean) vehicleDetailMap.get(COMPLETED));
             DirectorBackgroundDetail dirBackGroundDetails = backgroundDetailsRepository.getByAppIdAndIsMainDirector(applicationId);
             if (dirBackGroundDetails != null) {
             	keyPerMap.put(COMPLETED, Boolean.TRUE);
