@@ -290,11 +290,11 @@ public class CorporateServiceImpl implements CorporateService {
 		Map<String, Object> incomeExpenseMap = new HashMap<String, Object>();
 		incomeExpenseMap.put(MODULE_TYPE, 8);
 		incomeExpenseMap.put(MODULE_NAME, "Income & Expense Detail");
-		incomeExpenseMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/income_expanse_disable.svg");
+		incomeExpenseMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/income_expanse_detail_disable.svg");
 		incomeExpenseMap.put(COMPLETED, incomeExpenseDetail != null ? true : false);
 		incomeExpenseMap.put(ACTIVAE, true);  // (boolean)vehicleOperatorMap.get(COMPLETED) 
 		if((boolean)incomeExpenseMap.get(COMPLETED) == true) {
-			incomeExpenseMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/income_expanse.svg");
+			incomeExpenseMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/income_expanse_detail.svg");
 		}
 		vehicleSubTabs.add(incomeExpenseMap);
 		
