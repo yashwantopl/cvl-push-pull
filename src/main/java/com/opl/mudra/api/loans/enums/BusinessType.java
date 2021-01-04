@@ -11,7 +11,7 @@ public enum BusinessType {
     RETAIL_HOME_LOAN(5, "Retail Home Loan"), MFI(6, "Micro FInance Institute"), AGRICULTURE(7, "Agriculture"),
     RETAIL_AUTO_LOAN(8, "Retail Auto Loan"), CO_ORIGINATION(9 , "Co Origination"),
     MUDRA_LOAN(10 ,"Mudra Loan"),DFS_LOAN(21 ,"Dfs Loan"),
-    ODOP_LOAN(22 ,"Odop Loan");
+    ODOP_LOAN(22 ,"Odop Loan"), CVL_MUDRA_LOAN(26,"CVL Mudra Loan");
 
     private Integer id;
     private String value;
