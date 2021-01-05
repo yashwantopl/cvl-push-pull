@@ -51,6 +51,8 @@ public class ConnectResponse implements Serializable {
 	private Boolean isCoappPage;
 	private Integer applicationStatus;
 	private Long proposalId;
+	private Integer dayDifferenceForInPrinciple;
+	
 	public ConnectResponse() {
 		super();
 	}
@@ -97,6 +99,14 @@ public class ConnectResponse implements Serializable {
 		this.proceed = proceed;
 		this.data = data;
 		this.message = message;
+	}
+	
+	public ConnectResponse(Boolean proceed,Object data, Integer dayDifferenceForInPrinciple, String message) {
+		super();
+		this.proceed = proceed;
+		this.data = data;
+		this.message = message;
+		this.dayDifferenceForInPrinciple = dayDifferenceForInPrinciple;
 	}
 
 	public ConnectResponse(Integer stage, Integer status, String message, Integer stepId) {
@@ -482,6 +492,14 @@ public class ConnectResponse implements Serializable {
 
 	public void setProposalId(Long proposalId) {
 		this.proposalId = proposalId;
+	}
+
+	public Integer getDayDifferenceForInPrinciple() {
+		return dayDifferenceForInPrinciple;
+	}
+
+	public void setDayDifferenceForInPrinciple(Integer dayDifferenceForInPrinciple) {
+		this.dayDifferenceForInPrinciple = dayDifferenceForInPrinciple;
 	}
 
 	@Override
