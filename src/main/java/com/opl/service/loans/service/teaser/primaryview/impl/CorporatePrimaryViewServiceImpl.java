@@ -65,8 +65,10 @@ import com.opl.mudra.api.matchengine.model.ProposalMappingRequestString;
 import com.opl.mudra.api.matchengine.model.ProposalMappingResponse;
 import com.opl.mudra.api.mca.McaResponse;
 import com.opl.mudra.api.mca.verifyApi.VerifyAPIRequest;
+import com.opl.mudra.api.oneform.enums.AccessToInputs;
 import com.opl.mudra.api.oneform.enums.AssessedForITMst;
 import com.opl.mudra.api.oneform.enums.AssessmentOptionForFS;
+import com.opl.mudra.api.oneform.enums.BusinessProspects;
 import com.opl.mudra.api.oneform.enums.CertificationCourseMst;
 import com.opl.mudra.api.oneform.enums.CompetitionMst_SBI;
 import com.opl.mudra.api.oneform.enums.Constitution;
@@ -673,8 +675,8 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			
 			//No of Employees/Workers
 			corporatePrimaryViewResponse.setEmployeeGeneration(corporateApplicantDetail.getEmploymentGeneration() != null ?  (NoOfEmployees.getById(corporateApplicantDetail.getEmploymentGeneration()) != null ?  NoOfEmployees.getById(corporateApplicantDetail.getEmploymentGeneration()).getValue(): "-") : "-"  );
-			corporatePrimaryViewResponse.setBusinessProspects(corporateApplicantDetail.getBusinessProspects());
-			corporatePrimaryViewResponse.setAccessInput(corporateApplicantDetail.getAccessInput());
+			corporatePrimaryViewResponse.setBusinessProspects(corporateApplicantDetail.getBusinessProspects() != null ? (BusinessProspects.getById(corporateApplicantDetail.getBusinessProspects()) != null ? BusinessProspects.getById(corporateApplicantDetail.getBusinessProspects()).getValue() : "-") : "-");
+			corporatePrimaryViewResponse.setAccessInput(corporateApplicantDetail.getAccessInput() != null ? (AccessToInputs.getById(corporateApplicantDetail.getAccessInput()) != null ? AccessToInputs.getById(corporateApplicantDetail.getAccessInput()).getValue() : "-") : "-");
 
 			
 			// REGISTER WITH GOV AUTHORITIES
