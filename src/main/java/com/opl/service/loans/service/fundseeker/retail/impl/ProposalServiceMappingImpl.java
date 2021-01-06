@@ -3092,7 +3092,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			response.setProductId(CommonUtils.convertInteger(obj[10]));
 			if(setBranch) {
 				response.setBranchName(CommonUtils.convertString(obj[12]));
-				response.setBranchCode(CommonUtils.convertString(obj[13]));
+				response.setBranchCode(CommonUtils.convertString(obj[11]));
 			}
 			Integer count = CommonUtils.convertInteger(obj[14]);
 			if(!CommonUtils.isObjectNullOrEmpty(count) && count > 0) {

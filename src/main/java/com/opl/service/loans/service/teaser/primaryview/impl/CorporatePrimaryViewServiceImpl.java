@@ -772,7 +772,8 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				}
 
 				directorBackgroundDetailResponse.setStateCode(directorBackgroundDetailRequest.getStateCode());
-				directorBackgroundDetailResponse.setCity(directorBackgroundDetailRequest.getCity());
+				String cityName = commonRepository.getCityByCityId(Long.parseLong(directorBackgroundDetailRequest.getCityId().toString()));
+				directorBackgroundDetailResponse.setCity(cityName);
 				directorBackgroundDetailResponse.setGender((directorBackgroundDetailRequest.getGender() != null
 						? Gender.getById(directorBackgroundDetailRequest.getGender()).getValue()
 						: " "));

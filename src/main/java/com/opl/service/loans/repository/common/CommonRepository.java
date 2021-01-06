@@ -52,6 +52,8 @@ public interface CommonRepository {
 	
 	public String getStateByStateCode(Long id);
 	
+	public String getCityByCityId(Long id);
+	
 	public Long getCountOfJobId(Long jobId , Long stepId , Long actionId);
 	
 	public Boolean checkUserForMudraLoanByUserId(Long userId);
