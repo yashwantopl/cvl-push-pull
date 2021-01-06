@@ -558,4 +558,10 @@ public class CommonRepositoryImpl  implements CommonRepository {
 		}
 		return null;
 	}
+
+	@Override
+	public String getCityByCityId(Long id) {
+		List<String> city =  manager.createNativeQuery("SELECT city_name FROM one_form_mudra.city WHERE id =:id").setParameter("id", id).getResultList();
+		return 	!CommonUtils.isListNullOrEmpty(city) ? city.get(0) : "";  
+	}
 }
