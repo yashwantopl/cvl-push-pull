@@ -109,6 +109,8 @@ public class EligibililityRequest implements Serializable{
 	private String loanType;
 	
 	private Double monthlyLoanObligation;
+
+	private String fuelType;
 	
 	
 	public EligibililityRequest(){
@@ -120,6 +122,14 @@ public class EligibililityRequest implements Serializable{
 		this.applicationId = applicationId;
 		this.productId = productId;
 		this.fpProductId = fpProuctId;
+	}
+
+	public String getFuelType() {
+		return fuelType;
+	}
+
+	public void setFuelType(String fuelType) {
+		this.fuelType = fuelType;
 	}
 
 	public Long getApplicationId() {
