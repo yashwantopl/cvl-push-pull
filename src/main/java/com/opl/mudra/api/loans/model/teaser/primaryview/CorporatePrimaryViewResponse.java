@@ -189,8 +189,8 @@ public class CorporatePrimaryViewResponse {
 	private String scoringBasedOn;
 	private Long profileId;
     private Object vehicleOperatorDetailsResponse;
-    private Integer businessProspects;
-	private Integer accessInput;
+    private String businessProspects;
+	private String accessInput;
 	
 	
 	public CorporatePrimaryViewResponseNbfc getNbfcData() {
@@ -1496,16 +1496,16 @@ public class CorporatePrimaryViewResponse {
 	 * setNbfcListList(List<CorporatePrimaryViewResponseNbfc> nbfcListList) {
 	 * this.nbfcListList = nbfcListList; }
 	 */
-	public Integer getBusinessProspects() {
+	public String getBusinessProspects() {
 		return businessProspects;
 	}
-	public void setBusinessProspects(Integer businessProspects) {
+	public void setBusinessProspects(String businessProspects) {
 		this.businessProspects = businessProspects;
 	}
-	public Integer getAccessInput() {
+	public String getAccessInput() {
 		return accessInput;
 	}
-	public void setAccessInput(Integer accessInput) {
+	public void setAccessInput(String accessInput) {
 		this.accessInput = accessInput;
 	}
 }
