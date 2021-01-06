@@ -673,7 +673,9 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			
 			//No of Employees/Workers
 			corporatePrimaryViewResponse.setEmployeeGeneration(corporateApplicantDetail.getEmploymentGeneration() != null ?  (NoOfEmployees.getById(corporateApplicantDetail.getEmploymentGeneration()) != null ?  NoOfEmployees.getById(corporateApplicantDetail.getEmploymentGeneration()).getValue(): "-") : "-"  );
-			
+			corporatePrimaryViewResponse.setBusinessProspects(corporateApplicantDetail.getBusinessProspects());
+			corporatePrimaryViewResponse.setAccessInput(corporateApplicantDetail.getAccessInput());
+
 			
 			// REGISTER WITH GOV AUTHORITIES
 			List<Integer> govAuthorities = fsParameterMappingRepository.getParametersByApplicationIdAndType(applicationId, FSParameterMst.GOV_AUTHORITIES.getId());
