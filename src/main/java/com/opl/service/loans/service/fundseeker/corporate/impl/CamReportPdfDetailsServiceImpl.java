@@ -477,7 +477,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		VehicleOperatorRequest vehicleOperatorRequest = vehicleOperatorService.getByApplicationId(applicationId);
 
 		if (!CommonUtils.isObjectNullOrEmpty(vehicleOperatorRequest)){
-			List<Object[]> cityState = commonRepository.getStateAndCityNameById(vehicleOperatorRequest.getCity(), vehicleOperatorRequest.getState());
+			List<Object[]> cityState = commonRepository.getStateAndCityNameById(vehicleOperatorRequest.getState(), vehicleOperatorRequest.getCity());
 			if(cityState != null) {
 				for (Object[] obj : cityState) {
 					vehicleOperatorRequest.setCityName(CommonUtils.convertString(obj[0]));
