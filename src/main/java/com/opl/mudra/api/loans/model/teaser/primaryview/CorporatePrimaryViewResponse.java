@@ -3,6 +3,8 @@ package com.opl.mudra.api.loans.model.teaser.primaryview;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.Column;
+
 import com.opl.mudra.api.loans.model.AssociatedConcernDetailRequest;
 import com.opl.mudra.api.loans.model.DirectorBackgroundDetailResponse;
 import com.opl.mudra.api.loans.model.FinancialArrangementsDetailResponse;
@@ -187,6 +189,8 @@ public class CorporatePrimaryViewResponse {
 	private String scoringBasedOn;
 	private Long profileId;
     private Object vehicleOperatorDetailsResponse;
+    private Integer businessProspects;
+	private Integer accessInput;
 	
 	
 	public CorporatePrimaryViewResponseNbfc getNbfcData() {
@@ -1492,4 +1496,16 @@ public class CorporatePrimaryViewResponse {
 	 * setNbfcListList(List<CorporatePrimaryViewResponseNbfc> nbfcListList) {
 	 * this.nbfcListList = nbfcListList; }
 	 */
+	public Integer getBusinessProspects() {
+		return businessProspects;
+	}
+	public void setBusinessProspects(Integer businessProspects) {
+		this.businessProspects = businessProspects;
+	}
+	public Integer getAccessInput() {
+		return accessInput;
+	}
+	public void setAccessInput(Integer accessInput) {
+		this.accessInput = accessInput;
+	}
 }
