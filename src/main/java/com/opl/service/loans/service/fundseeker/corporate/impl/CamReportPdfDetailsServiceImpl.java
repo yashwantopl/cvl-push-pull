@@ -502,7 +502,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					}
 				}
 			}
-
+			map.put("vehicleOperateIn", vehicleOperatorRequest.getVehicleOperateIn().toString().replaceAll("[\\[\\]]", ""));
 			map.put("vehicleOperatorDetails", vehicleOperatorRequest);
 		}
 

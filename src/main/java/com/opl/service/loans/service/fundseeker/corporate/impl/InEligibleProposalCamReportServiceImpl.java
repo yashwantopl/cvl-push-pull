@@ -387,7 +387,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 					}
 				}
 			}
-
+			map.put("vehicleOperateIn", vehicleOperatorRequest.getVehicleOperateIn().toString().replaceAll("[\\[\\]]", ""));
 			map.put("vehicleOperatorDetails", vehicleOperatorRequest);
 		}
 
