@@ -150,7 +150,7 @@ public class CommonRepositoryImpl  implements CommonRepository {
 	
 	@Override
 	public List<Object[]> getBankDetails(Long applicationId, Long orgId){
-		StoredProcedureQuery storedProcedureQuery = manager.createStoredProcedureQuery("users.getCurrentBranchByAppIdAndOrgId_Mudra");
+		StoredProcedureQuery storedProcedureQuery = manager.createStoredProcedureQuery("users.getCurrentBranchByAppIdAndOrgId_Cvl_Mudra");
 		storedProcedureQuery.registerStoredProcedureParameter("applicationId",Long.class, ParameterMode.IN);
 		storedProcedureQuery.registerStoredProcedureParameter("orgId",Long.class, ParameterMode.IN);
 		storedProcedureQuery.setParameter("applicationId" ,applicationId);
