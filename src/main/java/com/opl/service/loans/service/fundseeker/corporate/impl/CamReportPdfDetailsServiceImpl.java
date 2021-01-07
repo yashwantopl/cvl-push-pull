@@ -2860,9 +2860,18 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		            for (FinancialArrangementsDetailRequest financialArrangementsDetailRequest : financialArrangementsDetailRequestList) {
 		            	FinancialArrangementDetailResponseString financialArrangementsDetailResponse = new FinancialArrangementDetailResponseString();
 		     			//financialArrangementsDetailResponse.setRelationshipSince(financialArrangementsDetailRequest.getRelationshipSince());
-		                financialArrangementsDetailResponse.setOutstandingAmount(CommonUtils.convertValueIndianCurrency(financialArrangementsDetailRequest.getOutstandingAmount()).toString());
+                        if(!CommonUtils.isObjectNullOrEmpty(financialArrangementsDetailRequest.getAmount())) {
+                        	Double finAmount = (Double) financialArrangementsDetailRequest.getAmount();
+                            BigDecimal convertedfinAmount = BigDecimal.valueOf(finAmount).setScale(2);
+                            financialArrangementsDetailRequest.setAmountInString(convertedfinAmount.toString());
+                        }else {
+                        	financialArrangementsDetailRequest.setAmount(0d);
+                        }
+                        
+		            	
+		            	financialArrangementsDetailResponse.setOutstandingAmount(CommonUtils.convertValueIndianCurrency(financialArrangementsDetailRequest.getOutstandingAmount()).toString());
 		                financialArrangementsDetailResponse.setSecurityDetails(financialArrangementsDetailRequest.getSecurityDetails());
-		                financialArrangementsDetailResponse.setAmount(financialArrangementsDetailRequest.getAmount() != null ? CommonUtils.convertValueIndianCurrency(financialArrangementsDetailRequest.getAmount()).toString() : "-");
+//		                financialArrangementsDetailResponse.setAmount(financialArrangementsDetailRequest.getAmount() != null ? CommonUtils.convertValueIndianCurrency(financialArrangementsDetailRequest.getAmount()).toString() : "-");
 		                //financialArrangementsDetailResponse.setLenderType(LenderType.getById(financialArrangementsDetailRequest.getLenderType()).getValue());
 		                financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());
 		                financialArrangementsDetailResponse.setLoanType(financialArrangementsDetailRequest.getLoanType());
@@ -2876,6 +2885,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 						financialArrangementsDetailResponse.setCollateralAmtStr(financialArrangementsDetailRequest.getCollateralSecurityAmount() != null ? CommonUtils.convertValueIndianCurrency(financialArrangementsDetailRequest.getCollateralSecurityAmount()).toString() : "-");
 		                financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
 		             }
+		            
 		             map.put("financialArrangments",!CommonUtils.isListNullOrEmpty(financialArrangementsDetailResponseList) ? financialArrangementsDetailResponseList : " ");
 				} catch (Exception e) {
 		             logger.error("Problem to get Data of Financial Arrangements Details {}", e);
