@@ -114,6 +114,7 @@ public class DirectorBackgroundDetailResponseString implements Serializable{
 	private DirectorPersonalDetailRequest directorPersonalDetailRequest;
 	private String isPhysicallyhandicapped;
 	private String isWorkPlaceResidenceSamePlace;
+	private Boolean haveOwnCommercialProperty;
 	
 	public String getIsWorkPlaceResidenceSamePlace() {
 		return isWorkPlaceResidenceSamePlace;
@@ -553,6 +554,13 @@ public class DirectorBackgroundDetailResponseString implements Serializable{
 	public void setIsPhysicallyhandicapped(String isPhysicallyhandicapped) {
 		this.isPhysicallyhandicapped = isPhysicallyhandicapped;
 	}
-	
+
+	public Boolean getHaveOwnCommercialProperty() {
+		return haveOwnCommercialProperty;
+	}
+
+	public void setHaveOwnCommercialProperty(Boolean haveOwnCommercialProperty) {
+		this.haveOwnCommercialProperty = haveOwnCommercialProperty;
+	}
 	
 }
