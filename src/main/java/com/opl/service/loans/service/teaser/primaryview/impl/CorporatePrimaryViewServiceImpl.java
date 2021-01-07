@@ -15,6 +15,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.opl.api.pennydrop.model.CommonResponse;
 import com.opl.cvl.enums.cvl.VehicleBuildType;
 import com.opl.cvl.enums.cvl.VehicleModelType;
 import com.opl.cvl.enums.cvl.VehicleSegment;
@@ -31,9 +32,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.service.pennydrop.client.PennydropClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opl.mudra.api.analyzer.model.common.AnalyzerResponse;
 import com.opl.mudra.api.analyzer.model.common.Data;
+import com.opl.mudra.api.analyzer.model.common.ManualBsReportRequest;
 import com.opl.mudra.api.analyzer.model.common.ReportRequest;
 import com.opl.mudra.api.dms.exception.DocumentException;
 import com.opl.mudra.api.dms.model.DocumentRequest;
@@ -293,6 +296,9 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 
 	@Autowired
 	VehicleOperatorService vehicleOperatorService;
+	
+	@Autowired
+	private PennydropClient pennyDropClient;
 
 	DecimalFormat decim = new DecimalFormat("#,###.00");
 
@@ -1526,8 +1532,27 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		} catch (Exception e1) {
 			logger.error("------:::::...Error while fetching Fraud Detection Details...For..::::::-----" + toApplicationId + CommonUtils.EXCEPTION + e1);
 		}
-
-
+		
+		try {
+			ManualBsReportRequest manualBsReportRequest = new ManualBsReportRequest();
+	    	manualBsReportRequest.setBsMasterId(bsId);
+	    	AnalyzerResponse analyzerResponse = analyzerClient.getManualBankAccDetails(manualBsReportRequest);
+	    	if (!CommonUtils.isObjectNullOrEmpty(analyzerResponse) && !CommonUtils.isObjectNullOrEmpty(analyzerResponse.getData())) {
+	    		LinkedHashMap<String, Object> bankStatementResponse = (LinkedHashMap<String, Object>)analyzerResponse.getData();
+			
+	    		corporatePrimaryViewResponse.setName(bankStatementResponse.get("accountHolderName"));
+	    		corporatePrimaryViewResponse.setAccountName(bankStatementResponse.get("accountHolderName"));
+	    		corporatePrimaryViewResponse.setAccountNumber(bankStatementResponse.get("bankAccountNo"));
+	    		corporatePrimaryViewResponse.setIfsc(bankStatementResponse.get("ifscCode"));
+	    		corporatePrimaryViewResponse.setStatus(bankStatementResponse.get(1));
+	    		
+	    		corporatePrimaryViewResponse.setBankStatement((List<Object>) corporatePrimaryViewResponse);
+	    	}
+		}
+		catch (Exception e) {
+			logger.error("Error while fetching No Bank Statement Account data From Analyzer with BsMasterId==>{} with Error:{} ",bsId , e);	
+		}
+		
 		// Product Name
 
 		if(fpProductMappingId != null) {
