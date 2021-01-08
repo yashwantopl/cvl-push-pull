@@ -2755,7 +2755,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 							directorBackgroundDetailResponse.setDirectorPersonalInfo(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest()) ? directorBackgroundDetailRequest.getDirectorPersonalDetailRequest() : " " );
 							directorBackgroundDetailResponse.setIsWorkPlaceResidenceSamePlace(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest()) && !CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getIsWorkAndResidenceSamePlace()) ? (directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getIsWorkAndResidenceSamePlace() != 0 ? "Yes" : "No") : "No" );
 							directorBackgroundDetailResponse.setIsPhysicallyhandicapped(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getPhysicallyHandicapped()) ? VisuallyImpairedMst.getById(directorBackgroundDetailRequest.getPhysicallyHandicapped()).toString() : "-");
-							directorBackgroundDetailResponse.setHaveOwnCommercialProperty(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest()) && !CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveOwnCommercialProperty()) ? (directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveOwnCommercialProperty() ? true : false) : false );
+							directorBackgroundDetailResponse.setHaveOwnCommercialProperty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveOwnCommercialProperty());
 						
 							//NATIONALITY
 							List<Long> countryList = new ArrayList<>();
