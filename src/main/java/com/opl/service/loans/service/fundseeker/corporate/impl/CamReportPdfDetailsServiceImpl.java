@@ -498,6 +498,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					proposedVehicleRequest.setVehicleBuild(!CommonUtils.isObjectNullOrEmpty(proposedVehicleRequest.getVehicleIs()) ? VehicleBuildType.getById(proposedVehicleRequest.getVehicleIs()).getValue() : "-");
 					if (!CommonUtils.isObjectNullOrEmpty(proposedVehicleRequest.getManufacturer())) {
 						String manufacturer = commonRepository.getAutoManufacturer(proposedVehicleRequest.getManufacturer());
+						proposedVehicleRequest.toString().replaceAll("[\\[\\]]", "");
 						proposedVehicleRequest.setVehicleMake(manufacturer);
 					}
 				}
