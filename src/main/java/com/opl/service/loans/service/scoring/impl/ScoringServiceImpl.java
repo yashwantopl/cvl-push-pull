@@ -100,6 +100,7 @@ import com.opl.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetailM
 import com.opl.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.opl.service.loans.repository.CurrentOperatedVehicleDetailRepository;
 import com.opl.service.loans.repository.PastVehicleLoanDetailRepository;
+import com.opl.service.loans.repository.VehicleOperatorDetailRepository;
 import com.opl.service.loans.repository.common.LoanRepository;
 import com.opl.service.loans.repository.fundseeker.ScoringRequestDetailRepository;
 import com.opl.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
@@ -211,6 +212,10 @@ public class ScoringServiceImpl implements ScoringService {
 
     @Autowired
     private PrimaryCorporateDetailMudraLoanRepository primaryCorporateDetailMudraLoanRepository;
+    
+
+    @Autowired
+    private VehicleOperatorDetailRepository vehicleOperatorDetailRepository;
     
     private static final String ERROR_WHILE_GETTING_FIELD_LIST = "error while getting field list : ";
     private static final String ERROR_WHILE_CALLING_SCORING = "error while calling scoring : ";
@@ -466,7 +471,7 @@ public class ScoringServiceImpl implements ScoringService {
     @Override
     public ResponseEntity<LoansResponse> calculateMudraScoringList(List<ScoringRequestLoans> scoringRequestLoansList) {
 
-    	VehicleOperatorDetail vehicleOperatorDetail = new VehicleOperatorDetail();
+//    	VehicleOperatorDetail vehicleOperatorDetail = new VehicleOperatorDetail();
     	Object[] profileVersionDetails = loanRepository.getProfileVersionDetailsByApplicationId(scoringRequestLoansList.get(0).getApplicationId());
 		if(CommonUtils.isObjectNullOrEmpty(profileVersionDetails)) {
 			logger.error("Profile not found for applicationId =======>" + scoringRequestLoansList.get(0).getApplicationId());
@@ -681,7 +686,7 @@ public class ScoringServiceImpl implements ScoringService {
         
 
         CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.getCorporateApplicantDetailByApplicationId(applicationId);
-        
+        VehicleOperatorDetail vehicleOperatorDetail = vehicleOperatorDetailRepository.findByApplicationIdAndIsActive(applicationId, true);
         
         // call gst client for gstr3b sales data for 6 months
         GSTR1Request gstr =  new GSTR1Request();
