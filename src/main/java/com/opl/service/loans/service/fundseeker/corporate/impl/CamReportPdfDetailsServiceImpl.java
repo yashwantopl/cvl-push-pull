@@ -3221,8 +3221,46 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		    userId = applicationProposalMapping.getUserId();
 		} else {
 			userId = loanApplicationRepository.getUserIdByApplicationId(applicationId);
-		}	    
-	    
+		}
+
+		// Vehicle Operator Code starts here
+
+		VehicleOperatorRequest vehicleOperatorRequest = vehicleOperatorService.getByApplicationId(applicationId);
+
+		if (!CommonUtils.isObjectNullOrEmpty(vehicleOperatorRequest)){
+			List<Object[]> cityState = commonRepository.getStateAndCityNameById(vehicleOperatorRequest.getState(), vehicleOperatorRequest.getCity());
+			if(cityState != null) {
+				for (Object[] obj : cityState) {
+					vehicleOperatorRequest.setCityName(CommonUtils.convertString(obj[0]));
+					vehicleOperatorRequest.setStateName(CommonUtils.convertString(obj[1]));
+				}
+			}
+
+			if (!CommonUtils.isListNullOrEmpty(vehicleOperatorRequest.getCurrentOperatedVehicleDetails())){
+				for (CurrentOperatedVehicleRequest currentOperatedVehicleRequest : vehicleOperatorRequest.getCurrentOperatedVehicleDetails()){
+					currentOperatedVehicleRequest.setTypeOfVehicle(!CommonUtils.isObjectNullOrEmpty(currentOperatedVehicleRequest.getVehicleType()) ? VehicleModelType.getById(currentOperatedVehicleRequest.getVehicleType()).getValue() : "-");
+				}
+			}
+
+			if (!CommonUtils.isListNullOrEmpty(vehicleOperatorRequest.getProposedVehicleDetails())){
+				for (ProposedVehicleRequest proposedVehicleRequest : vehicleOperatorRequest.getProposedVehicleDetails()){
+					proposedVehicleRequest.setTypeOfVehicleObt(!CommonUtils.isObjectNullOrEmpty(proposedVehicleRequest.getVehicleType()) ? VehicleType.getById(proposedVehicleRequest.getVehicleType()).getValue() : "-");
+					proposedVehicleRequest.setVehicleSeg(!CommonUtils.isObjectNullOrEmpty(proposedVehicleRequest.getVehicleSegment()) ? VehicleSegment.getById(proposedVehicleRequest.getVehicleSegment()).getValue() : "-");
+					proposedVehicleRequest.setVehicleBuild(!CommonUtils.isObjectNullOrEmpty(proposedVehicleRequest.getVehicleIs()) ? VehicleBuildType.getById(proposedVehicleRequest.getVehicleIs()).getValue() : "-");
+					if (!CommonUtils.isObjectNullOrEmpty(proposedVehicleRequest.getManufacturer())) {
+						String manufacturer = commonRepository.getAutoManufacturer(proposedVehicleRequest.getManufacturer());
+						proposedVehicleRequest.setVehicleMake(manufacturer);
+					}
+				}
+			}
+
+			map.put("vehicleOperateIn", vehicleOperatorRequest.getVehicleOperateIn().toString().replaceAll("[\\[\\]]", ""));
+
+			map.put("vehicleOperatorDetails", vehicleOperatorRequest);
+		}
+
+		// Vehicle Operator Code ends here
+
 	    //GST COMMON DATA
 	    map.put("gstDetailedResp",getGstDetails(applicationId, userId,gstId));
 	        
