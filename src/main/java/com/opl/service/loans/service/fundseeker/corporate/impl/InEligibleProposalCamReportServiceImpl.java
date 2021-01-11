@@ -949,6 +949,8 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 				map.put("promotorsContribution",CommonUtils.convertValueIndianCurrency(primaryCorporateRequest.getPromoterContribution()));
 				map.put("productDesc", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getProductServiceDescription()) ? StringEscapeUtils.escapeXml(primaryCorporateDetail.getProductServiceDescription()) : null);
 				map.put("totalAmtPer",!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getTotalAmtPercentage())? " (" + CommonUtils.convertValue(primaryCorporateRequest.getTotalAmtPercentage()) + "%)": null);
+				map.put("incrementalTurnover",primaryCorporateDetail.getIncrementalTurnover()!= null ? CommonUtils.convertValueIndianCurrency(primaryCorporateDetail.getIncrementalTurnover()) : 0);
+				map.put("incrementalMargin",primaryCorporateDetail.getIncrementalMargin()!= null ? CommonUtils.convertValueIndianCurrency(primaryCorporateDetail.getIncrementalMargin()) : 0);
 				if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getPurposeOfLoanId())) {
 					map.put("purpose", StringEscapeUtils.escapeXml(primaryCorporateDetail.getPurposeOfLoanId() != null && primaryCorporateDetail.getPurposeOfLoanId()==1 ? AssessmentOptionForFS.getById(primaryCorporateDetail.getAssessmentId()).getValue().toString() : PurposeOfLoan.getById(primaryCorporateDetail.getPurposeOfLoanId()).getValue().toString()));
 				} else {
