@@ -38,9 +38,9 @@ public class CalculationResponse {
 	 * @param gurAmtCalctd
 	 */
 	public CalculationResponse(Double totalColleteralAmt, Double colleteralCoverage, String natureOfEntity,
-			Double identifyAmount, String statusOfBrrower, Boolean isEligibleBorrower, Boolean isShareHoldingGT50,
-			Boolean isNorthEastRegion, Boolean status, Double gurAmt, Double maxCGTMSECovergeAvail, Double loanAmount,
-			Double cgtmseCoverageAmount, Double amountOfColleteral, Double percTerms, Double gurAmtCalctd,Double assetAqusition, Boolean isPurchaseOfEqup) {
+							   Double identifyAmount, String statusOfBrrower, Boolean isEligibleBorrower, Boolean isShareHoldingGT50,
+							   Boolean isNorthEastRegion, Boolean status, Double gurAmt, Double maxCGTMSECovergeAvail, Double loanAmount,
+							   Double cgtmseCoverageAmount, Double amountOfColleteral, Double percTerms, Double gurAmtCalctd,Double assetAqusition, Boolean isPurchaseOfEqup, Double turnOver) {
 		super();
 		this.totalColleteralAmt = totalColleteralAmt;
 		this.colleteralCoverage = colleteralCoverage;
@@ -60,6 +60,7 @@ public class CalculationResponse {
 		this.gurAmtCalctd = gurAmtCalctd;
 		this.assetAqusition = assetAqusition;
 		this.isPurchaseOfEqup = isPurchaseOfEqup;
+		this.turnOver = turnOver;
 	}
 
 	private Boolean isEligibleBorrower;
