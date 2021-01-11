@@ -133,4 +133,6 @@ public interface LoanRepository{
 	public Object[] getProfileVersionDetailsByApplicationId(Long applicationId);
 	
 	public Boolean isManualBs(Long bsId);
+
+	public int checkApplicationStageforMultiBank(Long applicationId);
 }

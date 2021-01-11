@@ -2599,6 +2599,12 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)){
 				return Boolean.FALSE;
 			}
+			if(applicationId!=null) {
+				int checkStage=loanRepository.checkApplicationStageforMultiBank(applicationId);
+				if(checkStage>0) {
+					return Boolean.FALSE;
+				}
+			}
 			List<ProposalDetails> proposalDetailsList = proposalDetailRepository.findByApplicationIdAndIsActiveForMBOnline(applicationId,true,false);
 			List<ProposalMappingRequest> inActivityProposalList = new ArrayList<ProposalMappingRequest>();
 			for (int i = 0; i < proposalDetailsList.size(); i++) {
