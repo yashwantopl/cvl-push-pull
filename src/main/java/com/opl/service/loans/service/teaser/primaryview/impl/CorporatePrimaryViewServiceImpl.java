@@ -763,7 +763,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 						.setAppointmentDate(directorBackgroundDetailRequest.getAppointmentDate());
 				directorBackgroundDetailResponse.setDin(directorBackgroundDetailRequest.getDin());
 				directorBackgroundDetailResponse.setMobile(directorBackgroundDetailRequest.getMobile());
-				directorBackgroundDetailResponse.setDob(directorBackgroundDetailRequest.getDob());
+				directorBackgroundDetailResponse.setDobN(directorBackgroundDetailRequest.getDob().toString());
 				directorBackgroundDetailResponse.setPincode(directorBackgroundDetailRequest.getPincode());
 				directorBackgroundDetailResponse.setPersonalId(directorBackgroundDetailRequest.getPersonalId());
                                 
