@@ -111,6 +111,11 @@ public class EligibililityRequest implements Serializable{
 	private Double monthlyLoanObligation;
 
 	private String fuelType;
+
+	private Double consideredPromotorContribution;
+	private Double consideredPromotorContributionAmount;
+	private Double valueAfterExistingLoanAmountDiduction;
+
 	
 	
 	public EligibililityRequest(){
@@ -130,6 +135,30 @@ public class EligibililityRequest implements Serializable{
 
 	public void setFuelType(String fuelType) {
 		this.fuelType = fuelType;
+	}
+
+	public Double getConsideredPromotorContribution() {
+		return consideredPromotorContribution;
+	}
+
+	public void setConsideredPromotorContribution(Double consideredPromotorContribution) {
+		this.consideredPromotorContribution = consideredPromotorContribution;
+	}
+
+	public Double getConsideredPromotorContributionAmount() {
+		return consideredPromotorContributionAmount;
+	}
+
+	public void setConsideredPromotorContributionAmount(Double consideredPromotorContributionAmount) {
+		this.consideredPromotorContributionAmount = consideredPromotorContributionAmount;
+	}
+
+	public Double getValueAfterExistingLoanAmountDiduction() {
+		return valueAfterExistingLoanAmountDiduction;
+	}
+
+	public void setValueAfterExistingLoanAmountDiduction(Double valueAfterExistingLoanAmountDiduction) {
+		this.valueAfterExistingLoanAmountDiduction = valueAfterExistingLoanAmountDiduction;
 	}
 
 	public Long getApplicationId() {
