@@ -115,7 +115,7 @@ public class EligibililityRequest implements Serializable{
 	private Double consideredPromotorContribution;
 	private Double consideredPromotorContributionAmount;
 	private Double valueAfterExistingLoanAmountDiduction;
-
+	private Double netEligibileBankFinance;
 	
 	
 	public EligibililityRequest(){
@@ -617,9 +617,11 @@ public class EligibililityRequest implements Serializable{
 		this.monthlyLoanObligation = monthlyLoanObligation;
 	}
 
+	public Double getNetEligibileBankFinance() {
+		return netEligibileBankFinance;
+	}
 
-	
-	
-
-	
+	public void setNetEligibileBankFinance(Double netEligibileBankFinance) {
+		this.netEligibileBankFinance = netEligibileBankFinance;
+	}
 }
