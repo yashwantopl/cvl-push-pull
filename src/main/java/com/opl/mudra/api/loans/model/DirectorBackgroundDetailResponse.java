@@ -108,7 +108,7 @@ public class DirectorBackgroundDetailResponse implements Serializable{
 		private Boolean isGuarantor;
                 private Double loanObligation;
         private String physicallyHandicapped;
-		
+        private String dobN;
 		
 
 		
@@ -635,5 +635,12 @@ public class DirectorBackgroundDetailResponse implements Serializable{
 			this.physicallyHandicapped = physicallyHandicapped;
 		}
 
+		public String getDobN() {
+			return dobN;
+		}
+
+		public void setDobN(String dobN) {
+			this.dobN = dobN;
+		}
 	
 }
