@@ -78,6 +78,7 @@ import com.opl.mudra.client.oneform.OneFormClient;
 import com.opl.mudra.client.users.UsersClient;
 import com.opl.service.loans.config.AsyncComponent;
 import com.opl.service.loans.domain.CommonAuditTable;
+import com.opl.service.loans.domain.VehicleOperatorDetail;
 import com.opl.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.opl.service.loans.domain.fundseeker.corporate.AssociatedConcernDetail;
 import com.opl.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
@@ -87,6 +88,7 @@ import com.opl.service.loans.domain.fundseeker.corporate.MachineDetailMudraLoan;
 import com.opl.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import com.opl.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetailMudraLoan;
 import com.opl.service.loans.repository.CommonAuditTableRepository;
+import com.opl.service.loans.repository.VehicleOperatorDetailRepository;
 import com.opl.service.loans.repository.common.LoanRepository;
 import com.opl.service.loans.repository.fundseeker.corporate.AssociatedConcernDetailRepository;
 import com.opl.service.loans.repository.fundseeker.corporate.CollateralSecurityDetailRepository;
@@ -223,6 +225,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	
 	@Autowired
 	private PennydropClient pennydropClient; 
+	
+	@Autowired
+	private VehicleOperatorDetailRepository vehicleOperatorDetailRepository;
 
 	
 	@Autowired
@@ -677,6 +682,11 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 					.findOneByApplicationIdId(fsInputReq.getApplicationId());
 			if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)) {
 				BeanUtils.copyProperties(primaryCorporateDetail, fsInputRes);
+			}
+			
+			VehicleOperatorDetail vehicleOperatorDetail = vehicleOperatorDetailRepository.findByApplicationIdAndIsActive(fsInputReq.getApplicationId(), true);
+			if(vehicleOperatorDetail != null) {
+				fsInputRes.setCostOfMachinery(vehicleOperatorDetail.getTotalCostOfProposedVehicle());
 			}
 			
 			List<FinancialArrangementsDetailRequest> resultList = financialArrangementDetailsService.getFinancialArrangementDetailsList(fsInputReq.getApplicationId(), fsInputReq.getUserId());
