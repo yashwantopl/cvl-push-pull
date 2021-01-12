@@ -323,7 +323,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 
 			if (!CommonUtils.isListNullOrEmpty(vehicleOperatorRequest.getCurrentOperatedVehicleDetails())){
 				for (CurrentOperatedVehicleRequest currentOperatedVehicleRequest : vehicleOperatorRequest.getCurrentOperatedVehicleDetails()){
-					currentOperatedVehicleRequest.setTypeOfVehicle(!CommonUtils.isObjectNullOrEmpty(currentOperatedVehicleRequest.getVehicleType()) ? VehicleModelType.getById(currentOperatedVehicleRequest.getVehicleType()).getValue() : "-");
+					currentOperatedVehicleRequest.setTypeOfVehicle(!CommonUtils.isObjectNullOrEmpty(currentOperatedVehicleRequest.getVehicleType()) ? VehicleSegment.getById(currentOperatedVehicleRequest.getVehicleType()).getValue() : "-");
 				}
 			}
 
