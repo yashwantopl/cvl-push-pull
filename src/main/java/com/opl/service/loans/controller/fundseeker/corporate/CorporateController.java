@@ -44,11 +44,11 @@ public class CorporateController {
 	@RequestMapping(value = "/getTabData/{profileId}/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<CommonResponse> getTabData(@PathVariable("profileId") Long profileId, @PathVariable("applicationId") Long applicationId,HttpServletRequest httpRequest) {
 		try {
-			Long userId = (Long) httpRequest.getAttribute(CommonUtils.USER_ID);
+			Long userId = 81371l;
 			if(profileId == null || applicationId == null || userId == null) {
 				return new ResponseEntity<CommonResponse>(new CommonResponse(CommonUtils.INVALID_REQUEST_MSG, HttpStatus.BAD_REQUEST.value()),HttpStatus.BAD_REQUEST);
 			}
-			logger.info("Enter in get tab data by profile id  ======>" + profileId + " With Application Id =====" + applicationId);
+			logger.info("Enter in get tab data by profile id  ======>" + profileId + " With Application Id =====" + applicationId+"user id====="+userId);
 			List<Map<String,Object>> loanTabsData = corporateService.getLoanTabsData(profileId, applicationId,userId);
 			return new ResponseEntity<CommonResponse>(
 					new CommonResponse(CommonUtils.SUCCESSFULLY_GET_DATA, loanTabsData, HttpStatus.OK.value()), HttpStatus.OK);
