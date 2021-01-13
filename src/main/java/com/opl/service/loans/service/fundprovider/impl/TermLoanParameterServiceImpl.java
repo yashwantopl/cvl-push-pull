@@ -176,6 +176,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 	@Autowired
 	private CvlVehicleMultipleOptionRepoTemp cvlVehicleMultipleOptionRepoTemp;
 	
+	@Autowired
 	private CvlVehicleMultipleOptionRepo cvlVehicleMultipleOptionRepo;
 	
 	

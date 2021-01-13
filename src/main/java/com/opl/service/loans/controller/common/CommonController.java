@@ -204,6 +204,7 @@ public class CommonController {
 
 		CommonDocumentUtils.startHook(logger, "user_verification");
 		Long userId = Long.valueOf(request.getAttribute(CommonUtils.USER_ID).toString());
+		logger.info("userId-------------------"+userId);
 		Integer userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 
 		if (CommonUtils.isObjectNullOrEmpty(userId) || CommonUtils.isObjectNullOrEmpty(userType)) {
@@ -306,7 +307,7 @@ public class CommonController {
 				obj.put("coOriginationUser",usersRequestObj.getNbfcUser());
 			}
 		}
-
+		logger.info("obj-------------------"+obj);
 		CommonDocumentUtils.endHook(logger, "user_verification");
 		return new ResponseEntity<UserResponse>(new UserResponse(obj, CommonUtils.SUCCESSFULLY_GET_DATA, HttpStatus.OK.value()),
 				HttpStatus.OK);

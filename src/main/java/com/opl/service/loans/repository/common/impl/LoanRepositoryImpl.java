@@ -888,6 +888,19 @@ public class LoanRepositoryImpl implements LoanRepository {
 			LOGGER.error("Exception while get is Bank Statement Uploaded  or Manual Filled for BS Id : " + bsId,e.getMessage());
 		}
 		return false;
-	}	
+	}
+
+	@Override
+	public int checkApplicationStageforMultiBank(Long applicationId) {
+		try {
+			BigInteger cnt = (BigInteger) entityManager.createNativeQuery(" SELECT COUNT(*) FROM connect_cvl_mudra.connect_log  WHERE application_id=:applicationId AND is_active IS TRUE\n" +
+					"  AND (stage_id=1006 OR stage_id=1010) ORDER BY id DESC LIMIT 1")
+					.setParameter("applicationId", applicationId).getSingleResult();
+			return cnt != null ? cnt.intValue() : null;
+		} catch (Exception e) {
+			LOGGER.error("Exception while get Count of checkApplicationStageforMultiBank from application id " + applicationId, e.getMessage());
+		}
+		return 0;
+	}
 	
 }

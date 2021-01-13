@@ -52,6 +52,8 @@ public interface CommonRepository {
 	
 	public String getStateByStateCode(Long id);
 	
+	public String getCityByCityId(Long id);
+	
 	public Long getCountOfJobId(Long jobId , Long stepId , Long actionId);
 	
 	public Boolean checkUserForMudraLoanByUserId(Long userId);
@@ -83,5 +85,6 @@ public interface CommonRepository {
 	
 	public String getGSTInFromConnectWithApplicationIdAndProposalId(Long applicationId);
 	public List<Object[]> getStateAndCityNameById(Long stateId, Long cityId);
+	public String getAutoManufacturer(Integer manufacturer);
 	
 }

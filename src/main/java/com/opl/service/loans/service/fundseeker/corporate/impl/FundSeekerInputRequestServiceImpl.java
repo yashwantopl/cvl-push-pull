@@ -78,6 +78,7 @@ import com.opl.mudra.client.oneform.OneFormClient;
 import com.opl.mudra.client.users.UsersClient;
 import com.opl.service.loans.config.AsyncComponent;
 import com.opl.service.loans.domain.CommonAuditTable;
+import com.opl.service.loans.domain.VehicleOperatorDetail;
 import com.opl.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.opl.service.loans.domain.fundseeker.corporate.AssociatedConcernDetail;
 import com.opl.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
@@ -87,6 +88,7 @@ import com.opl.service.loans.domain.fundseeker.corporate.MachineDetailMudraLoan;
 import com.opl.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import com.opl.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetailMudraLoan;
 import com.opl.service.loans.repository.CommonAuditTableRepository;
+import com.opl.service.loans.repository.VehicleOperatorDetailRepository;
 import com.opl.service.loans.repository.common.LoanRepository;
 import com.opl.service.loans.repository.fundseeker.corporate.AssociatedConcernDetailRepository;
 import com.opl.service.loans.repository.fundseeker.corporate.CollateralSecurityDetailRepository;
@@ -223,6 +225,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	
 	@Autowired
 	private PennydropClient pennydropClient; 
+	
+	@Autowired
+	private VehicleOperatorDetailRepository vehicleOperatorDetailRepository;
 
 	
 	@Autowired
@@ -248,7 +253,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				corporateApplicantDetail = new CorporateApplicantDetail();
 				BeanUtils.copyProperties(fundSeekerInputRequest, corporateApplicantDetail, SECOND_ADDRESS, SAME_AS,"organisationName",CONSTITUTION_ID,
 						CREDIT_RATING_ID, CONT_LIABILITY_FY_AMT, CONT_LIABILITY_SY_AMT, CONT_LIABILITY_TY_AMT,
-						CONT_LIABILITY_YEAR, NOT_APPLICABLE, ABOUT_US, "id", CommonUtils.IS_ACTIVE,"aadhar");
+						CONT_LIABILITY_YEAR, NOT_APPLICABLE, ABOUT_US, "id", CommonUtils.IS_ACTIVE,"aadhar","employmentGeneration","businessProspects","accessInput","castCategory");
 				corporateApplicantDetail
 						.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
 				corporateApplicantDetail.setCreatedBy(fundSeekerInputRequest.getUserId());
@@ -258,7 +263,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			} else {
 				BeanUtils.copyProperties(fundSeekerInputRequest, corporateApplicantDetail, SECOND_ADDRESS, SAME_AS,"organisationName",CONSTITUTION_ID,
 						CREDIT_RATING_ID, CONT_LIABILITY_FY_AMT, CONT_LIABILITY_SY_AMT, CONT_LIABILITY_TY_AMT,
-						CONT_LIABILITY_YEAR, NOT_APPLICABLE, ABOUT_US, "id","aadhar");
+						CONT_LIABILITY_YEAR, NOT_APPLICABLE, ABOUT_US, "id","aadhar","employmentGeneration","businessProspects","accessInput","castCategory");
 				corporateApplicantDetail.setModifiedBy(fundSeekerInputRequest.getUserId());
 				corporateApplicantDetail.setModifiedDate(new Date());
 				corporateApplicantDetail.setAadhar(CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequest.getAadhar()) ? null : fundSeekerInputRequest.getAadhar());
@@ -644,7 +649,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			return new ResponseEntity<LoansResponse>(res, HttpStatus.OK);
 		}finally {
 			try {
-				connectClient.saveAuditLog(new ConnectLogAuditRequest(fundSeekerInputRequest.getApplicationId(), ConnectStage.MUDRA_DIRECTOR_BACKGROUND.getId(),fundSeekerInputRequest.getUserId(),msg, ConnectAuditErrorCode.DIRECTOR_SUBMIT.toString(),CommonUtils.BusinessType.MUDRA_LOAN.getId()));
+				connectClient.saveAuditLog(new ConnectLogAuditRequest(fundSeekerInputRequest.getApplicationId(), ConnectStage.MUDRA_DIRECTOR_BACKGROUND.getId(),fundSeekerInputRequest.getUserId(),msg, ConnectAuditErrorCode.DIRECTOR_SUBMIT.toString(),CommonUtils.BusinessType.CVL_MUDRA_LOAN.getId()));
 			} catch (Exception e){
 				logger.error(CommonUtils.EXCEPTION,e);
 			}
@@ -677,6 +682,11 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 					.findOneByApplicationIdId(fsInputReq.getApplicationId());
 			if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)) {
 				BeanUtils.copyProperties(primaryCorporateDetail, fsInputRes);
+			}
+			
+			VehicleOperatorDetail vehicleOperatorDetail = vehicleOperatorDetailRepository.findByApplicationIdAndIsActive(fsInputReq.getApplicationId(), true);
+			if(vehicleOperatorDetail != null) {
+				fsInputRes.setCostOfMachinery(vehicleOperatorDetail.getTotalCostOfProposedVehicle());
 			}
 			
 			List<FinancialArrangementsDetailRequest> resultList = financialArrangementDetailsService.getFinancialArrangementDetailsList(fsInputReq.getApplicationId(), fsInputReq.getUserId());
