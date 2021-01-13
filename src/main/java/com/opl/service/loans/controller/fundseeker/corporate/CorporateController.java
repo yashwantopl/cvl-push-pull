@@ -44,7 +44,7 @@ public class CorporateController {
 	@RequestMapping(value = "/getTabData/{profileId}/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<CommonResponse> getTabData(@PathVariable("profileId") Long profileId, @PathVariable("applicationId") Long applicationId,HttpServletRequest httpRequest) {
 		try {
-			Long userId = 81371l;
+			Long userId = (Long) httpRequest.getAttribute(CommonUtils.USER_ID);
 			if(profileId == null || applicationId == null || userId == null) {
 				return new ResponseEntity<CommonResponse>(new CommonResponse(CommonUtils.INVALID_REQUEST_MSG, HttpStatus.BAD_REQUEST.value()),HttpStatus.BAD_REQUEST);
 			}
