@@ -17,9 +17,9 @@ import com.opl.service.loans.domain.fundseeker.IneligibleProposalDetails;
 public interface IneligibleProposalDetailsRepository extends JpaRepository<IneligibleProposalDetails,Long> {
 	
 	@Query(value = "SELECT ipd.application_id, cl.user_id, fs.name, usr.email, usr.mobile, ipd.created_date, ipd.branch_id, branch.name AS branchname, branch.contact_person_name, branch.telephone_no, branch.contact_person_number, org.organisation_name, lam.application_code, branch.code, branch.street_name, (SELECT state_name FROM `one_form`.`state` s WHERE s.id = branch.state_id), (SELECT city_name FROM `one_form`.`city` c WHERE c.id = branch.city_id), branch.premises_no, branch.contact_person_email\n" + 
-			"			FROM `loan_application_mudra`.`ineligible_proposal_details` ipd \n" + 
-			"			LEFT JOIN `loan_application_mudra`.`proposal_details` pd ON  pd.user_org_id = ipd.user_org_id \n" + 
-			"			LEFT JOIN `connect_mudra`.`connect_log` cl ON cl.application_id = ipd.application_id \n" + 
+			"			FROM `loan_application_cvl_mudra`.`ineligible_proposal_details` ipd \n" + 
+			"			LEFT JOIN `loan_application_cvl_mudra`.`proposal_details` pd ON  pd.user_org_id = ipd.user_org_id \n" + 
+			"			LEFT JOIN `connect_cvl_mudra`.`connect_log` cl ON cl.application_id = ipd.application_id \n" + 
 			"			LEFT JOIN `users`.`users` usr ON usr.user_id = cl.user_id\n" + 
 			"			LEFT JOIN `users`.`fund_seeker_details` fs ON fs.user_id = usr.user_id\n" + 
 			"			LEFT JOIN `users`.`branch_master` branch ON branch.id = ipd.branch_id\n" + 
@@ -32,7 +32,7 @@ public interface IneligibleProposalDetailsRepository extends JpaRepository<Ineli
     
     public IneligibleProposalDetails findFirstByApplicationIdAndIsActiveOrderByIdDesc(Long applicationId,Boolean isActive);
     
-    @Query(value = "SELECT inl.user_org_id FROM `ineligible_proposal_details` inl WHERE inl.application_id =:applicationId and inl.is_active=true", nativeQuery = true)
+    @Query(value = "SELECT inl.user_org_id FROM `proposal_details` inl WHERE inl.application_id =:applicationId and inl.is_active=true", nativeQuery = true)
     public Long getOrgId(@Param("applicationId") Long applicationId);
 
     public IneligibleProposalDetails findByApplicationIdAndUserOrgIdAndIsActive(Long applicationId,Long userOrgId,Boolean isActive);

@@ -275,32 +275,40 @@ public class CorporateServiceImpl implements CorporateService {
 		Map<String, Object> vehicleOperatorMap = new HashMap<String, Object>();
 		vehicleOperatorMap.put(MODULE_TYPE, 7);
 		vehicleOperatorMap.put(MODULE_NAME, "Vehicle & Operator Details");
-		vehicleOperatorMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/gst-icon-gray.svg");
+		vehicleOperatorMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/vehicle_disable.svg");
 		vehicleOperatorMap.put(TOTAL_COST, totalCost);
 		vehicleOperatorMap.put(DESCRIPTION, "Total cost of the proposed vehicle");
 		vehicleOperatorMap.put(COMPLETED, vehicleOperatorDetail != null ? true : false);
 		vehicleOperatorMap.put(ACTIVAE, Boolean.TRUE);
+		if((boolean)vehicleOperatorMap.get(COMPLETED) == true) {
+			vehicleOperatorMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/vehicle.svg");
+		}
 		vehicleSubTabs.add(vehicleOperatorMap);
 		
 		// SET VEHICLE INCOME & EXPENSE DETAILS
 		ProposedVehicleIncomeExpenseDetail incomeExpenseDetail = incomeExpenseDetailRepository.findByApplicationIdAndIsActiveIsTrue(applicationId);
 		Map<String, Object> incomeExpenseMap = new HashMap<String, Object>();
 		incomeExpenseMap.put(MODULE_TYPE, 8);
-		incomeExpenseMap.put(MODULE_NAME, "Income & Expanse Detail");
-		incomeExpenseMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/gst-icon-gray.svg");
+		incomeExpenseMap.put(MODULE_NAME, "Income & Expense Detail");
+		incomeExpenseMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/income_expanse_detail_disable.svg");
 		incomeExpenseMap.put(COMPLETED, incomeExpenseDetail != null ? true : false);
 		incomeExpenseMap.put(ACTIVAE, true);  // (boolean)vehicleOperatorMap.get(COMPLETED) 
+		if((boolean)incomeExpenseMap.get(COMPLETED) == true) {
+			incomeExpenseMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/income_expanse_detail.svg");
+		}
 		vehicleSubTabs.add(incomeExpenseMap);
 		
 		vehicleDetailMap.put(MODULE_TYPE, 9);
 		vehicleDetailMap.put(MODULE_NAME, "Vehicle Details");
-		vehicleDetailMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/gst-icon-gray.svg");
+		vehicleDetailMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/vehicle_disable.svg");
 		vehicleDetailMap.put(COMPLETED, (incomeExpenseDetail != null && vehicleOperatorDetail != null) ? true : false);
 		vehicleDetailMap.put(ACTIVAE, Boolean.TRUE);
 		vehicleDetailMap.put(TITLE, "Total cost of the proposed vehicle");
 		vehicleDetailMap.put(TOTAL_COST, totalCost);
 		vehicleDetailMap.put("subTab", vehicleSubTabs);
-		
+		if((boolean)vehicleDetailMap.get(COMPLETED) == true) {
+			vehicleDetailMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/vehicle.svg");
+		}
 		mapList.add(vehicleDetailMap);
 
 		// SET GST DATA
@@ -429,7 +437,7 @@ public class CorporateServiceImpl implements CorporateService {
             keyPerMap.put(MODULE_NAME, "Key Person Details");
             keyPerMap.put(DETAIL_IMG_PATH, "assets/images/Provide-data/key-person-gray.svg");
             keyPerMap.put(COMPLETED, Boolean.FALSE);
-            keyPerMap.put(ACTIVAE, ((boolean) itrMap.get(COMPLETED) && (boolean) gstMap.get(COMPLETED)&& (boolean) bsMap.get(COMPLETED)));
+            keyPerMap.put(ACTIVAE, ((boolean) itrMap.get(COMPLETED) && (boolean) gstMap.get(COMPLETED)&& (boolean) bsMap.get(COMPLETED)) && (boolean) vehicleDetailMap.get(COMPLETED));
             DirectorBackgroundDetail dirBackGroundDetails = backgroundDetailsRepository.getByAppIdAndIsMainDirector(applicationId);
             if (dirBackGroundDetails != null) {
             	keyPerMap.put(COMPLETED, Boolean.TRUE);

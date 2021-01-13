@@ -413,8 +413,8 @@ public class CamReportPdfDetailsController {
 				response = camReportPdfDetailsService.getDetailsForApplicationForm(applicationId, productId, proposalId);
 				reportRequest = new ReportRequest();
 				reportRequest.setParams(response);
-				reportRequest.setTemplate("MUDRALOANAPPLICATIONFORM");
-				reportRequest.setType("MUDRALOANAPPLICATIONFORM");
+				reportRequest.setTemplate("CVLMUDRALOANAPPLICATIONFORM");
+				reportRequest.setType("CVLMUDRALOANAPPLICATIONFORM");
 			}
 			if(reportRequest != null && !response.isEmpty()) {
 				byte[] byteArr = reportsClient.generatePDFFile(reportRequest);

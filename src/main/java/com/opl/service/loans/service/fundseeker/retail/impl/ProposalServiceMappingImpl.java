@@ -2599,6 +2599,12 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			if(!CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)){
 				return Boolean.FALSE;
 			}
+			if(applicationId!=null) {
+				int checkStage=loanRepository.checkApplicationStageforMultiBank(applicationId);
+				if(checkStage>0) {
+					return Boolean.FALSE;
+				}
+			}
 			List<ProposalDetails> proposalDetailsList = proposalDetailRepository.findByApplicationIdAndIsActiveForMBOnline(applicationId,true,false);
 			List<ProposalMappingRequest> inActivityProposalList = new ArrayList<ProposalMappingRequest>();
 			for (int i = 0; i < proposalDetailsList.size(); i++) {
@@ -2646,14 +2652,14 @@ public class ProposalServiceMappingImpl implements ProposalService {
 								new LocalDate(new Date())).getDays();
 					}
 					String maxDays = loanRepository.getCommonPropertiesValue("MAX_DAYS_RECALCULATION");
-					if(connectRequest1.getBusinessTypeId() == CommonUtils.BusinessType.MUDRA_LOAN.getId() &&
+					if(connectRequest1.getBusinessTypeId() == BusinessType.CVL_MUDRA_LOAN.getId() &&
 							days> Integer.parseInt(maxDays)){//take 22 from application.properties file
 						return Boolean.FALSE;
 					}else{
 						
 						String daysDiff = loanRepository.getCommonPropertiesValue("DAYS_DIFF_RECALCULATION");
 						if(inActivityProposalList.size()<3 && connectListSize ==1) {
-							if(connectRequest1.getBusinessTypeId() == CommonUtils.BusinessType.MUDRA_LOAN.getId() &&
+							if(connectRequest1.getBusinessTypeId() == BusinessType.CVL_MUDRA_LOAN.getId() &&
 									days >= Integer.parseInt(daysDiff)) {//take 7 from application.properties file
 								return Boolean.TRUE;
 							}
@@ -2674,7 +2680,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 									days = Days.daysBetween(new LocalDate(connectReqObj.getModifiedDate()),
 											new LocalDate(new Date())).getDays();
 								}
-								if(connectReqObj.getBusinessTypeId() == CommonUtils.BusinessType.MUDRA_LOAN.getId() &&
+								if(connectReqObj.getBusinessTypeId() == BusinessType.CVL_MUDRA_LOAN.getId() &&
 										days >= Integer.parseInt(daysDiff)){//take 7 from application.properties file
 									return Boolean.TRUE;
 								}else {
@@ -2717,7 +2723,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 										days = Days.daysBetween(new LocalDate(connectReqObj.getModifiedDate()),
 												new LocalDate(new Date())).getDays();
 									}
-									if(connectReqObj.getBusinessTypeId() == CommonUtils.BusinessType.MUDRA_LOAN.getId() &&
+									if(connectReqObj.getBusinessTypeId() == BusinessType.CVL_MUDRA_LOAN.getId() &&
 											eligibleCnt>=1 && days >= Integer.parseInt(daysDiff)){//take 7 from application.properties file
 										return Boolean.TRUE;
 									}else {
@@ -2765,7 +2771,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					
 					days = Days.daysBetween(new LocalDate(connectRequestOffline.getModifiedDate()),
 							new LocalDate(new Date())).getDays();
-					if(connectRequestOffline.getBusinessTypeId() == CommonUtils.BusinessType.MUDRA_LOAN.getId() &&
+					if(connectRequestOffline.getBusinessTypeId() == BusinessType.CVL_MUDRA_LOAN.getId() &&
 							days > Integer.parseInt(maxDaysForOffline)){
 						return Boolean.FALSE;
 					}else {
@@ -2777,7 +2783,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 									new LocalDate(new Date())).getDays();
 							
 							String daysIntervalForOffline = loanRepository.getCommonPropertiesValue("INTERVAL_DAYS_RECALCULATION_OFFLINE");
-							if(connectReqObj.getBusinessTypeId() == CommonUtils.BusinessType.MUDRA_LOAN.getId() &&
+							if(connectReqObj.getBusinessTypeId() == BusinessType.CVL_MUDRA_LOAN.getId() &&
 									days >= Integer.parseInt(daysIntervalForOffline)) {//take 1 from application.properties file
 								return Boolean.TRUE;
 								
@@ -2787,7 +2793,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							days = Days.daysBetween(new LocalDate(connectReqObj.getModifiedDate()),
 									new LocalDate(new Date())).getDays();
 							String startIntervalForOffline = loanRepository.getCommonPropertiesValue("INTERVAL_START_RECALCULATION_OFFLINE");
-							if(connectReqObj.getBusinessTypeId() == CommonUtils.BusinessType.MUDRA_LOAN.getId() &&
+							if(connectReqObj.getBusinessTypeId() == BusinessType.CVL_MUDRA_LOAN.getId() &&
 									days >= Integer.parseInt(startIntervalForOffline)) {//take 15 from application.properties file
 								return Boolean.TRUE;
 							}
@@ -2835,7 +2841,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						schedulerDataMultipleBankRequest.setApplicationId(connectRequest1.getApplicationId());
 						if((connectRequest1.getStageId().equals(4) || connectRequest1.getStageId().equals(207)) && connectRequest1.getStatus().equals(6)){
 							schedulerDataMultipleBankRequest.setInpricipleDate(connectRequest1.getModifiedDate());
-							if(connectRequest1.getBusinessTypeId() == BusinessType.MUDRA_LOAN.getId()){
+							if(connectRequest1.getBusinessTypeId() == BusinessType.CVL_MUDRA_LOAN.getId()){
 								String daysIntervalForOffline = loanRepository.getCommonPropertiesValue("INTERVAL_DAYS_RECALCULATION_OFFLINE");
 								schedulerDataMultipleBankRequest.setDayDiffrence(Integer.parseInt(daysIntervalForOffline));
 							}
@@ -2858,7 +2864,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							}else{
 								schedulerDataMultipleBankRequest.setInpricipleDate(connectRequest1.getModifiedDate());
 							}
-							if(connectRequest1.getBusinessTypeId() == BusinessType.MUDRA_LOAN.getId()){
+							if(connectRequest1.getBusinessTypeId() == BusinessType.CVL_MUDRA_LOAN.getId()){
 								String daysDiff = loanRepository.getCommonPropertiesValue("DAYS_DIFF_RECALCULATION");
 								schedulerDataMultipleBankRequest.setDayDiffrence(Integer.parseInt(daysDiff));
 							}
@@ -3092,7 +3098,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			response.setProductId(CommonUtils.convertInteger(obj[10]));
 			if(setBranch) {
 				response.setBranchName(CommonUtils.convertString(obj[12]));
-				response.setBranchCode(CommonUtils.convertString(obj[13]));
+				response.setBranchCode(CommonUtils.convertString(obj[11]));
 			}
 			Integer count = CommonUtils.convertInteger(obj[14]);
 			if(!CommonUtils.isObjectNullOrEmpty(count) && count > 0) {

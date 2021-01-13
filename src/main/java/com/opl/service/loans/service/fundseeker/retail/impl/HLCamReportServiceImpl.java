@@ -1,10 +1,14 @@
 package com.opl.service.loans.service.fundseeker.retail.impl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.opl.profile.api.model.CommonResponse;
+import com.opl.profile.api.model.ProfileVerMapRequest;
+import com.opl.profile.client.ProfileClient;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +41,9 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 	@Autowired
 	private AnalyzerClient analyzerClient;
 
+	@Autowired
+	private ProfileClient profileClient;
+
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	
 	
@@ -52,16 +59,27 @@ public class HLCamReportServiceImpl implements HLCamReportService{
 		} catch (Exception e1) {
 			logger.error(CommonUtils.EXCEPTION,e1);
 		}
-		
+
+		Long profileMappingId =  loanApplicationRepository.getProfileMappingId(applicationId);
+		ProfileVerMapRequest profileObj = new ProfileVerMapRequest();
+		if (!CommonUtils.isObjectNullOrEmpty(profileMappingId)) {
+			CommonResponse profileRequest = profileClient.getProfileVersionDetailsByPrimaryId(profileMappingId);
+			try {
+				profileObj = MultipleJSONObjectHelper.getObjectFromMap(((Map)profileRequest.getData()),ProfileVerMapRequest.class);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
 		//PERFIOS API DATA (BANK STATEMENT ANALYSIS)
-		map.put("bankRelatedData" , getBankRelatedData(applicationId, userId));
+		map.put("bankRelatedData" , getBankRelatedData(profileObj.getBsId(), userId));
 		
 		return map;
 	}
 	
-	public Object getBankRelatedData(Long applicationId ,Long userId){
+	public Object getBankRelatedData(Long bsId ,Long userId){
 		ReportRequest reportRequest = new ReportRequest();
-		reportRequest.setApplicationId(applicationId);
+		reportRequest.setBsMasterId(bsId);
 		reportRequest.setUserId(userId);
 		List<Data> datas = new ArrayList<>();
 		try {

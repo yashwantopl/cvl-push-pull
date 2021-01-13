@@ -100,6 +100,7 @@ import com.opl.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetailM
 import com.opl.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.opl.service.loans.repository.CurrentOperatedVehicleDetailRepository;
 import com.opl.service.loans.repository.PastVehicleLoanDetailRepository;
+import com.opl.service.loans.repository.VehicleOperatorDetailRepository;
 import com.opl.service.loans.repository.common.LoanRepository;
 import com.opl.service.loans.repository.fundseeker.ScoringRequestDetailRepository;
 import com.opl.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
@@ -211,6 +212,10 @@ public class ScoringServiceImpl implements ScoringService {
 
     @Autowired
     private PrimaryCorporateDetailMudraLoanRepository primaryCorporateDetailMudraLoanRepository;
+    
+
+    @Autowired
+    private VehicleOperatorDetailRepository vehicleOperatorDetailRepository;
     
     private static final String ERROR_WHILE_GETTING_FIELD_LIST = "error while getting field list : ";
     private static final String ERROR_WHILE_CALLING_SCORING = "error while calling scoring : ";
@@ -466,7 +471,7 @@ public class ScoringServiceImpl implements ScoringService {
     @Override
     public ResponseEntity<LoansResponse> calculateMudraScoringList(List<ScoringRequestLoans> scoringRequestLoansList) {
 
-    	VehicleOperatorDetail vehicleOperatorDetail = new VehicleOperatorDetail();
+//    	VehicleOperatorDetail vehicleOperatorDetail = new VehicleOperatorDetail();
     	Object[] profileVersionDetails = loanRepository.getProfileVersionDetailsByApplicationId(scoringRequestLoansList.get(0).getApplicationId());
 		if(CommonUtils.isObjectNullOrEmpty(profileVersionDetails)) {
 			logger.error("Profile not found for applicationId =======>" + scoringRequestLoansList.get(0).getApplicationId());
@@ -681,7 +686,7 @@ public class ScoringServiceImpl implements ScoringService {
         
 
         CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.getCorporateApplicantDetailByApplicationId(applicationId);
-        
+        VehicleOperatorDetail vehicleOperatorDetail = vehicleOperatorDetailRepository.findByApplicationIdAndIsActive(applicationId, true);
         
         // call gst client for gstr3b sales data for 6 months
         GSTR1Request gstr =  new GSTR1Request();
@@ -921,7 +926,7 @@ public class ScoringServiceImpl implements ScoringService {
             scoringRequest.setFpProductId(fpProductId);
             scoringRequest.setApplicationId(applicationId);
             scoringRequest.setUserId(scoringRequestLoans.getUserId());
-            scoringRequest.setBusinessTypeId(ScoreParameter.BusinessType.MUDRA_LOAN);
+            scoringRequest.setBusinessTypeId(ScoreParameter.BusinessType.MUDRA_LOAN_cvl);
             scoringRequest.setEligibleLoanAmountCircular(scoringRequestLoans.getEligibleLoanAmountCircular());
             scoringRequest.setMap(scoringRequestLoans.getMapList());
 			
@@ -1031,6 +1036,23 @@ public class ScoringServiceImpl implements ScoringService {
                             }
                             
                             case ScoreParameter.MudraLoan.OWNING_HOUSE_ML: {
+
+                                try {
+
+                                    if (!CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getOwningHouse())) {
+                                        scoringParameterRequest.setOwningHouse(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getOwningHouse().longValue());
+                                        scoringParameterRequest.setOwningHouse_p(true);
+                                    } else {
+                                        scoringParameterRequest.setOwningHouse_p(false);
+                                    }
+                                } catch (Exception e) {
+                                    logger.error("error while getting OWNING_HOUSE parameter : ",e);
+                                    scoringParameterRequest.setOwningHouse_p(false);
+                                }
+                                break;
+                            }
+                            
+                            case ScoreParameter.MudraLoan.OWNING_HOUSE: {
 
                                 try {
 
@@ -1691,29 +1713,36 @@ public class ScoringServiceImpl implements ScoringService {
 							case ScoreParameter.DEPOSIT_POSITION_POTENTIAL:{//Business Risk
 								logger.info("DEPOSIT_POSITION_POTENTIAL::::::::::");
 								try{
-									Double totalDebit = 0.0d;
-									List<Integer> list = new ArrayList<>();
-									//DEPOSIT_POSITION_POTENTIAL
-									ReportRequest reportRequest = new ReportRequest();
-									reportRequest.setBsMasterId(bsId);
-									AnalyzerResponse analyzerResponse1 = analyzerClient.getDetailsFromReportForCam(reportRequest);
-									if(!CommonUtils.isObjectNullOrEmpty(analyzerResponse1) && !CommonUtils.isObjectNullOrEmpty(analyzerResponse1.getData())){
-										for(Object object : (List)analyzerResponse1.getData()) {
-											try {
-												Data dataBs = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) object, Data.class);
-												// Total Debits //
-												totalDebit=totalDebit+Double.valueOf(dataBs.getSummaryInfo().getSummaryInfoTotalDetails().getTotalDebit());
-												list.add(dataBs.getMonthlyDetailList().getMonthlyDetails().size());
-												scoringParameterRequest.setDepositPositionPotential_p(true);
-											}catch(Exception e) {
-												logger.error("EXCEPTION IS GETTING WHILE CALCULATE DEPOSIT_POSITION_POTENTIAL/ ISSUE LOGIC=====>{}====>{}",totalDebit,list,e);
-												scoringParameterRequest.setDepositPositionPotential_p(false);
+									
+									if(!isNoBankStatement){
+										Double totalDebit = 0.0d;
+										List<Integer> list = new ArrayList<>();
+										//DEPOSIT_POSITION_POTENTIAL
+										ReportRequest reportRequest = new ReportRequest();
+										reportRequest.setBsMasterId(bsId);
+										AnalyzerResponse analyzerResponse1 = analyzerClient.getDetailsFromReportForCam(reportRequest);
+										if(!CommonUtils.isObjectNullOrEmpty(analyzerResponse1) && !CommonUtils.isObjectNullOrEmpty(analyzerResponse1.getData())){
+											for(Object object : (List)analyzerResponse1.getData()) {
+												try {
+													Data dataBs = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) object, Data.class);
+													// Total Debits //
+													totalDebit=totalDebit+Double.valueOf(dataBs.getSummaryInfo().getSummaryInfoTotalDetails().getTotalDebit());
+													list.add(dataBs.getMonthlyDetailList().getMonthlyDetails().size());
+												}catch(Exception e) {
+													logger.error("EXCEPTION IS GETTING WHILE CALCULATE DEPOSIT_POSITION_POTENTIAL/ ISSUE LOGIC=====>{}====>{}",totalDebit,list,e);
+													scoringParameterRequest.setDepositPositionPotential_p(false);
+												}
 											}
+											scoringParameterRequest.setDepositPositionPotential_p(true);
+											scoringParameterRequest.setTotalDebit(totalDebit);
+											scoringParameterRequest.setFullMonthCount(CommonUtility.findMax(list));
+										}else {
+											scoringParameterRequest.setDepositPositionPotential_p(false);
 										}
-										scoringParameterRequest.setTotalDebit(totalDebit);
-										scoringParameterRequest.setFullMonthCount(CommonUtility.findMax(list));
 									}else {
-										scoringParameterRequest.setDepositPositionPotential_p(false);
+										scoringParameterRequest.setTotalDebit(-1d);
+										scoringParameterRequest.setFullMonthCount(-1);
+										scoringParameterRequest.setDepositPositionPotential_p(true);
 									}
 
 								}catch (Exception e){

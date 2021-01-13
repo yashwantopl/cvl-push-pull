@@ -959,7 +959,7 @@ public class AsyncComponent {
         	logger.info("Ineligible mail to FS with ApplicationId==>{} , BranchId==>{} , OrgId==>{} and UserId==>{}", inProp.getApplicationId() , inProp.getBranchId() , inProp.getUserOrgId() , inProp.getUserId());
             Map<String, Object> notiParam = new HashMap<String, Object>();
             LoanApplicationMaster lonaApplication = loanApplicationRepository.findOne(inProp.getApplicationId());
-            if(lonaApplication.getBusinessTypeId() != null && BusinessType.MUDRA_LOAN.getId().equals(lonaApplication.getBusinessTypeId())) {
+            if(lonaApplication.getBusinessTypeId() != null && BusinessType.CVL_MUDRA_LOAN.getId().equals(lonaApplication.getBusinessTypeId())) {
                 UsersRequest fsRequest = getUserNameAndEmail(inProp.getUserId());
                
                 Object[] checkerName = commonRepo.getLastCheckerNameByBranchId(inProp.getBranchId());

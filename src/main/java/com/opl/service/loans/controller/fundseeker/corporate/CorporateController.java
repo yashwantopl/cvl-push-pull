@@ -48,7 +48,7 @@ public class CorporateController {
 			if(profileId == null || applicationId == null || userId == null) {
 				return new ResponseEntity<CommonResponse>(new CommonResponse(CommonUtils.INVALID_REQUEST_MSG, HttpStatus.BAD_REQUEST.value()),HttpStatus.BAD_REQUEST);
 			}
-			logger.info("Enter in get tab data by profile id  ======>" + profileId + " With Application Id =====" + applicationId);
+			logger.info("Enter in get tab data by profile id  ======>" + profileId + " With Application Id =====" + applicationId+"user id====="+userId);
 			List<Map<String,Object>> loanTabsData = corporateService.getLoanTabsData(profileId, applicationId,userId);
 			return new ResponseEntity<CommonResponse>(
 					new CommonResponse(CommonUtils.SUCCESSFULLY_GET_DATA, loanTabsData, HttpStatus.OK.value()), HttpStatus.OK);

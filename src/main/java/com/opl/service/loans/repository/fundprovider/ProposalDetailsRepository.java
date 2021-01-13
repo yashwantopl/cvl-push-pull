@@ -44,12 +44,12 @@ public interface ProposalDetailsRepository extends JpaRepository<ProposalDetails
     @Query(value = "SELECT pd.application_id, cl.user_id, fs.name, usr.email, usr.mobile, pd.created_date, pd.branch_id, \n" +
             "pd.el_amount, pd.el_tenure, pd.el_roi, pd.emi, pd.processing_fee, branch.name AS branchname, \n" +
             "branch.contact_person_name, branch.telephone_no, branch.contact_person_number, org.organisation_name, \n" +
-            "lam.application_code, branch.code, branch.street_name, (SELECT state_name FROM `one_form_mudra`.`state` s \n" +
-            "WHERE s.id = branch.state_id), (SELECT city_name FROM `one_form_mudra`.`city` c WHERE c.id = branch.city_id), branch.premises_no, \n" +
-            "(SELECT product_id FROM `loan_application_mudra`.`fp_product_master` pm WHERE pm.fp_product_id = pd.fp_product_id), branch.contact_person_email, \n" +
+            "lam.application_code, branch.code, branch.street_name, (SELECT state_name FROM `one_form_cvl_mudra`.`state` s \n" +
+            "WHERE s.id = branch.state_id), (SELECT city_name FROM `one_form_cvl_mudra`.`city` c WHERE c.id = branch.city_id), branch.premises_no, \n" +
+            "(SELECT product_id FROM `loan_application_cvl_mudra`.`fp_product_master` pm WHERE pm.fp_product_id = pd.fp_product_id), branch.contact_person_email, \n" +
             "(SELECT COUNT(id) FROM `users`.`campaign_details` cd WHERE cd.user_id = cl.user_id),cl.`gstin` \n" +
-            "FROM  `loan_application_mudra`.`proposal_details` pd \n" +
-            "LEFT JOIN `connect_mudra`.`connect_log` cl \n" +
+            "FROM  `loan_application_cvl_mudra`.`proposal_details` pd \n" +
+            "LEFT JOIN `connect_cvl_mudra`.`connect_log` cl \n" +
             "ON cl.application_id = pd.application_id \n" +
             "LEFT JOIN `users`.`users` usr \n" +
             "ON usr.user_id = cl.user_id \n" +
@@ -298,11 +298,11 @@ public interface ProposalDetailsRepository extends JpaRepository<ProposalDetails
     public Integer updateInEligibleDataBasedonApplicationId(@Param("applicationId")Long applicationId,@Param("isActive")Boolean isActive);
 
     @Modifying //  For In-eligible proposals
-    @Query(value="update connect_mudra.connect_log set proposal_id =:proposalId where application_id =:applicationId", nativeQuery = true)
+    @Query(value="update connect_cvl_mudra.connect_log set proposal_id =:proposalId where application_id =:applicationId", nativeQuery = true)
     public Integer updateProposalId(@Param("applicationId")Long applicationId,@Param("proposalId")Long proposalId);
 
     @Modifying //  For In-eligible proposals
-    @Query(value="update user_profile.profile_loan_mapping set proposal_id =:proposalId where application_id =:applicationId and business_type_id = 10", nativeQuery = true)
+    @Query(value="update user_profile.profile_loan_mapping set proposal_id =:proposalId where application_id =:applicationId and business_type_id = 26", nativeQuery = true)
     public Integer updateProposalIdInProfile(@Param("applicationId")Long applicationId,@Param("proposalId")Long proposalId);
 
     @Query(value = "SELECT inl.user_org_id FROM `proposal_details` inl WHERE inl.application_id =:applicationId AND is_offline = true", nativeQuery = true)
@@ -330,7 +330,7 @@ public interface ProposalDetailsRepository extends JpaRepository<ProposalDetails
 
     @Query(value = "SELECT ipd.application_id, cl.user_id, fs.name, usr.email, usr.mobile, ipd.created_date, ipd.branch_id, branch.name AS branchname, branch.contact_person_name, branch.telephone_no, branch.contact_person_number, org.organisation_name, lam.application_code, branch.code, branch.street_name, (SELECT state_name FROM `one_form`.`state` s WHERE s.id = branch.state_id), (SELECT city_name FROM `one_form`.`city` c WHERE c.id = branch.city_id), branch.premises_no, branch.contact_person_email\n" +
             "			FROM `proposal_details` ipd \n" +
-            "			LEFT JOIN `connect_mudra`.`connect_log` cl ON cl.application_id = ipd.application_id \n" +
+            "			LEFT JOIN `connect_cvl_mudra`.`connect_log` cl ON cl.application_id = ipd.application_id \n" +
             "			LEFT JOIN `users`.`users` usr ON usr.user_id = cl.user_id\n" +
             "			LEFT JOIN `users`.`fund_seeker_details` fs ON fs.user_id = usr.user_id\n" +
             "			LEFT JOIN `users`.`branch_master` branch ON branch.id = ipd.branch_id\n" +

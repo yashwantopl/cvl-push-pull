@@ -150,7 +150,7 @@ public class CommonRepositoryImpl  implements CommonRepository {
 	
 	@Override
 	public List<Object[]> getBankDetails(Long applicationId, Long orgId){
-		StoredProcedureQuery storedProcedureQuery = manager.createStoredProcedureQuery("users.getCurrentBranchByAppIdAndOrgId_Mudra");
+		StoredProcedureQuery storedProcedureQuery = manager.createStoredProcedureQuery("users.getCurrentBranchByAppIdAndOrgId_Cvl_Mudra");
 		storedProcedureQuery.registerStoredProcedureParameter("applicationId",Long.class, ParameterMode.IN);
 		storedProcedureQuery.registerStoredProcedureParameter("orgId",Long.class, ParameterMode.IN);
 		storedProcedureQuery.setParameter("applicationId" ,applicationId);
@@ -546,5 +546,22 @@ public class CommonRepositoryImpl  implements CommonRepository {
 			logger.error("Error/Exception while fetching State and City names",e);
 		}
 		return null;
+	}
+
+	@Override
+	public String getAutoManufacturer(Integer manufacturer) {
+		try {
+			String name = (String) manager.createNativeQuery("SELECT `manufacturer_name` FROM `one_form_cvl`.`auto_manufacturer` WHERE id = " + manufacturer).getSingleResult();
+			return name;
+		}catch (Exception e) {
+			logger.error("Error/Exception while fetching State and City names",e);
+		}
+		return null;
+	}
+
+	@Override
+	public String getCityByCityId(Long id) {
+		List<String> city =  manager.createNativeQuery("SELECT city_name FROM one_form_mudra.city WHERE id =:id").setParameter("id", id).getResultList();
+		return 	!CommonUtils.isListNullOrEmpty(city) ? city.get(0) : "";  
 	}
 }

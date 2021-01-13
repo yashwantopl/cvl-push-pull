@@ -15,6 +15,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.opl.api.pennydrop.model.CommonResponse;
+import com.opl.cvl.enums.cvl.VehicleBuildType;
+import com.opl.cvl.enums.cvl.VehicleModelType;
+import com.opl.cvl.enums.cvl.VehicleSegment;
+import com.opl.cvl.enums.cvl.VehicleType;
 import com.opl.mudra.api.loans.model.*;
 import com.opl.service.loans.repository.VehicleOperatorDetailRepository;
 import com.opl.service.loans.service.vehicledetails.VehicleOperatorService;
@@ -27,9 +32,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.service.pennydrop.client.PennydropClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opl.mudra.api.analyzer.model.common.AnalyzerResponse;
 import com.opl.mudra.api.analyzer.model.common.Data;
+import com.opl.mudra.api.analyzer.model.common.ManualBsReportRequest;
 import com.opl.mudra.api.analyzer.model.common.ReportRequest;
 import com.opl.mudra.api.dms.exception.DocumentException;
 import com.opl.mudra.api.dms.model.DocumentRequest;
@@ -61,8 +68,10 @@ import com.opl.mudra.api.matchengine.model.ProposalMappingRequestString;
 import com.opl.mudra.api.matchengine.model.ProposalMappingResponse;
 import com.opl.mudra.api.mca.McaResponse;
 import com.opl.mudra.api.mca.verifyApi.VerifyAPIRequest;
+import com.opl.mudra.api.oneform.enums.AccessToInputs;
 import com.opl.mudra.api.oneform.enums.AssessedForITMst;
 import com.opl.mudra.api.oneform.enums.AssessmentOptionForFS;
+import com.opl.mudra.api.oneform.enums.BusinessProspects;
 import com.opl.mudra.api.oneform.enums.CertificationCourseMst;
 import com.opl.mudra.api.oneform.enums.CompetitionMst_SBI;
 import com.opl.mudra.api.oneform.enums.Constitution;
@@ -287,6 +296,9 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 
 	@Autowired
 	VehicleOperatorService vehicleOperatorService;
+	
+	@Autowired
+	private PennydropClient pennyDropClient;
 
 	DecimalFormat decim = new DecimalFormat("#,###.00");
 
@@ -301,11 +313,29 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		VehicleOperatorRequest vehicleOperatorRequest = vehicleOperatorService.getByApplicationId(applicationId);
 
 		if (!CommonUtils.isObjectNullOrEmpty(vehicleOperatorRequest)){
-			List<Object[]> cityState = commonRepository.getStateAndCityNameById(vehicleOperatorRequest.getCity(), vehicleOperatorRequest.getState());
+			List<Object[]> cityState = commonRepository.getStateAndCityNameById(vehicleOperatorRequest.getState(), vehicleOperatorRequest.getCity());
 			if(cityState != null) {
 				for (Object[] obj : cityState) {
 					vehicleOperatorRequest.setCityName(CommonUtils.convertString(obj[0]));
 					vehicleOperatorRequest.setStateName(CommonUtils.convertString(obj[1]));
+				}
+			}
+
+			if (!CommonUtils.isListNullOrEmpty(vehicleOperatorRequest.getCurrentOperatedVehicleDetails())){
+				for (CurrentOperatedVehicleRequest currentOperatedVehicleRequest : vehicleOperatorRequest.getCurrentOperatedVehicleDetails()){
+					currentOperatedVehicleRequest.setTypeOfVehicle(!CommonUtils.isObjectNullOrEmpty(currentOperatedVehicleRequest.getVehicleType()) ? VehicleSegment.getById(currentOperatedVehicleRequest.getVehicleType()).getValue() : "-");
+				}
+			}
+
+			if (!CommonUtils.isListNullOrEmpty(vehicleOperatorRequest.getProposedVehicleDetails())){
+				for (ProposedVehicleRequest proposedVehicleRequest : vehicleOperatorRequest.getProposedVehicleDetails()){
+					proposedVehicleRequest.setTypeOfVehicleObt(!CommonUtils.isObjectNullOrEmpty(proposedVehicleRequest.getVehicleType()) ? VehicleType.getById(proposedVehicleRequest.getVehicleType()).getValue() : "-");
+					proposedVehicleRequest.setVehicleSeg(!CommonUtils.isObjectNullOrEmpty(proposedVehicleRequest.getVehicleSegment()) ? VehicleSegment.getById(proposedVehicleRequest.getVehicleSegment()).getValue() : "-");
+					proposedVehicleRequest.setVehicleBuild(!CommonUtils.isObjectNullOrEmpty(proposedVehicleRequest.getVehicleIs()) ? VehicleBuildType.getById(proposedVehicleRequest.getVehicleIs()).getValue() : "-");
+					if (!CommonUtils.isObjectNullOrEmpty(proposedVehicleRequest.getManufacturer())) {
+						String manufacturer = commonRepository.getAutoManufacturer(proposedVehicleRequest.getManufacturer());
+						proposedVehicleRequest.setVehicleMake(manufacturer);
+					}
 				}
 			}
 
@@ -651,7 +681,9 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			
 			//No of Employees/Workers
 			corporatePrimaryViewResponse.setEmployeeGeneration(corporateApplicantDetail.getEmploymentGeneration() != null ?  (NoOfEmployees.getById(corporateApplicantDetail.getEmploymentGeneration()) != null ?  NoOfEmployees.getById(corporateApplicantDetail.getEmploymentGeneration()).getValue(): "-") : "-"  );
-			
+			corporatePrimaryViewResponse.setBusinessProspects(corporateApplicantDetail.getBusinessProspects() != null ? (BusinessProspects.getById(corporateApplicantDetail.getBusinessProspects()) != null ? BusinessProspects.getById(corporateApplicantDetail.getBusinessProspects()).getValue() : "-") : "-");
+			corporatePrimaryViewResponse.setAccessInput(corporateApplicantDetail.getAccessInput() != null ? (AccessToInputs.getById(corporateApplicantDetail.getAccessInput()) != null ? AccessToInputs.getById(corporateApplicantDetail.getAccessInput()).getValue() : "-") : "-");
+
 			
 			// REGISTER WITH GOV AUTHORITIES
 			List<Integer> govAuthorities = fsParameterMappingRepository.getParametersByApplicationIdAndType(applicationId, FSParameterMst.GOV_AUTHORITIES.getId());
@@ -731,7 +763,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 						.setAppointmentDate(directorBackgroundDetailRequest.getAppointmentDate());
 				directorBackgroundDetailResponse.setDin(directorBackgroundDetailRequest.getDin());
 				directorBackgroundDetailResponse.setMobile(directorBackgroundDetailRequest.getMobile());
-				directorBackgroundDetailResponse.setDob(directorBackgroundDetailRequest.getDob());
+				directorBackgroundDetailResponse.setDobN(directorBackgroundDetailRequest.getDob().toString());
 				directorBackgroundDetailResponse.setPincode(directorBackgroundDetailRequest.getPincode());
 				directorBackgroundDetailResponse.setPersonalId(directorBackgroundDetailRequest.getPersonalId());
                                 
@@ -748,7 +780,8 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				}
 
 				directorBackgroundDetailResponse.setStateCode(directorBackgroundDetailRequest.getStateCode());
-				directorBackgroundDetailResponse.setCity(directorBackgroundDetailRequest.getCity());
+				String cityName = commonRepository.getCityByCityId(Long.parseLong(directorBackgroundDetailRequest.getCityId().toString()));
+				directorBackgroundDetailResponse.setCity(cityName);
 				directorBackgroundDetailResponse.setGender((directorBackgroundDetailRequest.getGender() != null
 						? Gender.getById(directorBackgroundDetailRequest.getGender()).getValue()
 						: " "));
@@ -809,7 +842,12 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 							directorPersonalDetail.setSpouseName(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getSpouseName());
 							directorPersonalDetail.setSpouseDetail(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getSpouseDetail() != null ? SpouseDetailMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getSpouseDetail()).getValue().toString() : "-");
 							directorPersonalDetail.setAssessedForIt(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getAssessedForIt() != null ? AssessedForITMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getAssessedForIt()).getValue().toString() : "-");
-							directorPersonalDetail.setOwningHouse(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOwningHouse() != null ? MudraOwningHouseMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOwningHouse()).getValue().toString() : "-");
+
+							if(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOwningHouse() != null && MudraOwningHouseMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOwningHouse()) != null){
+								directorPersonalDetail.setOwningHouse(MudraOwningHouseMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOwningHouse()).getValue().toString());
+							}
+
+
 							directorPersonalDetail.setNoOfChildren(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getNoOfChildren());
 							directorPersonalDetail.setHaveLiPolicy(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveLiPolicy()!= null ? HaveLIMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveLiPolicy()).getValue().toString() : "-");
 							directorPersonalDetail.setIdProof(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getIdProof() != null ? IdProofMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getIdProof()).getValue() : "-" );
@@ -820,6 +858,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 							directorPersonalDetail.setOtherIncomeSource(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOtherIncomeSource());
 							directorPersonalDetail.setCertificationCourse(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getCertificationCourse() != null ? CertificationCourseMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getCertificationCourse()).getValue() : "-"  );
 							directorPersonalDetail.setWorkAndResidenceSamePlace(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getIsWorkAndResidenceSamePlace() != null ?(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getIsWorkAndResidenceSamePlace().equals(1) ? "Yes" : "No")  : "-"  );
+							directorPersonalDetail.setHaveOwnCommercialProperty(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveOwnCommercialProperty() != null ?(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveOwnCommercialProperty() ? "Yes" : "No")  : "-"  );
 							String ongoingMudraLoan = directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOngoingMudraLoan() != null ? OngoingMudraLoan.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOngoingMudraLoan()).getValue() : "-"  ; 
 							directorPersonalDetail.setOngoingMudraLoan(ongoingMudraLoan);
 							corporatePrimaryViewResponse.setOngoingMudraLoan(ongoingMudraLoan);
@@ -1494,8 +1533,38 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		} catch (Exception e1) {
 			logger.error("------:::::...Error while fetching Fraud Detection Details...For..::::::-----" + toApplicationId + CommonUtils.EXCEPTION + e1);
 		}
-
-
+		
+		try {
+			ManualBsReportRequest manualBsReportRequest = new ManualBsReportRequest();
+	    	manualBsReportRequest.setBsMasterId(bsId);
+	    	AnalyzerResponse analyzerResponse = analyzerClient.getManualBankAccDetails(manualBsReportRequest);
+	    	if (!CommonUtils.isObjectNullOrEmpty(analyzerResponse) && !CommonUtils.isObjectNullOrEmpty(analyzerResponse.getData())) {
+	    		LinkedHashMap<String, Object> bankStatementResponse = (LinkedHashMap<String, Object>)analyzerResponse.getData();
+			
+	    		corporatePrimaryViewResponse.setName(bankStatementResponse.get("accountHolderName"));
+	    		corporatePrimaryViewResponse.setAccountName(bankStatementResponse.get("accountHolderName"));
+	    		corporatePrimaryViewResponse.setAccountNumber(bankStatementResponse.get("bankAccountNo"));
+	    		corporatePrimaryViewResponse.setIfsc(bankStatementResponse.get("ifscCode"));
+	    		corporatePrimaryViewResponse.setStatus(bankStatementResponse.get(1));
+	    		String year = bankStatementResponse.get("sinceYear") != null ? String.valueOf(bankStatementResponse.get("sinceYear")) : null;
+				String months = bankStatementResponse.get("sinceMonth") != null ? String.valueOf(bankStatementResponse.get("sinceMonth")) : null;
+				if (!CommonUtils.isObjectNullOrEmpty(year) || !CommonUtils.isObjectNullOrEmpty(months)) {
+					LocalDate today = LocalDate.now();
+					LocalDate since = LocalDate.of(Integer.parseInt(year), Integer.parseInt(months),1);
+					Period age = Period.between(since, today);
+					corporatePrimaryViewResponse.setNoBsSinceYear(age.getYears());
+					corporatePrimaryViewResponse.setNoBsSinceMonths(age.getMonths());
+					corporatePrimaryViewResponse.setNoBsSinceYear((!CommonUtils.isObjectNullOrEmpty(age.getYears()) ? age.getYears() +" year " : "") + " " +(!CommonUtils.isObjectNullOrEmpty(age.getMonths()) ? age.getMonths()+" months" :  "" ));
+				}
+				
+				
+	    		corporatePrimaryViewResponse.setBankStatement((List<Object>) corporatePrimaryViewResponse);
+	    	}
+		}
+		catch (Exception e) {
+			logger.error("Error while fetching No Bank Statement Account data From Analyzer with BsMasterId==>{} with Error:{} ",bsId , e);	
+		}
+		
 		// Product Name
 
 		if(fpProductMappingId != null) {

@@ -93,7 +93,7 @@ public class IneligibleProposalDetailsController {
 		if (isDetailsSaved == 2) {
 //			Boolean isEligible = false;
 			if(!CommonUtils.isObjectNullOrEmpty(fsBusinessType)
-					&& (fsBusinessType == CommonUtils.BusinessType.EXISTING_BUSINESS.getId() || fsBusinessType == CommonUtils.BusinessType.MUDRA_LOAN.getId())){
+					&& (fsBusinessType == CommonUtils.BusinessType.EXISTING_BUSINESS.getId() || fsBusinessType == CommonUtils.BusinessType.CVL_MUDRA_LOAN.getId())){
 				/** Trigger mail  to fs and bank branch
 					This email check if the selected bank is (sbi and wc_renewal) or sidbi specific then this email shoot*/
 				

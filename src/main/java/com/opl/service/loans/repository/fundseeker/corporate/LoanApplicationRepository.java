@@ -318,7 +318,7 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	@Query(value = "select lm.application_id from fs_loan_application_master lm inner join proposal_details pd on pd.application_id=lm.application_id where pd.branch_id=:branchId and (lm.status =:id or lm.status =:revertedId or lm.status =:submitId) and lm.fp_maker_id=:npUserId and pd.is_active=true and lm.is_active = true",nativeQuery = true)
 	public List<BigInteger> getFPAssignedTabPropsByNPUserIdCount(@Param("id") Long applicationStatusAssignId, @Param("revertedId") Long applicationRevertedStatusId, @Param("submitId") Long applicationSubmitStatusId,@Param("npUserId") Long npUserId, @Param("branchId") Long branchId);
 
-	@Query(value = "select lg.modified_date from connect_mudra.connect_log lg where lg.application_id=:applicationId AND lg.stage_id=:stage AND lg.status=:status ORDER BY lg.id desc LIMIT 1", nativeQuery = true)
+	@Query(value = "select lg.modified_date from connect_cvl_mudra.connect_log lg where lg.application_id=:applicationId AND lg.stage_id=:stage AND lg.status=:status ORDER BY lg.id desc LIMIT 1", nativeQuery = true)
 	Date getInEligibleModifiedDate(@Param("applicationId")  Long applicationId,@Param("stage")  Integer stage,@Param("status")  Integer status);
 	
 	//fp - maker - all other proposals - pagination
@@ -394,12 +394,12 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	public Integer findOneBusinessTypeIdByIdAndIsActive(@Param("applicationId")  Long applicationId); 
 
 	/*For cam report In-principleDate*/
-	@Query(value = "select lg.modified_date from connect_mudra.connect_log lg where lg.application_id=:applicationId AND lg.stage_id=:stage ORDER BY lg.id desc LIMIT 1", nativeQuery = true)
+	@Query(value = "select lg.modified_date from connect_cvl_mudra.connect_log lg where lg.application_id=:applicationId AND lg.stage_id=:stage ORDER BY lg.id desc LIMIT 1", nativeQuery = true)
 	Date getModifiedDate(@Param("applicationId")  Long applicationId,@Param("stage")  Integer stage);
 	
 	
 	/*For cam report In-principleDate for hl pl*/
-	@Query(value = "select lg.In_principle_date from connect_mudra.connect_log lg where lg.application_id=:applicationId ORDER BY lg.id desc LIMIT 1", nativeQuery = true)
+	@Query(value = "select lg.In_principle_date from connect_cvl_mudra.connect_log lg where lg.application_id=:applicationId ORDER BY lg.id desc LIMIT 1", nativeQuery = true)
 	Date getInPrincipleDate(@Param("applicationId")  Long applicationId);
 	
 	@Modifying
@@ -409,7 +409,7 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 
 	/*For select on on Loan Type*/
 	@Modifying
-	@Query(value = "UPDATE connect_mudra.connect_log SET loan_type_id =:loanType, is_coapp_page = false where application_id=:applicationId", nativeQuery = true)
+	@Query(value = "UPDATE connect_cvl_mudra.connect_log SET loan_type_id =:loanType, is_coapp_page = false where application_id=:applicationId", nativeQuery = true)
 	public int updateLoanType(@Param("applicationId")  Long applicationId,@Param("loanType") Long loanType);
 
 	@Modifying
@@ -419,14 +419,14 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	@Query(value = "SELECT COUNT(id) FROM `fs_corporate_current_financial_arrangements_details` WHERE (loan_type = 'Overdraft' OR loan_type = 'Cash credit') AND is_active = TRUE AND application_id =:applicationId LIMIT 1", nativeQuery = true)
 	public Integer checkAppliedForExisitingLoan(@Param("applicationId") Long applicationId);
 	
-	@Query(value = "SELECT wc_renewal_status FROM connect_mudra.connect_log WHERE application_id =:applicationId LIMIT 1", nativeQuery = true)
+	@Query(value = "SELECT wc_renewal_status FROM connect_cvl_mudra.connect_log WHERE application_id =:applicationId LIMIT 1", nativeQuery = true)
 	public Integer checkLoanTypeByApplicationId(@Param("applicationId") Long applicationId);
 	
 	@Query(value = "SELECT organisation_name FROM users.user_organisation_master WHERE user_org_id =:userOrganisationId LIMIT 1", nativeQuery = true)
 	public String getOrganisationNameByOrgId(@Param("userOrganisationId") Long userOrganisationId);
 	
 	@Modifying
-	@Query(value = "UPDATE connect_mudra.connect_log cl SET cl.wc_renewal_status=:wsRenwalStatus WHERE cl.application_id=:applicationId",nativeQuery = true)
+	@Query(value = "UPDATE connect_cvl_mudra.connect_log cl SET cl.wc_renewal_status=:wsRenwalStatus WHERE cl.application_id=:applicationId",nativeQuery = true)
 	public int updateWcRenewalStatusByApplicationId(@Param("wsRenwalStatus") Integer wsRenwalStatus, @Param("applicationId") Long applicationId);
 	
 	@Modifying
