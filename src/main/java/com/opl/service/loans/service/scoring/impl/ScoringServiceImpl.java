@@ -1052,6 +1052,23 @@ public class ScoringServiceImpl implements ScoringService {
                                 break;
                             }
                             
+                            case ScoreParameter.MudraLoan.OWNING_HOUSE: {
+
+                                try {
+
+                                    if (!CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getOwningHouse())) {
+                                        scoringParameterRequest.setOwningHouse(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getOwningHouse().longValue());
+                                        scoringParameterRequest.setOwningHouse_p(true);
+                                    } else {
+                                        scoringParameterRequest.setOwningHouse_p(false);
+                                    }
+                                } catch (Exception e) {
+                                    logger.error("error while getting OWNING_HOUSE parameter : ",e);
+                                    scoringParameterRequest.setOwningHouse_p(false);
+                                }
+                                break;
+                            }
+                            
                             case ScoreParameter.MudraLoan.ACADEMIC_QUALIFICATION_ML: {
 
                                 try {
