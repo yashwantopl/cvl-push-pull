@@ -46,6 +46,33 @@ public class CVLEligibilityRequest extends EligibililityRequest implements Seria
     private Double eligibleLoanEmi;
     private Double dscr;
 	private Integer typeOfFuel;
+	private Double fsLoanAmtRequired;
+	
+	
+	// FOR CVL Expences %
+	private Double cvlEliMotorTax;
+
+	private Double cvlEliInsurancePremium;
+
+	private Double cvlEliGarageRent;
+
+	private Double cvlEliDepreciation;
+
+	private Double cvlEliRepairExp;
+
+	private Double cvlEliCostOil;
+
+	private Double cvlEliStaffSal;
+
+	private Double cvlEliDrawingExp;
+
+	private Double cvlEliUnloadingCharges;
+
+	private Double cvlEliIntOnBorrowing;
+
+	private Double cvlEliOthers;
+	
+	
     
 	public Double getAgreedPurchasePrice() {
 		return agreedPurchasePrice;
@@ -227,4 +254,78 @@ public class CVLEligibilityRequest extends EligibililityRequest implements Seria
 	public void setTypeOfFuel(Integer typeOfFuel) {
 		this.typeOfFuel = typeOfFuel;
 	}
+	public Double getCvlEliMotorTax() {
+		return cvlEliMotorTax;
+	}
+	public void setCvlEliMotorTax(Double cvlEliMotorTax) {
+		this.cvlEliMotorTax = cvlEliMotorTax;
+	}
+	public Double getCvlEliInsurancePremium() {
+		return cvlEliInsurancePremium;
+	}
+	public void setCvlEliInsurancePremium(Double cvlEliInsurancePremium) {
+		this.cvlEliInsurancePremium = cvlEliInsurancePremium;
+	}
+	public Double getCvlEliGarageRent() {
+		return cvlEliGarageRent;
+	}
+	public void setCvlEliGarageRent(Double cvlEliGarageRent) {
+		this.cvlEliGarageRent = cvlEliGarageRent;
+	}
+	public Double getCvlEliDepreciation() {
+		return cvlEliDepreciation;
+	}
+	public void setCvlEliDepreciation(Double cvlEliDepreciation) {
+		this.cvlEliDepreciation = cvlEliDepreciation;
+	}
+	public Double getCvlEliRepairExp() {
+		return cvlEliRepairExp;
+	}
+	public void setCvlEliRepairExp(Double cvlEliRepairExp) {
+		this.cvlEliRepairExp = cvlEliRepairExp;
+	}
+	public Double getCvlEliCostOil() {
+		return cvlEliCostOil;
+	}
+	public void setCvlEliCostOil(Double cvlEliCostOil) {
+		this.cvlEliCostOil = cvlEliCostOil;
+	}
+	public Double getCvlEliStaffSal() {
+		return cvlEliStaffSal;
+	}
+	public void setCvlEliStaffSal(Double cvlEliStaffSal) {
+		this.cvlEliStaffSal = cvlEliStaffSal;
+	}
+	public Double getCvlEliDrawingExp() {
+		return cvlEliDrawingExp;
+	}
+	public void setCvlEliDrawingExp(Double cvlEliDrawingExp) {
+		this.cvlEliDrawingExp = cvlEliDrawingExp;
+	}
+	public Double getCvlEliUnloadingCharges() {
+		return cvlEliUnloadingCharges;
+	}
+	public void setCvlEliUnloadingCharges(Double cvlEliUnloadingCharges) {
+		this.cvlEliUnloadingCharges = cvlEliUnloadingCharges;
+	}
+	public Double getCvlEliIntOnBorrowing() {
+		return cvlEliIntOnBorrowing;
+	}
+	public void setCvlEliIntOnBorrowing(Double cvlEliIntOnBorrowing) {
+		this.cvlEliIntOnBorrowing = cvlEliIntOnBorrowing;
+	}
+	public Double getCvlEliOthers() {
+		return cvlEliOthers;
+	}
+	public void setCvlEliOthers(Double cvlEliOthers) {
+		this.cvlEliOthers = cvlEliOthers;
+	}
+	public Double getFsLoanAmtRequired() {
+		return fsLoanAmtRequired;
+	}
+	public void setFsLoanAmtRequired(Double fsLoanAmtRequired) {
+		this.fsLoanAmtRequired = fsLoanAmtRequired;
+	}
+	
+	
 }

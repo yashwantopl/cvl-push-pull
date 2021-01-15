@@ -68,27 +68,27 @@ public class EligibililityRequest implements Serializable{
 
 	// FOR CVL Expences %
 
-	private Double cvlEliMotorTax;
+	private Double cvlEliMotorTaxPct;
 
-	private Double cvlEliInsurancePremium;
+	private Double cvlEliInsurancePremiumPct;
 
-	private Double cvlEliGarageRent;
+	private Double cvlEliGarageRentPct;
 
-	private Double cvlEliDepreciation;
+	private Double cvlEliDepreciationPct;
 
-	private Double cvlEliRepairExp;
+	private Double cvlEliRepairExpPct;
 
-	private Double cvlEliCostOil;
+	private Double cvlEliCostOilPct;
 
-	private Double cvlEliStaffSal;
+	private Double cvlEliStaffSalPct;
 
-	private Double cvlEliDrawingExp;
+	private Double cvlEliDrawingExpPct;
 
-	private Double cvlEliUnloadingCharges;
+	private Double cvlEliUnloadingChargesPct;
 
-	private Double cvlEliIntOnBorrowing;
+	private Double cvlEliIntOnBorrowingPct;
 
-	private Double cvlEliOthers;
+	private Double cvlEliOthersPct;
 
 	// FOR CVL MARGIN
 
@@ -465,92 +465,92 @@ public class EligibililityRequest implements Serializable{
 		this.mainDirectorIsWomen = mainDirectorIsWomen;
 	}
 
-	public Double getCvlEliMotorTax() {
-		return cvlEliMotorTax;
+	public Double getCvlEliMotorTaxPct() {
+		return cvlEliMotorTaxPct;
 	}
 
-	public void setCvlEliMotorTax(Double cvlEliMotorTax) {
-		this.cvlEliMotorTax = cvlEliMotorTax;
+	public void setCvlEliMotorTaxPct(Double cvlEliMotorTaxPct) {
+		this.cvlEliMotorTaxPct = cvlEliMotorTaxPct;
 	}
 
-	public Double getCvlEliInsurancePremium() {
-		return cvlEliInsurancePremium;
+	public Double getCvlEliInsurancePremiumPct() {
+		return cvlEliInsurancePremiumPct;
 	}
 
-	public void setCvlEliInsurancePremium(Double cvlEliInsurancePremium) {
-		this.cvlEliInsurancePremium = cvlEliInsurancePremium;
+	public void setCvlEliInsurancePremiumPct(Double cvlEliInsurancePremiumPct) {
+		this.cvlEliInsurancePremiumPct = cvlEliInsurancePremiumPct;
 	}
 
-	public Double getCvlEliGarageRent() {
-		return cvlEliGarageRent;
+	public Double getCvlEliGarageRentPct() {
+		return cvlEliGarageRentPct;
 	}
 
-	public void setCvlEliGarageRent(Double cvlEliGarageRent) {
-		this.cvlEliGarageRent = cvlEliGarageRent;
+	public void setCvlEliGarageRentPct(Double cvlEliGarageRentPct) {
+		this.cvlEliGarageRentPct = cvlEliGarageRentPct;
 	}
 
-	public Double getCvlEliDepreciation() {
-		return cvlEliDepreciation;
+	public Double getCvlEliDepreciationPct() {
+		return cvlEliDepreciationPct;
 	}
 
-	public void setCvlEliDepreciation(Double cvlEliDepreciation) {
-		this.cvlEliDepreciation = cvlEliDepreciation;
+	public void setCvlEliDepreciationPct(Double cvlEliDepreciationPct) {
+		this.cvlEliDepreciationPct = cvlEliDepreciationPct;
 	}
 
-	public Double getCvlEliRepairExp() {
-		return cvlEliRepairExp;
+	public Double getCvlEliRepairExpPct() {
+		return cvlEliRepairExpPct;
 	}
 
-	public void setCvlEliRepairExp(Double cvlEliRepairExp) {
-		this.cvlEliRepairExp = cvlEliRepairExp;
+	public void setCvlEliRepairExpPct(Double cvlEliRepairExpPct) {
+		this.cvlEliRepairExpPct = cvlEliRepairExpPct;
 	}
 
-	public Double getCvlEliCostOil() {
-		return cvlEliCostOil;
+	public Double getCvlEliCostOilPct() {
+		return cvlEliCostOilPct;
 	}
 
-	public void setCvlEliCostOil(Double cvlEliCostOil) {
-		this.cvlEliCostOil = cvlEliCostOil;
+	public void setCvlEliCostOilPct(Double cvlEliCostOilPct) {
+		this.cvlEliCostOilPct = cvlEliCostOilPct;
 	}
 
-	public Double getCvlEliStaffSal() {
-		return cvlEliStaffSal;
+	public Double getCvlEliStaffSalPct() {
+		return cvlEliStaffSalPct;
 	}
 
-	public void setCvlEliStaffSal(Double cvlEliStaffSal) {
-		this.cvlEliStaffSal = cvlEliStaffSal;
+	public void setCvlEliStaffSalPct(Double cvlEliStaffSalPct) {
+		this.cvlEliStaffSalPct = cvlEliStaffSalPct;
 	}
 
-	public Double getCvlEliDrawingExp() {
-		return cvlEliDrawingExp;
+	public Double getCvlEliDrawingExpPct() {
+		return cvlEliDrawingExpPct;
 	}
 
-	public void setCvlEliDrawingExp(Double cvlEliDrawingExp) {
-		this.cvlEliDrawingExp = cvlEliDrawingExp;
+	public void setCvlEliDrawingExpPct(Double cvlEliDrawingExpPct) {
+		this.cvlEliDrawingExpPct = cvlEliDrawingExpPct;
 	}
 
-	public Double getCvlEliUnloadingCharges() {
-		return cvlEliUnloadingCharges;
+	public Double getCvlEliUnloadingChargesPct() {
+		return cvlEliUnloadingChargesPct;
 	}
 
-	public void setCvlEliUnloadingCharges(Double cvlEliUnloadingCharges) {
-		this.cvlEliUnloadingCharges = cvlEliUnloadingCharges;
+	public void setCvlEliUnloadingChargesPct(Double cvlEliUnloadingChargesPct) {
+		this.cvlEliUnloadingChargesPct = cvlEliUnloadingChargesPct;
 	}
 
-	public Double getCvlEliIntOnBorrowing() {
-		return cvlEliIntOnBorrowing;
+	public Double getCvlEliIntOnBorrowingPct() {
+		return cvlEliIntOnBorrowingPct;
 	}
 
-	public void setCvlEliIntOnBorrowing(Double cvlEliIntOnBorrowing) {
-		this.cvlEliIntOnBorrowing = cvlEliIntOnBorrowing;
+	public void setCvlEliIntOnBorrowingPct(Double cvlEliIntOnBorrowingPct) {
+		this.cvlEliIntOnBorrowingPct = cvlEliIntOnBorrowingPct;
 	}
 
-	public Double getCvlEliOthers() {
-		return cvlEliOthers;
+	public Double getCvlEliOthersPct() {
+		return cvlEliOthersPct;
 	}
 
-	public void setCvlEliOthers(Double cvlEliOthers) {
-		this.cvlEliOthers = cvlEliOthers;
+	public void setCvlEliOthersPct(Double cvlEliOthersPct) {
+		this.cvlEliOthersPct = cvlEliOthersPct;
 	}
 
 	public Double getCvlCostOfFullyBuildModel() {
