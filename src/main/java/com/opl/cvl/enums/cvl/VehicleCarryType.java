@@ -19,6 +19,15 @@ public enum VehicleCarryType {
 		return value;
 	}
 	
+	public static VehicleCarryType getById(Integer id) {
+		for(VehicleCarryType vehicleCarryType : VehicleCarryType.values()) {
+			if(vehicleCarryType.getId() == id) {
+				return vehicleCarryType;
+			}
+		}
+		return null;
+	}
+	
 	public static VehicleCarryType[] getAll() {
 		return VehicleCarryType.values();
 	}
