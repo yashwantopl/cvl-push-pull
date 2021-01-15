@@ -369,6 +369,7 @@ public class ScoreParameter {
 
     	    public static final String AGE_ML = "AGE_ML";
     	    public static final String OWNING_HOUSE_ML = "OWNING_HOUSE_ML";
+    	    public static final String OWNING_HOUSE = "OWNING_HOUSE";
     	    public static final String ACADEMIC_QUALIFICATION_ML = "ACADEMIC_QUALIFICATION_ML";
     	    public static final String EXPERIENCE_IN_THE_LINE_OF_TRADE_ML   = "EXPERIENCE_IN_THE_LINE_OF_TRADE_ML";
     	    public static final String ASSESSED_FOR_INCOME_TAX_ML = "ASSESSED_FOR_INCOME_TAX_ML";

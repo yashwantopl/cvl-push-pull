@@ -18,6 +18,8 @@ public class FinancialArrangementsDetailRequest implements Serializable {
 	private Long id;
 
 	private Double amount;
+	
+	private String amountInString;
 
 	 private Integer facilityNatureId;
 
@@ -301,5 +303,17 @@ public class FinancialArrangementsDetailRequest implements Serializable {
 	public void setSuitFiledStatus(String suitFiledStatus) {
 		this.suitFiledStatus = suitFiledStatus;
 	}
+
+	public String getAmountInString() {
+		return amountInString;
+	}
+
+	public void setAmountInString(String amountInString) {
+		this.amountInString = amountInString;
+	}
+
+	
+	
+	
 	
 }

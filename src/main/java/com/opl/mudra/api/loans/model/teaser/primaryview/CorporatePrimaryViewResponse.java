@@ -3,6 +3,8 @@ package com.opl.mudra.api.loans.model.teaser.primaryview;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.Column;
+
 import com.opl.mudra.api.loans.model.AssociatedConcernDetailRequest;
 import com.opl.mudra.api.loans.model.DirectorBackgroundDetailResponse;
 import com.opl.mudra.api.loans.model.FinancialArrangementsDetailResponse;
@@ -187,7 +189,19 @@ public class CorporatePrimaryViewResponse {
 	private String scoringBasedOn;
 	private Long profileId;
     private Object vehicleOperatorDetailsResponse;
+    private String businessProspects;
+	private String accessInput;
 	
+	private Object accountName;
+	private Object name;
+	private Object accountNumber;
+	private Object ifsc;
+	private Object status;
+	
+	private Object noBsSinceYear;
+	private Object noBsSinceMonths;
+	private Object noBsSinceWhen;
+	private Object noBsData;
 	
 	public CorporatePrimaryViewResponseNbfc getNbfcData() {
 		return nbfcData;
@@ -1492,4 +1506,70 @@ public class CorporatePrimaryViewResponse {
 	 * setNbfcListList(List<CorporatePrimaryViewResponseNbfc> nbfcListList) {
 	 * this.nbfcListList = nbfcListList; }
 	 */
+	public String getBusinessProspects() {
+		return businessProspects;
+	}
+	public void setBusinessProspects(String businessProspects) {
+		this.businessProspects = businessProspects;
+	}
+	public String getAccessInput() {
+		return accessInput;
+	}
+	public void setAccessInput(String accessInput) {
+		this.accessInput = accessInput;
+	}
+	public Object getAccountName() {
+		return accountName;
+	}
+	public void setAccountName(Object accountName) {
+		this.accountName = accountName;
+	}
+	public Object getName() {
+		return name;
+	}
+	public void setName(Object name) {
+		this.name = name;
+	}
+	public Object getAccountNumber() {
+		return accountNumber;
+	}
+	public void setAccountNumber(Object accountNumber) {
+		this.accountNumber = accountNumber;
+	}
+	public Object getIfsc() {
+		return ifsc;
+	}
+	public void setIfsc(Object ifsc) {
+		this.ifsc = ifsc;
+	}
+	public Object getStatus() {
+		return status;
+	}
+	public void setStatus(Object status) {
+		this.status = status;
+	}
+	public Object getNoBsSinceYear() {
+		return noBsSinceYear;
+	}
+	public void setNoBsSinceYear(Object noBsSinceYear) {
+		this.noBsSinceYear = noBsSinceYear;
+	}
+	public Object getNoBsSinceMonths() {
+		return noBsSinceMonths;
+	}
+	public void setNoBsSinceMonths(Object noBsSinceMonths) {
+		this.noBsSinceMonths = noBsSinceMonths;
+	}
+	public Object getNoBsSinceWhen() {
+		return noBsSinceWhen;
+	}
+	public void setNoBsSinceWhen(Object noBsSinceWhen) {
+		this.noBsSinceWhen = noBsSinceWhen;
+	}
+	public Object getNoBsData() {
+		return noBsData;
+	}
+	public void setNoBsData(Object noBsData) {
+		this.noBsData = noBsData;
+	}
 }

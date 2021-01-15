@@ -536,7 +536,7 @@ public class ScoringParameterRequest {
     private Boolean familyMembersDirectlyVal_p = false;
     private Boolean familyMembersDirectlyVal = false;
     private Boolean loanFreeVehicle_p = false;
-    private Double totalCostOfProposedVehicleVal;
+    private Double totalCostOfExistingVehicleVal;
     private Double totalSanctionVal;
     private Boolean depositPositionPotential_p = false;
     private Double totalDebit;
@@ -548,7 +548,14 @@ public class ScoringParameterRequest {
     private Double conservativeDebtServiceCoverageVal;
     private Boolean conservativeDebtServiceCoverage_p = false;
 
-    
+    public Double getTotalCostOfExistingVehicleVal() {
+        return totalCostOfExistingVehicleVal;
+    }
+
+    public void setTotalCostOfExistingVehicleVal(Double totalCostOfExistingVehicleVal) {
+        this.totalCostOfExistingVehicleVal = totalCostOfExistingVehicleVal;
+    }
+
     public Boolean getTypeOfActivity_p() {
 		return typeOfActivity_p;
 	}
@@ -2768,14 +2775,6 @@ public class ScoringParameterRequest {
         this.loanFreeVehicle_p = loanFreeVehicle_p;
     }
 
-    public Double getTotalCostOfProposedVehicleVal() {
-        return totalCostOfProposedVehicleVal;
-    }
-
-    public void setTotalCostOfProposedVehicleVal(Double totalCostOfProposedVehicleVal) {
-        this.totalCostOfProposedVehicleVal = totalCostOfProposedVehicleVal;
-    }
-
     public Double getTotalSanctionVal() {
         return totalSanctionVal;
     }
@@ -3121,7 +3120,7 @@ public class ScoringParameterRequest {
                 ", familyMembersDirectlyVal_p=" + familyMembersDirectlyVal_p +
                 ", familyMembersDirectlyVal=" + familyMembersDirectlyVal +
                 ", loanFreeVehicle_p=" + loanFreeVehicle_p +
-                ", totalCostOfProposedVehicleVal=" + totalCostOfProposedVehicleVal +
+                ", totalCostOfExistingVehicleVal=" + totalCostOfExistingVehicleVal +
                 ", totalSanctionVal=" + totalSanctionVal +
                 ", depositPositionPotential_p=" + depositPositionPotential_p +
                 ", totalDebit=" + totalDebit +

@@ -21,6 +21,7 @@ public class DirectorPersonalDetailResponse {
 	    private String ongoingMudraLoan;
 	    private String govScheme;
 	    private String workAndResidenceSamePlace;
+	    private String haveOwnCommercialProperty;
 	    
 	    
 	    
@@ -127,6 +128,12 @@ public class DirectorPersonalDetailResponse {
 		}
 		public void setWorkAndResidenceSamePlace(String workAndResidenceSamePlace) {
 			this.workAndResidenceSamePlace = workAndResidenceSamePlace;
+		}
+		public String getHaveOwnCommercialProperty() {
+			return haveOwnCommercialProperty;
+		}
+		public void setHaveOwnCommercialProperty(String haveOwnCommercialProperty) {
+			this.haveOwnCommercialProperty = haveOwnCommercialProperty;
 		}
 		
 }

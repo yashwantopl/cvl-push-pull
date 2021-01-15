@@ -109,6 +109,13 @@ public class EligibililityRequest implements Serializable{
 	private String loanType;
 	
 	private Double monthlyLoanObligation;
+
+	private String fuelType;
+
+	private Double consideredPromotorContribution;
+	private Double consideredPromotorContributionAmount;
+	private Double valueAfterExistingLoanAmountDiduction;
+	private Double netEligibileBankFinance;
 	
 	
 	public EligibililityRequest(){
@@ -120,6 +127,38 @@ public class EligibililityRequest implements Serializable{
 		this.applicationId = applicationId;
 		this.productId = productId;
 		this.fpProductId = fpProuctId;
+	}
+
+	public String getFuelType() {
+		return fuelType;
+	}
+
+	public void setFuelType(String fuelType) {
+		this.fuelType = fuelType;
+	}
+
+	public Double getConsideredPromotorContribution() {
+		return consideredPromotorContribution;
+	}
+
+	public void setConsideredPromotorContribution(Double consideredPromotorContribution) {
+		this.consideredPromotorContribution = consideredPromotorContribution;
+	}
+
+	public Double getConsideredPromotorContributionAmount() {
+		return consideredPromotorContributionAmount;
+	}
+
+	public void setConsideredPromotorContributionAmount(Double consideredPromotorContributionAmount) {
+		this.consideredPromotorContributionAmount = consideredPromotorContributionAmount;
+	}
+
+	public Double getValueAfterExistingLoanAmountDiduction() {
+		return valueAfterExistingLoanAmountDiduction;
+	}
+
+	public void setValueAfterExistingLoanAmountDiduction(Double valueAfterExistingLoanAmountDiduction) {
+		this.valueAfterExistingLoanAmountDiduction = valueAfterExistingLoanAmountDiduction;
 	}
 
 	public Long getApplicationId() {
@@ -578,9 +617,11 @@ public class EligibililityRequest implements Serializable{
 		this.monthlyLoanObligation = monthlyLoanObligation;
 	}
 
+	public Double getNetEligibileBankFinance() {
+		return netEligibileBankFinance;
+	}
 
-	
-	
-
-	
+	public void setNetEligibileBankFinance(Double netEligibileBankFinance) {
+		this.netEligibileBankFinance = netEligibileBankFinance;
+	}
 }
