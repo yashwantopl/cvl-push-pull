@@ -36,7 +36,7 @@ public class VehicleOperatorRequest implements Serializable {
     private Double chassisCost;
     private Double bodyBuildingCost;
     private Double totalCostOfProposedVehicle;
-
+    private String vehicleCarryType;
     private List<CurrentOperatedVehicleRequest> currentOperatedVehicleDetails;
     private List<PastVehicleLoanRequest> pastVehicleLoanDetails;
     private List<OperatorRequest> operatorDetails;
@@ -230,9 +230,11 @@ public class VehicleOperatorRequest implements Serializable {
 	public void setTotalCostOfProposedVehicle(Double totalCostOfProposedVehicle) {
 		this.totalCostOfProposedVehicle = totalCostOfProposedVehicle;
 	}
-    
-    
-    
-
+	public String getVehicleCarryType() {
+		return vehicleCarryType;
+	}
+	public void setVehicleCarryType(String vehicleCarryType) {
+		this.vehicleCarryType = vehicleCarryType;
+	}
     
 }
