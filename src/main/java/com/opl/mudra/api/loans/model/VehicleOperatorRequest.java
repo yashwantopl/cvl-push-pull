@@ -25,6 +25,7 @@ public class VehicleOperatorRequest implements Serializable {
     private Long state;
 	private String stateName;
     private Integer vehicleCapacity;
+    private String vehicleCapacityStr;
     private Integer noOfPerson;
     private Integer loadInKg;
     private Double expectedMonthlyEarning;
@@ -229,6 +230,12 @@ public class VehicleOperatorRequest implements Serializable {
 
 	public void setTotalCostOfProposedVehicle(Double totalCostOfProposedVehicle) {
 		this.totalCostOfProposedVehicle = totalCostOfProposedVehicle;
+	}
+	public String getVehicleCapacityStr() {
+		return vehicleCapacityStr;
+	}
+	public void setVehicleCapacityStr(String vehicleCapacityStr) {
+		this.vehicleCapacityStr = vehicleCapacityStr;
 	}
     
     
