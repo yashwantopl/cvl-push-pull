@@ -583,30 +583,30 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 		private Boolean isCgtmseCoveragePercMandatory =false;
 		
 
-		private Integer cvlEliMotorTax;
+		private BigDecimal cvlEliMotorTax;
 
-		private Integer cvlEliInsurancePremium;
+		private BigDecimal cvlEliInsurancePremium;
 		
-		private Integer cvlEliGarageRent;
+		private BigDecimal cvlEliGarageRent;
 
-		private Integer cvlEliDepreciation;
+		private BigDecimal cvlEliDepreciation;
 		
-		private Integer cvlEliRepairExp;
+		private BigDecimal cvlEliRepairExp;
 
-		private Integer cvlEliCostOil;
+		private BigDecimal cvlEliCostOil;
 
-		private Integer cvlEliStaffSal;
+		private BigDecimal cvlEliStaffSal;
 
-		private Integer cvlEliDrawingExp;
-		
-
-		private Integer cvlEliUnloadingCharges;
+		private BigDecimal cvlEliDrawingExp;
 		
 
-		private Integer cvlEliIntOnBorrowing;
+		private BigDecimal cvlEliUnloadingCharges;
 		
 
-		private Integer cvlEliOthers;
+		private BigDecimal cvlEliIntOnBorrowing;
+		
+
+		private BigDecimal cvlEliOthers;
 		
 
 		private List<Long> residencyStabilityIds;
@@ -615,15 +615,15 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 		
 		private List<Long> vehicleSegmentIds;
 		
-		private Integer cvlCostOfFullyBuildModel;
+		private BigDecimal cvlCostOfFullyBuildModel;
 		
-		private Integer cvlCostOfChasis;
+		private BigDecimal cvlCostOfChasis;
 		
-		private Integer cvlCostOfBody;
+		private BigDecimal cvlCostOfBody;
 		
-		private Integer cvlOtherMarginExp;
+		private BigDecimal cvlOtherMarginExp;
 		
-		private Integer cvl2ndHandVehicle;
+		private BigDecimal cvl2ndHandVehicle;
 		
 		
 		
@@ -2984,134 +2984,138 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 		this.vehicleSegmentIds = vehicleSegmentIds;
 	}
 
-	public Integer getCvlEliMotorTax() {
+	public BigDecimal getCvlEliMotorTax() {
 		return cvlEliMotorTax;
 	}
 
-	public void setCvlEliMotorTax(Integer cvlEliMotorTax) {
+	public void setCvlEliMotorTax(BigDecimal cvlEliMotorTax) {
 		this.cvlEliMotorTax = cvlEliMotorTax;
 	}
 
-	public Integer getCvlEliInsurancePremium() {
+	public BigDecimal getCvlEliInsurancePremium() {
 		return cvlEliInsurancePremium;
 	}
 
-	public void setCvlEliInsurancePremium(Integer cvlEliInsurancePremium) {
+	public void setCvlEliInsurancePremium(BigDecimal cvlEliInsurancePremium) {
 		this.cvlEliInsurancePremium = cvlEliInsurancePremium;
 	}
 
-	public Integer getCvlEliGarageRent() {
+	public BigDecimal getCvlEliGarageRent() {
 		return cvlEliGarageRent;
 	}
 
-	public void setCvlEliGarageRent(Integer cvlEliGarageRent) {
+	public void setCvlEliGarageRent(BigDecimal cvlEliGarageRent) {
 		this.cvlEliGarageRent = cvlEliGarageRent;
 	}
 
-	public Integer getCvlEliDepreciation() {
+	public BigDecimal getCvlEliDepreciation() {
 		return cvlEliDepreciation;
 	}
 
-	public void setCvlEliDepreciation(Integer cvlEliDepreciation) {
+	public void setCvlEliDepreciation(BigDecimal cvlEliDepreciation) {
 		this.cvlEliDepreciation = cvlEliDepreciation;
 	}
 
-	public Integer getCvlEliRepairExp() {
+	public BigDecimal getCvlEliRepairExp() {
 		return cvlEliRepairExp;
 	}
 
-	public void setCvlEliRepairExp(Integer cvlEliRepairExp) {
+	public void setCvlEliRepairExp(BigDecimal cvlEliRepairExp) {
 		this.cvlEliRepairExp = cvlEliRepairExp;
 	}
 
-	public Integer getCvlEliCostOil() {
+	public BigDecimal getCvlEliCostOil() {
 		return cvlEliCostOil;
 	}
 
-	public void setCvlEliCostOil(Integer cvlEliCostOil) {
+	public void setCvlEliCostOil(BigDecimal cvlEliCostOil) {
 		this.cvlEliCostOil = cvlEliCostOil;
 	}
 
-	public Integer getCvlEliStaffSal() {
+	public BigDecimal getCvlEliStaffSal() {
 		return cvlEliStaffSal;
 	}
 
-	public void setCvlEliStaffSal(Integer cvlEliStaffSal) {
+	public void setCvlEliStaffSal(BigDecimal cvlEliStaffSal) {
 		this.cvlEliStaffSal = cvlEliStaffSal;
 	}
 
-	public Integer getCvlEliDrawingExp() {
+	public BigDecimal getCvlEliDrawingExp() {
 		return cvlEliDrawingExp;
 	}
 
-	public void setCvlEliDrawingExp(Integer cvlEliDrawingExp) {
+	public void setCvlEliDrawingExp(BigDecimal cvlEliDrawingExp) {
 		this.cvlEliDrawingExp = cvlEliDrawingExp;
 	}
 
-	public Integer getCvlEliUnloadingCharges() {
+	public BigDecimal getCvlEliUnloadingCharges() {
 		return cvlEliUnloadingCharges;
 	}
 
-	public void setCvlEliUnloadingCharges(Integer cvlEliUnloadingCharges) {
+	public void setCvlEliUnloadingCharges(BigDecimal cvlEliUnloadingCharges) {
 		this.cvlEliUnloadingCharges = cvlEliUnloadingCharges;
 	}
 
-	public Integer getCvlEliIntOnBorrowing() {
+	public BigDecimal getCvlEliIntOnBorrowing() {
 		return cvlEliIntOnBorrowing;
 	}
 
-	public void setCvlEliIntOnBorrowing(Integer cvlEliIntOnBorrowing) {
+	public void setCvlEliIntOnBorrowing(BigDecimal cvlEliIntOnBorrowing) {
 		this.cvlEliIntOnBorrowing = cvlEliIntOnBorrowing;
 	}
 
-	public Integer getCvlEliOthers() {
+	public BigDecimal getCvlEliOthers() {
 		return cvlEliOthers;
 	}
 
-	public void setCvlEliOthers(Integer cvlEliOthers) {
+	public void setCvlEliOthers(BigDecimal cvlEliOthers) {
 		this.cvlEliOthers = cvlEliOthers;
 	}
 
-	public Integer getCvlCostOfFullyBuildModel() {
+	public BigDecimal getCvlCostOfFullyBuildModel() {
 		return cvlCostOfFullyBuildModel;
 	}
 
-	public void setCvlCostOfFullyBuildModel(Integer cvlCostOfFullyBuildModel) {
+	public void setCvlCostOfFullyBuildModel(BigDecimal cvlCostOfFullyBuildModel) {
 		this.cvlCostOfFullyBuildModel = cvlCostOfFullyBuildModel;
 	}
 
-	public Integer getCvlCostOfChasis() {
+	public BigDecimal getCvlCostOfChasis() {
 		return cvlCostOfChasis;
 	}
 
-	public void setCvlCostOfChasis(Integer cvlCostOfChasis) {
+	public void setCvlCostOfChasis(BigDecimal cvlCostOfChasis) {
 		this.cvlCostOfChasis = cvlCostOfChasis;
 	}
 
-	public Integer getCvlCostOfBody() {
+	public BigDecimal getCvlCostOfBody() {
 		return cvlCostOfBody;
 	}
 
-	public void setCvlCostOfBody(Integer cvlCostOfBody) {
+	public void setCvlCostOfBody(BigDecimal cvlCostOfBody) {
 		this.cvlCostOfBody = cvlCostOfBody;
 	}
 
-	public Integer getCvlOtherMarginExp() {
+	public BigDecimal getCvlOtherMarginExp() {
 		return cvlOtherMarginExp;
 	}
 
-	public void setCvlOtherMarginExp(Integer cvlOtherMarginExp) {
+	public void setCvlOtherMarginExp(BigDecimal cvlOtherMarginExp) {
 		this.cvlOtherMarginExp = cvlOtherMarginExp;
 	}
 
-	public Integer getCvl2ndHandVehicle() {
+	public BigDecimal getCvl2ndHandVehicle() {
 		return cvl2ndHandVehicle;
 	}
 
-	public void setCvl2ndHandVehicle(Integer cvl2ndHandVehicle) {
+	public void setCvl2ndHandVehicle(BigDecimal cvl2ndHandVehicle) {
 		this.cvl2ndHandVehicle = cvl2ndHandVehicle;
 	}
 
+
+
+
+	
 
 	
 	
