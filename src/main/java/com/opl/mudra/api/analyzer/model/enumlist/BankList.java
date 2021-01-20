@@ -885,7 +885,28 @@ public enum BankList {
 	KoilkuntlaCoOpBankLtdIndia	("Koilkuntla Co-Op Bank Ltd, India","KoilkuntlaCoOpBankLtdIndia","12235",""),
 	ManwathUrbanCoOpBankIndia	("Manwath Urban Co-Op Bank, India","ManwathUrbanCoOpBankIndia","12240",""),
 	StMilagresCreditSouhardhaCoOpLtdIndia	("St Milagres Credit Souhardha Co-Op Ltd, India","StMilagresCreditSouhardhaCoOpLtdIndia","12238",""),
-	TheSevaliaUrbanCoOpBankLtdIndia	("The Sevalia Urban Co-Op Bank Ltd, India","TheSevaliaUrbanCoOpBankLtdIndia","12237","");
+	TheSevaliaUrbanCoOpBankLtdIndia	("The Sevalia Urban Co-Op Bank Ltd, India","TheSevaliaUrbanCoOpBankLtdIndia","12237",""),
+	
+	//---20-01-2021
+			AlibagCoOpUrbanBankLtdIndia("Alibag Co-Op Urban Bank Ltd, India","AlibagCoOpUrbanBankLtdIndia","12245",""),
+			AshokSahakariBankLtdIndia("Ashok Sahakari Bank Ltd, India","AshokSahakariBankLtdIndia","12248",""),
+			BhingarUrbanCoOpBankLtdIndia("Bhingar Urban Co-Op Bank Ltd, India","BhingarUrbanCoOpBankLtdIndia","12244",""),
+			DYPatilSahakariBankLtdIndia("D Y Patil Sahakari Bank Ltd, India","DYPatilSahakariBankLtdIndia","12251",""),
+			GunturDistrictCoOpCentralBankLtdIndia("Guntur District Co-Op Central Bank Ltd, India","GunturDistrictCoOpCentralBankLtdIndia","12257",""),
+			KrishnaMercantileCoOpBankLtdIndia("Krishna Mercantile Co-Op Bank Ltd, India","KrishnaMercantileCoOpBankLtdIndia","12258",""),
+			MahilaUrbanCoOpBankLtdIndia("Mahila Urban Co-Op Bank Ltd, India","MahilaUrbanCoOpBankLtdIndia","12249",""),
+			NashikJilhaMahilaSahakariBankLtdIndia("Nashik Jilha Mahila Sahakari Bank Ltd, India","NashikJilhaMahilaSahakariBankLtdIndia","12239",""),
+			NationalMercantileCoOpBankLtdIndia("National Mercantile Co-Op Bank Ltd, India","NationalMercantileCoOpBankLtdIndia","12246",""),
+			ProgressiveUrbanCoOpBankIndia("Progressive Urban Co-Op Bank, India","ProgressiveUrbanCoOpBankIndia","12253",""),
+			SaptagiriGrameenaBankIndia("Saptagiri Grameena Bank, India","SaptagiriGrameenaBankIndia","12256",""),
+			SawantwadiUrbanCoOpBankLtdIndia("Sawantwadi Urban Co-Op Bank Ltd, India","SawantwadiUrbanCoOpBankLtdIndia","12255",""),
+			ShriChatrapatiShivajiMaharajSahakariBankNiyamithIndia("Shri Chatrapati Shivaji Maharaj Sahakari Bank Niyamith, India","ShriChatrapatiShivajiMaharajSahakariBankNiyamithIndia","12243",""),
+			ShriGajananLoksevaSahakariBankLtdIndia("Shri Gajanan Lokseva Sahakari Bank Ltd, India","ShriGajananLoksevaSahakariBankLtdIndia","12254",""),
+			ShripatraodadaSahkariBankLtdIndia("Shripatraodada Sahkari Bank Ltd, India","ShripatraodadaSahkariBankLtdIndia","12241",""),
+			SriSudhaCoOpBankLtdIndia("Sri Sudha Co-Op Bank Ltd, India","SriSudhaCoOpBankLtdIndia","12247",""),
+			SwatantraSenaniLateShripalAlaseKurundwadCoOpBankLtdIndia("Swatantra Senani Late Shripal Alase Kurundwad Co-Op Bank Ltd, India","SwatantraSenaniLateShripalAlaseKurundwadCoOpBankLtdIndia","12242",""),
+			TheBabasahebDeshmukhSahakariBankLtdIndia("The Babasaheb Deshmukh Sahakari Bank Ltd, India","TheBabasahebDeshmukhSahakariBankLtdIndia","12250",""),
+			TheMaharajaCoOpUrbanBankLtdIndia("The Maharaja Co-Op Urban Bank Ltd, India","TheMaharajaCoOpUrbanBankLtdIndia","12252","");
     
     
 	    
