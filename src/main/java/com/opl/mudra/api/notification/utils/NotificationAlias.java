@@ -906,6 +906,8 @@ public class NotificationAlias {
 	public static final Long DFS_EMAIL_FS_PRODUCT_SELECTED_EXISTING = 591L;
 	public static final Long DFS_WELCOME_EMAIL_FOR_EXISITNG_USER_DEALER = 592L;
 	
+	public static final Long CVL_WELCOME_EMAIL_FOR_USER = 3967L;
+	
 	public static final Long PAYMENT_GATEWAY_ISSUE_MAIL = 594L;
 	
 	
