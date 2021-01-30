@@ -203,6 +203,50 @@ public class CorporatePrimaryViewResponse {
 	private Object noBsSinceWhen;
 	private Object noBsData;
 	
+	
+	 //SPECIFIC MODULE MASTER ID's
+  	private Long bsModuleMasterId;
+  	private Long itrModuleMasterId;
+  	private Long cibilModuleMasterId;
+
+	/*6-12-2019*/
+	private List<Object> tripalAggriment;
+    private List<Object> sanctionletter;
+    private List<Object> others;
+    private List<Long> bsStorageIds;
+    
+    public List<Object> getTripalAggriment() {
+		return tripalAggriment;
+	}
+	public void setTripalAggriment(List<Object> tripalAggriment) {
+		this.tripalAggriment = tripalAggriment;
+	}
+	public List<Object> getSanctionletter() {
+		return sanctionletter;
+	}
+	public void setSanctionletter(List<Object> sanctionletter) {
+		this.sanctionletter = sanctionletter;
+	}
+	public List<Object> getOthers() {
+		return others;
+	}
+	public void setOthers(List<Object> others) {
+		this.others = others;
+	}
+	public List<Long> getBsStorageIds() {
+		return bsStorageIds;
+	}
+	public void setBsStorageIds(List<Long> bsStorageIds) {
+		this.bsStorageIds = bsStorageIds;
+	}
+	public List<Long> getCombinedStorageIds() {
+		return combinedStorageIds;
+	}
+	public void setCombinedStorageIds(List<Long> combinedStorageIds) {
+		this.combinedStorageIds = combinedStorageIds;
+	}
+	private List<Long> combinedStorageIds;
+	
 	public CorporatePrimaryViewResponseNbfc getNbfcData() {
 		return nbfcData;
 	}
@@ -1571,5 +1615,23 @@ public class CorporatePrimaryViewResponse {
 	}
 	public void setNoBsData(Object noBsData) {
 		this.noBsData = noBsData;
+	}
+	public Long getBsModuleMasterId() {
+		return bsModuleMasterId;
+	}
+	public void setBsModuleMasterId(Long bsModuleMasterId) {
+		this.bsModuleMasterId = bsModuleMasterId;
+	}
+	public Long getItrModuleMasterId() {
+		return itrModuleMasterId;
+	}
+	public void setItrModuleMasterId(Long itrModuleMasterId) {
+		this.itrModuleMasterId = itrModuleMasterId;
+	}
+	public Long getCibilModuleMasterId() {
+		return cibilModuleMasterId;
+	}
+	public void setCibilModuleMasterId(Long cibilModuleMasterId) {
+		this.cibilModuleMasterId = cibilModuleMasterId;
 	}
 }
